@@ -26,7 +26,14 @@ fi
 echo "[Shopro] Using PHP: $PHP_BIN"
 
 echo "[Shopro] Installing Composer dependencies"
-"$PHP_BIN" "$COMPOSER_BIN" install --prefer-dist --no-interaction --no-progress
+# On Plesk, `composer` can be a phpenv shell shim rather than a PHP/PHAR file.
+# It must therefore be executed directly instead of being passed to PHP.
+"$COMPOSER_BIN" install --prefer-dist --no-interaction --no-progress
+
+if [ ! -f vendor/symfony/html-sanitizer/HtmlSanitizer.php ]; then
+    echo "[Shopro] Composer did not install symfony/html-sanitizer" >&2
+    exit 1
+fi
 
 echo "[Shopro] Running database migrations"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console doctrine:migrations:migrate --no-interaction
