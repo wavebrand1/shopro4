@@ -8,7 +8,7 @@
 {% for page in pages %}
 <tr>
     <td><strong>{{ page.title }}</strong></td>
-    <td><code>/strona/{{ page.slug }}</code></td>
+    <td><code>/{{ page.slug }}</code></td>
     <td><span class="status status--{{ page.published ? 'published' : 'draft' }}">{{ page.published ? 'Opublikowana' : 'Szkic' }}</span></td>
     <td>{{ page.updatedAt|date('d.m.Y H:i') }}</td>
     <td class="actions"><a href="{{ path('admin_page_edit', {id: page.id}) }}">Edytuj</a>{% if page.published %}<a href="{{ path('cms_page_show', {slug: page.slug}) }}" target="_blank">Otwórz</a>{% endif %}

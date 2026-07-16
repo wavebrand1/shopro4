@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PublicPageController extends AbstractController
 {
-    #[Route('/strona/{slug}', name: 'cms_page_show', requirements: ['slug' => '[a-z0-9-]+'], methods: ['GET'])]
+    #[Route('/{slug}', name: 'cms_page_show', requirements: ['slug' => '[a-z0-9-]+'], methods: ['GET'], priority: -100)]
     public function __invoke(string $slug, PageRepository $pages): Response
     {
         $page = $pages->findPublishedBySlug($slug);
