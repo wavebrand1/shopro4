@@ -1,0 +1,5 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ page.title }} — Shopro 4.0{% endblock %}
+{% block body %}
+<main class="content-page"><article><a class="content-page__back" href="{{ path('app_home') }}">← Shopro 4.0</a><h1>{{ page.title }}</h1><div class="content-page__body">{{ page.content|nl2br }}</div></article></main>
+{% endblock %}

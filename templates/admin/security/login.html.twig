@@ -1,0 +1,15 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Logowanie — Shopro 4.0{% endblock %}
+{% block body %}
+<section class="login-card">
+    <p class="admin-eyebrow">Panel administracyjny</p>
+    <h1>Zaloguj się</h1>
+    {% if error %}<div class="flash flash--error">Nieprawidłowy e-mail lub hasło.</div>{% endif %}
+    <form method="post" class="admin-form">
+        <label>E-mail<input type="email" name="_username" value="{{ last_username }}" required autofocus autocomplete="email"></label>
+        <label>Hasło<input type="password" name="_password" required autocomplete="current-password"></label>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        <button class="button button--primary" type="submit">Zaloguj się</button>
+    </form>
+</section>
+{% endblock %}

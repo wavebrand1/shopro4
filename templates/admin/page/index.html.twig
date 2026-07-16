@@ -1,0 +1,19 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Podstrony — Shopro 4.0{% endblock %}
+{% block body %}
+<div class="admin-heading"><div><p class="admin-eyebrow">Treść</p><h1>Podstrony</h1></div><a class="button button--primary" href="{{ path('admin_page_new') }}">Nowa podstrona</a></div>
+<div class="admin-table-wrap"><table class="admin-table">
+<thead><tr><th>Tytuł</th><th>Adres</th><th>Status</th><th>Aktualizacja</th><th></th></tr></thead>
+<tbody>
+{% for page in pages %}
+<tr>
+    <td><strong>{{ page.title }}</strong></td>
+    <td><code>/strona/{{ page.slug }}</code></td>
+    <td><span class="status status--{{ page.published ? 'published' : 'draft' }}">{{ page.published ? 'Opublikowana' : 'Szkic' }}</span></td>
+    <td>{{ page.updatedAt|date('d.m.Y H:i') }}</td>
+    <td class="actions"><a href="{{ path('admin_page_edit', {id: page.id}) }}">Edytuj</a>{% if page.published %}<a href="{{ path('cms_page_show', {slug: page.slug}) }}" target="_blank">Otwórz</a>{% endif %}
+    <form method="post" action="{{ path('admin_page_delete', {id: page.id}) }}" onsubmit="return confirm('Usunąć podstronę?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-page-' ~ page.id) }}"><button>Usuń</button></form></td>
+</tr>
+{% else %}<tr><td colspan="5" class="empty">Nie utworzono jeszcze żadnej podstrony.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

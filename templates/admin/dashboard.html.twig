@@ -1,0 +1,8 @@
+{% extends 'admin/layout.html.twig' %}
+{% block body %}
+<div class="admin-heading"><div><p class="admin-eyebrow">Shopro CMS</p><h1>Pulpit</h1></div><a class="button button--primary" href="{{ path('admin_page_new') }}">Nowa podstrona</a></div>
+<div class="admin-stats">
+    <article><strong>{{ page_count }}</strong><span>wszystkich podstron</span></article>
+    <article><strong>{{ published_count }}</strong><span>opublikowanych</span></article>
+</div>
+{% endblock %}

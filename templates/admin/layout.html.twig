@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>{% block title %}Panel Shopro 4.0{% endblock %}</title>
+    {% block javascripts %}{{ importmap('app') }}{% endblock %}
+</head>
+<body class="admin-body">
+    <header class="admin-header">
+        <a class="admin-brand" href="{{ path('admin_dashboard') }}">Shopro <span>4.0</span></a>
+        {% if app.user %}
+            <nav>
+                <a href="{{ path('admin_dashboard') }}">Pulpit</a>
+                <a href="{{ path('admin_page_index') }}">Podstrony</a>
+                <a href="{{ path('app_home') }}" target="_blank">Witryna</a>
+                <form method="post" action="{{ path('admin_logout') }}"><button>Wyloguj</button></form>
+            </nav>
+        {% endif %}
+    </header>
+    <main class="admin-main">
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}<div class="flash flash--{{ type }}">{{ message }}</div>{% endfor %}
+        {% endfor %}
+        {% block body %}{% endblock %}
+    </main>
+</body>
+</html>
