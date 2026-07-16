@@ -37,6 +37,8 @@ Przed pierwszym wdrożeniem trzeba potwierdzić na serwerze:
 
 ## CI i wdrożenia
 
-`.github/workflows/ci.yml` sprawdza aplikację przy pushach i pull requestach. Szablon `.github/workflows/deploy-sftp.yml.example` jest celowo nieaktywny do czasu potwierdzenia układu hostingu. Hasło SFTP nie może znaleźć się w plikach projektu; należy je dodać jako sekret GitHub.
+`.github/workflows/ci.yml` sprawdza aplikację przy pushach i pull requestach. Serwer developerski jest aktualizowany przez integrację Git w Plesku: push do `main` wywołuje webhook, Plesk pobiera zmiany i wdraża je do `/httpdocs`, po czym uruchamia Composer i czyści cache Symfony.
+
+Szczegóły i procedura kontroli wdrożenia znajdują się w [documentation/DEPLOYMENT.md](documentation/DEPLOYMENT.md).
 
 Dokumentacja analizy Shopro Legacy znajduje się obecnie w nadrzędnym katalogu `documentation/` i zostanie włączona do repozytorium po ustaleniu docelowej organizacji dokumentacji.
