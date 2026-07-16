@@ -2,6 +2,8 @@
 
 Nowy edytor wizualny wykorzystuje GrapesJS 0.23.2 jako silnik komponentów, canvasu,
 drag-and-drop i urządzeń. Integracja znajduje się w `assets/page-builder.js`.
+Pakiety vendor importmapy są instalowane podczas wdrożenia przez `bin/deploy-dev` przed
+kompilacją AssetMapper.
 
 ## Model zapisu
 
