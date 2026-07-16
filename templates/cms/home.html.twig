@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Shopro 4.0 — środowisko developerskie{% endblock %}
+
+{% block body %}
+    <main class="welcome">
+        <section class="welcome__card">
+            <p class="welcome__eyebrow">Wavebrand · środowisko developerskie</p>
+            <h1>Shopro <span>4.0</span></h1>
+            <p class="welcome__lead">
+                Fundament nowej wersji systemu działa na Symfony 7.4 LTS.
+                Funkcjonalności Shopro Legacy będą przenoszone etapami, z zachowaniem ich kontraktów i danych.
+            </p>
+
+            <dl class="welcome__status">
+                <div><dt>Aplikacja</dt><dd>uruchomiona</dd></div>
+                <div><dt>Wdrożenia</dt><dd>GitHub → Plesk</dd></div>
+                <div><dt>Etap</dt><dd>fundament techniczny</dd></div>
+            </dl>
+        </section>
+    </main>
+{% endblock %}
