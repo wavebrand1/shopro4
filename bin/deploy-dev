@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+cd "$(dirname "$0")/.."
+
+echo "[Shopro] Installing Composer dependencies"
+composer install --prefer-dist --no-interaction --no-progress
+
+echo "[Shopro] Running database migrations"
+APP_ENV=dev APP_DEBUG=1 php bin/console doctrine:migrations:migrate --no-interaction
+
+echo "[Shopro] Installing bundle assets"
+APP_ENV=dev APP_DEBUG=1 php bin/console assets:install public
+
+echo "[Shopro] Compiling AssetMapper assets"
+APP_ENV=dev APP_DEBUG=1 php bin/console asset-map:compile
+
+# Cache must be cleared after compilation so that Symfony discovers the
+# freshly generated manifest instead of retaining old asset URLs.
+echo "[Shopro] Clearing Symfony cache"
+APP_ENV=dev APP_DEBUG=1 php bin/console cache:clear
+
+echo "[Shopro] Development deployment completed"
