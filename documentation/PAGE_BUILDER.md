@@ -4,14 +4,13 @@ Edytor stron nie zapisuje swobodnego HTML ani CSS. Programista przygotowuje komp
 jego formularz administracyjny i szablon Twig, a redaktor tworzy instancje komponentu,
 zmienia tylko dozwolone pola oraz ustala ich kolejność.
 
-## Tryby strony
+## Model edycji
 
-- rich_text — treść tekstowa w kolumnie cms_page.content; po ustawieniu
-  TINYMCE_API_KEY formularz uruchamia TinyMCE 8 z Tiny Cloud,
-- components — kontrolowane komponenty zapisane jako JSON w
-  cms_page.builder_data.
-
-Istniejące strony otrzymują tryb rich_text, dlatego ich treść pozostaje bez zmian.
+Wszystkie strony korzystają z jednego buildera komponentów zapisanego jako JSON w
+cms_page.builder_data. Komponent Tekst TinyMCE obsługuje zwykłe podstrony i treści
+blogowe. Nowa podstrona otrzymuje automatycznie sekcję pełnej szerokości z tym
+komponentem. Dawna treść rich_text jest przy pierwszej edycji opakowywana w taki sam
+komponent, dlatego istniejące strony zachowują zawartość.
 Kolumna builder_css pozostaje w bazie wyłącznie dla zgodności z pierwszym prototypem
 i nie jest wykonywana na stronie.
 
@@ -56,3 +55,15 @@ Nowy typ wymaga:
 
 Nie należy zapisywać w JSON haseł, sekretów ani wykonywalnego JavaScriptu.
 Adresy linków komponentu są renderowane tylko dla dozwolonych protokołów.
+
+## Sekcje i kolumny
+
+Najwyższym elementem projektu jest layout_section. Sekcja może mieć układ:
+
+- full — jedna kolumna 100%,
+- 70_30 — dwie kolumny 70% i 30%,
+- 50_50 — dwie równe kolumny.
+
+Komponent jest dodawany do aktualnie zaznaczonej kolumny. Sekcje i komponenty można
+przesuwać, usuwać oraz zwijać. Starsze płaskie projekty są podczas otwarcia
+automatycznie opakowywane w osobne sekcje pełnej szerokości.

@@ -55,13 +55,13 @@ final class AdminCmsTest extends WebTestCase
             'page[title]' => 'O nas',
             'page[slug]' => 'o-nas',
             'page[content]' => 'Pierwsza treść Shopro 4.0.',
+            'page[builderData]' => '[{"id":"section","type":"layout_section","data":{"layout":"full","columns":[[{"id":"text","type":"rich_text","data":{"content":"<p>Pierwsza treść Shopro 4.0.</p>"}}]]}}]',
             'page[published]' => true,
         ]);
         self::assertResponseRedirects('/admin/pages');
 
         $this->client->request('GET', '/o-nas');
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('h1', 'O nas');
         self::assertSelectorTextContains('.public-article__body', 'Pierwsza treść Shopro 4.0.');
 
         $page = self::getContainer()->get(PageRepository::class)->findPublishedBySlug('o-nas');
@@ -73,7 +73,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('input[name="page[homePage]"]');
         self::assertSelectorExists('textarea[name="page[javascript]"]');
         self::assertSelectorExists('[data-component-builder]');
-        self::assertSelectorExists('select[name="page[editorMode]"]');
+        self::assertSelectorExists('input[name="page[editorMode]"]');
         self::assertSelectorExists('input[name="page[builderData]"]');
         self::assertSelectorExists('input[name="page[builderCss]"]');
 

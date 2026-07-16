@@ -37,7 +37,7 @@ class Page
 
     #[ORM\Column(length: 20, options: ['default' => 'rich_text'])]
     #[Assert\Choice(choices: ['rich_text', 'components'])]
-    private string $editorMode = 'rich_text';
+    private string $editorMode = 'components';
 
     #[ORM\Column(type: Types::TEXT, options: ['default' => ''])]
     private string $builderData = '';
@@ -100,6 +100,15 @@ class Page
     {
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = $this->createdAt;
+        $this->builderData = json_encode([[
+            'id' => 'initial-section',
+            'type' => 'layout_section',
+            'data' => ['layout' => 'full', 'columns' => [[[
+                'id' => 'initial-text',
+                'type' => 'rich_text',
+                'data' => ['content' => '<p>Rozpocznij pisanie treści…</p>'],
+            ]]]],
+        ]], JSON_THROW_ON_ERROR);
     }
 
     public function getId(): ?int { return $this->id; }

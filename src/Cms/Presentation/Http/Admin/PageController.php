@@ -65,6 +65,19 @@ final class PageController extends AbstractController
 
     private function handleForm(Request $request, Page $page, PageRepository $pages, string $message): Response
     {
+        if (!$page->usesComponentBuilder()) {
+            $legacyContent = $page->getContent();
+            $page->setEditorMode('components');
+            $page->setBuilderData(json_encode([[
+                'id' => 'legacy-section-'.$page->getId(),
+                'type' => 'layout_section',
+                'data' => ['layout' => 'full', 'columns' => [[[
+                    'id' => 'legacy-text-'.$page->getId(),
+                    'type' => 'rich_text',
+                    'data' => ['content' => $legacyContent],
+                ]]]],
+            ]], JSON_THROW_ON_ERROR));
+        }
         $form = $this->createForm(PageType::class, $page);
         $form->handleRequest($request);
 

@@ -1,0 +1,6 @@
+{% set layout = block.layout|default('full') in ['full', '70_30', '50_50'] ? block.layout : 'full' %}
+<section class="builder-public-section builder-public-section--{{ layout }}"><div class="{{ layout == 'full' ? '' : 'site-container ' }}builder-public-section__columns builder-public-section__columns--{{ layout }}">
+    {% for column in block.columns|default([]) %}
+        <div class="builder-public-section__column">{% for component in column %}{% include 'cms/block/_render.html.twig' with {component: component} only %}{% endfor %}</div>
+    {% endfor %}
+</div></section>
