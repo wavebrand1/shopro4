@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class %}site-body{% endblock %}
+
+{% block body %}
+<div class="site-shell">
+    <header class="site-header site-header--solid">
+        <div class="site-container site-header__inner">
+            <a class="site-brand" href="{{ path('app_home') }}"><span class="site-brand__logo">S</span><span>Shopro <b>4.0</b></span></a>
+            <nav class="site-nav" id="site-navigation" aria-label="Menu główne">
+                <a href="{{ path('app_home') }}#mozliwosci">Możliwości</a>
+                <a href="{{ path('app_home') }}#jak-dziala">Jak działa</a>
+                <a href="{{ path('app_home') }}#dla-kogo">Dla kogo</a>
+                <a href="{{ path('app_home') }}#kontakt">Kontakt</a>
+            </nav>
+            <div class="site-header__actions">
+                <a class="site-login-link" href="{{ path('admin_dashboard') }}">Zaloguj się</a>
+                <a class="site-button site-button--small" href="{{ path('app_home') }}#kontakt">Rozpocznij</a>
+                <button class="site-menu-toggle" type="button" data-site-menu aria-label="Otwórz menu"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </header>
+
+    <main>{% block page_content %}{% endblock %}</main>
+
+    <footer class="site-footer">
+        <div class="site-container site-footer__grid">
+            <a class="site-brand" href="{{ path('app_home') }}"><span class="site-brand__logo">S</span><span>Shopro <b>4.0</b></span></a>
+            <p>Nowoczesny, modułowy system zarządzania firmą.</p>
+            <div><a href="{{ path('app_home') }}#mozliwosci">Możliwości</a><a href="{{ path('app_home') }}#jak-dziala">Jak działa</a><a href="{{ path('admin_dashboard') }}">Panel</a></div>
+        </div>
+        <div class="site-container site-footer__bottom"><span>© {{ 'now'|date('Y') }} Wavebrand. Wszystkie prawa zastrzeżone.</span><span>Symfony 7.4 LTS</span></div>
+    </footer>
+</div>
+{% endblock %}

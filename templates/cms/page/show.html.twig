@@ -1,5 +1,29 @@
-{% extends 'base.html.twig' %}
+{% extends 'cms/layout.html.twig' %}
+
 {% block title %}{{ page.title }} — Shopro 4.0{% endblock %}
-{% block body %}
-<main class="content-page"><article><a class="content-page__back" href="{{ path('app_home') }}">← Shopro 4.0</a><h1>{{ page.title }}</h1><div class="content-page__body">{{ page.content|nl2br }}</div></article></main>
+
+{% block page_content %}
+<section class="public-page-hero">
+    <div class="public-page-hero__orb"></div>
+    <div class="site-container">
+        <nav class="public-breadcrumb" aria-label="Okruszki">
+            <a href="{{ path('app_home') }}">Strona główna</a><span>›</span><span>{{ page.title }}</span>
+        </nav>
+        <span class="site-kicker">SHOPRO 4.0</span>
+        <h1>{{ page.title }}</h1>
+        <p>Informacje i materiały przygotowane dla użytkowników Shopro.</p>
+    </div>
+</section>
+
+<section class="public-page-content">
+    <div class="site-container public-page-grid">
+        <article class="public-article">
+            <div class="public-article__body">{{ page.content|nl2br }}</div>
+        </article>
+        <aside class="public-page-aside">
+            <div><span class="site-kicker">SHOPRO CMS</span><h2>Potrzebujesz pomocy?</h2><p>Skontaktuj się z nami, jeśli potrzebujesz dodatkowych informacji.</p><a class="site-button" href="{{ path('app_home') }}#kontakt">Kontakt <span>→</span></a></div>
+            <a class="public-back-link" href="{{ path('app_home') }}">← Wróć na stronę główną</a>
+        </aside>
+    </div>
+</section>
 {% endblock %}

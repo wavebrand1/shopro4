@@ -60,6 +60,6 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/o-nas');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'O nas');
-        self::assertSelectorTextContains('.content-page__body', 'Pierwsza treść Shopro 4.0.');
+        self::assertSelectorTextContains('.public-article__body', 'Pierwsza treść Shopro 4.0.');
     }
 }
