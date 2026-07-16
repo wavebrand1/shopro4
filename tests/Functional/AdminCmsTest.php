@@ -55,7 +55,7 @@ final class AdminCmsTest extends WebTestCase
             'page[title]' => 'O nas',
             'page[slug]' => 'o-nas',
             'page[content]' => 'Pierwsza treść Shopro 4.0.',
-            'page[builderData]' => '[{"id":"section","type":"layout_section","data":{"layout":"full","columns":[[{"id":"text","type":"rich_text","data":{"content":"<p>Pierwsza treść Shopro 4.0.</p>"}}]]}}]',
+            'page[builderData]' => '[{"id":"section","type":"layout_section","data":{"container":"grid","widths":[100],"columns":[[{"id":"text","type":"rich_text","data":{"content":"<p>Pierwsza treść Shopro 4.0.</p><script>alert(1)</script>"}}]]}}]',
             'page[published]' => true,
         ]);
         self::assertResponseRedirects('/admin/pages');
@@ -63,6 +63,7 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/o-nas');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.public-article__body', 'Pierwsza treść Shopro 4.0.');
+        self::assertStringNotContainsString('<script>alert(1)</script>', (string) $this->client->getResponse()->getContent());
 
         $page = self::getContainer()->get(PageRepository::class)->findPublishedBySlug('o-nas');
         self::assertNotNull($page);

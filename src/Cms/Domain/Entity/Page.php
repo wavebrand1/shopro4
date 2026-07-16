@@ -103,7 +103,7 @@ class Page
         $this->builderData = json_encode([[
             'id' => 'initial-section',
             'type' => 'layout_section',
-            'data' => ['layout' => 'full', 'columns' => [[[
+            'data' => ['container' => 'grid', 'widths' => [100], 'columns' => [[[
                 'id' => 'initial-text',
                 'type' => 'rich_text',
                 'data' => ['content' => '<p>Rozpocznij pisanie treści…</p>'],

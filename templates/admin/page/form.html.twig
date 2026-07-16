@@ -1,9 +1,6 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}{{ page.id ? 'Edycja podstrony' : 'Nowa podstrona' }} — Shopro 4.0{% endblock %}
-{% block javascripts %}
-    {% if tinymce_api_key %}<script src="https://cdn.tiny.cloud/1/{{ tinymce_api_key|e('html_attr') }}/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>{% endif %}
-    {{ importmap(['app', 'component-builder']) }}
-{% endblock %}
+{% block javascripts %}{{ importmap(['app', 'component-builder']) }}{% endblock %}
 {% block body %}
 <div class="modern-page-heading">
     <div><p class="modern-kicker">ZARZĄDZANIE TREŚCIĄ</p><h1>{{ page.id ? 'Edytuj podstronę' : 'Nowa podstrona' }}</h1><p>Formularz odwzorowuje ustawienia podstrony ze starego CMS.</p></div>
@@ -27,9 +24,7 @@
         <div class="component-builder" data-component-builder data-project-field="page_builderData">
             <aside class="component-builder__library">
                 <p class="component-builder__label">Układ sekcji</p>
-                <button class="component-library-item" type="button" data-add-section="full"><span class="component-library-item__icon">1</span><span><strong>Pełna szerokość</strong><small>Jedna kolumna 100%</small></span></button>
-                <button class="component-library-item" type="button" data-add-section="70_30"><span class="component-library-item__icon">⅔</span><span><strong>Kolumny 70 / 30</strong><small>Dwie niesymetryczne kolumny</small></span></button>
-                <button class="component-library-item" type="button" data-add-section="50_50"><span class="component-library-item__icon">½</span><span><strong>Kolumny 50 / 50</strong><small>Dwie równe kolumny</small></span></button>
+                <button class="component-library-item" type="button" data-add-section><span class="component-library-item__icon">§</span><span><strong>Dodaj sekcję</strong><small>Kolumny dodasz wewnątrz sekcji</small></span></button>
                 <p class="component-builder__label">Dostępne komponenty</p>
                 <button class="component-library-item component-library-item--preset" type="button" data-add-preset="homepage"><span class="component-library-item__icon">⌂</span><span><strong>Cała strona główna</strong><small>Dodaje wszystkie sekcje w aktualnym układzie</small></span></button>
                 <button class="component-library-item" type="button" data-add-component="feature_cards">
@@ -41,7 +36,7 @@
                 <button class="component-library-item" type="button" data-add-component="process"><span class="component-library-item__icon">1</span><span><strong>Jak to działa</strong><small>Ilustracja i powtarzalne kroki procesu</small></span></button>
                 <button class="component-library-item" type="button" data-add-component="audience"><span class="component-library-item__icon">A</span><span><strong>Dla kogo</strong><small>Powtarzalne grupy odbiorców</small></span></button>
                 <button class="component-library-item" type="button" data-add-component="cta"><span class="component-library-item__icon">→</span><span><strong>Wezwanie do działania</strong><small>Tekst i dwa przyciski końcowe</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="rich_text"><span class="component-library-item__icon">T</span><span><strong>Tekst TinyMCE</strong><small>Swobodna treść tekstowa i blogowa</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="rich_text"><span class="component-library-item__icon">T</span><span><strong>Edytor tekstu</strong><small>Darmowy edytor Quill bez konta i klucza</small></span></button>
             </aside>
             <div class="component-builder__workspace">
                 <div class="component-builder__toolbar"><div><strong>Układ strony</strong><small>Elementy są renderowane przez przygotowane szablony.</small></div></div>

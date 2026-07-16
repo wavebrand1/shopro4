@@ -1,5 +1,6 @@
-{% set layout = block.layout|default('full') in ['full', '70_30', '50_50'] ? block.layout : 'full' %}
-<section class="builder-public-section builder-public-section--{{ layout }}"><div class="{{ layout == 'full' ? '' : 'site-container ' }}builder-public-section__columns builder-public-section__columns--{{ layout }}">
+{% set container = block.container|default('grid') == 'full' ? 'full' : 'grid' %}
+{% set widths = block.widths|default([]) %}
+<section class="builder-public-section builder-public-section--{{ container }}"><div class="{{ container == 'grid' ? 'site-container ' : '' }}builder-public-section__columns" style="grid-template-columns:{% for column in block.columns|default([]) %}{{ widths[loop.index0]|default(1) }}fr {% endfor %}">
     {% for column in block.columns|default([]) %}
         <div class="builder-public-section__column">{% for component in column %}{% include 'cms/block/_render.html.twig' with {component: component} only %}{% endfor %}</div>
     {% endfor %}

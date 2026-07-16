@@ -7,10 +7,13 @@ zmienia tylko dozwolone pola oraz ustala ich kolejność.
 ## Model edycji
 
 Wszystkie strony korzystają z jednego buildera komponentów zapisanego jako JSON w
-cms_page.builder_data. Komponent Tekst TinyMCE obsługuje zwykłe podstrony i treści
+cms_page.builder_data. Komponent Edytor tekstu korzysta z lokalnego Quill 2 i obsługuje zwykłe podstrony i treści
 blogowe. Nowa podstrona otrzymuje automatycznie sekcję pełnej szerokości z tym
 komponentem. Dawna treść rich_text jest przy pierwszej edycji opakowywana w taki sam
 komponent, dlatego istniejące strony zachowują zawartość.
+
+Quill jest instalowany lokalnie przez AssetMapper, nie wymaga konta, klucza API ani
+połączenia z usługą chmurową.
 Kolumna builder_css pozostaje w bazie wyłącznie dla zgodności z pierwszym prototypem
 i nie jest wykonywana na stronie.
 
@@ -58,12 +61,11 @@ Adresy linków komponentu są renderowane tylko dla dozwolonych protokołów.
 
 ## Sekcje i kolumny
 
-Najwyższym elementem projektu jest layout_section. Sekcja może mieć układ:
+Najwyższym elementem projektu jest layout_section. Sekcja ma ustawienie szerokości:
+ograniczenie do grida witryny albo pełna szerokość ekranu. W sekcji można dynamicznie
+dodawać i usuwać kolumny, a każda kolumna ma edytowalny udział szerokości.
 
-- full — jedna kolumna 100%,
-- 70_30 — dwie kolumny 70% i 30%,
-- 50_50 — dwie równe kolumny.
-
-Komponent jest dodawany do aktualnie zaznaczonej kolumny. Sekcje i komponenty można
+Komponent jest dodawany do aktualnie zaznaczonej kolumny. Kolumny zawierające
+komponenty trzeba najpierw opróżnić, zanim będzie można je usunąć. Sekcje i komponenty można
 przesuwać, usuwać oraz zwijać. Starsze płaskie projekty są podczas otwarcia
 automatycznie opakowywane w osobne sekcje pełnej szerokości.
