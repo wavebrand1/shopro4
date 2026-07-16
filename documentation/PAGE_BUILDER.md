@@ -30,6 +30,20 @@ usuwanie i zmianę kolejności kart, 2–4 kolumny, nagłówek sekcji oraz pola 
 Publiczny HTML pochodzi wyłącznie z szablonu
 templates/cms/block/feature_cards.html.twig.
 
+## Komponenty strony głównej
+
+Builder udostępnia kompletny zestaw sekcji aktualnej strony startowej:
+
+- Hero — nagłówek, opis, dwa przyciski, informacje zaufania i podpisy podglądu,
+- Pasek marek — opis i powtarzalne nazwy marek,
+- Karty funkcji — nagłówek sekcji i powtarzalne karty,
+- Jak to działa — tekst, podpis ilustracji i powtarzalne kroki,
+- Dla kogo — nagłówek i powtarzalne grupy odbiorców,
+- Wezwanie do działania — treść i dwa linki końcowe.
+
+Przycisk „Cała strona główna” tworzy wszystkie powyższe sekcje w prawidłowej
+kolejności i wypełnia je treścią odpowiadającą bazowemu szablonowi.
+
 ## Dodawanie komponentów dla klienta
 
 Nowy typ wymaga:

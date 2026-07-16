@@ -31,10 +31,16 @@
         <div class="component-builder" data-component-builder data-project-field="page_builderData">
             <aside class="component-builder__library">
                 <p class="component-builder__label">Dostępne komponenty</p>
+                <button class="component-library-item component-library-item--preset" type="button" data-add-preset="homepage"><span class="component-library-item__icon">⌂</span><span><strong>Cała strona główna</strong><small>Dodaje wszystkie sekcje w aktualnym układzie</small></span></button>
                 <button class="component-library-item" type="button" data-add-component="feature_cards">
                     <span class="component-library-item__icon">▦</span>
                     <span><strong>Karty funkcji</strong><small>Powtarzalne boxy z ikoną, treścią i linkiem</small></span>
                 </button>
+                <button class="component-library-item" type="button" data-add-component="hero"><span class="component-library-item__icon">H</span><span><strong>Hero</strong><small>Nagłówek, przyciski i podgląd panelu</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="logo_bar"><span class="component-library-item__icon">L</span><span><strong>Pasek marek</strong><small>Powtarzalna lista nazw lub logotypów</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="process"><span class="component-library-item__icon">1</span><span><strong>Jak to działa</strong><small>Ilustracja i powtarzalne kroki procesu</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="audience"><span class="component-library-item__icon">A</span><span><strong>Dla kogo</strong><small>Powtarzalne grupy odbiorców</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="cta"><span class="component-library-item__icon">→</span><span><strong>Wezwanie do działania</strong><small>Tekst i dwa przyciski końcowe</small></span></button>
             </aside>
             <div class="component-builder__workspace">
                 <div class="component-builder__toolbar"><div><strong>Układ strony</strong><small>Elementy są renderowane przez przygotowane szablony.</small></div></div>
@@ -63,6 +69,6 @@
         <div class="cms-module-placeholder"><strong>Moduł podstrony</strong><span>Obsługa modułów i członkostw zostanie podłączona wraz z migracją systemu modułowego.</span></div>
     </div>
 </details>
-<div class="modern-form-actions cms-sticky-actions"><a class="modern-button" href="{{ path('admin_page_index') }}">Anuluj</a><button class="modern-button modern-button--primary" type="submit">Zapisz podstronę</button></div>
+<div class="modern-form-actions cms-sticky-actions"><a class="modern-button" href="{{ path('admin_page_index') }}">Anuluj</a><button class="modern-button" type="submit" name="_save_action" value="stay">Zapisz i kontynuuj edycję</button><button class="modern-button modern-button--primary" type="submit" name="_save_action" value="list">Zapisz podstronę</button></div>
 {{ form_end(form) }}
 {% endblock %}

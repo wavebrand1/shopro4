@@ -51,7 +51,7 @@ final class AdminCmsTest extends WebTestCase
 
         $this->client->request('GET', '/admin/pages/new');
         self::assertSelectorNotExists('.modern-nav a[href="/admin/pages/new"]');
-        $this->client->submitForm('Zapisz', [
+        $this->client->submitForm('Zapisz podstronę', [
             'page[title]' => 'O nas',
             'page[slug]' => 'o-nas',
             'page[content]' => 'Pierwsza treść Shopro 4.0.',
@@ -76,6 +76,29 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('select[name="page[editorMode]"]');
         self::assertSelectorExists('input[name="page[builderData]"]');
         self::assertSelectorExists('input[name="page[builderCss]"]');
+
+        $this->client->submitForm('Zapisz i kontynuuj edycję', [
+            'page[title]' => 'O nas — edycja',
+        ]);
+        self::assertResponseRedirects('/admin/pages/'.$page->getId().'/edit');
+
+        $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
+        self::assertNotNull($page);
+        $page->setEditorMode('components');
+        $page->setBuilderData(json_encode([[
+            'id' => 'hero-test',
+            'type' => 'hero',
+            'data' => [
+                'badge' => 'Komponent testowy',
+                'heading' => 'Strona z komponentów',
+                'highlight' => 'działa poprawnie',
+                'text' => 'Kontrolowana treść strony.',
+            ],
+        ]], JSON_THROW_ON_ERROR));
+        self::getContainer()->get(PageRepository::class)->save($page);
+        $this->client->request('GET', '/o-nas');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.site-hero h1', 'działa poprawnie');
 
         $this->client->request('GET', '/admin/pages');
         self::assertSelectorExists('form[action="/admin/pages/'.$page->getId().'/duplicate"]');

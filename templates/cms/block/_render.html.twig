@@ -1,0 +1,11 @@
+{% set templates = {
+    hero: 'cms/block/hero.html.twig',
+    logo_bar: 'cms/block/logo_bar.html.twig',
+    feature_cards: 'cms/block/feature_cards.html.twig',
+    process: 'cms/block/process.html.twig',
+    audience: 'cms/block/audience.html.twig',
+    cta: 'cms/block/cta.html.twig'
+} %}
+{% if templates[component.type] is defined %}
+    {% include templates[component.type] with {block: component.data} only %}
+{% endif %}

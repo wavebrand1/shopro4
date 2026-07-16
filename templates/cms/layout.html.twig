@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="site-shell">
-    <header class="site-header site-header--solid">
+    <header class="site-header{% block header_modifier %} site-header--solid{% endblock %}">
         <div class="site-container site-header__inner">
             <a class="site-brand" href="{{ path('app_home') }}"><span class="site-brand__logo">S</span><span>Shopro <b>4.0</b></span></a>
             <nav class="site-nav" id="site-navigation" aria-label="Menu główne">

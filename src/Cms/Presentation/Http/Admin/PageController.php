@@ -73,6 +73,10 @@ final class PageController extends AbstractController
                 $pages->save($page);
                 $this->addFlash('success', $message);
 
+                if ('stay' === $request->request->get('_save_action')) {
+                    return $this->redirectToRoute('admin_page_edit', ['id' => $page->getId()]);
+                }
+
                 return $this->redirectToRoute('admin_page_index');
             } catch (UniqueConstraintViolationException) {
                 $this->addFlash('error', 'Podstrona z takim slugiem już istnieje.');

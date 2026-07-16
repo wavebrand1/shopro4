@@ -1,0 +1,21 @@
+<section class="site-hero" id="{{ block.anchor|default('start') }}">
+    <div class="site-hero__orb site-hero__orb--one"></div><div class="site-hero__orb site-hero__orb--two"></div>
+    <div class="site-container site-hero__grid">
+        <div class="site-hero__content">
+            <div class="site-pill"><i></i> {{ block.badge|default('') }}</div>
+            <h1>{{ block.heading|default('') }}{% if block.highlight|default('') %}<br><span>{{ block.highlight }}</span>{% endif %}{% if block.headingAfter|default('') %}<br>{{ block.headingAfter }}{% endif %}</h1>
+            <p>{{ block.text|default('') }}</p>
+            <div class="site-hero__actions">
+                {% set primaryUrl = block.primaryUrl|default('#') %}{% set secondaryUrl = block.secondaryUrl|default('#') %}
+                {% if block.primaryLabel|default('') and (primaryUrl starts with '/' or primaryUrl starts with '#' or primaryUrl starts with 'https://' or primaryUrl starts with 'http://' or primaryUrl starts with 'mailto:' or primaryUrl starts with 'tel:') %}<a class="site-button" href="{{ primaryUrl }}">{{ block.primaryLabel }} <span>→</span></a>{% endif %}
+                {% if block.secondaryLabel|default('') and (secondaryUrl starts with '/' or secondaryUrl starts with '#' or secondaryUrl starts with 'https://' or secondaryUrl starts with 'http://' or secondaryUrl starts with 'mailto:' or secondaryUrl starts with 'tel:') %}<a class="site-button site-button--ghost" href="{{ secondaryUrl }}"><i class="site-play">▶</i> {{ block.secondaryLabel }}</a>{% endif %}
+            </div>
+            <div class="site-trust"><div class="site-avatars"><span>W</span><span>O</span><span>S</span><span>+</span></div><p><strong>{{ block.trustTitle|default('') }}</strong><br>{{ block.trustText|default('') }}</p></div>
+        </div>
+        <div class="site-hero__visual" aria-label="Podgląd panelu Shopro">
+            <div class="site-dashboard-preview"><div class="preview-sidebar"><span class="preview-logo">S</span><i class="is-active"></i><i></i><i></i><i></i><i></i></div><div class="preview-main"><div class="preview-top"><span></span><div><i></i><b>KW</b></div></div><div class="preview-title"><div><small>SHOPRO CMS</small><strong>Dzień dobry 👋</strong></div><button>+ Nowa podstrona</button></div><div class="preview-stats"><article><i></i><strong>24</strong><small>Podstrony</small></article><article><i></i><strong>18</strong><small>Opublikowane</small></article><article><i></i><strong>6</strong><small>Szkice</small></article></div><div class="preview-chart"><div><strong>Aktywność</strong><small>Ostatnie 7 dni</small></div><svg viewBox="0 0 430 115" preserveAspectRatio="none"><defs><linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d87ff" stop-opacity=".28"/><stop offset="1" stop-color="#5d87ff" stop-opacity="0"/></linearGradient></defs><path class="chart-area" d="M0 92 C40 85 48 55 91 66 S150 100 194 61 S245 35 286 49 S350 73 430 19 L430 115 L0 115Z"/><path class="chart-line" d="M0 92 C40 85 48 55 91 66 S150 100 194 61 S245 35 286 49 S350 73 430 19"/></svg></div></div></div>
+            <div class="site-floating-card site-floating-card--users"><div class="site-floating-icon">↗</div><div><small>{{ block.floatingLabel|default('Aktywne procesy') }}</small><strong>{{ block.floatingValue|default('+28.4%') }}</strong></div></div>
+            <div class="site-floating-card site-floating-card--status"><i></i><div><strong>{{ block.statusTitle|default('System działa') }}</strong><small>{{ block.statusText|default('Wszystkie usługi aktywne') }}</small></div></div>
+        </div>
+    </div>
+</section>
