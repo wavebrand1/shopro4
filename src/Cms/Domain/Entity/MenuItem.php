@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: MenuItemRepository::class)]
 #[ORM\Table(name: 'cms_menu_item')]
-final class MenuItem
+class MenuItem
 {
     public const PLACE_FOOTER = 0;
     public const PLACE_HEADER = 1;

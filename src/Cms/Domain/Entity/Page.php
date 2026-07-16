@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'cms_page')]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['slug'], message: 'Podstrona z takim adresem już istnieje.')]
-final class Page
+class Page
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

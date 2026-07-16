@@ -79,6 +79,10 @@ final class AdminCmsTest extends WebTestCase
         ]);
         self::assertResponseRedirects('/admin/menu');
 
+        $this->client->request('GET', '/admin/menu/new');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('select[name="menu_item[parent]"] option');
+
         $this->client->request('GET', '/');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.site-nav', 'O nas');
