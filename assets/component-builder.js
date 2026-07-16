@@ -1,6 +1,7 @@
-const root = document.querySelector('[data-component-builder]');
-
-if (root) {
+const initializeComponentBuilder = () => {
+    const root = document.querySelector('[data-component-builder]');
+    if (!root || root.dataset.componentBuilderInitialized === 'true') return;
+    root.dataset.componentBuilderInitialized = 'true';
     const projectField = document.getElementById(root.dataset.projectField);
     const modeField = document.getElementById('page_editorMode');
     const form = root.closest('form');
@@ -108,4 +109,10 @@ if (root) {
     modeField.addEventListener('change', showMode); form?.addEventListener('submit', synchronize);
     if (globalThis.tinymce) globalThis.tinymce.init({selector:'[data-rich-text-editor]',language:'pl',height:560,menubar:'edit view insert format tools table help',plugins:'autolink lists link image table code preview searchreplace wordcount fullscreen',toolbar:'undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image table | code preview fullscreen',promotion:false,branding:false});
     showMode(); render();
-}
+};
+
+initializeComponentBuilder();
+document.addEventListener('turbo:load', initializeComponentBuilder);
+document.addEventListener('turbo:before-cache', () => {
+    if (globalThis.tinymce) globalThis.tinymce.remove();
+});
