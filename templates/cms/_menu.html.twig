@@ -1,0 +1,15 @@
+{% macro render(items) %}
+    {% import _self as menu %}
+    {% for item in items %}
+        <div class="site-nav-item{{ item.children ? ' has-children' : '' }}">
+            {% if item.url %}
+                <a href="{{ item.url }}" target="{{ item.target }}"{{ item.target == '_blank' ? ' rel="noopener noreferrer"' : '' }}>
+                    <span>{{ item.name }}{% if item.caption %}<small>{{ item.caption }}</small>{% endif %}</span>{% if item.children %}<i>⌄</i>{% endif %}
+                </a>
+            {% else %}
+                <span class="site-nav-placeholder"><span>{{ item.name }}{% if item.caption %}<small>{{ item.caption }}</small>{% endif %}</span>{% if item.children %}<i>⌄</i>{% endif %}</span>
+            {% endif %}
+            {% if item.children %}<div class="site-submenu">{{ menu.render(item.children) }}</div>{% endif %}
+        </div>
+    {% endfor %}
+{% endmacro %}

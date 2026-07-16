@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
+use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -61,5 +62,25 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'O nas');
         self::assertSelectorTextContains('.public-article__body', 'Pierwsza treść Shopro 4.0.');
+
+        $page = self::getContainer()->get(PageRepository::class)->findPublishedBySlug('o-nas');
+        self::assertNotNull($page);
+
+        $this->client->request('GET', '/admin/menu/new');
+        $this->client->submitForm('Zapisz pozycję', [
+            'menu_item[name]' => 'O nas',
+            'menu_item[caption]' => 'Poznaj naszą firmę',
+            'menu_item[contentType]' => 'page',
+            'menu_item[page]' => (string) $page->getId(),
+            'menu_item[target]' => '_self',
+            'menu_item[position]' => 10,
+            'menu_item[place]' => 1,
+            'menu_item[active]' => true,
+        ]);
+        self::assertResponseRedirects('/admin/menu');
+
+        $this->client->request('GET', '/');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.site-nav', 'O nas');
     }
 }

@@ -1,0 +1,10 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Menu — Shopro 4.0{% endblock %}
+{% block body %}
+<div class="modern-page-heading"><div><p class="modern-kicker">ZARZĄDZANIE TREŚCIĄ</p><h1>Menu</h1><p>Hierarchiczne menu górne i dolne zgodne z modelem Shopro Legacy.</p></div><a class="modern-button modern-button--primary" href="{{ path('admin_menu_new') }}"><span>+</span> Nowa pozycja</a></div>
+<section class="modern-card modern-table-card"><div class="modern-card__heading"><div><h2>Pozycje menu</h2><p>{{ items|length }} elementów</p></div></div><div class="admin-table-wrap"><table class="admin-table">
+<thead><tr><th>Nazwa</th><th>Typ</th><th>Miejsce</th><th>Kolejność</th><th>Status</th><th class="table-actions-heading">Akcje</th></tr></thead><tbody>
+{% for item in items %}<tr><td><div class="page-cell"><span class="page-cell__icon">{{ item.parent ? '└' : item.name|first|upper }}</span><div><strong>{{ item.name }}</strong><small>{{ item.parent ? 'Pod: ' ~ item.parent.name : (item.caption ?: 'Poziom główny') }}</small></div></div></td><td>{{ item.contentType == 'page' ? 'Podstrona' : (item.contentType == 'web' ? 'Link zewnętrzny' : 'Bez linku') }}</td><td>{{ item.place == 1 ? 'Górne' : 'Dolne' }}</td><td>{{ item.position }}</td><td><span class="status status--{{ item.active ? 'published' : 'draft' }}"><i></i>{{ item.active ? 'Aktywna' : 'Ukryta' }}</span></td><td class="actions"><a href="{{ path('admin_menu_edit', {id: item.id}) }}">Edytuj</a><form method="post" action="{{ path('admin_menu_delete', {id: item.id}) }}" onsubmit="return confirm('Usunąć pozycję menu?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-menu-' ~ item.id) }}"><button>Usuń</button></form></td></tr>
+{% else %}<tr><td colspan="6" class="empty">Nie utworzono jeszcze pozycji menu.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}
