@@ -14,6 +14,13 @@ komponent, dlatego istniejące strony zachowują zawartość.
 
 Quill jest instalowany lokalnie przez AssetMapper, nie wymaga konta, klucza API ani
 połączenia z usługą chmurową.
+
+Preset strony głównej tworzy osobną, pełnoszeroką sekcję 100% dla każdego
+komponentu. Takie sekcje są podczas renderowania przezroczyste, ponieważ Hero,
+Pasek marek, Karty funkcji, Jak to działa, Dla kogo i CTA posiadają własne
+wewnętrzne kontenery i gridy odpowiadające wzorcowej stronie głównej. Wrapper
+sekcji jest renderowany tylko dla układów, w których ma znaczenie: sekcji w
+gridzie strony albo sekcji zawierających więcej niż jedną kolumnę.
 Kolumna builder_css pozostaje w bazie wyłącznie dla zgodności z pierwszym prototypem
 i nie jest wykonywana na stronie.
 

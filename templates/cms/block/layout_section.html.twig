@@ -1,7 +1,24 @@
 {% set container = block.container|default('grid') == 'full' ? 'full' : 'grid' %}
 {% set widths = block.widths|default([]) %}
-<section class="builder-public-section builder-public-section--{{ container }}"><div class="{{ container == 'grid' ? 'site-container ' : '' }}builder-public-section__columns" style="grid-template-columns:{% for column in block.columns|default([]) %}{{ widths[loop.index0]|default(1) }}fr {% endfor %}">
-    {% for column in block.columns|default([]) %}
-        <div class="builder-public-section__column">{% for component in column %}{% include 'cms/block/_render.html.twig' with {component: component} only %}{% endfor %}</div>
+{% set columns = block.columns|default([]) %}
+
+{# Full-width single-column sections are transparent. This keeps page-level
+   components such as Hero, Process and CTA structurally identical to the
+   hand-built homepage and avoids wrapping their own internal grids. #}
+{% if container == 'full' and columns|length == 1 %}
+    {% for component in columns[0] %}
+        {% include 'cms/block/_render.html.twig' with {component: component} only %}
     {% endfor %}
-</div></section>
+{% else %}
+    <section class="builder-public-section builder-public-section--{{ container }}">
+        <div class="{{ container == 'grid' ? 'site-container ' : '' }}builder-public-section__columns" style="grid-template-columns:{% for column in columns %}{{ widths[loop.index0]|default(1) }}fr {% endfor %}">
+            {% for column in columns %}
+                <div class="builder-public-section__column">
+                    {% for component in column %}
+                        {% include 'cms/block/_render.html.twig' with {component: component} only %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
