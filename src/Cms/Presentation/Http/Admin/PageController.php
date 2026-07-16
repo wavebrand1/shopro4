@@ -39,11 +39,27 @@ final class PageController extends AbstractController
     #[Route('/{id}/delete', name: 'admin_page_delete', requirements: ['id' => '\\d+'], methods: ['POST'])]
     public function delete(Page $page, Request $request, PageRepository $pages): Response
     {
+        if ($page->isSystemPage()) {
+            $this->addFlash('error', 'Strony systemowej nie można usunąć. Najpierw przypisz jej rolę innej podstronie.');
+            return $this->redirectToRoute('admin_page_index');
+        }
         if ($this->isCsrfTokenValid('delete-page-'.$page->getId(), (string) $request->request->get('_token'))) {
             $pages->remove($page);
             $this->addFlash('success', 'Podstrona została usunięta.');
         }
 
+        return $this->redirectToRoute('admin_page_index');
+    }
+
+    #[Route('/{id}/duplicate', name: 'admin_page_duplicate', requirements: ['id' => '\\d+'], methods: ['POST'])]
+    public function duplicate(Page $page, Request $request, PageRepository $pages): Response
+    {
+        if ($this->isCsrfTokenValid('duplicate-page-'.$page->getId(), (string) $request->request->get('_token'))) {
+            $copy = $page->copyAs('kopia-'.date('YmdHis'));
+            $pages->save($copy);
+            $this->addFlash('success', 'Podstrona została zduplikowana.');
+            return $this->redirectToRoute('admin_page_edit', ['id' => $copy->getId()]);
+        }
         return $this->redirectToRoute('admin_page_index');
     }
 

@@ -50,6 +50,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('h1', 'Dzień dobry');
 
         $this->client->request('GET', '/admin/pages/new');
+        self::assertSelectorNotExists('.modern-nav a[href="/admin/pages/new"]');
         $this->client->submitForm('Zapisz', [
             'page[title]' => 'O nas',
             'page[slug]' => 'o-nas',
@@ -65,6 +66,15 @@ final class AdminCmsTest extends WebTestCase
 
         $page = self::getContainer()->get(PageRepository::class)->findPublishedBySlug('o-nas');
         self::assertNotNull($page);
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('textarea[name="page[caption]"]');
+        self::assertSelectorExists('input[name="page[homePage]"]');
+        self::assertSelectorExists('textarea[name="page[javascript]"]');
+
+        $this->client->request('GET', '/admin/pages');
+        self::assertSelectorExists('form[action="/admin/pages/'.$page->getId().'/duplicate"]');
 
         $this->client->request('GET', '/admin/menu/new');
         $this->client->submitForm('Zapisz pozycję', [

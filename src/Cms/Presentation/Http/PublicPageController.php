@@ -18,6 +18,12 @@ final class PublicPageController extends AbstractController
         if ($page === null) {
             throw $this->createNotFoundException('Podstrona nie istnieje lub nie jest opublikowana.');
         }
+        if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createNotFoundException('Podstrona nie istnieje.');
+        }
+        if ('Public' !== $page->getAccess() && !$this->getUser()) {
+            return $this->redirectToRoute('admin_login');
+        }
 
         return $this->render('cms/page/show.html.twig', ['page' => $page]);
     }

@@ -39,6 +39,48 @@ class Page
     #[ORM\Column(options: ['default' => false])]
     private bool $published = false;
 
+    #[ORM\Column(length: 600, options: ['default' => ''])]
+    private string $caption = '';
+    #[ORM\Column(length: 200, options: ['default' => ''])]
+    private string $seoTitle = '';
+    #[ORM\Column(type: Types::TEXT, options: ['default' => ''])]
+    private string $description = '';
+    #[ORM\Column(type: Types::TEXT, options: ['default' => ''])]
+    private string $keywords = '';
+    #[ORM\Column(type: Types::TEXT, options: ['default' => ''])]
+    private string $meta = '';
+    #[ORM\Column(type: Types::TEXT, options: ['default' => ''])]
+    private string $javascript = '';
+    #[ORM\Column(length: 300, options: ['default' => ''])]
+    private string $canonical = '';
+    #[ORM\Column(length: 20, options: ['default' => 'Public'])]
+    #[Assert\Choice(choices: ['Public', 'Registered', 'Membership'])]
+    private string $access = 'Public';
+    #[ORM\Column(options: ['default' => true])]
+    private bool $follow = true;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $homePage = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $errorPage = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $adminOnly = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $loginPage = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $activationPage = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $accountPage = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $registrationPage = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $searchPage = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $sitemapPage = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $profilePage = false;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $termsPage = false;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $createdAt;
 
@@ -60,6 +102,57 @@ class Page
     public function setContent(string $content): void { $this->content = trim($content); }
     public function isPublished(): bool { return $this->published; }
     public function setPublished(bool $published): void { $this->published = $published; }
+    public function getCaption(): string { return $this->caption; }
+    public function setCaption(?string $v): void { $this->caption = trim($v ?? ''); }
+    public function getSeoTitle(): string { return $this->seoTitle; }
+    public function setSeoTitle(?string $v): void { $this->seoTitle = trim($v ?? ''); }
+    public function getEffectiveSeoTitle(): string { return $this->seoTitle ?: $this->title; }
+    public function getDescription(): string { return $this->description; }
+    public function setDescription(?string $v): void { $this->description = trim($v ?? ''); }
+    public function getKeywords(): string { return $this->keywords; }
+    public function setKeywords(?string $v): void { $this->keywords = trim($v ?? ''); }
+    public function getMeta(): string { return $this->meta; }
+    public function setMeta(?string $v): void { $this->meta = trim($v ?? ''); }
+    public function getJavascript(): string { return $this->javascript; }
+    public function setJavascript(?string $v): void { $this->javascript = trim($v ?? ''); }
+    public function getCanonical(): string { return $this->canonical; }
+    public function setCanonical(?string $v): void { $this->canonical = trim($v ?? ''); }
+    public function getAccess(): string { return $this->access; }
+    public function setAccess(string $v): void { $this->access = $v; }
+    public function isFollow(): bool { return $this->follow; }
+    public function setFollow(bool $v): void { $this->follow = $v; }
+    public function isHomePage(): bool { return $this->homePage; }
+    public function setHomePage(bool $v): void { $this->homePage = $v; }
+    public function isErrorPage(): bool { return $this->errorPage; }
+    public function setErrorPage(bool $v): void { $this->errorPage = $v; }
+    public function isAdminOnly(): bool { return $this->adminOnly; }
+    public function setAdminOnly(bool $v): void { $this->adminOnly = $v; }
+    public function isLoginPage(): bool { return $this->loginPage; }
+    public function setLoginPage(bool $v): void { $this->loginPage = $v; }
+    public function isActivationPage(): bool { return $this->activationPage; }
+    public function setActivationPage(bool $v): void { $this->activationPage = $v; }
+    public function isAccountPage(): bool { return $this->accountPage; }
+    public function setAccountPage(bool $v): void { $this->accountPage = $v; }
+    public function isRegistrationPage(): bool { return $this->registrationPage; }
+    public function setRegistrationPage(bool $v): void { $this->registrationPage = $v; }
+    public function isSearchPage(): bool { return $this->searchPage; }
+    public function setSearchPage(bool $v): void { $this->searchPage = $v; }
+    public function isSitemapPage(): bool { return $this->sitemapPage; }
+    public function setSitemapPage(bool $v): void { $this->sitemapPage = $v; }
+    public function isProfilePage(): bool { return $this->profilePage; }
+    public function setProfilePage(bool $v): void { $this->profilePage = $v; }
+    public function isTermsPage(): bool { return $this->termsPage; }
+    public function setTermsPage(bool $v): void { $this->termsPage = $v; }
+    public function isSystemPage(): bool { return $this->loginPage || $this->activationPage || $this->accountPage || $this->registrationPage || $this->searchPage || $this->sitemapPage || $this->profilePage || $this->errorPage || $this->termsPage; }
+    public function copyAs(string $slug): self
+    {
+        $copy = clone $this;
+        $copy->id = null; $copy->slug = $slug; $copy->homePage = $copy->errorPage = false;
+        $copy->loginPage = $copy->activationPage = $copy->accountPage = $copy->registrationPage = false;
+        $copy->searchPage = $copy->sitemapPage = $copy->profilePage = $copy->termsPage = false;
+        $copy->createdAt = $copy->updatedAt = new DateTimeImmutable();
+        return $copy;
+    }
     public function getCreatedAt(): DateTimeImmutable { return $this->createdAt; }
     public function getUpdatedAt(): DateTimeImmutable { return $this->updatedAt; }
 

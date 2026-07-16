@@ -12,12 +12,13 @@
         <tbody>
         {% for page in pages %}
             <tr>
-                <td><div class="page-cell"><span class="page-cell__icon">{{ page.title|first|upper }}</span><div><strong>{{ page.title }}</strong><small>ID: {{ page.id }}</small></div></div></td>
+                <td><div class="page-cell"><span class="page-cell__icon">{{ page.title|first|upper }}</span><div><strong>{{ page.title }}</strong><small>ID: {{ page.id }}{% if page.homePage %} · strona główna{% elseif page.systemPage %} · strona systemowa{% endif %}</small></div></div></td>
                 <td><code>/{{ page.slug }}</code></td>
                 <td><span class="status status--{{ page.published ? 'published' : 'draft' }}"><i></i>{{ page.published ? 'Opublikowana' : 'Szkic' }}</span></td>
                 <td><span class="date-cell">{{ page.updatedAt|date('d.m.Y') }}<small>{{ page.updatedAt|date('H:i') }}</small></span></td>
                 <td class="actions"><a href="{{ path('admin_page_edit', {id: page.id}) }}">Edytuj</a>{% if page.published %}<a href="{{ path('cms_page_show', {slug: page.slug}) }}" target="_blank">Otwórz</a>{% endif %}
-                    <form method="post" action="{{ path('admin_page_delete', {id: page.id}) }}" onsubmit="return confirm('Usunąć podstronę?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-page-' ~ page.id) }}"><button>Usuń</button></form>
+                    <form method="post" action="{{ path('admin_page_duplicate', {id: page.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('duplicate-page-' ~ page.id) }}"><button>Duplikuj</button></form>
+                    {% if not page.systemPage %}<form method="post" action="{{ path('admin_page_delete', {id: page.id}) }}" onsubmit="return confirm('Usunąć podstronę?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-page-' ~ page.id) }}"><button>Usuń</button></form>{% endif %}
                 </td>
             </tr>
         {% else %}<tr><td colspan="5" class="empty">Nie utworzono jeszcze żadnej podstrony.</td></tr>{% endfor %}

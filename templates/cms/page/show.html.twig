@@ -1,6 +1,7 @@
 {% extends 'cms/layout.html.twig' %}
 
-{% block title %}{{ page.title }} — Shopro 4.0{% endblock %}
+{% block title %}{{ page.effectiveSeoTitle }} — Shopro 4.0{% endblock %}
+{% block meta %}<meta name="description" content="{{ page.description }}"><meta name="keywords" content="{{ page.keywords }}"><meta name="robots" content="{{ page.follow ? 'index, follow' : 'index, nofollow' }}">{% if page.canonical %}<link rel="canonical" href="{{ page.canonical }}">{% endif %}{{ page.meta|raw }}{% endblock %}
 
 {% block page_content %}
 <section class="public-page-hero">
@@ -11,14 +12,14 @@
         </nav>
         <span class="site-kicker">SHOPRO 4.0</span>
         <h1>{{ page.title }}</h1>
-        <p>Informacje i materiały przygotowane dla użytkowników Shopro.</p>
+        <p>{{ page.caption ?: 'Informacje i materiały przygotowane dla użytkowników Shopro.' }}</p>
     </div>
 </section>
 
 <section class="public-page-content">
     <div class="site-container public-page-grid">
         <article class="public-article">
-            <div class="public-article__body">{{ page.content|nl2br }}</div>
+            <div class="public-article__body">{{ page.content|raw }}</div>
         </article>
         <aside class="public-page-aside">
             <div><span class="site-kicker">SHOPRO CMS</span><h2>Potrzebujesz pomocy?</h2><p>Skontaktuj się z nami, jeśli potrzebujesz dodatkowych informacji.</p><a class="site-button" href="{{ path('app_home') }}#kontakt">Kontakt <span>→</span></a></div>
@@ -27,3 +28,4 @@
     </div>
 </section>
 {% endblock %}
+{% block page_javascript %}{% if page.javascript %}<script>{{ page.javascript|raw }}</script>{% endif %}{% endblock %}

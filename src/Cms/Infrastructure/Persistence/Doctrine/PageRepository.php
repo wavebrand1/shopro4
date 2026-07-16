@@ -30,8 +30,26 @@ final class PageRepository extends ServiceEntityRepository
         return $this->findOneBy(['slug' => $slug, 'published' => true]);
     }
 
+    public function findPublishedHomePage(): ?Page
+    {
+        return $this->findOneBy(['homePage' => true, 'published' => true]);
+    }
+
     public function save(Page $page): void
     {
+        $roles = [
+            'homePage' => $page->isHomePage(), 'errorPage' => $page->isErrorPage(),
+            'loginPage' => $page->isLoginPage(), 'activationPage' => $page->isActivationPage(),
+            'accountPage' => $page->isAccountPage(), 'registrationPage' => $page->isRegistrationPage(),
+            'searchPage' => $page->isSearchPage(), 'sitemapPage' => $page->isSitemapPage(),
+            'profilePage' => $page->isProfilePage(), 'termsPage' => $page->isTermsPage(),
+        ];
+        foreach ($roles as $field => $enabled) {
+            if (!$enabled) { continue; }
+            $query = $this->createQueryBuilder('other')->update()->set('other.'.$field, ':disabled')->setParameter('disabled', false);
+            if (null !== $page->getId()) { $query->where('other.id != :id')->setParameter('id', $page->getId()); }
+            $query->getQuery()->execute();
+        }
         $this->getEntityManager()->persist($page);
         $this->getEntityManager()->flush();
     }
