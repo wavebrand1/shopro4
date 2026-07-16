@@ -8,7 +8,7 @@
     <p class="modern-login-lead">Zaloguj się, aby zarządzać witryną.</p>
     {% if error %}<div class="flash flash--error">Nieprawidłowy e-mail lub hasło.</div>{% endif %}
     <form method="post" class="admin-form modern-login-form">
-        <label>Adres e-mail<input type="email" name="_username" value="{{ last_username }}" required autofocus autocomplete="email" placeholder="admin@example.pl"></label>
+        <label>Login lub adres e-mail<input type="text" name="_username" value="{{ last_username }}" required autofocus autocomplete="username" placeholder="admin lub admin@example.pl"></label>
         <label>Hasło<input type="password" name="_password" required autocomplete="current-password" placeholder="Wprowadź hasło"></label>
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
         <button class="modern-button modern-button--primary modern-button--wide" type="submit">Zaloguj się</button>

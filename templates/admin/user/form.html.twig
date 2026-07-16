@@ -1,0 +1,6 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}{{ user.id ? 'Edycja użytkownika' : 'Nowy użytkownik' }} — Shopro 4.0{% endblock %}
+{% block body %}
+<div class="modern-page-heading"><div><p class="modern-kicker">ZARZĄDZANIE DOSTĘPEM</p><h1>{{ user.id ? 'Edytuj użytkownika' : 'Nowy użytkownik' }}</h1><p>Login i e-mail muszą być unikalne.</p></div><a class="modern-button" href="{{ path('admin_user_index') }}">← Wróć do listy</a></div>
+{{ form_start(form,{attr:{class:'admin-form'}}) }}<section class="modern-card"><div class="modern-card__heading"><div><h2>Dane konta</h2><p>Puste nowe hasło pozostawia obecne hasło bez zmian.</p></div></div><div class="cms-card-body"><div class="component-fields">{{ form_row(form.username) }}{{ form_row(form.email) }}{{ form_row(form.firstName) }}{{ form_row(form.lastName) }}{{ form_row(form.plainPassword) }}</div><div class="cms-option-grid">{{ form_row(form.active) }}{{ form_row(form.newsletter) }}</div></div></section><div class="cms-sticky-actions"><a class="modern-button" href="{{ path('admin_user_index') }}">Anuluj</a><button class="modern-button modern-button--primary">Zapisz użytkownika</button></div>{{ form_end(form) }}
+{% endblock %}

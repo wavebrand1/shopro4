@@ -125,4 +125,22 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.site-nav', 'O nas');
     }
+
+    public function testAdministratorCanLogInWithUsername(): void
+    {
+        $user = new AdminUser('owner@example.test', 'administrator');
+        $hasher = self::getContainer()->get(UserPasswordHasherInterface::class);
+        $user->setPassword($hasher->hashPassword($user, 'very-secure-password'));
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/admin/login');
+        $form = $this->client->getCrawler()->filter('form')->form([
+            '_username' => 'administrator',
+            '_password' => 'very-secure-password',
+        ]);
+        $this->client->submit($form);
+
+        self::assertResponseRedirects('/admin');
+    }
 }

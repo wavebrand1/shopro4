@@ -1,0 +1,8 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Użytkownicy — Shopro 4.0{% endblock %}
+{% block body %}
+<div class="modern-page-heading"><div><p class="modern-kicker">ZARZĄDZANIE DOSTĘPEM</p><h1>Użytkownicy</h1><p>Konta mogą logować się loginem albo adresem e-mail.</p></div><a class="modern-button modern-button--primary" href="{{ path('admin_user_new') }}">+ Nowy użytkownik</a></div>
+<section class="modern-card modern-table-card"><div class="modern-card__heading"><form method="get" class="admin-user-search"><input name="q" value="{{ query }}" placeholder="Login, e-mail, imię lub nazwisko"><button class="modern-button">Szukaj</button></form></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Użytkownik</th><th>E-mail</th><th>Newsletter</th><th>Status</th><th>Akcje</th></tr></thead><tbody>
+{% for user in users %}<tr><td><div class="page-cell"><span class="page-cell__icon">{{ user.username|first|upper }}</span><div><strong>{{ user.displayName }}</strong><small>{{ user.username }}</small></div></div></td><td>{{ user.email }}</td><td>{{ user.newsletter ? 'Tak' : 'Nie' }}</td><td><span class="status status--{{ user.active ? 'published' : 'draft' }}"><i></i>{{ user.active ? 'Aktywny' : 'Nieaktywny' }}</span></td><td class="actions"><a href="{{ path('admin_user_edit',{id:user.id}) }}">Edytuj</a><form method="post" action="{{ path('admin_user_delete',{id:user.id}) }}" onsubmit="return confirm('Usunąć użytkownika?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-user-'~user.id) }}"><button>Usuń</button></form></td></tr>{% else %}<tr><td colspan="5" class="empty">Nie znaleziono użytkowników.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

@@ -8,7 +8,6 @@ security:
         admin_users:
             entity:
                 class: App\Identity\Domain\Entity\AdminUser
-                property: email
 
     firewalls:
         dev:
