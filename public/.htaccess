@@ -1,0 +1,20 @@
+DirectoryIndex index.php
+
+<IfModule mod_negotiation.c>
+    Options -MultiViews
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Zachowaj nagłówek Authorization dla mechanizmu logowania Symfony.
+    RewriteCond %{HTTP:Authorization} .+
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%0]
+
+    # Istniejące pliki (CSS, JS, obrazy) są obsługiwane bezpośrednio.
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Pozostałe adresy aplikacji obsługuje kontroler frontowy Symfony.
+    RewriteRule ^ index.php [L]
+</IfModule>
