@@ -1,7 +1,9 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}{{ page.id ? 'Edycja podstrony' : 'Nowa podstrona' }} — Shopro 4.0{% endblock %}
-{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('vendor/grapesjs/dist/css/grapes.min.css') }}">{% endblock %}
-{% block javascripts %}{{ importmap(['app', 'page-builder']) }}{% endblock %}
+{% block javascripts %}
+    {% if tinymce_api_key %}<script src="https://cdn.tiny.cloud/1/{{ tinymce_api_key|e('html_attr') }}/tinymce/8/tinymce.min.js" referrerpolicy="origin"></script>{% endif %}
+    {{ importmap(['app', 'component-builder']) }}
+{% endblock %}
 {% block body %}
 <div class="modern-page-heading">
     <div><p class="modern-kicker">ZARZĄDZANIE TREŚCIĄ</p><h1>{{ page.id ? 'Edytuj podstronę' : 'Nowa podstrona' }}</h1><p>Formularz odwzorowuje ustawienia podstrony ze starego CMS.</p></div>
@@ -18,13 +20,29 @@
     </div>
 </section>
 <section class="modern-card modern-form-card cms-editor-card">
-    <div class="modern-card__heading"><div><h2>Live edytor</h2><p>Buduj stronę z sekcji i komponentów. HTML jest generowany automatycznie przy zapisie.</p></div><div class="builder-device-buttons"><button type="button" data-builder-device="Desktop">Desktop</button><button type="button" data-builder-device="Tablet">Tablet</button><button type="button" data-builder-device="Mobile portrait">Telefon</button></div></div>
+    <div class="modern-card__heading"><div><h2>Treść podstrony</h2><p>Wybierz edytor tekstowy albo bezpieczny builder komponentów przygotowanych dla klienta.</p></div></div>
     <div class="cms-card-body">
-    <div class="shopro-builder" data-shopro-builder data-content-field="page_content" data-project-field="page_builderData" data-css-field="page_builderCss" data-style-url="{{ asset('styles/app.css') }}">
-        <aside class="shopro-builder__blocks"><strong>Elementy</strong><div data-builder-blocks></div></aside>
-        <div class="shopro-builder__canvas" data-builder-canvas></div>
+    {{ form_row(form.editorMode) }}
+    <div class="cms-editor-mode" data-editor-panel="rich_text">
+        <div class="cms-editor-notice"><strong>Edytor tekstowy</strong><span>{% if tinymce_api_key %}TinyMCE jest aktywny.{% else %}Ustaw TINYMCE_API_KEY na serwerze, aby uruchomić TinyMCE. Do tego czasu dostępne jest pole tekstowe.{% endif %}</span></div>
+        {{ form_row(form.content) }}
     </div>
-    <details class="builder-html-fallback"><summary>Zaawansowane: wygenerowany HTML</summary>{{ form_row(form.content) }}</details>
+    <div class="cms-editor-mode" data-editor-panel="components" hidden>
+        <div class="component-builder" data-component-builder data-project-field="page_builderData">
+            <aside class="component-builder__library">
+                <p class="component-builder__label">Dostępne komponenty</p>
+                <button class="component-library-item" type="button" data-add-component="feature_cards">
+                    <span class="component-library-item__icon">▦</span>
+                    <span><strong>Karty funkcji</strong><small>Powtarzalne boxy z ikoną, treścią i linkiem</small></span>
+                </button>
+            </aside>
+            <div class="component-builder__workspace">
+                <div class="component-builder__toolbar"><div><strong>Układ strony</strong><small>Elementy są renderowane przez przygotowane szablony.</small></div></div>
+                <div class="component-builder__empty" data-builder-empty><strong>Ta strona nie ma jeszcze komponentów</strong><span>Dodaj pierwszy element z biblioteki po lewej stronie.</span></div>
+                <div class="component-builder__list" data-builder-list></div>
+            </div>
+        </div>
+    </div>
     {{ form_widget(form.builderData) }}{{ form_widget(form.builderCss) }}
     {{ form_row(form.description) }}
     </div>

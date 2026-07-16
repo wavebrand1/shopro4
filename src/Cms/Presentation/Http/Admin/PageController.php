@@ -82,6 +82,7 @@ final class PageController extends AbstractController
         return $this->render('admin/page/form.html.twig', [
             'form' => $form,
             'page' => $page,
+            'tinymce_api_key' => $this->getParameter('tinymce_api_key'),
         ]);
     }
 }

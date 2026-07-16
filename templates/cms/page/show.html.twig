@@ -2,7 +2,7 @@
 
 {% block title %}{{ page.effectiveSeoTitle }} — Shopro 4.0{% endblock %}
 {% block meta %}<meta name="description" content="{{ page.description }}"><meta name="keywords" content="{{ page.keywords }}"><meta name="robots" content="{{ page.follow ? 'index, follow' : 'index, nofollow' }}">{% if page.canonical %}<link rel="canonical" href="{{ page.canonical }}">{% endif %}{{ page.meta|raw }}{% endblock %}
-{% block stylesheets %}{{ parent() }}{% if page.builderCss %}<style>{{ page.builderCss|raw }}</style>{% endif %}{% endblock %}
+{% block stylesheets %}{{ parent() }}{% endblock %}
 
 {% block page_content %}
 <section class="public-page-hero">
@@ -19,8 +19,18 @@
 
 <section class="public-page-content">
     <div class="site-container public-page-grid">
-        <article class="public-article">
-            <div class="public-article__body">{{ page.content|raw }}</div>
+        <article class="public-article{% if page.usesComponentBuilder %} public-article--components{% endif %}">
+            {% if page.usesComponentBuilder %}
+                {% for block in page.builderBlocks %}
+                    {% if block.type == 'feature_cards' %}
+                        {% include 'cms/block/feature_cards.html.twig' with {block: block.data} only %}
+                    {% endif %}
+                {% else %}
+                    <div class="public-article__body"><p>Ta podstrona nie ma jeszcze treści.</p></div>
+                {% endfor %}
+            {% else %}
+                <div class="public-article__body">{{ page.content|raw }}</div>
+            {% endif %}
         </article>
         <aside class="public-page-aside">
             <div><span class="site-kicker">SHOPRO CMS</span><h2>Potrzebujesz pomocy?</h2><p>Skontaktuj się z nami, jeśli potrzebujesz dodatkowych informacji.</p><a class="site-button" href="{{ path('app_home') }}#kontakt">Kontakt <span>→</span></a></div>

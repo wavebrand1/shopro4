@@ -72,7 +72,8 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('textarea[name="page[caption]"]');
         self::assertSelectorExists('input[name="page[homePage]"]');
         self::assertSelectorExists('textarea[name="page[javascript]"]');
-        self::assertSelectorExists('[data-shopro-builder]');
+        self::assertSelectorExists('[data-component-builder]');
+        self::assertSelectorExists('select[name="page[editorMode]"]');
         self::assertSelectorExists('input[name="page[builderData]"]');
         self::assertSelectorExists('input[name="page[builderCss]"]');
 

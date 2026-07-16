@@ -1,0 +1,23 @@
+{% set columns = block.columns|default(3) %}
+<section class="content-feature-cards content-feature-cards--{{ columns }}">
+    {% if block.heading|default('') %}
+        <header class="content-feature-cards__heading">
+            <h2>{{ block.heading }}</h2>
+            {% if block.lead|default('') %}<p>{{ block.lead }}</p>{% endif %}
+        </header>
+    {% endif %}
+    <div class="content-feature-cards__grid">
+        {% for card in block.items|default([]) %}
+            {% set color = card.color|default('blue') in ['blue', 'green', 'orange', 'purple'] ? card.color : 'blue' %}
+            <article class="content-feature-card">
+                <span class="content-feature-card__icon content-feature-card__icon--{{ color }}" aria-hidden="true">{{ card.icon|default('document') == 'command' ? '⌘' : (card.icon|default('document') == 'target' ? '◎' : (card.icon|default('document') == 'star' ? '☆' : '▤')) }}</span>
+                <h3>{{ card.title|default('') }}</h3>
+                <p>{{ card.text|default('') }}</p>
+                {% set url = card.url|default('') %}
+                {% if card.buttonLabel|default('') and (url starts with '/' or url starts with '#' or url starts with 'https://' or url starts with 'http://' or url starts with 'mailto:' or url starts with 'tel:') %}
+                    <a href="{{ url }}">{{ card.buttonLabel }} <span>→</span></a>
+                {% endif %}
+            </article>
+        {% endfor %}
+    </div>
+</section>

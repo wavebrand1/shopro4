@@ -33,8 +33,11 @@ class Page
     private string $slug = '';
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
     private string $content = '';
+
+    #[ORM\Column(length: 20, options: ['default' => 'rich_text'])]
+    #[Assert\Choice(choices: ['rich_text', 'components'])]
+    private string $editorMode = 'rich_text';
 
     #[ORM\Column(type: Types::TEXT, options: ['default' => ''])]
     private string $builderData = '';
@@ -106,8 +109,26 @@ class Page
     public function setSlug(string $slug): void { $this->slug = mb_strtolower(trim($slug)); }
     public function getContent(): string { return $this->content; }
     public function setContent(string $content): void { $this->content = trim($content); }
+    public function getEditorMode(): string { return $this->editorMode; }
+    public function setEditorMode(string $editorMode): void { $this->editorMode = $editorMode; }
+    public function usesComponentBuilder(): bool { return $this->editorMode === 'components'; }
     public function getBuilderData(): string { return $this->builderData; }
     public function setBuilderData(?string $value): void { $this->builderData = trim($value ?? ''); }
+    /** @return list<array{id: string, type: string, data: array<string, mixed>}> */
+    public function getBuilderBlocks(): array
+    {
+        try {
+            $blocks = json_decode($this->builderData, true, 64, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return [];
+        }
+
+        if (!is_array($blocks)) return [];
+
+        return array_values(array_filter($blocks, static fn (mixed $block): bool =>
+            is_array($block) && isset($block['id'], $block['type'], $block['data']) && is_array($block['data'])
+        ));
+    }
     public function getBuilderCss(): string { return $this->builderCss; }
     public function setBuilderCss(?string $value): void { $this->builderCss = trim($value ?? ''); }
     public function isPublished(): bool { return $this->published; }

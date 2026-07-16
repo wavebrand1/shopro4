@@ -1,33 +1,44 @@
-# Shopro Page Builder
+# Shopro Component Builder
 
-Nowy edytor wizualny wykorzystuje GrapesJS 0.23.2 jako silnik komponentów, canvasu,
-drag-and-drop i urządzeń. Integracja znajduje się w `assets/page-builder.js`.
-Pakiety vendor importmapy są instalowane podczas wdrożenia przez `bin/deploy-dev` przed
-kompilacją AssetMapper.
+Edytor stron nie zapisuje swobodnego HTML ani CSS. Programista przygotowuje komponent,
+jego formularz administracyjny i szablon Twig, a redaktor tworzy instancje komponentu,
+zmienia tylko dozwolone pola oraz ustala ich kolejność.
 
-## Model zapisu
+## Tryby strony
 
-- `cms_page.builder_data` — projekt GrapesJS w JSON; źródło kolejnych edycji,
-- `cms_page.content` — wygenerowany HTML i format zgodności z legacy,
-- `cms_page.builder_css` — CSS wygenerowany dla danej podstrony.
+- rich_text — treść tekstowa w kolumnie cms_page.content; po ustawieniu
+  TINYMCE_API_KEY formularz uruchamia TinyMCE 8 z Tiny Cloud,
+- components — kontrolowane komponenty zapisane jako JSON w
+  cms_page.builder_data.
 
-Strona bez `builder_data` jest otwierana przez import istniejącego `content`. Dzięki temu
-dotychczasowe podstrony działają bez masowej migracji i mogą być przenoszone stopniowo.
+Istniejące strony otrzymują tryb rich_text, dlatego ich treść pozostaje bez zmian.
+Kolumna builder_css pozostaje w bazie wyłącznie dla zgodności z pierwszym prototypem
+i nie jest wykonywana na stronie.
 
-## Pierwszy zestaw bloków
+## Format danych
 
-- sekcja,
-- układ dwóch kolumn,
-- tekst,
-- obraz,
-- przycisk,
-- separator.
+Każdy element ma stabilne id, identyfikator type oraz obiekt data. Typ
+feature_cards zawiera ustawienia sekcji i tablicę items. Każda karta przechowuje:
 
-Kolejne typy komponentów Shopro (produkt, plugin, galeria, plik i formularz) powinny
-odwoływać się do identyfikatorów encji/API, a nie zapisywać wyrenderowany fragment modułu
-w danych projektu.
+- id,
+- title i text,
+- url i buttonLabel,
+- icon i color.
 
-## Bezpieczeństwo
+Feature cards jest pierwszym komponentem referencyjnym. Obsługuje powielanie,
+usuwanie i zmianę kolejności kart, 2–4 kolumny, nagłówek sekcji oraz pola każdej karty.
+Publiczny HTML pochodzi wyłącznie z szablonu
+templates/cms/block/feature_cards.html.twig.
 
-HTML i CSS może zapisywać wyłącznie administrator. Przed udostępnieniem edycji innym
-rolom należy dodać politykę dozwolonych komponentów/atrybutów i sanitizację wyniku.
+## Dodawanie komponentów dla klienta
+
+Nowy typ wymaga:
+
+1. definicji formularza i wartości początkowych w assets/component-builder.js,
+2. szablonu w templates/cms/block/,
+3. jawnego dopuszczenia typu w templates/cms/page/show.html.twig,
+4. stylów publicznych i administracyjnych,
+5. testu renderowania.
+
+Nie należy zapisywać w JSON haseł, sekretów ani wykonywalnego JavaScriptu.
+Adresy linków komponentu są renderowane tylko dla dozwolonych protokołów.
