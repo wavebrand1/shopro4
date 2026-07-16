@@ -8,6 +8,7 @@ use App\Cms\Domain\Entity\Page;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -28,6 +29,8 @@ final class PageType extends AbstractType
             ->add('published', CheckboxType::class, $checkbox + ['label' => 'Aktywna / opublikowana'])
             ->add('follow', CheckboxType::class, $checkbox + ['label' => 'Śledzenie linków przez roboty'])
             ->add('content', TextareaType::class, ['label' => 'Treść HTML', 'attr' => ['rows' => 20]])
+            ->add('builderData', HiddenType::class, ['required' => false])
+            ->add('builderCss', HiddenType::class, ['required' => false])
             ->add('description', TextareaType::class, ['label' => 'Opis meta', 'required' => false, 'attr' => ['rows' => 3, 'maxlength' => 160]])
             ->add('keywords', TextareaType::class, ['label' => 'Słowa kluczowe', 'required' => false, 'attr' => ['rows' => 3]])
             ->add('meta', TextareaType::class, ['label' => 'Dodatkowe meta', 'required' => false, 'attr' => ['rows' => 3]])

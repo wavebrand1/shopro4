@@ -72,6 +72,9 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('textarea[name="page[caption]"]');
         self::assertSelectorExists('input[name="page[homePage]"]');
         self::assertSelectorExists('textarea[name="page[javascript]"]');
+        self::assertSelectorExists('[data-shopro-builder]');
+        self::assertSelectorExists('input[name="page[builderData]"]');
+        self::assertSelectorExists('input[name="page[builderCss]"]');
 
         $this->client->request('GET', '/admin/pages');
         self::assertSelectorExists('form[action="/admin/pages/'.$page->getId().'/duplicate"]');

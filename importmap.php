@@ -16,6 +16,10 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
+    'page-builder' => [
+        'path' => './assets/page-builder.js',
+        'entrypoint' => true,
+    ],
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],
@@ -24,5 +28,12 @@ return [
     ],
     '@hotwired/turbo' => [
         'version' => '8.0.23',
+    ],
+    'grapesjs' => [
+        'version' => '0.23.2',
+    ],
+    'grapesjs/dist/css/grapes.min.css' => [
+        'version' => '0.23.2',
+        'type' => 'css',
     ],
 ];

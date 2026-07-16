@@ -36,6 +36,12 @@ class Page
     #[Assert\NotBlank]
     private string $content = '';
 
+    #[ORM\Column(type: Types::TEXT, options: ['default' => ''])]
+    private string $builderData = '';
+
+    #[ORM\Column(type: Types::TEXT, options: ['default' => ''])]
+    private string $builderCss = '';
+
     #[ORM\Column(options: ['default' => false])]
     private bool $published = false;
 
@@ -100,6 +106,10 @@ class Page
     public function setSlug(string $slug): void { $this->slug = mb_strtolower(trim($slug)); }
     public function getContent(): string { return $this->content; }
     public function setContent(string $content): void { $this->content = trim($content); }
+    public function getBuilderData(): string { return $this->builderData; }
+    public function setBuilderData(?string $value): void { $this->builderData = trim($value ?? ''); }
+    public function getBuilderCss(): string { return $this->builderCss; }
+    public function setBuilderCss(?string $value): void { $this->builderCss = trim($value ?? ''); }
     public function isPublished(): bool { return $this->published; }
     public function setPublished(bool $published): void { $this->published = $published; }
     public function getCaption(): string { return $this->caption; }

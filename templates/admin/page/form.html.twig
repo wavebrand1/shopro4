@@ -1,5 +1,7 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}{{ page.id ? 'Edycja podstrony' : 'Nowa podstrona' }} — Shopro 4.0{% endblock %}
+{% block stylesheets %}{{ parent() }}<link rel="stylesheet" href="{{ asset('vendor/grapesjs/dist/css/grapes.min.css') }}">{% endblock %}
+{% block javascripts %}{{ importmap(['app', 'page-builder']) }}{% endblock %}
 {% block body %}
 <div class="modern-page-heading">
     <div><p class="modern-kicker">ZARZĄDZANIE TREŚCIĄ</p><h1>{{ page.id ? 'Edytuj podstronę' : 'Nowa podstrona' }}</h1><p>Formularz odwzorowuje ustawienia podstrony ze starego CMS.</p></div>
@@ -16,9 +18,14 @@
     </div>
 </section>
 <section class="modern-card modern-form-card cms-editor-card">
-    <div class="modern-card__heading"><div><h2>Treść podstrony</h2><p>Możesz używać kodu HTML, tak jak w edytorze starego CMS.</p></div></div>
+    <div class="modern-card__heading"><div><h2>Live edytor</h2><p>Buduj stronę z sekcji i komponentów. HTML jest generowany automatycznie przy zapisie.</p></div><div class="builder-device-buttons"><button type="button" data-builder-device="Desktop">Desktop</button><button type="button" data-builder-device="Tablet">Tablet</button><button type="button" data-builder-device="Mobile portrait">Telefon</button></div></div>
     <div class="cms-card-body">
-    {{ form_row(form.content) }}
+    <div class="shopro-builder" data-shopro-builder data-content-field="page_content" data-project-field="page_builderData" data-css-field="page_builderCss" data-style-url="{{ asset('styles/app.css') }}">
+        <aside class="shopro-builder__blocks"><strong>Elementy</strong><div data-builder-blocks></div></aside>
+        <div class="shopro-builder__canvas" data-builder-canvas></div>
+    </div>
+    <details class="builder-html-fallback"><summary>Zaawansowane: wygenerowany HTML</summary>{{ form_row(form.content) }}</details>
+    {{ form_widget(form.builderData) }}{{ form_widget(form.builderCss) }}
     {{ form_row(form.description) }}
     </div>
 </section>

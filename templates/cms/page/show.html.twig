@@ -2,6 +2,7 @@
 
 {% block title %}{{ page.effectiveSeoTitle }} — Shopro 4.0{% endblock %}
 {% block meta %}<meta name="description" content="{{ page.description }}"><meta name="keywords" content="{{ page.keywords }}"><meta name="robots" content="{{ page.follow ? 'index, follow' : 'index, nofollow' }}">{% if page.canonical %}<link rel="canonical" href="{{ page.canonical }}">{% endif %}{{ page.meta|raw }}{% endblock %}
+{% block stylesheets %}{{ parent() }}{% if page.builderCss %}<style>{{ page.builderCss|raw }}</style>{% endif %}{% endblock %}
 
 {% block page_content %}
 <section class="public-page-hero">
