@@ -14,7 +14,7 @@ final class HomeControllerTest extends WebTestCase
         $client->request('GET', '/');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('h1', 'Shopro 4.0');
-        self::assertSelectorTextContains('.welcome__status', 'GitHub → Plesk');
+        self::assertSelectorTextContains('h1', 'Pełna kontrola');
+        self::assertSelectorTextContains('.site-features', 'Zarządzanie treścią');
     }
 }

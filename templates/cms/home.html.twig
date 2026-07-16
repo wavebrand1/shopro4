@@ -1,22 +1,79 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Shopro 4.0 — środowisko developerskie{% endblock %}
+{% block title %}Shopro 4.0 — nowoczesne zarządzanie firmą{% endblock %}
+{% block body_class %}site-body{% endblock %}
 
 {% block body %}
-    <main class="welcome">
-        <section class="welcome__card">
-            <p class="welcome__eyebrow">Wavebrand · środowisko developerskie</p>
-            <h1>Shopro <span>4.0</span></h1>
-            <p class="welcome__lead">
-                Fundament nowej wersji systemu działa na Symfony 7.4 LTS.
-                Funkcjonalności Shopro Legacy będą przenoszone etapami, z zachowaniem ich kontraktów i danych.
-            </p>
+<div class="site-shell">
+    <header class="site-header">
+        <div class="site-container site-header__inner">
+            <a class="site-brand" href="{{ path('app_home') }}"><span class="site-brand__logo">S</span><span>Shopro <b>4.0</b></span></a>
+            <nav class="site-nav" id="site-navigation" aria-label="Menu główne">
+                <a href="#mozliwosci">Możliwości</a>
+                <a href="#jak-dziala">Jak działa</a>
+                <a href="#dla-kogo">Dla kogo</a>
+                <a href="#kontakt">Kontakt</a>
+            </nav>
+            <div class="site-header__actions">
+                <a class="site-login-link" href="{{ path('admin_dashboard') }}">Zaloguj się</a>
+                <a class="site-button site-button--small" href="#kontakt">Rozpocznij</a>
+                <button class="site-menu-toggle" type="button" data-site-menu aria-label="Otwórz menu"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </header>
 
-            <dl class="welcome__status">
-                <div><dt>Aplikacja</dt><dd>uruchomiona</dd></div>
-                <div><dt>Wdrożenia</dt><dd>GitHub → Plesk</dd></div>
-                <div><dt>Etap</dt><dd>fundament techniczny</dd></div>
-            </dl>
+    <main>
+        <section class="site-hero">
+            <div class="site-hero__orb site-hero__orb--one"></div><div class="site-hero__orb site-hero__orb--two"></div>
+            <div class="site-container site-hero__grid">
+                <div class="site-hero__content">
+                    <div class="site-pill"><i></i> Nowa generacja Shopro</div>
+                    <h1>Jedno miejsce.<br><span>Pełna kontrola</span><br>nad firmą.</h1>
+                    <p>Nowoczesny system do zarządzania treścią, procesami i codzienną pracą zespołu. Elastyczny, modułowy i dopasowany do Twojej organizacji.</p>
+                    <div class="site-hero__actions"><a class="site-button" href="#mozliwosci">Poznaj możliwości <span>→</span></a><a class="site-button site-button--ghost" href="#jak-dziala"><i class="site-play">▶</i> Zobacz jak działa</a></div>
+                    <div class="site-trust"><div class="site-avatars"><span>W</span><span>O</span><span>S</span><span>+</span></div><p><strong>Rozwijany z myślą o firmach</strong><br>które potrzebują czegoś więcej</p></div>
+                </div>
+                <div class="site-hero__visual" aria-label="Podgląd panelu Shopro">
+                    <div class="site-dashboard-preview">
+                        <div class="preview-sidebar"><span class="preview-logo">S</span><i class="is-active"></i><i></i><i></i><i></i><i></i></div>
+                        <div class="preview-main">
+                            <div class="preview-top"><span></span><div><i></i><b>KW</b></div></div>
+                            <div class="preview-title"><div><small>SHOPRO CMS</small><strong>Dzień dobry 👋</strong></div><button>+ Nowa podstrona</button></div>
+                            <div class="preview-stats"><article><i></i><strong>24</strong><small>Podstrony</small></article><article><i></i><strong>18</strong><small>Opublikowane</small></article><article><i></i><strong>6</strong><small>Szkice</small></article></div>
+                            <div class="preview-chart"><div><strong>Aktywność</strong><small>Ostatnie 7 dni</small></div><svg viewBox="0 0 430 115" preserveAspectRatio="none"><defs><linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d87ff" stop-opacity=".28"/><stop offset="1" stop-color="#5d87ff" stop-opacity="0"/></linearGradient></defs><path class="chart-area" d="M0 92 C40 85 48 55 91 66 S150 100 194 61 S245 35 286 49 S350 73 430 19 L430 115 L0 115Z"/><path class="chart-line" d="M0 92 C40 85 48 55 91 66 S150 100 194 61 S245 35 286 49 S350 73 430 19"/></svg></div>
+                        </div>
+                    </div>
+                    <div class="site-floating-card site-floating-card--users"><div class="site-floating-icon">↗</div><div><small>Aktywne procesy</small><strong>+28.4%</strong></div></div>
+                    <div class="site-floating-card site-floating-card--status"><i></i><div><strong>System działa</strong><small>Wszystkie usługi aktywne</small></div></div>
+                </div>
+            </div>
         </section>
+
+        <section class="site-logos"><div class="site-container"><p>Elastyczny fundament dla nowoczesnych organizacji</p><div><span>WAVEBRAND</span><span>ORANGE STUDIO</span><span>SHOPRO CMS</span><span>SYMFONY</span><span>MODULAR</span></div></div></section>
+
+        <section class="site-section" id="mozliwosci">
+            <div class="site-container">
+                <div class="site-section-heading"><div><span class="site-kicker">MOŻLIWOŚCI</span><h2>Wszystko, czego potrzebujesz.<br><em>Bez zbędnego chaosu.</em></h2></div><p>Shopro porządkuje pracę i daje zespołowi narzędzia, które rozwijają się razem z firmą.</p></div>
+                <div class="site-features">
+                    <article><span class="feature-icon feature-icon--blue">▤</span><h3>Zarządzanie treścią</h3><p>Twórz, edytuj i publikuj podstrony w intuicyjnym panelu administracyjnym.</p><a href="{{ path('admin_dashboard') }}">Otwórz panel →</a></article>
+                    <article><span class="feature-icon feature-icon--green">⌘</span><h3>Modułowa architektura</h3><p>Uruchamiaj tylko te funkcje, których potrzebuje konkretna organizacja.</p><a href="#jak-dziala">Dowiedz się więcej →</a></article>
+                    <article><span class="feature-icon feature-icon--orange">◎</span><h3>Bezpieczny rozwój</h3><p>Nowoczesny fundament Symfony, kontrola dostępu i przewidywalne wdrożenia.</p><a href="#jak-dziala">Poznaj technologię →</a></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="site-section site-section--soft" id="jak-dziala">
+            <div class="site-container site-process">
+                <div class="site-process__visual"><div class="process-window"><div class="process-window__bar"><i></i><i></i><i></i></div><div class="process-window__body"><aside><b></b><span></span><span></span><span></span></aside><main><small>TWÓJ SYSTEM</small><strong>Prosty w obsłudze.<br>Gotowy na rozwój.</strong><div><i></i><i></i><i></i></div></main></div></div></div>
+                <div class="site-process__content"><span class="site-kicker">JAK TO DZIAŁA</span><h2>Technologia pracuje w tle.<br><em>Ty skupiasz się na firmie.</em></h2><p>Shopro łączy prostotę codziennej obsługi z solidną architekturą, która nie ogranicza kolejnych etapów rozwoju.</p><ol><li><span>1</span><div><strong>Wybierasz potrzebne funkcje</strong><small>System dopasowuje się do procesów organizacji.</small></div></li><li><span>2</span><div><strong>Zespół pracuje w jednym miejscu</strong><small>Dane, treści i zadania pozostają uporządkowane.</small></div></li><li><span>3</span><div><strong>Rozbudowujesz bez rewolucji</strong><small>Nowe moduły dochodzą wraz z rozwojem firmy.</small></div></li></ol></div>
+            </div>
+        </section>
+
+        <section class="site-section" id="dla-kogo"><div class="site-container"><div class="site-centered-heading"><span class="site-kicker">DLA KOGO</span><h2>Stworzone dla firm,<br><em>które chcą działać sprawniej.</em></h2><p>Od prostego CMS po kompleksowe środowisko do zarządzania procesami.</p></div><div class="site-audience"><article><strong>01</strong><h3>Rosnące zespoły</h3><p>Potrzebują jednego źródła informacji i jasnych zasad pracy.</p></article><article><strong>02</strong><h3>Firmy usługowe</h3><p>Chcą połączyć treści, klientów, pliki i procesy operacyjne.</p></article><article><strong>03</strong><h3>Organizacje z własnym procesem</h3><p>Nie chcą dopasowywać firmy do sztywnego, gotowego systemu.</p></article></div></div></section>
+
+        <section class="site-cta" id="kontakt"><div class="site-container"><div class="site-cta__inner"><div><span class="site-kicker">SHOPRO 4.0</span><h2>Zbudujmy system,<br>który pracuje po Twojemu.</h2><p>Nowa wersja Shopro powstaje na stabilnym fundamencie i będzie rozwijana etapami.</p></div><div class="site-cta__actions"><a class="site-button site-button--light" href="mailto:kontakt@wavebrand.pl">Porozmawiajmy <span>→</span></a><a href="{{ path('admin_dashboard') }}">Przejdź do panelu</a></div></div></div></section>
     </main>
+
+    <footer class="site-footer"><div class="site-container site-footer__grid"><a class="site-brand" href="{{ path('app_home') }}"><span class="site-brand__logo">S</span><span>Shopro <b>4.0</b></span></a><p>Nowoczesny, modułowy system zarządzania firmą.</p><div><a href="#mozliwosci">Możliwości</a><a href="#jak-dziala">Jak działa</a><a href="{{ path('admin_dashboard') }}">Panel</a></div></div><div class="site-container site-footer__bottom"><span>© {{ 'now'|date('Y') }} Wavebrand. Wszystkie prawa zastrzeżone.</span><span>Symfony 7.4 LTS</span></div></footer>
+</div>
 {% endblock %}
