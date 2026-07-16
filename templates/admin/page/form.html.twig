@@ -8,15 +8,19 @@
 {{ form_start(form, {attr: {class: 'admin-form admin-form--page'}}) }}
 <section class="modern-card modern-form-card">
     <div class="modern-card__heading"><div><h2>Podstawowe informacje</h2><p>Tytuł, adres i sposób udostępniania strony.</p></div></div>
+    <div class="cms-card-body">
     <div class="modern-form-grid">{{ form_row(form.title) }}{{ form_row(form.slug) }}</div>
     <div class="modern-form-grid">{{ form_row(form.caption) }}{{ form_row(form.seoTitle) }}</div>
     <div class="modern-form-grid">{{ form_row(form.access) }}{{ form_row(form.canonical) }}</div>
     <div class="cms-option-grid">{{ form_row(form.published) }}{{ form_row(form.follow) }}</div>
+    </div>
 </section>
 <section class="modern-card modern-form-card cms-editor-card">
     <div class="modern-card__heading"><div><h2>Treść podstrony</h2><p>Możesz używać kodu HTML, tak jak w edytorze starego CMS.</p></div></div>
+    <div class="cms-card-body">
     {{ form_row(form.content) }}
     {{ form_row(form.description) }}
+    </div>
 </section>
 <details class="modern-card modern-form-card cms-advanced" {{ not page.id ? 'open' : '' }}>
     <summary><span><strong>Ustawienia zaawansowane</strong><small>SEO, role systemowe i kod strony</small></span><b>+</b></summary>
