@@ -46,7 +46,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseRedirects('/admin');
 
         $this->client->followRedirect();
-        self::assertSelectorTextContains('h1', 'Pulpit');
+        self::assertSelectorTextContains('h1', 'Dzień dobry');
 
         $this->client->request('GET', '/admin/pages/new');
         $this->client->submitForm('Zapisz', [

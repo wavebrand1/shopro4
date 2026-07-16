@@ -1,19 +1,27 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}Podstrony — Shopro 4.0{% endblock %}
 {% block body %}
-<div class="admin-heading"><div><p class="admin-eyebrow">Treść</p><h1>Podstrony</h1></div><a class="button button--primary" href="{{ path('admin_page_new') }}">Nowa podstrona</a></div>
-<div class="admin-table-wrap"><table class="admin-table">
-<thead><tr><th>Tytuł</th><th>Adres</th><th>Status</th><th>Aktualizacja</th><th></th></tr></thead>
-<tbody>
-{% for page in pages %}
-<tr>
-    <td><strong>{{ page.title }}</strong></td>
-    <td><code>/{{ page.slug }}</code></td>
-    <td><span class="status status--{{ page.published ? 'published' : 'draft' }}">{{ page.published ? 'Opublikowana' : 'Szkic' }}</span></td>
-    <td>{{ page.updatedAt|date('d.m.Y H:i') }}</td>
-    <td class="actions"><a href="{{ path('admin_page_edit', {id: page.id}) }}">Edytuj</a>{% if page.published %}<a href="{{ path('cms_page_show', {slug: page.slug}) }}" target="_blank">Otwórz</a>{% endif %}
-    <form method="post" action="{{ path('admin_page_delete', {id: page.id}) }}" onsubmit="return confirm('Usunąć podstronę?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-page-' ~ page.id) }}"><button>Usuń</button></form></td>
-</tr>
-{% else %}<tr><td colspan="5" class="empty">Nie utworzono jeszcze żadnej podstrony.</td></tr>{% endfor %}
-</tbody></table></div>
+<div class="modern-page-heading">
+    <div><p class="modern-kicker">ZARZĄDZANIE TREŚCIĄ</p><h1>Podstrony</h1><p>Twórz i publikuj zawartość widoczną w witrynie.</p></div>
+    <a class="modern-button modern-button--primary" href="{{ path('admin_page_new') }}"><span>+</span> Nowa podstrona</a>
+</div>
+<section class="modern-card modern-table-card">
+    <div class="modern-card__heading"><div><h2>Lista podstron</h2><p>{{ pages|length }} {{ pages|length == 1 ? 'element' : 'elementów' }}</p></div></div>
+    <div class="admin-table-wrap"><table class="admin-table">
+        <thead><tr><th>Podstrona</th><th>Adres URL</th><th>Status</th><th>Aktualizacja</th><th class="table-actions-heading">Akcje</th></tr></thead>
+        <tbody>
+        {% for page in pages %}
+            <tr>
+                <td><div class="page-cell"><span class="page-cell__icon">{{ page.title|first|upper }}</span><div><strong>{{ page.title }}</strong><small>ID: {{ page.id }}</small></div></div></td>
+                <td><code>/{{ page.slug }}</code></td>
+                <td><span class="status status--{{ page.published ? 'published' : 'draft' }}"><i></i>{{ page.published ? 'Opublikowana' : 'Szkic' }}</span></td>
+                <td><span class="date-cell">{{ page.updatedAt|date('d.m.Y') }}<small>{{ page.updatedAt|date('H:i') }}</small></span></td>
+                <td class="actions"><a href="{{ path('admin_page_edit', {id: page.id}) }}">Edytuj</a>{% if page.published %}<a href="{{ path('cms_page_show', {slug: page.slug}) }}" target="_blank">Otwórz</a>{% endif %}
+                    <form method="post" action="{{ path('admin_page_delete', {id: page.id}) }}" onsubmit="return confirm('Usunąć podstronę?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-page-' ~ page.id) }}"><button>Usuń</button></form>
+                </td>
+            </tr>
+        {% else %}<tr><td colspan="5" class="empty">Nie utworzono jeszcze żadnej podstrony.</td></tr>{% endfor %}
+        </tbody>
+    </table></div>
+</section>
 {% endblock %}
