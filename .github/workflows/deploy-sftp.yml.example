@@ -1,0 +1,58 @@
+name: Deploy production by SFTP
+
+# Przed zmianą nazwy pliku na deploy-sftp.yml potwierdź REMOTE_PATH i document root.
+# W GitHub Settings -> Secrets and variables -> Actions dodaj:
+# SFTP_HOST, SFTP_PORT, SFTP_USERNAME, SFTP_PASSWORD, SFTP_REMOTE_PATH.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      - name: Build production application
+        run: |
+          composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+          APP_ENV=prod APP_DEBUG=0 php bin/console cache:clear
+
+      - name: Install SFTP client
+        run: sudo apt-get update && sudo apt-get install --yes lftp
+
+      - name: Upload application
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_REMOTE_PATH: ${{ secrets.SFTP_REMOTE_PATH }}
+        run: |
+          lftp -u "$SFTP_USERNAME","$SFTP_PASSWORD" -p "$SFTP_PORT" "sftp://$SFTP_HOST" <<LFTP
+          set sftp:auto-confirm no
+          mirror --reverse --delete --verbose \
+            --exclude-glob .git/ \
+            --exclude-glob .github/ \
+            --exclude-glob .env.local \
+            --exclude-glob var/ \
+            ./ "$SFTP_REMOTE_PATH"
+          bye
+          LFTP
