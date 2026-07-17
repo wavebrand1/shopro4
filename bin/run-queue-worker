@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PHP_BIN=""
+for candidate in /opt/plesk/php/8.3/bin/php /opt/plesk/php/8.2/bin/php /usr/bin/php; do
+    if [ -x "$candidate" ]; then PHP_BIN="$candidate"; break; fi
+done
+[ -n "$PHP_BIN" ] || { echo "[Shopro queue] Nie znaleziono PHP Pleska." >&2; exit 1; }
+
+cd "$ROOT" || exit 1
+COMMAND=(/usr/bin/env APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console messenger:consume async --time-limit=50 --limit=100 --memory-limit=128M --no-interaction)
+
+FLOCK_BIN="$(command -v flock 2>/dev/null || true)"
+if [ -z "$FLOCK_BIN" ]; then
+    "${COMMAND[@]}"
+    exit $?
+fi
+
+# Exit code 75 means that another worker owns the lock. This is expected and
+# must be reported to Plesk as success, while every real worker error remains visible.
+"$FLOCK_BIN" -E 75 -n "$ROOT/var/messenger-worker.lock" "${COMMAND[@]}"
+STATUS=$?
+if [ "$STATUS" -eq 75 ]; then
+    echo "[Shopro queue] Worker jest już uruchomiony — pomijam to wywołanie."
+    exit 0
+fi
+exit "$STATUS"

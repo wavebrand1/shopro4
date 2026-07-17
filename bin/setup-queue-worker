@@ -10,7 +10,7 @@ done
 
 MODE="${1:-install-and-drain}"
 MARKER="# SHOPRO_QUEUE_WORKER"
-WORKER="cd $ROOT && /usr/bin/flock -n $ROOT/var/messenger-worker.lock /usr/bin/env APP_ENV=dev APP_DEBUG=1 $PHP_BIN bin/console messenger:consume async --time-limit=50 --limit=100 --memory-limit=128M --no-interaction >> $ROOT/var/log/messenger-cron.log 2>&1"
+WORKER="cd $ROOT && /bin/bash $ROOT/bin/run-queue-worker >> $ROOT/var/log/messenger-cron.log 2>&1"
 
 install_cron() {
     if ! command -v crontab >/dev/null 2>&1; then
@@ -28,8 +28,7 @@ install_cron() {
 
 drain_queue() {
     echo "[Shopro queue] Przetwarzanie oczekujących wiadomości..."
-    cd "$ROOT"
-    /usr/bin/flock -n "$ROOT/var/messenger-worker.lock" /usr/bin/env APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console messenger:consume async --time-limit=50 --limit=100 --memory-limit=128M --no-interaction -vv
+    /bin/bash "$ROOT/bin/run-queue-worker"
 }
 
 case "$MODE" in
