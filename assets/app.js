@@ -52,8 +52,8 @@ const initializeMenuSorting = () => {
 
         const clearDropState = () => {
             container.classList.remove('is-menu-dragging');
-            container.querySelectorAll('.is-drop-parent, .is-drop-group').forEach((element) => {
-                element.classList.remove('is-drop-parent', 'is-drop-group');
+            container.querySelectorAll('.is-drop-parent, .is-drop-group, .is-drop-before, .is-drop-after').forEach((element) => {
+                element.classList.remove('is-drop-parent', 'is-drop-group', 'is-drop-before', 'is-drop-after');
             });
         };
 
@@ -73,6 +73,31 @@ const initializeMenuSorting = () => {
                 const result = await response.json();
                 if (!response.ok) throw new Error(result.message || 'Nie udało się przenieść pozycji.');
                 status.textContent = 'Hierarchia zapisana';
+                status.className = 'menu-sort-status is-saved';
+                window.location.reload();
+            } catch (error) {
+                status.textContent = error.message;
+                status.className = 'menu-sort-status is-error';
+                clearDropState();
+            }
+        };
+
+        const reorderItems = async (targetRow, insertAfter) => {
+            const sourceParent = draggedRow?.dataset.menuParent || '0';
+            const group = targetRow.closest('[data-menu-sort-group]');
+            const siblings = [...group.querySelectorAll('[data-menu-row]')]
+                .filter((row) => row.dataset.menuParent === sourceParent && row !== draggedRow);
+            const targetIndex = siblings.indexOf(targetRow);
+            siblings.splice(targetIndex + (insertAfter ? 1 : 0), 0, draggedRow);
+            const body = new URLSearchParams({ _token: container.dataset.reorderToken });
+            siblings.forEach((row) => body.append('items[]', row.dataset.menuId));
+            status.textContent = 'Zapisywanie…';
+            status.className = 'menu-sort-status is-saving';
+            try {
+                const response = await fetch(container.dataset.reorderUrl, { method: 'POST', body, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Nie udało się zapisać kolejności.');
+                status.textContent = 'Kolejność zapisana';
                 status.className = 'menu-sort-status is-saved';
                 window.location.reload();
             } catch (error) {
@@ -111,7 +136,7 @@ const initializeMenuSorting = () => {
                 if (!draggedRow) return;
                 event.preventDefault();
                 event.stopPropagation();
-                void moveItem(group.dataset.menuParent, group.dataset.menuPlace);
+                void moveItem('0', group.dataset.menuPlace);
             });
 
             group.querySelectorAll('[data-menu-row]').forEach((targetRow) => {
@@ -132,43 +157,35 @@ const initializeMenuSorting = () => {
                 });
 
                 targetRow.addEventListener('dragover', (event) => {
-                    if (!draggedRow || draggedRow.closest('[data-menu-sort-group]') === group) return;
-                    markAsParent(event);
+                    if (!draggedRow || targetRow === draggedRow) return;
+                    const samePlace = draggedRow.closest('[data-menu-sort-group]') === group;
+                    const sameParent = draggedRow.dataset.menuParent === targetRow.dataset.menuParent;
+                    if (!samePlace || !sameParent) {
+                        markAsParent(event);
+                        return;
+                    }
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = 'move';
+                    const after = event.clientY >= targetRow.getBoundingClientRect().top + targetRow.getBoundingClientRect().height / 2;
+                    targetRow.classList.toggle('is-drop-before', !after);
+                    targetRow.classList.toggle('is-drop-after', after);
                 });
                 targetRow.addEventListener('dragleave', (event) => {
                     if (!targetRow.contains(event.relatedTarget)) targetRow.classList.remove('is-drop-parent');
                 });
                 targetRow.addEventListener('drop', (event) => {
-                    if (!draggedRow || draggedRow.closest('[data-menu-sort-group]') === group || !markAsParent(event)) return;
-                    void moveItem(targetRow.dataset.menuId, group.dataset.menuPlace);
+                    if (!draggedRow || targetRow === draggedRow) return;
+                    const samePlace = draggedRow.closest('[data-menu-sort-group]') === group;
+                    const sameParent = draggedRow.dataset.menuParent === targetRow.dataset.menuParent;
+                    if (!samePlace || !sameParent) {
+                        if (markAsParent(event)) void moveItem(targetRow.dataset.menuId, group.dataset.menuPlace);
+                        return;
+                    }
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const after = event.clientY >= targetRow.getBoundingClientRect().top + targetRow.getBoundingClientRect().height / 2;
+                    void reorderItems(targetRow, after);
                 });
-            });
-
-            group.addEventListener('dragover', (event) => {
-                if (!draggedRow || draggedRow.closest('[data-menu-sort-group]') !== group) return;
-                event.preventDefault();
-                event.dataTransfer.dropEffect = 'move';
-                const rows = [...group.querySelectorAll('[data-menu-row]:not(.is-dragging)')];
-                const next = rows.find((row) => event.clientY < row.getBoundingClientRect().top + row.getBoundingClientRect().height / 2);
-                if (next) group.insertBefore(draggedRow, next); else group.appendChild(draggedRow);
-            });
-            group.addEventListener('drop', async (event) => {
-                if (!draggedRow || draggedRow.closest('[data-menu-sort-group]') !== group) return;
-                event.preventDefault();
-                const body = new URLSearchParams({ _token: container.dataset.reorderToken });
-                group.querySelectorAll('[data-menu-row]').forEach((row) => body.append('items[]', row.dataset.menuId));
-                status.textContent = 'Zapisywanie…';
-                status.className = 'menu-sort-status is-saving';
-                try {
-                    const response = await fetch(container.dataset.reorderUrl, { method: 'POST', body, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                    const result = await response.json();
-                    if (!response.ok) throw new Error(result.message || 'Nie udało się zapisać kolejności.');
-                    status.textContent = 'Kolejność zapisana';
-                    status.className = 'menu-sort-status is-saved';
-                } catch (error) {
-                    status.textContent = error.message;
-                    status.className = 'menu-sort-status is-error';
-                }
             });
         });
     });

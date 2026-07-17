@@ -6,21 +6,21 @@
     <div class="modern-card__heading"><div><h2>Pozycje menu</h2><p>{{ items|length }} elementów · kolejność zapisuje się automatycznie</p></div><span class="menu-sort-status" data-menu-sort-status></span></div>
     <div class="admin-table-wrap"><table class="admin-table menu-sort-table">
         <thead><tr><th class="menu-drag-heading" aria-label="Sortowanie"></th><th>Nazwa</th><th>Typ</th><th>Miejsce</th><th>Status</th><th class="table-actions-heading">Akcje</th></tr></thead>
-        {% for group in groups %}
-        <tbody class="menu-sort-group" data-menu-sort-group="{{ group.key }}" data-menu-place="{{ group.place }}" data-menu-parent="{{ group.parent_id|default(0) }}">
-            <tr class="menu-group-heading" data-menu-group-drop><td colspan="6">{{ group.label }} <small>· {{ group.items|length }} {{ group.items|length == 1 ? 'pozycja' : 'pozycje' }} · upuść tutaj, aby przenieść na ten poziom</small></td></tr>
-            {% for item in group.items %}
-            <tr data-menu-row data-menu-id="{{ item.id }}">
+        {% for tree in trees %}
+        <tbody class="menu-sort-group menu-tree" data-menu-sort-group data-menu-place="{{ tree.place }}">
+            <tr class="menu-group-heading" data-menu-group-drop><td colspan="6">{{ tree.label }} <small>· {{ tree.items|length }} {{ tree.items|length == 1 ? 'pozycja' : 'pozycje' }} · upuść tutaj, aby przenieść na poziom główny</small></td></tr>
+            {% for node in tree.items %}{% set item = node.item %}
+            <tr data-menu-row data-menu-id="{{ item.id }}" data-menu-parent="{{ item.parent ? item.parent.id : 0 }}" data-menu-depth="{{ node.depth }}" style="--menu-depth: {{ node.depth }}">
                 <td class="menu-drag-cell"><button class="menu-drag-handle" type="button" draggable="true" data-menu-drag-handle aria-label="Przeciągnij pozycję {{ item.name }}" title="Przeciągnij, aby zmienić kolejność"><i></i><i></i><i></i><i></i><i></i><i></i></button></td>
-                <td><div class="page-cell"><span class="page-cell__icon">{{ item.parent ? '└' : item.name|first|upper }}</span><div><strong>{{ item.name }}</strong><small>{{ item.parent ? 'Pod: ' ~ item.parent.name : (item.caption ?: 'Poziom główny') }}</small></div><span class="menu-nest-target" data-menu-nest-target>Upuść jako podrzędną</span></div></td>
+                <td><div class="page-cell menu-tree-node"><span class="menu-tree-branch" aria-hidden="true"></span><span class="page-cell__icon">{{ item.name|first|upper }}</span><div><strong>{{ item.name }}</strong><small>{{ item.parent ? 'Pod: ' ~ item.parent.name : (item.caption ?: 'Poziom główny') }}</small></div><span class="menu-nest-target" data-menu-nest-target>Upuść jako podrzędną</span></div></td>
                 <td>{{ item.contentType == 'page' ? 'Podstrona' : (item.contentType == 'web' ? 'Link zewnętrzny' : 'Bez linku') }}</td>
                 <td>{{ item.place == 1 ? 'Górne' : 'Dolne' }}</td>
                 <td><span class="status status--{{ item.active ? 'published' : 'draft' }}"><i></i>{{ item.active ? 'Aktywna' : 'Ukryta' }}</span></td>
                 <td class="actions"><a href="{{ path('admin_menu_edit', {id: item.id}) }}">Edytuj</a><form method="post" action="{{ path('admin_menu_delete', {id: item.id}) }}" onsubmit="return confirm('Usunąć pozycję menu?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-menu-' ~ item.id) }}"><button>Usuń</button></form></td>
             </tr>
-            {% endfor %}
+            {% else %}<tr><td colspan="6" class="empty">Brak pozycji w tym menu. Przeciągnij tutaj element z drugiego menu.</td></tr>{% endfor %}
         </tbody>
-        {% else %}<tbody><tr><td colspan="6" class="empty">Nie utworzono jeszcze pozycji menu.</td></tr></tbody>{% endfor %}
+        {% endfor %}
     </table></div>
 </section>
 {% endblock %}

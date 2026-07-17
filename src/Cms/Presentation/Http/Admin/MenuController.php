@@ -22,19 +22,35 @@ final class MenuController extends AbstractController
     public function index(MenuItemRepository $items): Response
     {
         $allItems = $items->findAllForAdministration();
-        $groups = [];
+        $children = [];
         foreach ($allItems as $item) {
-            $key = $item->getPlace().'-'.($item->getParent()?->getId() ?? 0);
-            $groups[$key] ??= [
-                'key' => $key,
-                'place' => $item->getPlace(),
-                'parent_id' => $item->getParent()?->getId(),
-                'label' => ($item->getPlace() === MenuItem::PLACE_HEADER ? 'Menu górne' : 'Menu dolne').($item->getParent() ? ' / '.$item->getParent()->getName() : ' / poziom główny'),
-                'items' => [],
-            ];
-            $groups[$key]['items'][] = $item;
+            $children[$item->getPlace()][$item->getParent()?->getId() ?? 0][] = $item;
         }
-        return $this->render('admin/menu/index.html.twig', ['items' => $allItems, 'groups' => $groups]);
+
+        $trees = [];
+        foreach ([MenuItem::PLACE_HEADER => 'Menu górne', MenuItem::PLACE_FOOTER => 'Menu dolne'] as $place => $label) {
+            $flatItems = [];
+            $visited = [];
+            $appendBranch = function (int $parentId, int $depth) use (&$appendBranch, &$flatItems, &$visited, $children, $place): void {
+                foreach ($children[$place][$parentId] ?? [] as $item) {
+                    $id = (int) $item->getId();
+                    if (isset($visited[$id])) continue;
+                    $visited[$id] = true;
+                    $flatItems[] = ['item' => $item, 'depth' => $depth];
+                    $appendBranch($id, $depth + 1);
+                }
+            };
+            $appendBranch(0, 0);
+            // Zachowaj widoczność historycznych, osieroconych rekordów zamiast zakładać, że można je usunąć.
+            foreach ($allItems as $item) {
+                if ($item->getPlace() === $place && !isset($visited[(int) $item->getId()])) {
+                    $appendBranch((int) ($item->getParent()?->getId() ?? 0), 0);
+                }
+            }
+            $trees[] = ['place' => $place, 'label' => $label, 'items' => $flatItems];
+        }
+
+        return $this->render('admin/menu/index.html.twig', ['items' => $allItems, 'trees' => $trees]);
     }
 
     #[Route('/reorder', name: 'admin_menu_reorder', methods: ['POST'])]

@@ -160,6 +160,8 @@ final class AdminCmsTest extends WebTestCase
         $footerParentId = (int) $footerParent->getId();
 
         $menuPage = $this->client->request('GET', '/admin/menu');
+        self::assertSelectorExists('[data-menu-sort-group][data-menu-place="1"]');
+        self::assertSelectorExists('[data-menu-row][data-menu-depth="1"]');
         $sortContainer = $menuPage->filter('[data-menu-sort]');
         $this->client->request('POST', '/admin/menu/move', [
             '_token' => $sortContainer->attr('data-reorder-token'),
