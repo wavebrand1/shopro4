@@ -44,7 +44,7 @@ final class NewsletterController extends AbstractController
         if (!$this->isCsrfTokenValid('queue-newsletter-'.$campaign->getId(), (string) $request->request->get('_token')) || $campaign->getStatus() !== 'draft') return $this->redirectToRoute('admin_newsletter_index');
         $recipients = $em->getRepository(AdminUser::class)->findBy(['active' => true, 'newsletter' => true]);
         foreach ($recipients as $recipient) { $delivery = new NewsletterDelivery($campaign, $recipient->getEmail()); $em->persist($delivery); $em->flush(); $bus->dispatch(new SendNewsletterDelivery((int) $delivery->getId())); }
-        $campaign->markQueued(); $em->flush();
+        count($recipients) === 0 ? $campaign->markCompleted() : $campaign->markQueued(); $em->flush();
         $this->addFlash('success', sprintf('Zakolejkowano %d wiadomości.', count($recipients)));
         return $this->redirectToRoute('admin_newsletter_index');
     }

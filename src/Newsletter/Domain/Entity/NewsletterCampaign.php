@@ -27,4 +27,6 @@ class NewsletterCampaign
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
     public function getQueuedAt(): ?\DateTimeImmutable { return $this->queuedAt; }
     public function markQueued(): void { $this->status = 'queued'; $this->queuedAt = new \DateTimeImmutable(); }
+    public function markCompleted(): void { $this->status = 'sent'; }
+    public function markFailed(): void { $this->status = 'failed'; }
 }

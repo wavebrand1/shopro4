@@ -37,11 +37,23 @@ final class SendNewsletterDeliveryHandler
             if ($replyTo = $this->settings->get('mail_reply_to')) $email->replyTo($replyTo);
             $this->mailers->create()->send($email);
             $delivery->markSent();
+            $this->em->flush();
+            $this->updateCampaignStatus($delivery);
         } catch (\Throwable $exception) {
             $delivery->markFailed($exception->getMessage());
+            $delivery->getCampaign()->markFailed();
             $this->em->flush();
             throw $exception;
         }
         $this->em->flush();
+    }
+
+    private function updateCampaignStatus(NewsletterDelivery $delivery): void
+    {
+        $campaign = $delivery->getCampaign();
+        $queued = (int) $this->em->createQuery('SELECT COUNT(d.id) FROM App\\Newsletter\\Domain\\Entity\\NewsletterDelivery d WHERE d.campaign = :campaign AND d.status = :status')->setParameter('campaign', $campaign)->setParameter('status', 'queued')->getSingleScalarResult();
+        if ($queued > 0) return;
+        $failed = (int) $this->em->createQuery('SELECT COUNT(d.id) FROM App\\Newsletter\\Domain\\Entity\\NewsletterDelivery d WHERE d.campaign = :campaign AND d.status = :status')->setParameter('campaign', $campaign)->setParameter('status', 'failed')->getSingleScalarResult();
+        $failed > 0 ? $campaign->markFailed() : $campaign->markCompleted();
     }
 }
