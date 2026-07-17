@@ -5,21 +5,27 @@ declare(strict_types=1);
 namespace App\Cms\Presentation\Twig;
 
 use App\Cms\Domain\Entity\MenuItem;
+use App\Cms\Domain\Entity\MenuItemTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Language\Application\LocalizedPageUrlGenerator;
 use App\Language\Domain\Entity\Language;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 final class MenuExtension extends AbstractExtension
 {
+    /** @var array<int,MenuItemTranslation> */
+    private array $translations=[];
+
     public function __construct(
         private readonly MenuItemRepository $items,
         private readonly UrlGeneratorInterface $urls,
         private readonly RequestStack $requests,
         private readonly LocalizedPageUrlGenerator $localizedUrls,
+        private readonly EntityManagerInterface $em,
     ) {
     }
 
@@ -32,6 +38,11 @@ final class MenuExtension extends AbstractExtension
     public function menu(int $place): array
     {
         $items = $this->items->findActiveByPlace($place);
+        $this->translations=[];
+        $language=$this->requests->getCurrentRequest()?->attributes->get('_shopro_language');
+        if($language instanceof Language&&!$language->isDefaultLanguage()&&$items){
+            foreach($this->em->getRepository(MenuItemTranslation::class)->findBy(['language'=>$language,'menuItem'=>$items]) as $translation)$this->translations[(int)$translation->getMenuItem()->getId()]=$translation;
+        }
 
         return $this->branch($items, null, []);
     }
@@ -50,11 +61,12 @@ final class MenuExtension extends AbstractExtension
                 continue;
             }
 
+            $translation=$this->translations[$id]??null;
             $branch[] = [
                 'id' => $id,
-                'name' => $item->getName(),
-                'caption' => $item->getCaption(),
-                'url' => $this->resolveUrl($item),
+                'name' => $translation?->getName()??$item->getName(),
+                'caption' => $translation?->getCaption()??$item->getCaption(),
+                'url' => $this->resolveUrl($item,$translation),
                 'target' => $item->getTarget(),
                 'children' => $this->branch($items, $id, [...$visited, $id]),
             ];
@@ -63,7 +75,7 @@ final class MenuExtension extends AbstractExtension
         return $branch;
     }
 
-    private function resolveUrl(MenuItem $item): ?string
+    private function resolveUrl(MenuItem $item,?MenuItemTranslation $translation=null): ?string
     {
         if ($item->isHomePage()) {
             return $this->urls->generate('app_home');
@@ -73,7 +85,7 @@ final class MenuExtension extends AbstractExtension
             MenuItem::TYPE_PAGE => $item->getPage() !== null
                 ? $this->pageUrl($item->getPage())
                 : null,
-            MenuItem::TYPE_WEB => $item->getLink(),
+            MenuItem::TYPE_WEB => $translation?->getLink()??$item->getLink(),
             default => null,
         };
     }

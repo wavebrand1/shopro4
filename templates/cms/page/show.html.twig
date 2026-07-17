@@ -21,7 +21,7 @@
         </nav>{% endif %}
         <span class="site-kicker">SHOPRO 4.0</span>
         <h1>{{ page.title }}</h1>
-        <p>{{ page.caption ?: 'Informacje i materiały przygotowane dla użytkowników Shopro.' }}</p>
+        <p>{{ page.caption ?: shopro_trans('front.page_caption') }}</p>
     </div>
 </section>
 
@@ -31,7 +31,7 @@
             <div class="public-article__body">{{ page.content|raw }}</div>
         </article>
         <aside class="public-page-aside">
-            <div><span class="site-kicker">SHOPRO CMS</span><h2>{{ shopro_trans('front.need_help') }}</h2><p>Skontaktuj się z nami, jeśli potrzebujesz dodatkowych informacji.</p><a class="site-button" href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.contact') }} <span>→</span></a></div>
+            <div><span class="site-kicker">SHOPRO CMS</span><h2>{{ shopro_trans('front.need_help') }}</h2><p>{{ shopro_trans('front.help_text') }}</p><a class="site-button" href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.contact') }} <span>→</span></a></div>
             <a class="public-back-link" href="{{ path('app_home') }}">← {{ shopro_trans('front.back_home') }}</a>
         </aside>
     </div>

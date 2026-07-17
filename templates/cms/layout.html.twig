@@ -7,17 +7,17 @@
     <header class="site-header{% block header_modifier %} site-header--solid{% endblock %}">
         <div class="site-container site-header__inner">
             {% include 'cms/_brand.html.twig' %}
-            <nav class="site-nav" id="site-navigation" aria-label="Menu główne">
+            <nav class="site-nav" id="site-navigation" aria-label="{{ shopro_trans('front.main_menu') }}">
                 {% import 'cms/_menu.html.twig' as menu %}
                 {% set header_menu = shopro_menu(1) %}
                 {% if header_menu %}{{ menu.render(header_menu) }}{% else %}<a href="{{ path('app_home') }}#mozliwosci">{{ shopro_trans('front.features') }}</a><a href="{{ path('app_home') }}#jak-dziala">{{ shopro_trans('front.how_it_works') }}</a><a href="{{ path('app_home') }}#dla-kogo">{{ shopro_trans('front.for_whom') }}</a><a href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.contact') }}</a>{% endif %}
             </nav>
             <div class="site-header__actions">
-                {% if shopro_setting('show_search', true) %}<a class="site-search-link" href="{{ path('app_home') }}?q=" aria-label="Szukaj">⌕</a>{% endif %}
+                {% if shopro_setting('show_search', true) %}<a class="site-search-link" href="{{ path('app_home') }}?q=" aria-label="{{ shopro_trans('front.search') }}">⌕</a>{% endif %}
                 {% if shopro_setting('show_language', false) %}{% include 'cms/_language_switcher.html.twig' %}{% endif %}
                 {% if shopro_setting('show_login', true) %}<a class="site-login-link" href="{{ path('admin_dashboard') }}">{{ shopro_trans('front.login') }}</a>{% endif %}
                 <a class="site-button site-button--small" href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.start') }}</a>
-                <button class="site-menu-toggle" type="button" data-site-menu aria-label="Otwórz menu"><span></span><span></span><span></span></button>
+                <button class="site-menu-toggle" type="button" data-site-menu aria-label="{{ shopro_trans('front.open_menu') }}"><span></span><span></span><span></span></button>
             </div>
         </div>
     </header>
@@ -27,10 +27,10 @@
     <footer class="site-footer">
         <div class="site-container site-footer__grid">
             {% include 'cms/_brand.html.twig' %}
-            <p>Nowoczesny, modułowy system zarządzania firmą.</p>
+            <p>{{ shopro_trans('front.tagline') }}</p>
             <div>{% set footer_menu = shopro_menu(0) %}{% for item in footer_menu %}{% if item.url %}<a href="{{ item.url }}" target="{{ item.target }}">{{ item.name }}</a>{% endif %}{% else %}<a href="{{ path('app_home') }}#mozliwosci">{{ shopro_trans('front.features') }}</a><a href="{{ path('app_home') }}#jak-dziala">{{ shopro_trans('front.how_it_works') }}</a><a href="{{ path('admin_dashboard') }}">Panel</a>{% endfor %}</div>
         </div>
-        <div class="site-container site-footer__bottom"><span>© {{ 'now'|date('Y') }} Wavebrand. Wszystkie prawa zastrzeżone.</span><span>Symfony 7.4 LTS</span></div>
+        <div class="site-container site-footer__bottom"><span>© {{ 'now'|date('Y') }} Wavebrand. {{ shopro_trans('front.rights') }}</span><span>Symfony 7.4 LTS</span></div>
     </footer>
 </div>
 {% endblock %}

@@ -16,7 +16,7 @@
                 <td>{{ item.contentType == 'page' ? 'Podstrona' : (item.contentType == 'web' ? 'Link zewnętrzny' : 'Bez linku') }}</td>
                 <td>{{ item.place == 1 ? 'Górne' : 'Dolne' }}</td>
                 <td><span class="status status--{{ item.active ? 'published' : 'draft' }}"><i></i>{{ item.active ? 'Aktywna' : 'Ukryta' }}</span></td>
-                <td class="actions"><a href="{{ path('admin_menu_edit', {id: item.id}) }}">Edytuj</a><form method="post" action="{{ path('admin_menu_delete', {id: item.id}) }}" onsubmit="return confirm('Usunąć pozycję menu?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-menu-' ~ item.id) }}"><button>Usuń</button></form></td>
+                <td class="actions"><a href="{{ path('admin_menu_edit', {id: item.id}) }}">Edytuj</a><a href="{{ path('admin_menu_translation_index',{id:item.id}) }}">Tłumaczenia</a><form method="post" action="{{ path('admin_menu_delete', {id: item.id}) }}" onsubmit="return confirm('Usunąć pozycję menu?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-menu-' ~ item.id) }}"><button>Usuń</button></form></td>
             </tr>
             {% else %}<tr><td colspan="6" class="empty">Brak pozycji w tym menu. Przeciągnij tutaj element z drugiego menu.</td></tr>{% endfor %}
         </tbody>

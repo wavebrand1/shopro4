@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional;
 
 use App\Cms\Domain\Entity\MenuItem;
+use App\Cms\Domain\Entity\MenuItemTranslation;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
@@ -218,9 +219,15 @@ final class AdminCmsTest extends WebTestCase
         $translation->setBuilderData('[]');
         $translation->setPublished(false);
         $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $managedHeaderItem = $entityManager->find(MenuItem::class, $headerItemId);
+        self::assertNotNull($managedHeaderItem);
+        $menuTranslation = new MenuItemTranslation($managedHeaderItem, $english);
+        $menuTranslation->setName('About us');
+        $menuTranslation->setCaption('Learn more about our company');
         $entityManager->persist($polish);
         $entityManager->persist($english);
         $entityManager->persist($translation);
+        $entityManager->persist($menuTranslation);
         $entityManager->flush();
 
         $this->client->request('GET', '/admin/pages/'.$page->getId().'/translations/'.$english->getId());
@@ -230,6 +237,13 @@ final class AdminCmsTest extends WebTestCase
         $copiedTranslation = self::getContainer()->get(EntityManagerInterface::class)->getRepository(PageTranslation::class)->find($translation->getId());
         self::assertNotNull($copiedTranslation);
         self::assertSame($page->getBuilderData(), $copiedTranslation->getBuilderData());
+
+        $this->client->request('GET', '/admin/menu/'.$headerItemId.'/translations/'.$english->getId());
+        self::assertResponseIsSuccessful();
+        $this->client->submitForm('Zapisz tłumaczenie', [
+            'menu_item_translation[name]' => 'About our company',
+        ]);
+        self::assertResponseRedirects('/admin/menu/'.$headerItemId.'/translations');
 
         $settingsRepository = self::getContainer()->get(SystemSettingsRepository::class);
         $systemSettings = $settingsRepository->get();
@@ -244,6 +258,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('.site-language-picker a.is-active[href^="/language/en"]');
         self::assertSelectorExists('.site-nav a[href="/en/about-us"]');
+        self::assertSelectorTextContains('.site-nav', 'About our company');
 
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
