@@ -259,6 +259,9 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('.site-language-picker a.is-active[href^="/language/en"]');
         self::assertSelectorExists('.site-nav a[href="/en/about-us"]');
         self::assertSelectorTextContains('.site-nav', 'About our company');
+        self::assertSelectorTextContains('.preview-title strong', 'Good morning');
+        self::assertSelectorTextContains('.preview-stats', 'Published');
+        self::assertSelectorTextContains('.preview-chart', 'Last 7 days');
 
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
