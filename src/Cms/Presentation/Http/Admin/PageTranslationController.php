@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+namespace App\Cms\Presentation\Http\Admin;
+use App\Cms\Domain\Entity\Page;use App\Cms\Domain\Entity\PageTranslation;use App\Cms\Presentation\Form\PageTranslationType;use App\Language\Domain\Entity\Language;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\DependencyInjection\Attribute\Autowire;use Symfony\Component\HttpFoundation\Request;use Symfony\Component\HttpFoundation\Response;use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;use Symfony\Component\Routing\Attribute\Route;use Symfony\Component\Security\Http\Attribute\IsGranted;
+#[Route('/admin/pages/{id}/translations')]
+#[IsGranted('ROLE_ADMIN')]
+final class PageTranslationController extends AbstractController
+{
+ public function __construct(#[Autowire(service:'html_sanitizer.sanitizer.app.page_content')]private readonly HtmlSanitizerInterface $sanitizer){}
+ #[Route('',name:'admin_page_translation_index',requirements:['id'=>'\d+'],methods:['GET'])]
+ public function index(Page $page,EntityManagerInterface $em):Response{$translations=[];foreach($em->getRepository(PageTranslation::class)->findBy(['page'=>$page]) as $t)$translations[$t->getLanguage()->getId()]=$t;return $this->render('admin/page/translations.html.twig',['page'=>$page,'languages'=>$em->getRepository(Language::class)->findBy(['active'=>true],['name'=>'ASC']),'translations'=>$translations]);}
+ #[Route('/{languageId}',name:'admin_page_translation_edit',requirements:['id'=>'\d+','languageId'=>'\d+'],methods:['GET','POST'])]
+ public function edit(Page $page,int $languageId,Request $request,EntityManagerInterface $em):Response{$language=$em->find(Language::class,$languageId);if(!$language)throw $this->createNotFoundException();$translation=$em->getRepository(PageTranslation::class)->findOneBy(['page'=>$page,'language'=>$language])??new PageTranslation($page,$language);$form=$this->createForm(PageTranslationType::class,$translation);$form->handleRequest($request);if($form->isSubmitted()&&$form->isValid()){$translation->setBuilderData($this->sanitizeBuilder($translation->getBuilderData()));$em->persist($translation);$em->flush();$this->addFlash('success','Tłumaczenie zostało zapisane.');return $this->redirectToRoute('admin_page_translation_edit',['id'=>$page->getId(),'languageId'=>$language->getId()]);}return $this->render('admin/page/translation_form.html.twig',['form'=>$form,'page'=>$page,'translation'=>$translation,'language'=>$language]);}
+ private function sanitizeBuilder(string $json):string{try{$data=json_decode($json,true,64,JSON_THROW_ON_ERROR);}catch(\JsonException){return '[]';}$walk=function(array &$items)use(&$walk):void{foreach($items as &$item){if(($item['type']??'')==='rich_text'&&isset($item['data']['content']))$item['data']['content']=$this->sanitizer->sanitize((string)$item['data']['content']);foreach(($item['data']['columns']??[]) as &$column)if(is_array($column))$walk($column);}};if(is_array($data))$walk($data);return json_encode($data,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);}
+}

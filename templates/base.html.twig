@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ shopro_setting('language', 'pl') }}">
+<html lang="{{ app.request.locale|default(shopro_setting('language', 'pl')) }}" dir="{{ shopro_language() ? shopro_language().direction : 'ltr' }}">
     <head>
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

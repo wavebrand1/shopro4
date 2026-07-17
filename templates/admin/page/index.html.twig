@@ -16,7 +16,7 @@
                 <td><code>/{{ page.slug }}</code></td>
                 <td><span class="status status--{{ page.published ? 'published' : 'draft' }}"><i></i>{{ page.published ? 'Opublikowana' : 'Szkic' }}</span></td>
                 <td><span class="date-cell">{{ shopro_date(page.updatedAt) }}<small>{{ shopro_date(page.updatedAt, 'time') }}</small></span></td>
-                <td class="actions"><a href="{{ path('admin_page_edit', {id: page.id}) }}">Edytuj</a>{% if page.published %}<a href="{{ path('cms_page_show', {slug: page.slug}) }}" target="_blank">Otwórz</a>{% endif %}
+                <td class="actions"><a href="{{ path('admin_page_edit', {id: page.id}) }}">Edytuj</a><a href="{{ path('admin_page_translation_index',{id:page.id}) }}">Tłumaczenia</a>{% if page.published %}<a href="{{ path('cms_page_show', {slug: page.slug}) }}" target="_blank">Otwórz</a>{% endif %}
                     <form method="post" action="{{ path('admin_page_duplicate', {id: page.id}) }}"><input type="hidden" name="_token" value="{{ csrf_token('duplicate-page-' ~ page.id) }}"><button>Duplikuj</button></form>
                     {% if not page.systemPage %}<form method="post" action="{{ path('admin_page_delete', {id: page.id}) }}" onsubmit="return confirm('Usunąć podstronę?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-page-' ~ page.id) }}"><button>Usuń</button></form>{% endif %}
                 </td>
