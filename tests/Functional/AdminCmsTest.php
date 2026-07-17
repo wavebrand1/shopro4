@@ -61,7 +61,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorNotExists('.modern-nav a[href="/admin/pages/new"]');
         $this->client->submitForm('Zapisz podstronę', [
             'page[title]' => 'O nas',
-            'page[slug]' => 'o-nas',
+            'page[slug]' => '',
             'page[content]' => 'Pierwsza treść Shopro 4.0.',
             'page[builderData]' => '[{"id":"section","type":"layout_section","data":{"container":"grid","widths":[100],"columns":[[{"id":"text","type":"rich_text","data":{"content":"<p>Pierwsza treść Shopro 4.0.</p><script>alert(1)</script>"}}]]}}]',
             'page[published]' => true,

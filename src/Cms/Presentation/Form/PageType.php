@@ -12,16 +12,23 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class PageType extends AbstractType
 {
+    public function __construct(private readonly SluggerInterface $slugger)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $checkbox = ['required' => false];
         $builder
             ->add('title', TextType::class, ['label' => 'Tytuł'])
-            ->add('slug', TextType::class, ['label' => 'Slug', 'help' => 'Np. o-nas; bez ukośników i polskich znaków.'])
+            ->add('slug', TextType::class, ['label' => 'Slug', 'required' => false, 'help' => 'Np. o-nas; pozostaw puste, aby wygenerować automatycznie z tytułu.'])
             ->add('caption', TextareaType::class, ['label' => 'Podpis / zajawka', 'required' => false, 'attr' => ['rows' => 3, 'maxlength' => 600]])
             ->add('seoTitle', TextType::class, ['label' => 'Tytuł SEO', 'required' => false, 'attr' => ['maxlength' => 200]])
             ->add('access', ChoiceType::class, ['label' => 'Dostęp', 'choices' => ['Publiczny' => 'Public', 'Zalogowani' => 'Registered', 'Członkostwo' => 'Membership']])
@@ -47,6 +54,16 @@ final class PageType extends AbstractType
             ->add('sitemapPage', CheckboxType::class, $checkbox + ['label' => 'Mapa witryny'])
             ->add('profilePage', CheckboxType::class, $checkbox + ['label' => 'Strona profilu'])
             ->add('termsPage', CheckboxType::class, $checkbox + ['label' => 'Regulamin']);
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
+            $data = $event->getData();
+            if (!is_array($data) || '' !== trim((string) ($data['slug'] ?? ''))) {
+                return;
+            }
+
+            $data['slug'] = $this->slugger->slug((string) ($data['title'] ?? ''))->lower()->toString();
+            $event->setData($data);
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
