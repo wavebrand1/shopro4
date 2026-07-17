@@ -7,6 +7,7 @@ namespace App\Identity\Presentation\Http\Admin;
 use App\Identity\Domain\Entity\AdminUser;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Identity\Presentation\Form\AdminUserType;
+use App\Language\Application\SystemTranslator;
 use App\Settings\Application\SettingsProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +20,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
+    public function __construct(private readonly SystemTranslator $translator) {}
+
     #[Route('', name: 'admin_user_index', methods: ['GET'])]
     public function index(Request $request, AdminUserRepository $users, SettingsProvider $settings): Response
     {
@@ -45,8 +48,8 @@ final class UserController extends AbstractController
     #[Route('/{id}/delete', name: 'admin_user_delete', requirements: ['id' => '\\d+'], methods: ['POST'])]
     public function delete(AdminUser $user, Request $request, AdminUserRepository $users): Response
     {
-        if ($user === $this->getUser()) $this->addFlash('error', 'Nie możesz usunąć aktualnie zalogowanego konta.');
-        elseif ($this->isCsrfTokenValid('delete-user-'.$user->getId(), (string) $request->request->get('_token'))) { $users->remove($user); $this->addFlash('success', 'Użytkownik został usunięty.'); }
+        if ($user === $this->getUser()) $this->addFlash('error', $this->translator->translate('users.cannot_delete_self'));
+        elseif ($this->isCsrfTokenValid('delete-user-'.$user->getId(), (string) $request->request->get('_token'))) { $users->remove($user); $this->addFlash('success', $this->translator->translate('users.deleted')); }
         return $this->redirectToRoute('admin_user_index');
     }
 
@@ -56,11 +59,11 @@ final class UserController extends AbstractController
         if (!$this->isCsrfTokenValid('api-token-'.$user->getId(), (string) $request->request->get('_token'))) return $this->redirectToRoute('admin_user_edit', ['id' => $user->getId()]);
         if ($request->request->get('action') === 'revoke') {
             $user->revokeApiToken();
-            $this->addFlash('success', 'Token API został unieważniony.');
+            $this->addFlash('success', $this->translator->translate('users.token_revoked'));
         } else {
             $token = $user->rotateApiToken();
             $this->addFlash('api_token', $token);
-            $this->addFlash('success', 'Nowy token został wygenerowany. Skopiuj go teraz — nie będzie ponownie wyświetlony.');
+            $this->addFlash('success', $this->translator->translate('users.token_generated'));
         }
         $users->save($user);
         return $this->redirectToRoute('admin_user_edit', ['id' => $user->getId()]);
@@ -72,7 +75,7 @@ final class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $password = (string) $form->get('plainPassword')->getData();
             if ($password !== '') $user->setPassword($hasher->hashPassword($user, $password));
-            $users->save($user); $this->addFlash('success', 'Użytkownik został zapisany.');
+            $users->save($user); $this->addFlash('success', $this->translator->translate('users.saved'));
             return $this->redirectToRoute('admin_user_index');
         }
         return $this->render('admin/user/form.html.twig', ['form' => $form, 'user' => $user]);
