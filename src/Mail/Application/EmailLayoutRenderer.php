@@ -19,6 +19,7 @@ final class EmailLayoutRenderer
         $logo = (string) $this->settings->get('site_logo');
         $logoHtml = $logo !== '' ? '<img src="'.htmlspecialchars(rtrim((string) $this->settings->get('site_url'), '/').$logo, ENT_QUOTES).'" alt="'.$siteName.'" style="display:block;max-width:220px;max-height:64px;width:auto;height:auto;border:0">' : '<span style="color:#17243d;font-size:22px;font-weight:700">'.$siteName.'</span>';
         $accent = match ((string) $this->settings->get('theme_variant', 'blue')) { 'violet' => '#7c5cff', 'emerald' => '#12a77a', 'orange' => '#f27a3d', default => '#5d87ff' };
+        $content = preg_replace('/<img\b(?![^>]*\balt\s*=)([^>]*)>/i', '<img alt=""$1>', $content) ?? $content;
         $safeContent = $this->sanitizer->sanitize($content);
         $preheaderText = htmlspecialchars($preheader ?? '', ENT_QUOTES);
 
