@@ -29,4 +29,5 @@ class NewsletterCampaign
     public function markQueued(): void { $this->status = 'queued'; $this->queuedAt = new \DateTimeImmutable(); }
     public function markCompleted(): void { $this->status = 'sent'; }
     public function markFailed(): void { $this->status = 'failed'; }
+    public function markWithoutRecipients(): void { $this->status = 'no_recipients'; }
 }
