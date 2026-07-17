@@ -10,14 +10,14 @@
     {% for block in page.builderBlocks %}
         {% include 'cms/block/_render.html.twig' with {component: block} only %}
     {% else %}
-        <section class="site-section"><div class="site-container"><p>Ta podstrona nie ma jeszcze treści.</p></div></section>
+        <section class="site-section"><div class="site-container"><p>{{ shopro_trans('page.no_content') }}</p></div></section>
     {% endfor %}
 {% else %}
 <section class="public-page-hero">
     <div class="public-page-hero__orb"></div>
     <div class="site-container">
         {% if shopro_setting('show_breadcrumbs', true) %}<nav class="public-breadcrumb" aria-label="Okruszki">
-            <a href="{{ path('app_home') }}">Strona główna</a><span>›</span><span>{{ page.title }}</span>
+            <a href="{{ path('app_home') }}">{{ shopro_trans('front.home') }}</a><span>›</span><span>{{ page.title }}</span>
         </nav>{% endif %}
         <span class="site-kicker">SHOPRO 4.0</span>
         <h1>{{ page.title }}</h1>
@@ -31,8 +31,8 @@
             <div class="public-article__body">{{ page.content|raw }}</div>
         </article>
         <aside class="public-page-aside">
-            <div><span class="site-kicker">SHOPRO CMS</span><h2>Potrzebujesz pomocy?</h2><p>Skontaktuj się z nami, jeśli potrzebujesz dodatkowych informacji.</p><a class="site-button" href="{{ path('app_home') }}#kontakt">Kontakt <span>→</span></a></div>
-            <a class="public-back-link" href="{{ path('app_home') }}">← Wróć na stronę główną</a>
+            <div><span class="site-kicker">SHOPRO CMS</span><h2>{{ shopro_trans('front.need_help') }}</h2><p>Skontaktuj się z nami, jeśli potrzebujesz dodatkowych informacji.</p><a class="site-button" href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.contact') }} <span>→</span></a></div>
+            <a class="public-back-link" href="{{ path('app_home') }}">← {{ shopro_trans('front.back_home') }}</a>
         </aside>
     </div>
 </section>

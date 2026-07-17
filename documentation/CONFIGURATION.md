@@ -27,3 +27,9 @@ Kampania tworzy osobną dostawę dla każdego zapisanego odbiorcy i przekazuje j
 - adresy social media są globalnym źródłem danych, natomiast widżety i komponenty social media powinny być dostarczane przez opcjonalny moduł Page Buildera;
 - rejestracja dotyczy przyszłych kont użytkowników witryny. Nie jest łączona z kontami administratorów, ponieważ nadanie publicznie rejestrowanemu kontu `ROLE_ADMIN` byłoby błędem bezpieczeństwa;
 - dowolny JavaScript analityczny i globalny klucz API ze starego systemu zostały celowo usunięte. System przyjmuje bezpieczny identyfikator GA4 i uruchamia go zgodnie z wyborem zgody użytkownika.
+
+## Tłumaczenia interfejsu
+
+Systemowy katalog fraz znajduje się w `src/Language/Application/SystemTranslationCatalog.php`. Każda nowa etykieta, akcja lub wiadomość interfejsu musi od razu otrzymać polską i angielską wersję w tym katalogu oraz być wyświetlana w Twig przez `shopro_trans('klucz')`.
+
+Polecenie `app:translations:sync`, uruchamiane automatycznie przez `bin/deploy-dev`, zakłada brakujące języki Polski i English oraz dopisuje brakujące frazy. Nie nadpisuje tłumaczeń zmodyfikowanych ręcznie w panelu administracyjnym. Test `SystemTranslationCatalogTest` pilnuje, aby żadna fraza systemowa nie została dodana bez obu wersji językowych.
