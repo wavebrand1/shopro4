@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
+use App\Cms\Domain\Entity\MenuItem;
+use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
 use Doctrine\ORM\EntityManagerInterface;
@@ -125,12 +127,66 @@ final class AdminCmsTest extends WebTestCase
 
         $menuPage = $this->client->request('GET', '/admin/menu');
         self::assertSelectorExists('[data-menu-sort-group] [data-menu-row]');
+        self::assertSelectorExists('[data-menu-sort][data-move-url="/admin/menu/move"]');
+        self::assertSelectorExists('[data-menu-nest-target]');
         $sortContainer = $menuPage->filter('[data-menu-sort]');
         $this->client->request('POST', '/admin/menu/reorder', [
             '_token' => $sortContainer->attr('data-reorder-token'),
             'items' => [(string) $menuPage->filter('[data-menu-row]')->attr('data-menu-id')],
         ]);
         self::assertResponseIsSuccessful();
+
+        $menuRepository = self::getContainer()->get(MenuItemRepository::class);
+        $headerItem = $menuRepository->findOneBy(['name' => 'O nas']);
+        self::assertNotNull($headerItem);
+        $headerParent = new MenuItem();
+        $headerParent->setName('Firma');
+        $headerParent->setContentType(MenuItem::TYPE_PLACEHOLDER);
+        $headerParent->setPlace(MenuItem::PLACE_HEADER);
+        $headerParent->setPosition(10);
+        $menuRepository->save($headerParent);
+        $headerItem->setParent($headerParent);
+        $headerItem->setPosition(10);
+        $menuRepository->save($headerItem);
+
+        $footerParent = new MenuItem();
+        $footerParent->setName('Informacje');
+        $footerParent->setContentType(MenuItem::TYPE_PLACEHOLDER);
+        $footerParent->setPlace(MenuItem::PLACE_FOOTER);
+        $footerParent->setPosition(10);
+        $menuRepository->save($footerParent);
+        $headerItemId = (int) $headerItem->getId();
+        $headerParentId = (int) $headerParent->getId();
+        $footerParentId = (int) $footerParent->getId();
+
+        $menuPage = $this->client->request('GET', '/admin/menu');
+        $sortContainer = $menuPage->filter('[data-menu-sort]');
+        $this->client->request('POST', '/admin/menu/move', [
+            '_token' => $sortContainer->attr('data-reorder-token'),
+            'item' => (string) $headerItemId,
+            'parent' => (string) $footerParentId,
+            'place' => MenuItem::PLACE_FOOTER,
+        ]);
+        self::assertResponseIsSuccessful();
+        $menuRepository = self::getContainer()->get(MenuItemRepository::class);
+        $movedItem = $menuRepository->find($headerItemId);
+        self::assertNotNull($movedItem);
+        self::assertSame($footerParentId, $movedItem->getParent()?->getId());
+        self::assertSame(MenuItem::PLACE_FOOTER, $movedItem->getPlace());
+
+        $this->client->request('POST', '/admin/menu/move', [
+            '_token' => $sortContainer->attr('data-reorder-token'),
+            'item' => (string) $footerParentId,
+            'parent' => (string) $headerItemId,
+            'place' => MenuItem::PLACE_FOOTER,
+        ]);
+        self::assertResponseStatusCodeSame(422);
+        $menuRepository = self::getContainer()->get(MenuItemRepository::class);
+        $menuRepository->move(
+            $menuRepository->find($headerItemId),
+            $menuRepository->find($headerParentId),
+            MenuItem::PLACE_HEADER,
+        );
 
         $settingsPage = $this->client->request('GET', '/admin/configuration/system');
         self::assertResponseIsSuccessful();

@@ -50,20 +50,100 @@ const initializeMenuSorting = () => {
         const status = container.querySelector('[data-menu-sort-status]');
         let draggedRow = null;
 
+        const clearDropState = () => {
+            container.classList.remove('is-menu-dragging');
+            container.querySelectorAll('.is-drop-parent, .is-drop-group').forEach((element) => {
+                element.classList.remove('is-drop-parent', 'is-drop-group');
+            });
+        };
+
+        const moveItem = async (parentId, place) => {
+            const itemId = draggedRow?.dataset.menuId;
+            if (!itemId) return;
+            const body = new URLSearchParams({
+                _token: container.dataset.reorderToken,
+                item: itemId,
+                parent: parentId || '0',
+                place,
+            });
+            status.textContent = 'Przenoszenie…';
+            status.className = 'menu-sort-status is-saving';
+            try {
+                const response = await fetch(container.dataset.moveUrl, { method: 'POST', body, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Nie udało się przenieść pozycji.');
+                status.textContent = 'Hierarchia zapisana';
+                status.className = 'menu-sort-status is-saved';
+                window.location.reload();
+            } catch (error) {
+                status.textContent = error.message;
+                status.className = 'menu-sort-status is-error';
+                clearDropState();
+            }
+        };
+
         container.querySelectorAll('[data-menu-drag-handle]').forEach((handle) => {
             handle.addEventListener('dragstart', (event) => {
                 draggedRow = handle.closest('[data-menu-row]');
                 draggedRow?.classList.add('is-dragging');
+                container.classList.add('is-menu-dragging');
                 event.dataTransfer.effectAllowed = 'move';
                 event.dataTransfer.setData('text/plain', draggedRow?.dataset.menuId || '');
             });
             handle.addEventListener('dragend', () => {
                 draggedRow?.classList.remove('is-dragging');
                 draggedRow = null;
+                clearDropState();
             });
         });
 
         container.querySelectorAll('[data-menu-sort-group]').forEach((group) => {
+            const groupDrop = group.querySelector('[data-menu-group-drop]');
+            groupDrop?.addEventListener('dragover', (event) => {
+                if (!draggedRow) return;
+                event.preventDefault();
+                event.stopPropagation();
+                event.dataTransfer.dropEffect = 'move';
+                groupDrop.classList.add('is-drop-group');
+            });
+            groupDrop?.addEventListener('dragleave', () => groupDrop.classList.remove('is-drop-group'));
+            groupDrop?.addEventListener('drop', (event) => {
+                if (!draggedRow) return;
+                event.preventDefault();
+                event.stopPropagation();
+                void moveItem(group.dataset.menuParent, group.dataset.menuPlace);
+            });
+
+            group.querySelectorAll('[data-menu-row]').forEach((targetRow) => {
+                const nestTarget = targetRow.querySelector('[data-menu-nest-target]');
+                const markAsParent = (event) => {
+                    if (!draggedRow || targetRow === draggedRow) return false;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.dataTransfer.dropEffect = 'move';
+                    targetRow.classList.add('is-drop-parent');
+                    return true;
+                };
+                nestTarget?.addEventListener('dragover', markAsParent);
+                nestTarget?.addEventListener('dragleave', () => targetRow.classList.remove('is-drop-parent'));
+                nestTarget?.addEventListener('drop', (event) => {
+                    if (!markAsParent(event)) return;
+                    void moveItem(targetRow.dataset.menuId, group.dataset.menuPlace);
+                });
+
+                targetRow.addEventListener('dragover', (event) => {
+                    if (!draggedRow || draggedRow.closest('[data-menu-sort-group]') === group) return;
+                    markAsParent(event);
+                });
+                targetRow.addEventListener('dragleave', (event) => {
+                    if (!targetRow.contains(event.relatedTarget)) targetRow.classList.remove('is-drop-parent');
+                });
+                targetRow.addEventListener('drop', (event) => {
+                    if (!draggedRow || draggedRow.closest('[data-menu-sort-group]') === group || !markAsParent(event)) return;
+                    void moveItem(targetRow.dataset.menuId, group.dataset.menuPlace);
+                });
+            });
+
             group.addEventListener('dragover', (event) => {
                 if (!draggedRow || draggedRow.closest('[data-menu-sort-group]') !== group) return;
                 event.preventDefault();

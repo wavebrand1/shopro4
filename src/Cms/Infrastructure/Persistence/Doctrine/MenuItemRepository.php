@@ -84,6 +84,35 @@ final class MenuItemRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
+    public function move(MenuItem $item, ?MenuItem $parent, int $place): void
+    {
+        if (!in_array($place, [MenuItem::PLACE_HEADER, MenuItem::PLACE_FOOTER], true)) {
+            throw new \InvalidArgumentException('Nieprawidłowe miejsce menu.');
+        }
+        if ($parent && $parent->getPlace() !== $place) {
+            throw new \InvalidArgumentException('Element nadrzędny należy do innego menu.');
+        }
+        $cursor = $parent;
+        while ($cursor) {
+            if ($cursor === $item) throw new \InvalidArgumentException('Nie można przenieść pozycji pod nią samą ani pod jej element podrzędny.');
+            $cursor = $cursor->getParent();
+        }
+
+        $item->setParent($parent);
+        $item->setPlace($place);
+        $item->setPosition($this->nextPosition($parent, $place));
+        $this->moveDescendantsToPlace($item, $place);
+        $this->getEntityManager()->flush();
+    }
+
+    private function moveDescendantsToPlace(MenuItem $parent, int $place): void
+    {
+        foreach ($this->findBy(['parent' => $parent]) as $child) {
+            $child->setPlace($place);
+            $this->moveDescendantsToPlace($child, $place);
+        }
+    }
+
     public function remove(MenuItem $item): void
     {
         $this->getEntityManager()->remove($item);

@@ -27,6 +27,8 @@ final class MenuController extends AbstractController
             $key = $item->getPlace().'-'.($item->getParent()?->getId() ?? 0);
             $groups[$key] ??= [
                 'key' => $key,
+                'place' => $item->getPlace(),
+                'parent_id' => $item->getParent()?->getId(),
                 'label' => ($item->getPlace() === MenuItem::PLACE_HEADER ? 'Menu górne' : 'Menu dolne').($item->getParent() ? ' / '.$item->getParent()->getName() : ' / poziom główny'),
                 'items' => [],
             ];
@@ -48,6 +50,24 @@ final class MenuController extends AbstractController
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         return $this->json(['message' => 'Kolejność menu została zapisana.']);
+    }
+
+    #[Route('/move', name: 'admin_menu_move', methods: ['POST'])]
+    public function move(Request $request, MenuItemRepository $items): JsonResponse
+    {
+        if (!$this->isCsrfTokenValid('reorder-menu', (string) $request->request->get('_token'))) {
+            return $this->json(['message' => 'Nieprawidłowy token bezpieczeństwa.'], Response::HTTP_FORBIDDEN);
+        }
+        $item = $items->find($request->request->getInt('item'));
+        $parentId = $request->request->getInt('parent');
+        $parent = $parentId > 0 ? $items->find($parentId) : null;
+        if (!$item || ($parentId > 0 && !$parent)) return $this->json(['message' => 'Nie znaleziono pozycji menu.'], Response::HTTP_NOT_FOUND);
+        try {
+            $items->move($item, $parent, $request->request->getInt('place'));
+        } catch (\InvalidArgumentException $exception) {
+            return $this->json(['message' => $exception->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        return $this->json(['message' => 'Hierarchia menu została zapisana.']);
     }
 
     #[Route('/new', name: 'admin_menu_new', methods: ['GET', 'POST'])]
