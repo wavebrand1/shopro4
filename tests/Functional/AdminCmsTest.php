@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Functional;
 
 use App\Cms\Domain\Entity\MenuItem;
+use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
+use App\Language\Domain\Entity\Language;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -200,6 +202,50 @@ final class AdminCmsTest extends WebTestCase
             $menuRepository->find($headerParentId),
             MenuItem::PLACE_HEADER,
         );
+
+        $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
+        self::assertNotNull($page);
+        $polish = new Language();
+        $polish->setName('Polski');
+        $polish->setCode('pl');
+        $polish->setDefaultLanguage(true);
+        $english = new Language();
+        $english->setName('English');
+        $english->setCode('en');
+        $translation = new PageTranslation($page, $english);
+        $translation->setTitle('About us');
+        $translation->setSlug('about-us');
+        $translation->setPublished(true);
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->persist($polish);
+        $entityManager->persist($english);
+        $entityManager->persist($translation);
+        $entityManager->flush();
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/translations/'.$english->getId());
+        self::assertResponseIsSuccessful();
+        $this->client->submitForm('Zastosuj szablon języka głównego');
+        self::assertResponseRedirects('/admin/pages/'.$page->getId().'/translations/'.$english->getId());
+
+        $settingsRepository = self::getContainer()->get(SystemSettingsRepository::class);
+        $systemSettings = $settingsRepository->get();
+        $languageConfiguration = $systemSettings->getConfiguration();
+        $languageConfiguration['show_language'] = true;
+        $systemSettings->setConfiguration($languageConfiguration);
+        $settingsRepository->save($systemSettings);
+
+        $this->client->request('GET', '/language/en?page='.$page->getId());
+        self::assertResponseRedirects('/en/about-us');
+        $this->client->followRedirect();
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.site-language-picker a.is-active[href^="/language/en"]');
+        self::assertSelectorExists('.site-nav a[href="/en/about-us"]');
+
+        $this->client->request('GET', '/o-nas');
+        self::assertResponseRedirects('/en/about-us');
+
+        $this->client->request('GET', '/language/pl?page='.$page->getId());
+        self::assertResponseRedirects('/');
 
         $settingsPage = $this->client->request('GET', '/admin/configuration/system');
         self::assertResponseIsSuccessful();

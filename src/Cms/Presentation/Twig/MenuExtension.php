@@ -6,6 +6,9 @@ namespace App\Cms\Presentation\Twig;
 
 use App\Cms\Domain\Entity\MenuItem;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
+use App\Language\Application\LocalizedPageUrlGenerator;
+use App\Language\Domain\Entity\Language;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -15,6 +18,8 @@ final class MenuExtension extends AbstractExtension
     public function __construct(
         private readonly MenuItemRepository $items,
         private readonly UrlGeneratorInterface $urls,
+        private readonly RequestStack $requests,
+        private readonly LocalizedPageUrlGenerator $localizedUrls,
     ) {
     }
 
@@ -66,10 +71,16 @@ final class MenuExtension extends AbstractExtension
 
         return match ($item->getContentType()) {
             MenuItem::TYPE_PAGE => $item->getPage() !== null
-                ? $this->urls->generate('cms_page_show', ['slug' => $item->getPage()->getSlug()])
+                ? $this->pageUrl($item->getPage())
                 : null,
             MenuItem::TYPE_WEB => $item->getLink(),
             default => null,
         };
+    }
+
+    private function pageUrl(\App\Cms\Domain\Entity\Page $page): string
+    {
+        $language=$this->requests->getCurrentRequest()?->attributes->get('_shopro_language');
+        return $language instanceof Language?$this->localizedUrls->page($page,$language):$this->urls->generate('cms_page_show',['slug'=>$page->getSlug()]);
     }
 }

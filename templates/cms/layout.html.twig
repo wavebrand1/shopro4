@@ -14,7 +14,7 @@
             </nav>
             <div class="site-header__actions">
                 {% if shopro_setting('show_search', true) %}<a class="site-search-link" href="{{ path('app_home') }}?q=" aria-label="Szukaj">⌕</a>{% endif %}
-                {% if shopro_setting('show_language', false) %}{% set current_language=shopro_language() %}<form method="get" class="site-language"><select name="lang" onchange="this.form.submit()" aria-label="Język strony">{% for language in shopro_languages() %}<option value="{{ language.code }}" {{ current_language and current_language.id==language.id?'selected':'' }}>{{ language.code|upper }}</option>{% endfor %}</select></form>{% endif %}
+                {% if shopro_setting('show_language', false) %}{% include 'cms/_language_switcher.html.twig' %}{% endif %}
                 {% if shopro_setting('show_login', true) %}<a class="site-login-link" href="{{ path('admin_dashboard') }}">{{ shopro_trans('front.login') }}</a>{% endif %}
                 <a class="site-button site-button--small" href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.start') }}</a>
                 <button class="site-menu-toggle" type="button" data-site-menu aria-label="Otwórz menu"><span></span><span></span><span></span></button>

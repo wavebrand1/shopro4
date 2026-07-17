@@ -7,9 +7,11 @@ namespace App\Cms\Presentation\Http;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Language\Domain\Entity\Language;
+use App\Language\Application\LocalizedPageUrlGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class PublicPageController extends AbstractController
@@ -33,7 +35,7 @@ final class PublicPageController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'cms_page_show', requirements: ['slug' => '[a-z0-9-]+'], methods: ['GET'], priority: -100)]
-    public function __invoke(string $slug, PageRepository $pages, EntityManagerInterface $em): Response
+    public function __invoke(string $slug, PageRepository $pages, EntityManagerInterface $em, Request $request, LocalizedPageUrlGenerator $localizedUrls): Response
     {
         $page = $pages->findPublishedBySlug($slug);
         if ($page === null) {
@@ -44,6 +46,12 @@ final class PublicPageController extends AbstractController
         }
         if ('Public' !== $page->getAccess() && !$this->getUser()) {
             return $this->redirectToRoute('admin_login');
+        }
+        $language=$request->attributes->get('_shopro_language');
+        if($language instanceof Language&&!$language->isDefaultLanguage()){
+            $localizedUrl=$localizedUrls->page($page,$language);
+            $baseUrl=$this->generateUrl('cms_page_show',['slug'=>$page->getSlug()]);
+            if($localizedUrl!==$baseUrl)return $this->redirect($localizedUrl);
         }
 
         return $this->render('cms/page/show.html.twig', ['page' => $page, 'source_page' => $page, 'alternates' => $em->getRepository(PageTranslation::class)->findBy(['page' => $page, 'published' => true])]);
