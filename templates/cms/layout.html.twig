@@ -6,7 +6,7 @@
 <div class="site-shell">
     <header class="site-header{% block header_modifier %} site-header--solid{% endblock %}">
         <div class="site-container site-header__inner">
-            <a class="site-brand" href="{{ path('app_home') }}"><span class="site-brand__logo">S</span><span>Shopro <b>4.0</b></span></a>
+            {% include 'cms/_brand.html.twig' %}
             <nav class="site-nav" id="site-navigation" aria-label="Menu główne">
                 {% import 'cms/_menu.html.twig' as menu %}
                 {% set header_menu = shopro_menu(1) %}
@@ -26,7 +26,7 @@
 
     <footer class="site-footer">
         <div class="site-container site-footer__grid">
-            <a class="site-brand" href="{{ path('app_home') }}"><span class="site-brand__logo">S</span><span>Shopro <b>4.0</b></span></a>
+            {% include 'cms/_brand.html.twig' %}
             <p>Nowoczesny, modułowy system zarządzania firmą.</p>
             <div>{% set footer_menu = shopro_menu(0) %}{% for item in footer_menu %}{% if item.url %}<a href="{{ item.url }}" target="{{ item.target }}">{{ item.name }}</a>{% endif %}{% else %}<a href="{{ path('app_home') }}#mozliwosci">Możliwości</a><a href="{{ path('app_home') }}#jak-dziala">Jak działa</a><a href="{{ path('admin_dashboard') }}">Panel</a>{% endfor %}</div>
         </div>

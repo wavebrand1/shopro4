@@ -5,7 +5,7 @@
 {% if not storage_available %}<div class="flash flash--error">Migracja konfiguracji nie została jeszcze wykonana. Formularz jest tymczasowo dostępny tylko do odczytu; uruchom ponownie wdrożenie.</div>{% endif %}
 {{ form_start(form, {attr: {class: 'settings-form'}}) }}
 {% set groups = {
-    'Dane witryny i szablony': ['site_name','company','site_url','site_dir','site_email','theme','theme_variant','admin_theme','admin_theme_variant'],
+    'Dane witryny i szablony': ['site_name','company','site_url','site_dir','site_email','site_logo_file','remove_site_logo','favicon_file','remove_favicon','theme','theme_variant','admin_theme','admin_theme_variant'],
     'Data, czas i język': ['date_short','date_long','time_format','timezone','locale','week_start','language'],
     'Widoczność elementów': ['show_login','show_search','show_breadcrumbs','show_language','eu_cookie'],
     'Tryb konserwacji': ['maintenance','maintenance_date','maintenance_time','maintenance_message'],
@@ -19,6 +19,7 @@
 {% for title, fields in groups %}
 <section class="modern-card settings-card">
     <div class="modern-card__heading"><h2>{{ title }}</h2></div>
+    {% if loop.first and (shopro_setting('site_logo') or shopro_setting('favicon')) %}<div class="branding-preview">{% if shopro_setting('site_logo') %}<div><span>Aktualne logo</span><img src="{{ shopro_setting('site_logo') }}" alt="Aktualne logo"></div>{% endif %}{% if shopro_setting('favicon') %}<div><span>Aktualna favicon</span><img class="branding-preview__favicon" src="{{ shopro_setting('favicon') }}" alt="Aktualna favicon"></div>{% endif %}</div>{% endif %}
     <div class="settings-grid">
         {% for name in fields %}{% set control = attribute(form, name) %}<div class="settings-field settings-field--{{ control.vars.block_prefixes|last }}">{{ form_row(control) }}</div>{% endfor %}
     </div>

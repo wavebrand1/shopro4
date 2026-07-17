@@ -8,6 +8,8 @@ use App\Mail\Infrastructure\Persistence\Doctrine\EmailTemplateRepository;
 use App\Settings\Application\FrontThemeRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -20,6 +22,7 @@ use Symfony\Component\Intl\Locales;
 use Symfony\Component\Intl\Timezones;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Positive;
 use Symfony\Component\Validator\Constraints\Range;
@@ -40,6 +43,10 @@ final class SystemSettingsType extends AbstractType
             ->add('site_url', UrlType::class, ['label' => 'Adres witryny', 'constraints' => [new Url(requireTld: false)]])
             ->add('site_dir', TextType::class, ['label' => 'Katalog instalacji', 'help' => 'Pusty dla instalacji w katalogu głównym.', 'required' => false])
             ->add('site_email', EmailType::class, ['label' => 'E-mail witryny', 'constraints' => [new Email()]])
+            ->add('site_logo_file', FileType::class, ['label' => 'Logo strony', 'mapped' => false, 'required' => false, 'help' => 'SVG, PNG, JPG lub WebP; maksymalnie 3 MB.', 'constraints' => [new File(maxSize: '3M', mimeTypes: ['image/svg+xml', 'image/png', 'image/jpeg', 'image/webp'])]])
+            ->add('remove_site_logo', CheckboxType::class, ['label' => 'Usuń aktualne logo', 'mapped' => false, 'required' => false])
+            ->add('favicon_file', FileType::class, ['label' => 'Favicon', 'mapped' => false, 'required' => false, 'help' => 'PNG, WebP lub ICO; maksymalnie 1 MB.', 'constraints' => [new File(maxSize: '1M', mimeTypes: ['image/png', 'image/webp', 'image/x-icon', 'image/vnd.microsoft.icon'])]])
+            ->add('remove_favicon', CheckboxType::class, ['label' => 'Usuń aktualną faviconę', 'mapped' => false, 'required' => false])
             ->add('theme', ChoiceType::class, ['label' => 'Szablon strony', 'choices' => $this->themes->frontChoices()])
             ->add('theme_variant', ChoiceType::class, ['label' => 'Wariant szablonu', 'choices' => $this->themes->frontVariantChoices()])
             ->add('admin_theme', ChoiceType::class, ['label' => 'Szablon panelu administracyjnego', 'choices' => $this->themes->adminChoices()])

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Settings\Presentation\Http\Admin;
 
 use App\Settings\Application\SettingsProvider;
+use App\Settings\Application\BrandingAssetManager;
 use App\Settings\Application\SensitiveDataCipher;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
 use App\Settings\Presentation\Form\SystemSettingsType;
@@ -19,7 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class SystemSettingsController extends AbstractController
 {
     #[Route('', name: 'edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, SystemSettingsRepository $repository, SensitiveDataCipher $cipher): Response
+    public function edit(Request $request, SystemSettingsRepository $repository, SensitiveDataCipher $cipher, BrandingAssetManager $branding): Response
     {
         $settings = $repository->get();
         $storageAvailable = $repository->isStorageAvailable();
@@ -38,7 +39,25 @@ final class SystemSettingsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var array<string, mixed> $configuration */
             $configuration = array_replace($settings->getConfiguration(), $form->getData());
-            unset($configuration['smtp_password']);
+            unset($configuration['smtp_password'], $configuration['site_logo_file'], $configuration['favicon_file'], $configuration['remove_site_logo'], $configuration['remove_favicon']);
+            if ($form->get('remove_site_logo')->getData()) {
+                $branding->remove($configuration['site_logo'] ?? null);
+                $configuration['site_logo'] = '';
+            }
+            if ($form->get('remove_favicon')->getData()) {
+                $branding->remove($configuration['favicon'] ?? null);
+                $configuration['favicon'] = '';
+            }
+            if ($file = $form->get('site_logo_file')->getData()) {
+                $previous = $configuration['site_logo'] ?? null;
+                $configuration['site_logo'] = $branding->store($file, 'logo');
+                $branding->remove($previous);
+            }
+            if ($file = $form->get('favicon_file')->getData()) {
+                $previous = $configuration['favicon'] ?? null;
+                $configuration['favicon'] = $branding->store($file, 'favicon');
+                $branding->remove($previous);
+            }
             $settings->setConfiguration($configuration);
             if ($password = $form->get('smtp_password')->getData()) $settings->setSmtpPassword($cipher->encrypt($password));
             $repository->save($settings);

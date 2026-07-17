@@ -23,6 +23,10 @@ services:
         arguments:
             $kernelSecret: '%kernel.secret%'
 
+    App\Settings\Application\BrandingAssetManager:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     App\Newsletter\Application\UnsubscribeToken:
         arguments:
             $kernelSecret: '%kernel.secret%'

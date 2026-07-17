@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block meta %}{% if shopro_setting('meta_description') %}<meta name="description" content="{{ shopro_setting('meta_description') }}">{% endif %}{% if shopro_setting('meta_keywords') %}<meta name="keywords" content="{{ shopro_setting('meta_keywords') }}">{% endif %}{% endblock %}
         <title>{% block title %}{{ shopro_setting('site_name', 'Shopro 4.0') }}{% endblock %}</title>
+        {% if shopro_setting('favicon') %}<link rel="icon" href="{{ shopro_setting('favicon') }}">{% endif %}
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}

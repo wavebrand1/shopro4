@@ -1,0 +1,7 @@
+<a class="site-brand" href="{{ href|default(path('app_home')) }}">
+    {% if shopro_setting('site_logo') %}
+        <img class="site-brand__image" src="{{ shopro_setting('site_logo') }}" alt="{{ shopro_setting('site_name', 'Shopro 4.0') }}">
+    {% else %}
+        <span class="site-brand__logo">S</span><span>{{ shopro_setting('site_name', 'Shopro 4.0') }}</span>
+    {% endif %}
+</a>
