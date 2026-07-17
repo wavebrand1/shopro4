@@ -308,6 +308,9 @@ body {
 .ui-choice:focus-within { border-color: var(--admin-control-focus); box-shadow: 0 0 0 3px rgba(93,131,255,.1); }
 .ui-choice:has(input:checked) { border-color: #c2d2ff; background: #f2f6ff; }
 .ui-choice__content { display: grid; gap: .2rem; padding-top: 1px; }
+.ui-choice-group { display: flex; flex-wrap: wrap; gap: .55rem; }
+.ui-choice-group .ui-choice { flex: 1 1 105px; }
+.ui-choice--compact { min-height: 42px; padding: .6rem .75rem; }
 .admin-body input[type="checkbox"], .admin-body input[type="radio"] { display: inline-grid; flex: 0 0 20px; width: 20px; height: 20px; margin: 0; padding: 0; border: 1.5px solid #c6d0df; outline: 0; appearance: none; background: #fff; place-content: center; cursor: pointer; transition: background-color .18s,border-color .18s,box-shadow .18s,transform .12s; }
 .admin-body input[type="checkbox"] { border-radius: 6px; }
 .admin-body input[type="radio"] { border-radius: 50%; }

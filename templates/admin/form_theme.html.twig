@@ -22,6 +22,17 @@
     {{ block('checkbox_row') }}
 {% endblock %}
 
+{% block choice_widget_expanded %}
+    <div class="ui-choice-group" {{ block('widget_container_attributes') }}>
+        {% for child in form %}
+            <div class="ui-choice ui-choice--compact">
+                {{ form_widget(child, {attr: {class: 'ui-choice__control'}}) }}
+                <div class="ui-choice__content">{{ form_label(child, null, {translation_domain: choice_translation_domain}) }}</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
 {% block form_help %}
     {% if help is not empty %}<div class="ui-field__help">{% set translated_help = help|trans(help_translation_parameters, translation_domain) %}{{ help_html|default(false) ? translated_help|raw : translated_help }}</div>{% endif %}
 {% endblock %}

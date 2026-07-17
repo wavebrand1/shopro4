@@ -123,10 +123,23 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('select[name="menu_item[parent]"] option');
 
-        $this->client->request('GET', '/admin/configuration/system');
+        $settingsPage = $this->client->request('GET', '/admin/configuration/system');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('.ui-field input[name="system_settings[site_name]"]');
-        self::assertSelectorExists('.ui-choice input[name="system_settings[show_login]"]');
+        self::assertSelectorExists('select[name="system_settings[theme]"]');
+        self::assertSelectorExists('select[name="system_settings[date_short]"]');
+        self::assertSelectorExists('select[name="system_settings[timezone]"]');
+        self::assertSelectorCount(2, 'input[type="radio"][name="system_settings[show_login]"]');
+        self::assertSelectorCount(2, 'input[type="radio"][name="system_settings[maintenance]"]');
+        self::assertSelectorExists('input[name="system_settings[small_image_width]"]');
+        self::assertSelectorExists('select[name="system_settings[alert_email_template]"]');
+        self::assertSelectorExists('select[name="system_settings[api_auth_module]"]');
+        self::assertSelectorCount(2, 'input[type="radio"][name="system_settings[smtp_ssl]"]');
+        $this->client->submit($settingsPage->selectButton('Zapisz konfigurację')->form(), [
+            'system_settings[site_name]' => 'Shopro test',
+            'system_settings[theme]' => 'modernize',
+        ]);
+        self::assertResponseRedirects('/admin/configuration/system');
 
         $this->client->request('GET', '/');
         self::assertResponseIsSuccessful();
