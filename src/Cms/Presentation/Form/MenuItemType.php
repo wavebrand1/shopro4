@@ -6,6 +6,7 @@ namespace App\Cms\Presentation\Form;
 
 use App\Cms\Domain\Entity\MenuItem;
 use App\Cms\Domain\Entity\Page;
+use App\Language\Application\SystemTranslator;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -16,19 +17,22 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class MenuItemType extends AbstractType
 {
+    public function __construct(private readonly SystemTranslator $translator) {}
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $t = $this->translator->translate(...);
         $builder
-            ->add('name', TextType::class, ['label' => 'Nazwa'])
-            ->add('caption', TextType::class, ['label' => 'Podpis', 'required' => false])
-            ->add('parent', EntityType::class, ['class' => MenuItem::class, 'choice_label' => 'name', 'label' => 'Pozycja nadrzędna', 'placeholder' => 'Poziom główny', 'required' => false])
-            ->add('contentType', ChoiceType::class, ['label' => 'Typ', 'choices' => ['Podstrona' => MenuItem::TYPE_PAGE, 'Link zewnętrzny' => MenuItem::TYPE_WEB, 'Element bez linku' => MenuItem::TYPE_PLACEHOLDER]])
-            ->add('page', EntityType::class, ['class' => Page::class, 'choice_label' => 'title', 'label' => 'Podstrona', 'placeholder' => 'Wybierz podstronę', 'required' => false])
-            ->add('link', TextType::class, ['label' => 'Link zewnętrzny', 'help' => 'Np. https://example.com lub /#kontakt', 'required' => false])
-            ->add('target', ChoiceType::class, ['label' => 'Otwieranie linku', 'choices' => ['W tej samej karcie' => '_self', 'W nowej karcie' => '_blank']])
-            ->add('place', ChoiceType::class, ['label' => 'Miejsce menu', 'choices' => ['Menu górne' => MenuItem::PLACE_HEADER, 'Menu dolne' => MenuItem::PLACE_FOOTER]])
-            ->add('homePage', CheckboxType::class, ['label' => 'Link do strony głównej', 'required' => false])
-            ->add('active', CheckboxType::class, ['label' => 'Aktywna', 'required' => false]);
+            ->add('name', TextType::class, ['label' => $t('menu.name')])
+            ->add('caption', TextType::class, ['label' => $t('menu.caption'), 'required' => false])
+            ->add('parent', EntityType::class, ['class' => MenuItem::class, 'choice_label' => 'name', 'label' => $t('menu.parent'), 'placeholder' => $t('menu.root_level'), 'required' => false])
+            ->add('contentType', ChoiceType::class, ['label' => $t('menu.type'), 'choices' => [$t('menu.type_page') => MenuItem::TYPE_PAGE, $t('menu.type_web') => MenuItem::TYPE_WEB, $t('menu.type_placeholder') => MenuItem::TYPE_PLACEHOLDER]])
+            ->add('page', EntityType::class, ['class' => Page::class, 'choice_label' => 'title', 'label' => $t('pages.page'), 'placeholder' => $t('menu.select_page'), 'required' => false])
+            ->add('link', TextType::class, ['label' => $t('menu.external_link'), 'help' => $t('menu.link_help'), 'required' => false])
+            ->add('target', ChoiceType::class, ['label' => $t('menu.link_target'), 'choices' => [$t('menu.same_tab') => '_self', $t('menu.new_tab') => '_blank']])
+            ->add('place', ChoiceType::class, ['label' => $t('menu.place'), 'choices' => [$t('menu.header') => MenuItem::PLACE_HEADER, $t('menu.footer') => MenuItem::PLACE_FOOTER]])
+            ->add('homePage', CheckboxType::class, ['label' => $t('menu.home_link'), 'required' => false])
+            ->add('active', CheckboxType::class, ['label' => $t('common.active'), 'required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

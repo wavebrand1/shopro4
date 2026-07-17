@@ -1,24 +1,24 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}Menu — Shopro 4.0{% endblock %}
 {% block body %}
-<div class="modern-page-heading"><div><p class="modern-kicker">ZARZĄDZANIE TREŚCIĄ</p><h1>Menu</h1><p>Przeciągnij pozycje za uchwyt, aby zmienić ich kolejność.</p></div><a class="modern-button modern-button--primary" href="{{ path('admin_menu_new') }}"><span>+</span> Nowa pozycja</a></div>
+<div class="modern-page-heading"><div><p class="modern-kicker">{{ shopro_trans('admin.content_management') }}</p><h1>{{ shopro_trans('menu.heading') }}</h1><p>{{ shopro_trans('menu.lead') }}</p></div><a class="modern-button modern-button--primary" href="{{ path('admin_menu_new') }}"><span>+</span> {{ shopro_trans('menu.new') }}</a></div>
 <section class="modern-card modern-table-card" data-menu-sort data-reorder-url="{{ path('admin_menu_reorder') }}" data-move-url="{{ path('admin_menu_move') }}" data-reorder-token="{{ csrf_token('reorder-menu') }}">
-    <div class="modern-card__heading"><div><h2>Pozycje menu</h2><p>{{ items|length }} elementów · kolejność zapisuje się automatycznie</p></div><span class="menu-sort-status" data-menu-sort-status></span></div>
+    <div class="modern-card__heading"><div><h2>{{ shopro_trans('menu.items') }}</h2><p>{{ items|length }} {{ shopro_trans('pages.items') }} · {{ shopro_trans('menu.auto_save') }}</p></div><span class="menu-sort-status" data-menu-sort-status></span></div>
     <div class="admin-table-wrap"><table class="admin-table menu-sort-table">
-        <thead><tr><th class="menu-drag-heading" aria-label="Sortowanie"></th><th>Nazwa</th><th>Typ</th><th>Miejsce</th><th>Status</th><th class="table-actions-heading">Akcje</th></tr></thead>
+        <thead><tr><th class="menu-drag-heading" aria-label="{{ shopro_trans('menu.sorting') }}"></th><th>{{ shopro_trans('menu.name') }}</th><th>{{ shopro_trans('menu.type') }}</th><th>{{ shopro_trans('menu.place') }}</th><th>{{ shopro_trans('common.status') }}</th><th class="table-actions-heading">{{ shopro_trans('common.actions') }}</th></tr></thead>
         {% for tree in trees %}
         <tbody class="menu-sort-group menu-tree" data-menu-sort-group data-menu-place="{{ tree.place }}">
-            <tr class="menu-group-heading" data-menu-group-drop><td colspan="6">{{ tree.label }} <small>· {{ tree.items|length }} {{ tree.items|length == 1 ? 'pozycja' : 'pozycje' }} · upuść tutaj, aby przenieść na poziom główny</small></td></tr>
+            <tr class="menu-group-heading" data-menu-group-drop><td colspan="6">{{ tree.place == 1 ? shopro_trans('menu.header') : shopro_trans('menu.footer') }} <small>· {{ tree.items|length }} {{ shopro_trans(tree.items|length == 1 ? 'menu.position' : 'menu.positions') }} · {{ shopro_trans('menu.drop_root') }}</small></td></tr>
             {% for node in tree.items %}{% set item = node.item %}
             <tr data-menu-row data-menu-id="{{ item.id }}" data-menu-parent="{{ item.parent ? item.parent.id : 0 }}" data-menu-depth="{{ node.depth }}" style="--menu-depth: {{ node.depth }}">
-                <td class="menu-drag-cell"><button class="menu-drag-handle" type="button" draggable="true" data-menu-drag-handle aria-label="Przeciągnij pozycję {{ item.name }}" title="Przeciągnij, aby zmienić kolejność"><i></i><i></i><i></i><i></i><i></i><i></i></button></td>
-                <td><div class="page-cell menu-tree-node"><span class="menu-tree-branch" aria-hidden="true"></span><span class="page-cell__icon">{{ item.name|first|upper }}</span><div><strong>{{ item.name }}</strong><small>{{ item.parent ? 'Pod: ' ~ item.parent.name : (item.caption ?: 'Poziom główny') }}</small></div><span class="menu-nest-target" data-menu-nest-target>Upuść jako podrzędną</span></div></td>
-                <td>{{ item.contentType == 'page' ? 'Podstrona' : (item.contentType == 'web' ? 'Link zewnętrzny' : 'Bez linku') }}</td>
-                <td>{{ item.place == 1 ? 'Górne' : 'Dolne' }}</td>
-                <td><span class="status status--{{ item.active ? 'published' : 'draft' }}"><i></i>{{ item.active ? 'Aktywna' : 'Ukryta' }}</span></td>
-                <td class="actions"><a href="{{ path('admin_menu_edit', {id: item.id}) }}">Edytuj</a><a href="{{ path('admin_menu_translation_index',{id:item.id}) }}">Tłumaczenia</a><form method="post" action="{{ path('admin_menu_delete', {id: item.id}) }}" onsubmit="return confirm('Usunąć pozycję menu?')"><input type="hidden" name="_token" value="{{ csrf_token('delete-menu-' ~ item.id) }}"><button>Usuń</button></form></td>
+                <td class="menu-drag-cell"><button class="menu-drag-handle" type="button" draggable="true" data-menu-drag-handle aria-label="{{ shopro_trans('menu.drag_item') }} {{ item.name }}" title="{{ shopro_trans('menu.drag_help') }}"><i></i><i></i><i></i><i></i><i></i><i></i></button></td>
+                <td><div class="page-cell menu-tree-node"><span class="menu-tree-branch" aria-hidden="true"></span><span class="page-cell__icon">{{ item.name|first|upper }}</span><div><strong>{{ item.name }}</strong><small>{{ item.parent ? shopro_trans('menu.under') ~ ' ' ~ item.parent.name : (item.caption ?: shopro_trans('menu.root_level')) }}</small></div><span class="menu-nest-target" data-menu-nest-target>{{ shopro_trans('menu.drop_child') }}</span></div></td>
+                <td>{{ shopro_trans(item.contentType == 'page' ? 'menu.type_page' : (item.contentType == 'web' ? 'menu.type_web' : 'menu.type_placeholder')) }}</td>
+                <td>{{ shopro_trans(item.place == 1 ? 'menu.header' : 'menu.footer') }}</td>
+                <td><span class="status status--{{ item.active ? 'published' : 'draft' }}"><i></i>{{ shopro_trans(item.active ? 'menu.visible' : 'menu.hidden') }}</span></td>
+                <td class="actions"><a href="{{ path('admin_menu_edit', {id: item.id}) }}">{{ shopro_trans('common.edit') }}</a><a href="{{ path('admin_menu_translation_index',{id:item.id}) }}">{{ shopro_trans('menu.translations') }}</a><form method="post" action="{{ path('admin_menu_delete', {id: item.id}) }}" onsubmit="return confirm('{{ shopro_trans('menu.delete_confirm')|e('js') }}')"><input type="hidden" name="_token" value="{{ csrf_token('delete-menu-' ~ item.id) }}"><button>{{ shopro_trans('common.delete') }}</button></form></td>
             </tr>
-            {% else %}<tr><td colspan="6" class="empty">Brak pozycji w tym menu. Przeciągnij tutaj element z drugiego menu.</td></tr>{% endfor %}
+            {% else %}<tr><td colspan="6" class="empty">{{ shopro_trans('menu.empty') }}</td></tr>{% endfor %}
         </tbody>
         {% endfor %}
     </table></div>

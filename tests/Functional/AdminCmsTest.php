@@ -280,6 +280,17 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-page-heading h1', 'Pages');
         self::assertSelectorTextContains('.modern-table-card', 'Page list');
 
+        $this->client->request('GET', '/admin/menu');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading', 'Drag items by the handle');
+        self::assertSelectorTextContains('.menu-sort-table thead', 'Location');
+        self::assertSelectorTextContains('.menu-group-heading', 'Header menu');
+
+        $this->client->request('GET', '/admin/menu/'.$headerItemId.'/edit');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Edit menu item');
+        self::assertSelectorTextContains('select[name="menu_item[contentType]"] option[value="web"]', 'External link');
+
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
 
