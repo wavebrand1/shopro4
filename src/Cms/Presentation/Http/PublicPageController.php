@@ -18,6 +18,11 @@ final class PublicPageController extends AbstractController
     public function localized(string $_locale, string $slug, EntityManagerInterface $em): Response
     {
         $language = $em->getRepository(Language::class)->findOneBy(['code' => $_locale, 'active' => true]);
+        if ($language?->isDefaultLanguage()) {
+            $basePage = $em->getRepository(\App\Cms\Domain\Entity\Page::class)->findOneBy(['slug' => $slug, 'published' => true]);
+            if (!$basePage) throw $this->createNotFoundException('Podstrona nie istnieje.');
+            return $this->redirectToRoute('cms_page_show', ['slug' => $basePage->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
+        }
         $translation = $language ? $em->getRepository(PageTranslation::class)->findOneBy(['language' => $language, 'slug' => $slug, 'published' => true]) : null;
         if (!$translation) throw $this->createNotFoundException('Tłumaczenie podstrony nie istnieje lub nie jest opublikowane.');
         $page = $translation->getPage();
