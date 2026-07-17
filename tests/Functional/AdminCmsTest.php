@@ -216,7 +216,7 @@ final class AdminCmsTest extends WebTestCase
         $translation->setTitle('About us');
         $translation->setSlug('about-us');
         $translation->setBuilderData('[]');
-        $translation->setPublished(true);
+        $translation->setPublished(false);
         $entityManager = self::getContainer()->get(EntityManagerInterface::class);
         $entityManager->persist($polish);
         $entityManager->persist($english);

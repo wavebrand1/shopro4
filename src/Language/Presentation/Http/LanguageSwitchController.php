@@ -21,6 +21,8 @@ final class LanguageSwitchController extends AbstractController
   $request->getSession()->set('shopro_language',$language->getCode());
   $pageId=$request->query->getInt('page');
   $page=$pageId>0?$em->find(Page::class,$pageId):null;
-  return $this->redirect($page?$urls->page($page,$language):$this->generateUrl('app_home'));
+  $response=$this->redirect($page?$urls->page($page,$language):$this->generateUrl('app_home'));
+  $response->headers->set('Cache-Control','no-store, private');
+  return $response;
  }
 }

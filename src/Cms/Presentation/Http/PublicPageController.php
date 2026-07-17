@@ -25,8 +25,8 @@ final class PublicPageController extends AbstractController
             if (!$basePage) throw $this->createNotFoundException('Podstrona nie istnieje.');
             return $this->redirectToRoute('cms_page_show', ['slug' => $basePage->getSlug()], Response::HTTP_FOUND);
         }
-        $translation = $language ? $em->getRepository(PageTranslation::class)->findOneBy(['language' => $language, 'slug' => $slug, 'published' => true]) : null;
-        if (!$translation) throw $this->createNotFoundException('Tłumaczenie podstrony nie istnieje lub nie jest opublikowane.');
+        $translation = $language ? $em->getRepository(PageTranslation::class)->findOneBy(['language' => $language, 'slug' => $slug]) : null;
+        if (!$translation || (!$translation->isPublished() && !$this->isGranted('ROLE_ADMIN'))) throw $this->createNotFoundException('Tłumaczenie podstrony nie istnieje lub nie jest opublikowane.');
         $page = $translation->getPage();
         if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) throw $this->createNotFoundException('Podstrona nie istnieje.');
         if ('Public' !== $page->getAccess() && !$this->getUser()) return $this->redirectToRoute('admin_login');
