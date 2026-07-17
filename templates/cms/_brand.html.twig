@@ -1,7 +1,5 @@
-<a class="site-brand" href="{{ href|default(path('app_home')) }}">
-    {% if shopro_setting('site_logo') %}
-        <img class="site-brand__image" src="{{ shopro_setting('site_logo') }}" alt="{{ shopro_setting('site_name', 'Shopro 4.0') }}">
-    {% else %}
-        <span class="site-brand__logo">S</span><span>{{ shopro_setting('site_name', 'Shopro 4.0') }}</span>
-    {% endif %}
+{% set configured_logo = shopro_setting('site_logo') %}
+{% set fallback_logo = asset('branding/shopro-logo.svg') %}
+<a class="site-brand" href="{{ href|default(path('app_home')) }}" aria-label="{{ shopro_setting('site_name', 'Shopro 4.0') }}">
+    <img class="site-brand__image" src="{{ configured_logo ?: fallback_logo }}" alt="{{ shopro_setting('site_name', 'Shopro 4.0') }}"{% if configured_logo and configured_logo != fallback_logo %} onerror="this.onerror=null;this.src='{{ fallback_logo|e('js') }}'"{% endif %}>
 </a>
