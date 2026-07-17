@@ -23,7 +23,7 @@ final class PublicPageController extends AbstractController
         if ($language?->isDefaultLanguage()) {
             $basePage = $em->getRepository(\App\Cms\Domain\Entity\Page::class)->findOneBy(['slug' => $slug, 'published' => true]);
             if (!$basePage) throw $this->createNotFoundException('Podstrona nie istnieje.');
-            return $this->redirectToRoute('cms_page_show', ['slug' => $basePage->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
+            return $this->redirectToRoute('cms_page_show', ['slug' => $basePage->getSlug()], Response::HTTP_FOUND);
         }
         $translation = $language ? $em->getRepository(PageTranslation::class)->findOneBy(['language' => $language, 'slug' => $slug, 'published' => true]) : null;
         if (!$translation) throw $this->createNotFoundException('Tłumaczenie podstrony nie istnieje lub nie jest opublikowane.');

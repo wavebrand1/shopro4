@@ -19,19 +19,26 @@ final class PageTranslationController extends AbstractController
   $form=$this->createForm(PageTranslationType::class,$translation);
   $form->handleRequest($request);
   if($form->isSubmitted()&&$form->isValid()){
-   if($request->request->has('copy_base_template')){
-    $translation->setContent($page->getContent());
-    $translation->setBuilderData($page->getBuilderData());
-    $translation->setBuilderCss($page->getBuilderCss());
-    $this->addFlash('success','Zastosowano układ i komponenty z języka głównego. Teraz przetłumacz ich treść.');
-   }else{
-    $translation->setBuilderData($this->sanitizeBuilder($translation->getBuilderData()));
-    $this->addFlash('success','Tłumaczenie zostało zapisane.');
-   }
+   $translation->setBuilderData($this->sanitizeBuilder($translation->getBuilderData()));
+   $this->addFlash('success','Tłumaczenie zostało zapisane.');
    $em->persist($translation);$em->flush();
    return $this->redirectToRoute('admin_page_translation_edit',['id'=>$page->getId(),'languageId'=>$language->getId()]);
   }
   return $this->render('admin/page/translation_form.html.twig',['form'=>$form,'page'=>$page,'translation'=>$translation,'language'=>$language]);
+ }
+ #[Route('/{languageId}/copy-base-template',name:'admin_page_translation_copy_base',requirements:['id'=>'\d+','languageId'=>'\d+'],methods:['POST'])]
+ public function copyBaseTemplate(Page $page,int $languageId,Request $request,EntityManagerInterface $em):Response
+ {
+  $language=$em->find(Language::class,$languageId);
+  if(!$language||$language->isDefaultLanguage())throw $this->createNotFoundException('Wersja językowa nie istnieje.');
+  if(!$this->isCsrfTokenValid('copy-page-template-'.$page->getId().'-'.$languageId,(string)$request->request->get('_token')))throw $this->createAccessDeniedException('Nieprawidłowy token formularza.');
+  $translation=$em->getRepository(PageTranslation::class)->findOneBy(['page'=>$page,'language'=>$language])??new PageTranslation($page,$language);
+  $translation->setContent($page->getContent());
+  $translation->setBuilderData($page->getBuilderData());
+  $translation->setBuilderCss($page->getBuilderCss());
+  $em->persist($translation);$em->flush();
+  $this->addFlash('success','Zastosowano układ i komponenty z języka głównego. Teraz przetłumacz ich treść.');
+  return $this->redirectToRoute('admin_page_translation_edit',['id'=>$page->getId(),'languageId'=>$languageId]);
  }
  private function sanitizeBuilder(string $json):string
  {

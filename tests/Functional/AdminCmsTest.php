@@ -215,6 +215,7 @@ final class AdminCmsTest extends WebTestCase
         $translation = new PageTranslation($page, $english);
         $translation->setTitle('About us');
         $translation->setSlug('about-us');
+        $translation->setBuilderData('[]');
         $translation->setPublished(true);
         $entityManager = self::getContainer()->get(EntityManagerInterface::class);
         $entityManager->persist($polish);
@@ -226,6 +227,9 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         $this->client->submitForm('Zastosuj szablon języka głównego');
         self::assertResponseRedirects('/admin/pages/'.$page->getId().'/translations/'.$english->getId());
+        $copiedTranslation = self::getContainer()->get(EntityManagerInterface::class)->getRepository(PageTranslation::class)->find($translation->getId());
+        self::assertNotNull($copiedTranslation);
+        self::assertSame($page->getBuilderData(), $copiedTranslation->getBuilderData());
 
         $settingsRepository = self::getContainer()->get(SystemSettingsRepository::class);
         $systemSettings = $settingsRepository->get();
