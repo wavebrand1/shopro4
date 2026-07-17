@@ -1,31 +1,31 @@
 {% extends 'admin/layout.html.twig' %}
 {% block body %}
 <div class="modern-page-heading">
-    <div><p class="modern-kicker">SHOPRO CMS</p><h1>Dzień dobry 👋</h1><p>Zarządzaj treścią swojej witryny z jednego miejsca.</p></div>
-    <a class="modern-button modern-button--primary" href="{{ path('admin_page_new') }}"><span>+</span> Nowa podstrona</a>
+    <div><p class="modern-kicker">SHOPRO CMS</p><h1>{{ shopro_trans('dashboard.greeting') }} 👋</h1><p>{{ shopro_trans('dashboard.lead') }}</p></div>
+    <a class="modern-button modern-button--primary" href="{{ path('admin_page_new') }}"><span>+</span> {{ shopro_trans('dashboard.new_page') }}</a>
 </div>
 <div class="modern-stats-grid">
     <article class="modern-stat modern-stat--blue">
         <div class="modern-stat__top"><span class="modern-stat__icon"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2Zm8 2v5h4"/></svg></span><span class="modern-trend">CMS</span></div>
-        <strong>{{ page_count }}</strong><span>Wszystkie podstrony</span>
+        <strong>{{ page_count }}</strong><span>{{ shopro_trans('dashboard.all_pages') }}</span>
     </article>
     <article class="modern-stat modern-stat--green">
-        <div class="modern-stat__top"><span class="modern-stat__icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><span class="modern-trend">Aktywne</span></div>
-        <strong>{{ published_count }}</strong><span>Opublikowane</span>
+        <div class="modern-stat__top"><span class="modern-stat__icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><span class="modern-trend">{{ shopro_trans('dashboard.active') }}</span></div>
+        <strong>{{ published_count }}</strong><span>{{ shopro_trans('dashboard.published') }}</span>
     </article>
     <article class="modern-stat modern-stat--orange">
-        <div class="modern-stat__top"><span class="modern-stat__icon"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16l4-5 3 2 5-7"/></svg></span><span class="modern-trend">Szkice</span></div>
-        <strong>{{ page_count - published_count }}</strong><span>Nieopublikowane</span>
+        <div class="modern-stat__top"><span class="modern-stat__icon"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 16l4-5 3 2 5-7"/></svg></span><span class="modern-trend">{{ shopro_trans('dashboard.drafts') }}</span></div>
+        <strong>{{ page_count - published_count }}</strong><span>{{ shopro_trans('dashboard.unpublished') }}</span>
     </article>
 </div>
 <div class="modern-dashboard-grid">
     <section class="modern-card modern-card--welcome">
-        <div><span class="modern-card__eyebrow">SZYBKI START</span><h2>Twórz treści wygodniej</h2><p>Dodawaj podstrony, publikuj je i zarządzaj adresami bez ingerencji w kod.</p><a href="{{ path('admin_page_index') }}">Przejdź do podstron →</a></div>
+        <div><span class="modern-card__eyebrow">{{ shopro_trans('dashboard.quick_start') }}</span><h2>{{ shopro_trans('dashboard.create_better') }}</h2><p>{{ shopro_trans('dashboard.create_help') }}</p><a href="{{ path('admin_page_index') }}">{{ shopro_trans('dashboard.go_pages') }} →</a></div>
         <div class="modern-card__illustration"><span></span><span></span><span></span></div>
     </section>
     <section class="modern-card">
-        <div class="modern-card__heading"><div><span class="modern-card__eyebrow">STATUS SYSTEMU</span><h2>Shopro 4.0</h2></div><span class="modern-live"><i></i> Online</span></div>
-        <div class="modern-system-list"><div><span>Aplikacja</span><strong>Symfony 7.4 LTS</strong></div><div><span>Środowisko</span><strong>Development</strong></div><div><span>CMS</span><strong>Aktywny</strong></div></div>
+        <div class="modern-card__heading"><div><span class="modern-card__eyebrow">{{ shopro_trans('dashboard.system_status') }}</span><h2>Shopro 4.0</h2></div><span class="modern-live"><i></i> {{ shopro_trans('dashboard.online') }}</span></div>
+        <div class="modern-system-list"><div><span>{{ shopro_trans('dashboard.application') }}</span><strong>Symfony 7.4 LTS</strong></div><div><span>{{ shopro_trans('dashboard.environment') }}</span><strong>{{ shopro_trans('dashboard.development') }}</strong></div><div><span>CMS</span><strong>{{ shopro_trans('dashboard.cms_active') }}</strong></div></div>
     </section>
 </div>
 {% endblock %}

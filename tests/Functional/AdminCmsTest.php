@@ -263,6 +263,17 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.preview-stats', 'Published');
         self::assertSelectorTextContains('.preview-chart', 'Last 7 days');
 
+        $this->client->request('GET', '/admin');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('html[lang="en"]');
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Good morning');
+        self::assertSelectorTextContains('.modern-nav', 'CONTENT MANAGEMENT');
+
+        $this->client->request('GET', '/admin/pages');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Pages');
+        self::assertSelectorTextContains('.modern-table-card', 'Page list');
+
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
 
