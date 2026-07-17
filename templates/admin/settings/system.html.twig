@@ -1,0 +1,27 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}Konfiguracja systemu — Shopro 4.0{% endblock %}
+{% block body %}
+<div class="modern-page-heading"><div><p class="modern-kicker">KONFIGURACJA</p><h1>Konfiguracja systemu</h1><p>Ustawienia odpowiadają sekcjom konfiguracji Shopro Legacy.</p></div></div>
+{{ form_start(form, {attr: {class: 'settings-form'}}) }}
+{% set groups = {
+    'Dane witryny': ['site_name','company','site_url','site_email','theme'],
+    'Data, czas i język': ['locale','timezone','language','date_short','date_long','time_format','week_start'],
+    'Widoczność elementów': ['show_login','show_search','show_breadcrumbs','show_language','eu_cookie'],
+    'Tryb konserwacji': ['maintenance','maintenance_from','maintenance_message'],
+    'Obrazy': ['image_width','image_height','thumbnail_width','thumbnail_height','avatar_width','avatar_height','image_quality'],
+    'Paginacja i waluta': ['per_page','currency','currency_symbol'],
+    'Rejestracja i bezpieczeństwo': ['registration_allowed','registration_verify','registration_auto_verify','notify_admin','user_limit','login_attempts','flood_seconds','logging'],
+    'Social media i SEO': ['facebook','instagram','twitter','pinterest','meta_keywords','meta_description','analytics'],
+    'Wysyłka wiadomości': ['mailer','sendmail_path','smtp_host','smtp_user','smtp_password','smtp_port','smtp_encryption']
+} %}
+{% for title, fields in groups %}
+<section class="modern-card settings-card">
+    <div class="modern-card__heading"><h2>{{ title }}</h2></div>
+    <div class="settings-grid">
+        {% for name in fields %}{% set control = attribute(form, name) %}<div class="settings-field settings-field--{{ control.vars.block_prefixes|last }}">{{ form_row(control) }}</div>{% endfor %}
+    </div>
+</section>
+{% endfor %}
+<div class="settings-actions"><button class="modern-button modern-button--primary" type="submit">Zapisz konfigurację</button></div>
+{{ form_end(form) }}
+{% endblock %}

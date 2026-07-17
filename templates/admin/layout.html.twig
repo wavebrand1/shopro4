@@ -38,6 +38,10 @@
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3-7 8-7s8 3 8 7"/></svg></span>
                     Użytkownicy
                 </a>
+                <a class="{{ route starts with 'admin_system_settings_' ? 'is-active' : '' }}" href="{{ path('admin_system_settings_edit') }}">
+                    <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 15a2 2 0 0 0 .4 2l-2.4 2.4a2 2 0 0 0-2-.4 2 2 0 0 0-1 1.7V21h-4v-.3A2 2 0 0 0 9 19a2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.7-1H3v-4h.3A2 2 0 0 0 5 9a2 2 0 0 0-.4-2L7 4.6A2 2 0 0 0 9 5a2 2 0 0 0 1-1.7V3h4v.3A2 2 0 0 0 15 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.7 1h.3v4h-.3A2 2 0 0 0 19 15Z"/></svg></span>
+                    Konfiguracja systemu
+                </a>
                 <p class="modern-nav__label">WITRYNA</p>
                 <a href="{{ path('app_home') }}" target="_blank">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
