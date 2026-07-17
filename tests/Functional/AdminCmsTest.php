@@ -316,6 +316,16 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-page-heading h1', 'Translations: English');
         self::assertSelectorExists('input[placeholder="Search key or content"]');
 
+        $this->client->request('GET', '/admin/newsletter');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading', 'delivery queue');
+        self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'Delivery history');
+
+        $this->client->request('GET', '/admin/newsletter/new');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'New campaign');
+        self::assertSelectorTextContains('label[for="newsletter_campaign_customEmails"]', 'Additional email addresses');
+
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Newsletter\Presentation\Http\Admin;
 
 use App\Identity\Domain\Entity\AdminUser;
+use App\Language\Application\SystemTranslator;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
@@ -21,6 +22,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class NewsletterController extends AbstractController
 {
+    public function __construct(private readonly SystemTranslator $translator) {}
+
     #[Route('', name: 'admin_newsletter_index', methods: ['GET'])]
     public function index(EntityManagerInterface $em): Response
     {
@@ -46,7 +49,7 @@ final class NewsletterController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->persist($campaign);
             $em->flush();
-            $this->addFlash('success', 'Kampania została zapisana jako szkic.');
+            $this->addFlash('success', $this->translator->translate('newsletter.draft_saved'));
 
             return $this->redirectToRoute('admin_newsletter_index');
         }
@@ -73,7 +76,7 @@ final class NewsletterController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
-            $this->addFlash('success', 'Zmiany kampanii zostały zapisane.');
+            $this->addFlash('success', $this->translator->translate('newsletter.changes_saved'));
 
             return $this->redirectToRoute('admin_newsletter_show', ['id' => $campaign->getId()]);
         }
@@ -91,8 +94,8 @@ final class NewsletterController extends AbstractController
 
         $count = $this->enqueue($campaign, $em, $bus);
         $this->addFlash($count === 0 ? 'error' : 'success', $count === 0
-            ? 'Nie wybrano żadnego prawidłowego odbiorcy.'
-            : sprintf('Zakolejkowano %d wiadomości.', $count));
+            ? $this->translator->translate('newsletter.no_valid_recipients')
+            : sprintf($this->translator->translate('newsletter.queued_count'), $count));
 
         return $this->redirectToRoute('admin_newsletter_index');
     }
@@ -111,9 +114,9 @@ final class NewsletterController extends AbstractController
         if ($failed) {
             $campaign->markQueued();
             $em->flush();
-            $this->addFlash('success', sprintf('Ponowiono %d nieudanych wiadomości.', count($failed)));
+            $this->addFlash('success', sprintf($this->translator->translate('newsletter.retried_count'), count($failed)));
         } else {
-            $this->addFlash('error', 'Ta kampania nie ma nieudanych wiadomości do ponowienia.');
+            $this->addFlash('error', $this->translator->translate('newsletter.no_failed'));
         }
 
         return $this->redirectToRoute('admin_newsletter_show', ['id' => $campaign->getId()]);
@@ -137,8 +140,8 @@ final class NewsletterController extends AbstractController
 
         $count = $this->enqueue($repeated, $em, $bus);
         $this->addFlash($count === 0 ? 'error' : 'success', $count === 0
-            ? 'Nie znaleziono odbiorców do ponownej wysyłki.'
-            : sprintf('Utworzono ponowną wysyłkę i zakolejkowano %d wiadomości.', $count));
+            ? $this->translator->translate('newsletter.no_resend_recipients')
+            : sprintf($this->translator->translate('newsletter.resend_queued_count'), $count));
 
         return $this->redirectToRoute('admin_newsletter_show', ['id' => $repeated->getId()]);
     }
