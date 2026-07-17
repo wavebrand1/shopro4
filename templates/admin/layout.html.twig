@@ -73,6 +73,7 @@
                     <span>{{ shopro_trans('admin.panel') }}</span>
                 </div>
                 <div class="modern-topbar__actions">
+                    {% include 'admin/_language_switcher.html.twig' %}
                     <a class="modern-icon-button" href="{{ path('app_home') }}" target="_blank" aria-label="{{ shopro_trans('admin.open_website') }}">
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
                     </a>

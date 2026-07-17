@@ -268,6 +268,12 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('html[lang="en"]');
         self::assertSelectorTextContains('.modern-page-heading h1', 'Good morning');
         self::assertSelectorTextContains('.modern-nav', 'CONTENT MANAGEMENT');
+        self::assertSelectorCount(6, '.modern-module-card');
+        self::assertSelectorTextContains('.modern-dashboard-modules', 'Manage the entire system');
+        self::assertSelectorExists('.admin-language-picker a[href^="/admin/language/en"]');
+
+        $this->client->request('GET', '/admin/language/en?return=%2Fadmin%2Fpages');
+        self::assertResponseRedirects('/admin/pages');
 
         $this->client->request('GET', '/admin/pages');
         self::assertResponseIsSuccessful();

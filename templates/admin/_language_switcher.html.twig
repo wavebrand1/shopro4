@@ -1,0 +1,17 @@
+{% set current_language = shopro_language() %}
+{% set languages = shopro_languages() %}
+{% if languages|length > 1 %}
+<details class="site-language-picker admin-language-picker">
+    <summary aria-label="{{ shopro_trans('language.change') }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
+        <span>{{ current_language ? current_language.code|upper : 'PL' }}</span><i></i>
+    </summary>
+    <div class="site-language-picker__menu">
+        {% for language in languages %}
+            <a href="{{ path('admin_language_switch',{code:language.code,return:app.request.requestUri}) }}" class="{{ current_language and current_language.id == language.id ? 'is-active' : '' }}" hreflang="{{ language.code }}">
+                <span class="site-language-picker__code">{{ language.code|upper }}</span><span>{{ language.name }}</span>{% if current_language and current_language.id == language.id %}<b>✓</b>{% endif %}
+            </a>
+        {% endfor %}
+    </div>
+</details>
+{% endif %}
