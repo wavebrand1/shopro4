@@ -19,6 +19,16 @@ if [ -z "$PHP_BIN" ]; then
     exit 1
 fi
 
+# Plesk runs Git deployment hooks with a minimal PATH. Composer and Symfony
+# recipes use `#!/usr/bin/env php`, so expose the selected Plesk PHP to every
+# child process as well.
+export PATH="$(dirname "$PHP_BIN"):$PATH"
+
+if ! command -v php >/dev/null 2>&1; then
+    echo "[Shopro] PHP is not available in deployment PATH" >&2
+    exit 1
+fi
+
 COMPOSER_BIN="$(command -v composer || true)"
 if [ -z "$COMPOSER_BIN" ]; then
     echo "[Shopro] Composer executable was not found" >&2
