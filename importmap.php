@@ -24,6 +24,10 @@ return [
         'path' => './assets/rich-editor.js',
         'entrypoint' => true,
     ],
+    'email-template-form' => [
+        'path' => './assets/email-template-form.js',
+        'entrypoint' => true,
+    ],
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],
