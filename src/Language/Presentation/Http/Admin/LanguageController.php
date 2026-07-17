@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace App\Language\Presentation\Http\Admin;
 
+use App\Language\Application\SystemTranslator;
 use App\Language\Domain\Entity\Language;
 use App\Language\Domain\Entity\Translation;
 use App\Language\Presentation\Form\LanguageType;
@@ -16,6 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class LanguageController extends AbstractController
 {
+ public function __construct(private readonly SystemTranslator $translator){}
  #[Route('',name:'admin_language_index',methods:['GET'])]
  public function index(EntityManagerInterface $em):Response{return $this->render('admin/language/index.html.twig',['languages'=>$em->getRepository(Language::class)->findBy([],['name'=>'ASC'])]);}
  #[Route('/new',name:'admin_language_new',methods:['GET','POST'])]
@@ -25,16 +27,16 @@ final class LanguageController extends AbstractController
  #[Route('/{id}/delete',name:'admin_language_delete',requirements:['id'=>'\d+'],methods:['POST'])]
  public function delete(Language $language,Request $r,EntityManagerInterface $em):Response{
   if($this->isCsrfTokenValid('delete-language-'.$language->getId(),(string)$r->request->get('_token'))){
-   if($em->getRepository(Language::class)->count([])<=1)$this->addFlash('error','Nie można usunąć ostatniego języka.');
-   else{$em->remove($language);$em->flush();$this->addFlash('success','Język został usunięty.');}
+   if($em->getRepository(Language::class)->count([])<=1)$this->addFlash('error',$this->translator->translate('language.cannot_delete_last'));
+   else{$em->remove($language);$em->flush();$this->addFlash('success',$this->translator->translate('language.deleted'));}
   }return $this->redirectToRoute('admin_language_index');
  }
  #[Route('/{id}/phrases',name:'admin_language_phrases',requirements:['id'=>'\d+'],methods:['GET','POST'])]
  public function phrases(Language $language,Request $r,EntityManagerInterface $em):Response{
   if($r->isMethod('POST')&&$this->isCsrfTokenValid('language-phrases-'.$language->getId(),(string)$r->request->get('_token'))){
    $key=trim((string)$r->request->get('key'));$value=(string)$r->request->get('value');
-   if(!preg_match('/^[a-zA-Z0-9_.-]{1,190}$/',$key))$this->addFlash('error','Klucz może zawierać litery, cyfry, kropki, myślniki i podkreślenia.');
-   else{$item=$em->getRepository(Translation::class)->findOneBy(['language'=>$language,'key'=>$key])??new Translation($language,$key);$item->setValue($value);$em->persist($item);$em->flush();$this->addFlash('success','Tłumaczenie zostało zapisane.');}
+   if(!preg_match('/^[a-zA-Z0-9_.-]{1,190}$/',$key))$this->addFlash('error',$this->translator->translate('language.invalid_key'));
+   else{$item=$em->getRepository(Translation::class)->findOneBy(['language'=>$language,'key'=>$key])??new Translation($language,$key);$item->setValue($value);$em->persist($item);$em->flush();$this->addFlash('success',$this->translator->translate('language.translation_saved'));}
    return $this->redirectToRoute('admin_language_phrases',['id'=>$language->getId(),'q'=>$r->query->get('q')]);
   }
   $q=trim((string)$r->query->get('q'));$qb=$em->getRepository(Translation::class)->createQueryBuilder('t')->andWhere('t.language=:language')->setParameter('language',$language)->orderBy('t.key','ASC');
@@ -46,7 +48,7 @@ final class LanguageController extends AbstractController
   if($form->isSubmitted()&&$form->isValid()){
    if($language->isDefaultLanguage())foreach($em->getRepository(Language::class)->findAll() as $other)if($other!==$language)$other->setDefaultLanguage(false);
    elseif($em->getRepository(Language::class)->count(['defaultLanguage'=>true])===0)$language->setDefaultLanguage(true);
-   $em->persist($language);$em->flush();$this->addFlash('success','Język został zapisany.');return $this->redirectToRoute('admin_language_index');}
+   $em->persist($language);$em->flush();$this->addFlash('success',$this->translator->translate('language.saved'));return $this->redirectToRoute('admin_language_index');}
   return $this->render('admin/language/form.html.twig',['form'=>$form,'language'=>$language]);
  }
 }

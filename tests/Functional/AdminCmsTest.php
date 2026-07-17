@@ -301,6 +301,21 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-page-heading h1', 'Edit user');
         self::assertSelectorTextContains('label[for="admin_user_apiScopes_0"]', 'Read data');
 
+        $this->client->request('GET', '/admin/configuration/languages');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Language management');
+        self::assertSelectorTextContains('.admin-table thead', 'Subdomain');
+
+        $this->client->request('GET', '/admin/configuration/languages/'.$english->getId().'/edit');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Edit language');
+        self::assertSelectorTextContains('label[for="language_decimalSeparator"]', 'Decimal separator');
+
+        $this->client->request('GET', '/admin/configuration/languages/'.$english->getId().'/phrases');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Translations: English');
+        self::assertSelectorExists('input[placeholder="Search key or content"]');
+
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
 

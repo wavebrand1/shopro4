@@ -42,6 +42,11 @@ final class SystemTranslator
         return $this->cache[$cacheKey] = $phrase[$code] ?? $phrase['pl'] ?? $key;
     }
 
+    public function locale(): string
+    {
+        return $this->requestStack->getCurrentRequest()?->getLocale() ?: 'pl';
+    }
+
     private function currentLanguage(): ?Language
     {
         return $this->requestStack->getCurrentRequest()?->attributes->get('_shopro_language');
