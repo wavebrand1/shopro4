@@ -31,6 +31,24 @@ Skrypt wykonuje kolejno:
 4. kompilację CSS i JavaScript przez AssetMapper,
 5. czyszczenie cache Symfony.
 
+Skrypt generuje również responsywne warianty AVIF/WebP plików znajdujących się
+w `public/uploads`. Nowe integracje przesyłania obrazów powinny po zapisie pliku
+wywoływać `ResponsiveImageOptimizer`; polecenie `app:images:optimize` pozostaje
+bezpiecznym mechanizmem uzupełniającym dla plików wgranych wcześniej.
+
+## Kolejka wiadomości
+
+Newsletter korzysta z trwałej kolejki Doctrine. W Plesku należy dodać zadanie
+cykliczne uruchamiane co minutę:
+
+```bash
+cd /var/www/vhosts/shopro4.orangestudio.pl/httpdocs && APP_ENV=dev APP_DEBUG=1 /opt/plesk/php/8.3/bin/php bin/console messenger:consume async --time-limit=50 --limit=100 --memory-limit=128M
+```
+
+Nie należy uruchamiać kilku nakładających się zadań. Messenger ponawia
+przejściowe błędy trzy razy, a niedostarczone zadania przenosi do kolejki
+`failed`. Stan każdej wiadomości jest równolegle widoczny w historii newslettera.
+
 Cache jest czyszczony po kompilacji, aby Symfony odczytało najnowszy manifest
 assetów i nie podawało przeglądarce poprzednich adresów CSS.
 

@@ -9,12 +9,12 @@
     'Data, czas i język': ['date_short','date_long','time_format','timezone','locale','week_start','language'],
     'Widoczność elementów': ['show_login','show_search','show_breadcrumbs','show_language','eu_cookie'],
     'Tryb konserwacji': ['maintenance','maintenance_date','maintenance_time','maintenance_message'],
-    'Obrazy': ['thumbnail_width','thumbnail_height','image_width','image_height','small_image_width','small_image_height','medium_image_width','medium_image_height','avatar_width','avatar_height','image_quality'],
-    'Paginacja i waluta': ['per_page','currency','currency_symbol','thousands_separator','decimal_separator'],
+    'Obrazy responsywne': ['image_formats','image_widths','image_quality','image_lazy_loading'],
+    'Paginacja i waluta (waluta zostanie przeniesiona do języków)': ['per_page','currency','currency_symbol','thousands_separator','decimal_separator'],
     'Rejestracja i bezpieczeństwo': ['registration_allowed','registration_verify','registration_auto_verify','notify_admin','user_limit','login_attempts','flood_seconds','logging','alert_email_template'],
-    'Social media': ['facebook','instagram','twitter','pinterest','linkedin','youtube','tiktok'],
-    'SEO, analityka i API': ['analytics','meta_keywords','meta_description','tenor_api_key','api_auth_module'],
-    'Wysyłka wiadomości': ['mailer','sendmail_path','smtp_host','smtp_user','smtp_password','smtp_port','smtp_ssl']
+    'Social media (dane dla modułu komponentów)': ['facebook','instagram','twitter','pinterest','linkedin','youtube','tiktok'],
+    'SEO i analityka': ['analytics_measurement_id','analytics_consent_required','meta_keywords','meta_description'],
+    'Wysyłka wiadomości przez SMTP': ['smtp_host','smtp_user','smtp_password','smtp_port','smtp_encryption','mail_from_address','mail_from_name','mail_reply_to']
 } %}
 {% for title, fields in groups %}
 <section class="modern-card settings-card">

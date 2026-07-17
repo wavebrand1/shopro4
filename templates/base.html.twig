@@ -1,19 +1,26 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="{{ shopro_setting('language', 'pl') }}">
     <head>
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% block meta %}{% endblock %}
-        <title>{% block title %}Shopro 4.0{% endblock %}</title>
+    {% block meta %}{% if shopro_setting('meta_description') %}<meta name="description" content="{{ shopro_setting('meta_description') }}">{% endif %}{% if shopro_setting('meta_keywords') %}<meta name="keywords" content="{{ shopro_setting('meta_keywords') }}">{% endif %}{% endblock %}
+        <title>{% block title %}{{ shopro_setting('site_name', 'Shopro 4.0') }}{% endblock %}</title>
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
+            {% set ga_id = shopro_setting('analytics_measurement_id') %}{% if ga_id and not shopro_setting('analytics_consent_required', true) and not (app.request.pathInfo starts with '/admin') %}<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id|url_encode }}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',{{ ga_id|json_encode|raw }},{anonymize_ip:true});</script>{% endif %}
         {% endblock %}
     </head>
-    <body class="{% block body_class %}{% endblock %}">
+    <body class="front-theme--{{ shopro_setting('theme', 'modernize') }} theme-variant--{{ shopro_setting('theme_variant', 'blue') }} {% block body_class %}{% endblock %}">
         {% block body %}{% endblock %}
+        {% if shopro_setting('eu_cookie', true) and not (app.request.pathInfo starts with '/admin') %}
+            <aside class="cookie-consent" data-cookie-consent data-measurement-id="{{ shopro_setting('analytics_measurement_id') }}" hidden aria-label="Ustawienia prywatności">
+                <div><strong>Twoja prywatność</strong><p>Używamy niezbędnych plików cookie. Analitykę uruchomimy wyłącznie po Twojej zgodzie.</p></div>
+                <div class="cookie-consent__actions"><button type="button" class="modern-button" data-cookie-reject>Tylko niezbędne</button><button type="button" class="modern-button modern-button--primary" data-cookie-accept>Akceptuję</button></div>
+            </aside>
+        {% endif %}
         {% block page_javascript %}{% endblock %}
     </body>
 </html>

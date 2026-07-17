@@ -7,6 +7,7 @@ namespace App\Identity\Presentation\Form;
 use App\Identity\Domain\Entity\AdminUser;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -27,7 +28,9 @@ final class AdminUserType extends AbstractType
             ->add('lastName', TextType::class, ['label' => 'Nazwisko', 'required' => false])
             ->add('plainPassword', PasswordType::class, ['label' => $new ? 'Hasło' : 'Nowe hasło', 'mapped' => false, 'required' => $new, 'constraints' => $new ? [new NotBlank(), new Length(min: 12)] : [new Length(min: 12)]])
             ->add('active', CheckboxType::class, ['label' => 'Konto aktywne', 'required' => false])
-            ->add('newsletter', CheckboxType::class, ['label' => 'Zapisany do newslettera', 'required' => false]);
+            ->add('newsletter', CheckboxType::class, ['label' => 'Zapisany do newslettera', 'required' => false])
+            ->add('apiEnabled', CheckboxType::class, ['label' => 'Dostęp do API aktywny', 'required' => false])
+            ->add('apiScopes', ChoiceType::class, ['label' => 'Uprawnienia API', 'expanded' => true, 'multiple' => true, 'choices' => ['Odczyt danych' => 'read', 'Zapis danych' => 'write', 'Zarządzanie treścią' => 'cms']]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void { $resolver->setDefaults(['data_class' => AdminUser::class]); }

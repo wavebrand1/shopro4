@@ -13,7 +13,9 @@
                 {% if header_menu %}{{ menu.render(header_menu) }}{% else %}<a href="{{ path('app_home') }}#mozliwosci">Możliwości</a><a href="{{ path('app_home') }}#jak-dziala">Jak działa</a><a href="{{ path('app_home') }}#dla-kogo">Dla kogo</a><a href="{{ path('app_home') }}#kontakt">Kontakt</a>{% endif %}
             </nav>
             <div class="site-header__actions">
-                <a class="site-login-link" href="{{ path('admin_dashboard') }}">Zaloguj się</a>
+                {% if shopro_setting('show_search', true) %}<a class="site-search-link" href="{{ path('app_home') }}?q=" aria-label="Szukaj">⌕</a>{% endif %}
+                {% if shopro_setting('show_language', false) %}<span class="site-language">{{ shopro_setting('language', 'pl')|upper }}</span>{% endif %}
+                {% if shopro_setting('show_login', true) %}<a class="site-login-link" href="{{ path('admin_dashboard') }}">Zaloguj się</a>{% endif %}
                 <a class="site-button site-button--small" href="{{ path('app_home') }}#kontakt">Rozpocznij</a>
                 <button class="site-menu-toggle" type="button" data-site-menu aria-label="Otwórz menu"><span></span><span></span><span></span></button>
             </div>

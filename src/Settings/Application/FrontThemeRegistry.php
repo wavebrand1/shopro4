@@ -11,7 +11,7 @@ final class FrontThemeRegistry
     {
         return [
             'Shopro Modernize' => 'modernize',
-            'Domyślny (zgodność wsteczna)' => 'default',
+            'Shopro Classic' => 'classic',
         ];
     }
 
@@ -19,7 +19,10 @@ final class FrontThemeRegistry
     public function frontVariantChoices(): array
     {
         return [
-            'Domyślny' => 'default',
+            'Niebieski' => 'blue',
+            'Fioletowy' => 'violet',
+            'Zielony' => 'emerald',
+            'Pomarańczowy' => 'orange',
         ];
     }
 
@@ -28,7 +31,10 @@ final class FrontThemeRegistry
     {
         return [
             'Shopro 4.0 Modernize' => 'modernize',
-            'Domyślny (zgodność wsteczna)' => 'default',
+            'Shopro 4.0 Compact' => 'compact',
         ];
     }
+
+    /** @return array<string, string> */
+    public function adminVariantChoices(): array { return $this->frontVariantChoices(); }
 }

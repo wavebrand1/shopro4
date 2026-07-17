@@ -64,6 +64,9 @@ APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console importmap:install
 echo "[Shopro] Compiling AssetMapper assets"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console asset-map:compile
 
+echo "[Shopro] Generating responsive image variants"
+APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console app:images:optimize
+
 # Cache must be cleared after compilation so that Symfony discovers the
 # freshly generated manifest instead of retaining old asset URLs.
 echo "[Shopro] Clearing Symfony cache"

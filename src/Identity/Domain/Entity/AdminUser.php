@@ -40,6 +40,19 @@ final class AdminUser implements UserInterface, PasswordAuthenticatedUserInterfa
     #[ORM\Column(options: ['default' => false])]
     private bool $newsletter = false;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $apiEnabled = false;
+
+    #[ORM\Column(length: 64, nullable: true, unique: true)]
+    private ?string $apiTokenHash = null;
+
+    #[ORM\Column(length: 12, nullable: true)]
+    private ?string $apiTokenPrefix = null;
+
+    /** @var list<string> */
+    #[ORM\Column(type: Types::JSON)]
+    private array $apiScopes = [];
+
     /** @var list<string> */
     #[ORM\Column(type: Types::JSON)]
     private array $roles = [];
@@ -66,6 +79,23 @@ final class AdminUser implements UserInterface, PasswordAuthenticatedUserInterfa
     public function setActive(bool $active): void { $this->active = $active; }
     public function isNewsletter(): bool { return $this->newsletter; }
     public function setNewsletter(bool $newsletter): void { $this->newsletter = $newsletter; }
+    public function isApiEnabled(): bool { return $this->apiEnabled; }
+    public function setApiEnabled(bool $enabled): void { $this->apiEnabled = $enabled; }
+    public function getApiTokenHash(): ?string { return $this->apiTokenHash; }
+    public function getApiTokenPrefix(): ?string { return $this->apiTokenPrefix; }
+    /** @return list<string> */
+    public function getApiScopes(): array { return $this->apiScopes; }
+    /** @param list<string> $scopes */
+    public function setApiScopes(array $scopes): void { $this->apiScopes = array_values(array_unique($scopes)); }
+    public function rotateApiToken(): string
+    {
+        $token = 'shp4_'.bin2hex(random_bytes(32));
+        $this->apiTokenHash = hash('sha256', $token);
+        $this->apiTokenPrefix = substr($token, 0, 12);
+        $this->apiEnabled = true;
+        return $token;
+    }
+    public function revokeApiToken(): void { $this->apiEnabled = false; $this->apiTokenHash = null; $this->apiTokenPrefix = null; }
     public function getDisplayName(): string { return trim(($this->firstName ?? '').' '.($this->lastName ?? '')) ?: $this->username; }
     public function getUserIdentifier(): string { return $this->username; }
 

@@ -24,16 +24,11 @@ const initializeSystemSettings = () => {
 
     const fields = (names) => names.map((name) => form.querySelector(`[name="system_settings[${name}]"]`)?.closest('.settings-field')).filter(Boolean);
     const maintenanceFields = fields(['maintenance_date', 'maintenance_time', 'maintenance_message']);
-    const sendmailFields = fields(['sendmail_path']);
-    const smtpFields = fields(['smtp_host', 'smtp_user', 'smtp_password', 'smtp_port', 'smtp_ssl']);
     const selectedRadio = (name) => form.querySelector(`[name="system_settings[${name}]"]:checked`)?.value;
     const toggle = (elements, visible) => elements.forEach((element) => { element.hidden = !visible; });
 
     const refresh = () => {
         toggle(maintenanceFields, selectedRadio('maintenance') === '1');
-        const mailer = form.querySelector('[name="system_settings[mailer]"]')?.value;
-        toggle(sendmailFields, mailer === 'SMAIL');
-        toggle(smtpFields, mailer === 'SMTP');
     };
 
     form.addEventListener('change', refresh);
@@ -193,5 +188,33 @@ const initializeMenuSorting = () => {
 
 document.addEventListener('turbo:load', initializeMenuSorting);
 initializeMenuSorting();
+
+const initializeCookieConsent = () => {
+    const banner = document.querySelector('[data-cookie-consent]');
+    if (!banner) return;
+    const key = 'shopro_analytics_consent';
+    const loadAnalytics = () => {
+        const id = banner.dataset.measurementId;
+        if (!id || window.shoproAnalyticsLoaded) return;
+        window.shoproAnalyticsLoaded = true;
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+        document.head.append(script);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('consent', 'default', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+        window.gtag('config', id, { anonymize_ip: true });
+    };
+    const consent = localStorage.getItem(key);
+    if (consent === 'granted') loadAnalytics();
+    if (!consent) banner.hidden = false;
+    banner.querySelector('[data-cookie-accept]')?.addEventListener('click', () => { localStorage.setItem(key, 'granted'); banner.hidden = true; loadAnalytics(); });
+    banner.querySelector('[data-cookie-reject]')?.addEventListener('click', () => { localStorage.setItem(key, 'denied'); banner.hidden = true; });
+};
+
+document.addEventListener('turbo:load', initializeCookieConsent);
+initializeCookieConsent();
 
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');

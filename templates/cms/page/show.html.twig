@@ -16,9 +16,9 @@
 <section class="public-page-hero">
     <div class="public-page-hero__orb"></div>
     <div class="site-container">
-        <nav class="public-breadcrumb" aria-label="Okruszki">
+        {% if shopro_setting('show_breadcrumbs', true) %}<nav class="public-breadcrumb" aria-label="Okruszki">
             <a href="{{ path('app_home') }}">Strona główna</a><span>›</span><span>{{ page.title }}</span>
-        </nav>
+        </nav>{% endif %}
         <span class="site-kicker">SHOPRO 4.0</span>
         <h1>{{ page.title }}</h1>
         <p>{{ page.caption ?: 'Informacje i materiały przygotowane dla użytkowników Shopro.' }}</p>

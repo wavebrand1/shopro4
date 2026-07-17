@@ -1,0 +1,29 @@
+# Konfiguracja Shopro 4.0
+
+Formularz został odwzorowany na podstawie `stare/Wersja_2_00/Develop/admin/config.php` oraz zapisu ustawień w `stare/Wersja_2_00/Develop/lib/class_core.php::processConfig()`. Zachowano istniejące klucze tam, gdzie ich znaczenie nadal jest aktualne, ale sposób wykonania dostosowano do Symfony 7.4.
+
+## Ustawienia wykonywane przez system
+
+- `theme`, `theme_variant`, `admin_theme`, `admin_theme_variant` wybierają niezależnie szablon frontu, panelu oraz ich wariant kolorystyczny. Rejestr dostępnych opcji znajduje się w `src/Settings/Application/FrontThemeRegistry.php`.
+- formaty daty, czasu, locale i strefa czasowa są obsługiwane przez `src/Settings/Presentation/Twig/SettingsExtension.php`;
+- widoczność logowania, wyszukiwarki, breadcrumbs, języka i zgody cookies jest respektowana przez szablony frontu;
+- tryb konserwacji zwraca publicznie HTTP 503, pozostawiając dostęp do panelu i wypisu z newslettera;
+- `per_page` steruje paginacją list panelu;
+- limity prób logowania i czas blokady są egzekwowane dla pary login+IP oraz globalnie dla IP;
+- SMTP jest pojedynczym transportem, a hasło jest szyfrowane przy użyciu `APP_SECRET`;
+- klucze API są generowane per użytkownik, zapisywane wyłącznie jako SHA-256 i mają osobne zakresy uprawnień.
+
+## Obrazy
+
+Stałe rozmiary miniatur ze starego systemu zastąpił zestaw responsywnych szerokości. `app:images:optimize` generuje AVIF/WebP, a funkcja Twig `shopro_picture()` tworzy `picture/srcset`, dopisuje naturalne `width` i `height`, `decoding=async`, lazy loading poza pierwszym ekranem i `fetchpriority=high` dla obrazu LCP. Polecenie jest częścią `bin/deploy-dev`.
+
+## E-mail i newsletter
+
+Kampania tworzy osobną dostawę dla każdego zapisanego odbiorcy i przekazuje ją do Symfony Messenger. Historia przechowuje status, czas wysłania i błąd; nieudane wiadomości mają retry i failed transport. Każdy newsletter zawiera podpisany, roczny link wypisu oraz nagłówki `List-Unsubscribe` i `List-Unsubscribe-Post`.
+
+## Decyzje modułowe
+
+- waluta pozostaje przejściowo w konfiguracji dla zgodności, ale docelowo należy do ustawień języka;
+- adresy social media są globalnym źródłem danych, natomiast widżety i komponenty social media powinny być dostarczane przez opcjonalny moduł Page Buildera;
+- rejestracja dotyczy przyszłych kont użytkowników witryny. Nie jest łączona z kontami administratorów, ponieważ nadanie publicznie rejestrowanemu kontu `ROLE_ADMIN` byłoby błędem bezpieczeństwa;
+- dowolny JavaScript analityczny i globalny klucz API ze starego systemu zostały celowo usunięte. System przyjmuje bezpieczny identyfikator GA4 i uruchamia go zgodnie z wyborem zgody użytkownika.

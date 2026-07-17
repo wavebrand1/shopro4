@@ -7,6 +7,7 @@ namespace App\Cms\Presentation\Http\Admin;
 use App\Cms\Domain\Entity\Page;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Cms\Presentation\Form\PageType;
+use App\Settings\Application\SettingsProvider;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,9 +27,12 @@ final class PageController extends AbstractController
     ) {}
 
     #[Route('', name: 'admin_page_index', methods: ['GET'])]
-    public function index(PageRepository $pages): Response
+    public function index(Request $request, PageRepository $pages, SettingsProvider $settings): Response
     {
-        return $this->render('admin/page/index.html.twig', ['pages' => $pages->findAllForAdministration()]);
+        $page = max(1, $request->query->getInt('page', 1)); $limit = max(1, min(200, (int) $settings->get('per_page', 20)));
+        $query = $pages->createQueryBuilder('p')->orderBy('p.updatedAt', 'DESC');
+        $total = (int) (clone $query)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
+        return $this->render('admin/page/index.html.twig', ['pages' => $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult(), 'current_page' => $page, 'last_page' => max(1, (int) ceil($total / $limit)), 'total' => $total]);
     }
 
     #[Route('/new', name: 'admin_page_new', methods: ['GET', 'POST'])]

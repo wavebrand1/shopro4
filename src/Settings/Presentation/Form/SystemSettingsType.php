@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Settings\Presentation\Form;
 
+use App\Mail\Infrastructure\Persistence\Doctrine\EmailTemplateRepository;
 use App\Settings\Application\FrontThemeRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -26,7 +27,7 @@ use Symfony\Component\Validator\Constraints\Url;
 
 final class SystemSettingsType extends AbstractType
 {
-    public function __construct(private readonly FrontThemeRegistry $themes) {}
+    public function __construct(private readonly FrontThemeRegistry $themes, private readonly EmailTemplateRepository $emailTemplates) {}
 
     public function buildForm(FormBuilderInterface $b, array $options): void
     {
@@ -42,7 +43,7 @@ final class SystemSettingsType extends AbstractType
             ->add('theme', ChoiceType::class, ['label' => 'Szablon strony', 'choices' => $this->themes->frontChoices()])
             ->add('theme_variant', ChoiceType::class, ['label' => 'Wariant szablonu', 'choices' => $this->themes->frontVariantChoices()])
             ->add('admin_theme', ChoiceType::class, ['label' => 'Szablon panelu administracyjnego', 'choices' => $this->themes->adminChoices()])
-            ->add('admin_theme_variant', ChoiceType::class, ['label' => 'Wariant szablonu PA', 'choices' => ['Domyślny' => 'default']])
+            ->add('admin_theme_variant', ChoiceType::class, ['label' => 'Wariant szablonu PA', 'choices' => $this->themes->adminVariantChoices()])
             ->add('date_short', ChoiceType::class, ['label' => 'Krótki format daty', 'choices' => ['MM-DD-YYYY' => '%m-%d-%Y', 'D-MM-YYYY' => '%e-%m-%Y', 'MM-D-YY' => '%m-%e-%y', 'D-MMM-YY' => '%e-%m-%y', 'DD Mon YYYY' => '%d %b %Y']])
             ->add('date_long', ChoiceType::class, ['label' => 'Długi format daty', 'choices' => ['Miesiąc DD, YYYY HH:MM AM' => '%B %d, %Y %I:%M %p', 'DD Miesiąc YYYY HH:MM AM' => '%d %B %Y %I:%M %p', 'Miesiąc DD, YYYY' => '%B %d, %Y', 'DD Miesiąc, YYYY' => '%d %B, %Y', 'Dzień DD Miesiąc YYYY' => '%A %d %B %Y', 'Dzień DD Miesiąc YYYY HH:MM' => '%A %d %B %Y %H:%M', 'Dzień DD, Miesiąc' => '%a %d, %B']])
             ->add('time_format', ChoiceType::class, ['label' => 'Format czasu', 'choices' => ['12-godzinny (02:30 PM)' => '%I:%M %p', '12-godzinny (02:30 pm)' => '%I:%M %P', '24-godzinny (14:30)' => '%H:%M', 'Godzina (14)' => '%k']])
@@ -56,20 +57,13 @@ final class SystemSettingsType extends AbstractType
             ->add('show_language', ChoiceType::class, $yesNo('Pokazuj przełącznik języka'))
             ->add('eu_cookie', ChoiceType::class, $yesNo('Pokazuj komunikat cookies'))
             ->add('maintenance', ChoiceType::class, $yesNo('Tryb konserwacji'))
-            ->add('maintenance_date', TextType::class, ['label' => 'Data zakończenia konserwacji', 'required' => false])
-            ->add('maintenance_time', TextType::class, ['label' => 'Godzina zakończenia konserwacji', 'required' => false])
+            ->add('maintenance_date', TextType::class, ['label' => 'Data zakończenia konserwacji', 'required' => false, 'attr' => ['type' => 'date']])
+            ->add('maintenance_time', TextType::class, ['label' => 'Godzina zakończenia konserwacji', 'required' => false, 'attr' => ['type' => 'time']])
             ->add('maintenance_message', TextareaType::class, ['label' => 'Komunikat konserwacyjny', 'required' => false])
-            ->add('thumbnail_width', IntegerType::class, $positive('Szerokość miniatury'))
-            ->add('thumbnail_height', IntegerType::class, $positive('Wysokość miniatury'))
-            ->add('image_width', IntegerType::class, $positive('Szerokość obrazu'))
-            ->add('image_height', IntegerType::class, $positive('Wysokość obrazu'))
-            ->add('small_image_width', IntegerType::class, $positive('Szerokość małego obrazu'))
-            ->add('small_image_height', IntegerType::class, $positive('Wysokość małego obrazu'))
-            ->add('medium_image_width', IntegerType::class, $positive('Szerokość średniego obrazu'))
-            ->add('medium_image_height', IntegerType::class, $positive('Wysokość średniego obrazu'))
-            ->add('avatar_width', IntegerType::class, $positive('Szerokość avatara'))
-            ->add('avatar_height', IntegerType::class, $positive('Wysokość avatara'))
+            ->add('image_formats', ChoiceType::class, ['label' => 'Generowane formaty', 'choices' => ['AVIF' => 'avif', 'WebP' => 'webp'], 'expanded' => true, 'multiple' => true])
+            ->add('image_widths', TextType::class, ['label' => 'Szerokości responsywne', 'help' => 'Wartości w pikselach oddzielone przecinkami, np. 320,640,960,1280,1600'])
             ->add('image_quality', IntegerType::class, ['label' => 'Jakość obrazów (%)', 'constraints' => [new Range(min: 1, max: 100)]])
+            ->add('image_lazy_loading', ChoiceType::class, $yesNo('Lazy loading obrazów poza pierwszym ekranem'))
             ->add('per_page', IntegerType::class, $positive('Rekordów na stronę'))
             ->add('currency', TextType::class, ['label' => 'Kod waluty'])
             ->add('currency_symbol', TextType::class, ['label' => 'Symbol waluty'])
@@ -83,7 +77,7 @@ final class SystemSettingsType extends AbstractType
             ->add('login_attempts', IntegerType::class, $positive('Dozwolone próby logowania'))
             ->add('flood_seconds', IntegerType::class, ['label' => 'Ochrona flood (sekundy)', 'constraints' => [new Range(min: 0)]])
             ->add('logging', ChoiceType::class, $yesNo('Rejestruj zdarzenia systemowe'))
-            ->add('alert_email_template', ChoiceType::class, ['label' => 'Szablon wiadomości alertu', 'choices' => ['Domyślny szablon systemowy' => 0]])
+            ->add('alert_email_template', ChoiceType::class, ['label' => 'Szablon wiadomości alertu', 'choices' => $this->emailTemplates->choices()])
             ->add('facebook', TextType::class, ['label' => 'Facebook', 'required' => false])
             ->add('instagram', TextType::class, ['label' => 'Instagram', 'required' => false])
             ->add('twitter', TextType::class, ['label' => 'X / Twitter', 'required' => false])
@@ -91,18 +85,18 @@ final class SystemSettingsType extends AbstractType
             ->add('linkedin', TextType::class, ['label' => 'LinkedIn', 'required' => false])
             ->add('youtube', TextType::class, ['label' => 'YouTube', 'required' => false])
             ->add('tiktok', TextType::class, ['label' => 'TikTok', 'required' => false])
-            ->add('analytics', TextareaType::class, ['label' => 'Kod analityczny', 'required' => false])
+            ->add('analytics_measurement_id', TextType::class, ['label' => 'Google Analytics Measurement ID', 'required' => false, 'help' => 'Np. G-XXXXXXXXXX. Kod jest generowany przez system, bez wklejania dowolnego JavaScriptu.'])
+            ->add('analytics_consent_required', ChoiceType::class, $yesNo('Uruchamiaj analitykę dopiero po zgodzie'))
             ->add('meta_keywords', TextareaType::class, ['label' => 'Domyślne słowa kluczowe', 'required' => false])
             ->add('meta_description', TextareaType::class, ['label' => 'Domyślny opis meta', 'required' => false])
-            ->add('tenor_api_key', TextType::class, ['label' => 'Klucz API Tenor', 'required' => false])
-            ->add('api_auth_module', ChoiceType::class, ['label' => 'Moduł autoryzacji API', 'choices' => ['Brak' => 'none']])
-            ->add('mailer', ChoiceType::class, ['label' => 'Sposób wysyłki', 'choices' => ['PHP Mailer' => 'PHP', 'Sendmail' => 'SMAIL', 'SMTP' => 'SMTP']])
-            ->add('sendmail_path', TextType::class, ['label' => 'Ścieżka Sendmail', 'required' => false])
             ->add('smtp_host', TextType::class, ['label' => 'Host SMTP', 'required' => false])
             ->add('smtp_user', TextType::class, ['label' => 'Użytkownik SMTP', 'required' => false])
             ->add('smtp_password', PasswordType::class, ['label' => 'Nowe hasło SMTP', 'mapped' => false, 'required' => false, 'help' => 'Pozostaw puste, aby zachować zapisane hasło.', 'constraints' => [new Length(max: 255)]])
             ->add('smtp_port', IntegerType::class, ['label' => 'Port SMTP', 'required' => false, 'constraints' => [new Range(min: 1, max: 65535)]])
-            ->add('smtp_ssl', ChoiceType::class, $yesNo('Połączenie SSL'));
+            ->add('smtp_encryption', ChoiceType::class, ['label' => 'Szyfrowanie SMTP', 'choices' => ['STARTTLS (zalecane, port 587)' => 'tls', 'TLS bezpośredni (port 465)' => 'smtps', 'Brak (tylko zaufana sieć)' => 'none']])
+            ->add('mail_from_address', EmailType::class, ['label' => 'Adres nadawcy', 'required' => false, 'constraints' => [new Email()]])
+            ->add('mail_from_name', TextType::class, ['label' => 'Nazwa nadawcy'])
+            ->add('mail_reply_to', EmailType::class, ['label' => 'Adres Reply-To', 'required' => false, 'constraints' => [new Email()]]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

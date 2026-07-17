@@ -19,5 +19,18 @@ services:
     App\:
         resource: '../src/'
 
+    App\Settings\Application\SensitiveDataCipher:
+        arguments:
+            $kernelSecret: '%kernel.secret%'
+
+    App\Newsletter\Application\UnsubscribeToken:
+        arguments:
+            $kernelSecret: '%kernel.secret%'
+
+    App\Identity\Application\DynamicLoginRateLimiter:
+        arguments:
+            $pool: '@cache.rate_limiter'
+            $kernelSecret: '%kernel.secret%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

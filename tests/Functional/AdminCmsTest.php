@@ -8,6 +8,9 @@ use App\Cms\Domain\Entity\MenuItem;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
+use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
+use App\Newsletter\Application\UnsubscribeToken;
+use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -198,19 +201,71 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('select[name="system_settings[timezone]"]');
         self::assertSelectorCount(2, 'input[type="radio"][name="system_settings[show_login]"]');
         self::assertSelectorCount(2, 'input[type="radio"][name="system_settings[maintenance]"]');
-        self::assertSelectorExists('input[name="system_settings[small_image_width]"]');
+        self::assertSelectorCount(2, 'select[name="system_settings[theme]"] option');
+        self::assertSelectorCount(2, 'select[name="system_settings[admin_theme]"] option');
+        self::assertSelectorCount(4, 'select[name="system_settings[theme_variant]"] option');
+        self::assertSelectorExists('input[name="system_settings[image_widths]"]');
+        self::assertSelectorExists('input[name="system_settings[image_formats][]"]');
         self::assertSelectorExists('select[name="system_settings[alert_email_template]"]');
-        self::assertSelectorExists('select[name="system_settings[api_auth_module]"]');
-        self::assertSelectorCount(2, 'input[type="radio"][name="system_settings[smtp_ssl]"]');
+        self::assertSelectorNotExists('input[name="system_settings[tenor_api_key]"]');
+        self::assertSelectorNotExists('select[name="system_settings[api_auth_module]"]');
+        self::assertSelectorExists('select[name="system_settings[smtp_encryption]"]');
         $this->client->submit($settingsPage->selectButton('Zapisz konfigurację')->form(), [
             'system_settings[site_name]' => 'Shopro test',
-            'system_settings[theme]' => 'modernize',
+            'system_settings[theme]' => 'classic',
+            'system_settings[theme_variant]' => 'orange',
+            'system_settings[admin_theme]' => 'compact',
         ]);
         self::assertResponseRedirects('/admin/configuration/system');
 
         $this->client->request('GET', '/');
         self::assertResponseIsSuccessful();
+        self::assertSelectorExists('body.front-theme--classic.theme-variant--orange');
         self::assertSelectorTextContains('.site-nav', 'O nas');
+
+        $settingsRepository = self::getContainer()->get(SystemSettingsRepository::class);
+        $systemSettings = $settingsRepository->get();
+        $configuration = $systemSettings->getConfiguration();
+        $configuration['maintenance'] = true;
+        $configuration['maintenance_message'] = 'Testowa przerwa techniczna';
+        $systemSettings->setConfiguration($configuration);
+        $settingsRepository->save($systemSettings);
+        $this->client->request('GET', '/');
+        self::assertResponseStatusCodeSame(503);
+        self::assertSelectorTextContains('main', 'Testowa przerwa techniczna');
+        $settingsRepository = self::getContainer()->get(SystemSettingsRepository::class);
+        $systemSettings = $settingsRepository->get();
+        $configuration = $systemSettings->getConfiguration();
+        $configuration['maintenance'] = false;
+        $systemSettings->setConfiguration($configuration);
+        $settingsRepository->save($systemSettings);
+
+        $this->client->request('GET', '/admin/newsletter');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Newsletter');
+
+        $this->client->request('GET', '/admin/configuration/email-templates');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Szablony wiadomości e-mail');
+
+        $userRepository = self::getContainer()->get(AdminUserRepository::class);
+        $apiUser = $userRepository->findOneBy(['email' => 'admin@example.test']);
+        self::assertNotNull($apiUser);
+        $apiUser->setApiScopes(['read']);
+        $apiUser->setNewsletter(true);
+        $apiToken = $apiUser->rotateApiToken();
+        $userRepository->save($apiUser);
+        $this->client->request('GET', '/api/v1/me', server: ['HTTP_AUTHORIZATION' => 'Bearer '.$apiToken]);
+        self::assertResponseIsSuccessful();
+        $apiResponse = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        self::assertSame('admin', $apiResponse['username']);
+        self::assertSame(['read'], $apiResponse['scopes']);
+
+        $unsubscribeToken = self::getContainer()->get(UnsubscribeToken::class)->create('admin@example.test');
+        $this->client->request('POST', '/newsletter/unsubscribe', ['token' => $unsubscribeToken]);
+        self::assertResponseIsSuccessful();
+        $apiUser = self::getContainer()->get(AdminUserRepository::class)->findOneBy(['email' => 'admin@example.test']);
+        self::assertFalse($apiUser->isNewsletter());
     }
 
     public function testAdministratorCanLogInWithUsername(): void

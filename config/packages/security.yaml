@@ -22,6 +22,8 @@ security:
                 check_path: admin_login
                 enable_csrf: true
                 default_target_path: admin_dashboard
+            login_throttling:
+                limiter: App\Identity\Application\DynamicLoginRateLimiter
             logout:
                 path: admin_logout
                 target: admin_login
