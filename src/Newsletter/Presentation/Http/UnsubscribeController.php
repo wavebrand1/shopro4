@@ -13,10 +13,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class UnsubscribeController extends AbstractController
 {
+    #[Route('/newsletter/unsubscribe/{token}', name: 'newsletter_unsubscribe_token', requirements: ['token' => '[A-Za-z0-9_-]+'], methods: ['GET', 'POST'])]
     #[Route('/newsletter/unsubscribe', name: 'newsletter_unsubscribe', methods: ['GET', 'POST'])]
     public function __invoke(Request $request, UnsubscribeToken $tokens, AdminUserRepository $users): Response
     {
-        $email = $tokens->verify((string) ($request->query->get('token') ?: $request->request->get('token')));
+        $token = $request->attributes->get('token') ?: $request->query->get('token') ?: $request->request->get('token');
+        $email = $tokens->verify((string) $token);
         if (!$email) return new Response('Link wypisu jest nieprawidłowy lub wygasł.', 400);
         $user = $users->findOneBy(['email' => $email]);
         if ($user) { $user->setNewsletter(false); $users->save($user); }
