@@ -77,6 +77,8 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('input[name="page[editorMode]"]');
         self::assertSelectorExists('input[name="page[builderData]"]');
         self::assertSelectorExists('input[name="page[builderCss]"]');
+        self::assertSelectorExists('.ui-field input[name="page[title]"]');
+        self::assertSelectorExists('.ui-choice input[name="page[published]"]');
 
         $this->client->submitForm('Zapisz i kontynuuj edycję', [
             'page[title]' => 'O nas — edycja',
@@ -120,6 +122,11 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/admin/menu/new');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('select[name="menu_item[parent]"] option');
+
+        $this->client->request('GET', '/admin/configuration/system');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.ui-field input[name="system_settings[site_name]"]');
+        self::assertSelectorExists('.ui-choice input[name="system_settings[show_login]"]');
 
         $this->client->request('GET', '/');
         self::assertResponseIsSuccessful();

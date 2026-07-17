@@ -1,0 +1,31 @@
+{% use 'form_div_layout.html.twig' %}
+
+{% block form_row %}
+    {% set row_attr = row_attr|merge({class: (row_attr.class|default('') ~ ' ui-field')|trim}) %}
+    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+        {{ form_label(form) }}
+        {{ form_widget(form, {attr: {class: (form.vars.attr.class|default('') ~ ' ui-control')|trim}}) }}
+        {{ form_help(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}
+
+{% block checkbox_row %}
+    {% set row_attr = row_attr|merge({class: (row_attr.class|default('') ~ ' ui-choice')|trim}) %}
+    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+        {{ form_widget(form, {attr: {class: (form.vars.attr.class|default('') ~ ' ui-choice__control')|trim}}) }}
+        <div class="ui-choice__content">{{ form_label(form) }}{{ form_help(form) }}{{ form_errors(form) }}</div>
+    </div>
+{% endblock %}
+
+{% block radio_row %}
+    {{ block('checkbox_row') }}
+{% endblock %}
+
+{% block form_help %}
+    {% if help is not empty %}<div class="ui-field__help">{% set translated_help = help|trans(help_translation_parameters, translation_domain) %}{{ help_html|default(false) ? translated_help|raw : translated_help }}</div>{% endif %}
+{% endblock %}
+
+{% block form_errors %}
+    {% if errors|length > 0 %}<ul class="ui-field__errors">{% for error in errors %}<li>{{ error.message }}</li>{% endfor %}</ul>{% endif %}
+{% endblock %}

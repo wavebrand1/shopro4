@@ -29,7 +29,7 @@ final class SystemSettingsType extends AbstractType
         $b
             ->add('site_name', TextType::class, ['label' => 'Nazwa witryny'])
             ->add('company', TextType::class, ['label' => 'Nazwa firmy', 'required' => false])
-            ->add('site_url', UrlType::class, ['label' => 'Adres witryny', 'constraints' => [new Url()]])
+            ->add('site_url', UrlType::class, ['label' => 'Adres witryny', 'constraints' => [new Url(requireTld: false)]])
             ->add('site_email', EmailType::class, ['label' => 'E-mail witryny', 'constraints' => [new Email()]])
             ->add('theme', TextType::class, ['label' => 'Szablon', 'required' => false])
             ->add('locale', TextType::class, ['label' => 'Locale', 'help' => 'Np. pl_PL'])
