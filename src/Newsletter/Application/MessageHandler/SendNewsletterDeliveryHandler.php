@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Newsletter\Application\MessageHandler;
 
+use App\Mail\Application\EmailLayoutRenderer;
 use App\Newsletter\Application\DynamicMailerFactory;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
 use App\Newsletter\Application\UnsubscribeToken;
@@ -16,7 +17,7 @@ use Symfony\Component\Mime\Email;
 #[AsMessageHandler]
 final class SendNewsletterDeliveryHandler
 {
-    public function __construct(private readonly EntityManagerInterface $em, private readonly DynamicMailerFactory $mailers, private readonly SettingsProvider $settings, private readonly UnsubscribeToken $tokens) {}
+    public function __construct(private readonly EntityManagerInterface $em, private readonly DynamicMailerFactory $mailers, private readonly SettingsProvider $settings, private readonly UnsubscribeToken $tokens, private readonly EmailLayoutRenderer $layout) {}
     public function __invoke(SendNewsletterDelivery $message): void
     {
         $delivery = $this->em->find(NewsletterDelivery::class, $message->deliveryId);
@@ -25,6 +26,7 @@ final class SendNewsletterDeliveryHandler
             $token = $this->tokens->create($delivery->getRecipient());
             $unsubscribeUrl = rtrim((string) $this->settings->get('site_url'), '/').'/newsletter/unsubscribe?token='.rawurlencode($token);
             $content = $delivery->getCampaign()->getContent().'<hr><p style="font-size:12px;color:#667085">Nie chcesz otrzymywać wiadomości? <a href="'.htmlspecialchars($unsubscribeUrl, ENT_QUOTES).'">Wypisz się</a>.</p>';
+            $content = $this->layout->render($content, $delivery->getCampaign()->getSubject());
             $fromAddress = trim((string) ($this->settings->get('mail_from_address') ?: $this->settings->get('site_email')));
             if ($fromAddress === '') {
                 throw new \RuntimeException('Skonfiguruj adres nadawcy wiadomości e-mail.');

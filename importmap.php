@@ -20,6 +20,10 @@ return [
         'path' => './assets/component-builder.js',
         'entrypoint' => true,
     ],
+    'rich-editor' => [
+        'path' => './assets/rich-editor.js',
+        'entrypoint' => true,
+    ],
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],

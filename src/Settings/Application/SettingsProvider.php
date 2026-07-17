@@ -28,7 +28,7 @@ final class SettingsProvider
     public static function defaults(): array
     {
         return [
-            'site_name' => 'Shopro 4.0', 'company' => '', 'site_url' => '', 'site_dir' => '', 'site_email' => '', 'site_logo' => '', 'favicon' => '',
+            'site_name' => 'Shopro 4.0', 'company' => '', 'site_url' => '', 'site_dir' => '', 'site_email' => '', 'site_logo' => '/branding/shopro-logo.svg', 'favicon' => '/branding/favicon.svg',
             'theme' => 'modernize', 'theme_variant' => 'blue', 'admin_theme' => 'modernize', 'admin_theme_variant' => 'blue',
             'locale' => 'pl_PL', 'timezone' => 'Europe/Warsaw', 'language' => 'pl', 'date_short' => '%e-%m-%Y', 'date_long' => '%d %B %Y %H:%M', 'time_format' => '%H:%M', 'week_start' => 1,
             'show_login' => true, 'show_search' => true, 'show_breadcrumbs' => true, 'show_language' => false, 'eu_cookie' => true,
