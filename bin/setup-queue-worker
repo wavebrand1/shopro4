@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PHP_BIN=""
+for candidate in /opt/plesk/php/8.3/bin/php /opt/plesk/php/8.2/bin/php /usr/bin/php; do
+    if [ -x "$candidate" ]; then PHP_BIN="$candidate"; break; fi
+done
+[ -n "$PHP_BIN" ] || { echo "[Shopro queue] Nie znaleziono PHP Pleska." >&2; exit 1; }
+
+MODE="${1:-install-and-drain}"
+MARKER="# SHOPRO_QUEUE_WORKER"
+WORKER="cd $ROOT && /usr/bin/flock -n $ROOT/var/messenger-worker.lock /usr/bin/env APP_ENV=dev APP_DEBUG=1 $PHP_BIN bin/console messenger:consume async --time-limit=50 --limit=100 --memory-limit=128M --no-interaction >> $ROOT/var/log/messenger-cron.log 2>&1"
+
+install_cron() {
+    if ! command -v crontab >/dev/null 2>&1; then
+        echo "[Shopro queue] crontab nie jest dostępny; dodaj zadanie w panelu Plesk." >&2
+        return 1
+    fi
+    local temporary
+    temporary="$(mktemp)"
+    trap 'rm -f "$temporary"' RETURN
+    crontab -l 2>/dev/null | grep -vF "$MARKER" > "$temporary" || true
+    printf '%s\n' "* * * * * $WORKER $MARKER" >> "$temporary"
+    crontab "$temporary"
+    echo "[Shopro queue] Zadanie crona działa co minutę."
+}
+
+drain_queue() {
+    echo "[Shopro queue] Przetwarzanie oczekujących wiadomości..."
+    cd "$ROOT"
+    /usr/bin/flock -n "$ROOT/var/messenger-worker.lock" /usr/bin/env APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console messenger:consume async --time-limit=50 --limit=100 --memory-limit=128M --no-interaction -vv
+}
+
+case "$MODE" in
+    --install-only) install_cron ;;
+    --drain-only) drain_queue ;;
+    install-and-drain) install_cron && drain_queue ;;
+    *) echo "Użycie: bash bin/setup-queue-worker [--install-only|--drain-only]" >&2; exit 2 ;;
+esac

@@ -72,4 +72,9 @@ APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console app:images:optimize
 echo "[Shopro] Clearing Symfony cache"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console cache:clear
 
+echo "[Shopro] Ensuring newsletter queue worker is scheduled"
+bash bin/setup-queue-worker --install-only || echo "[Shopro] Cron unavailable; configure the worker in Plesk Scheduled Tasks"
+echo "[Shopro] Processing messages already waiting in the queue"
+bash bin/setup-queue-worker --drain-only || echo "[Shopro] Queue is already being processed or the mail transport needs attention"
+
 echo "[Shopro] Development deployment completed"
