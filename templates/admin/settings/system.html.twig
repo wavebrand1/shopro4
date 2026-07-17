@@ -2,6 +2,7 @@
 {% block title %}Konfiguracja systemu — Shopro 4.0{% endblock %}
 {% block body %}
 <div class="modern-page-heading"><div><p class="modern-kicker">KONFIGURACJA</p><h1>Konfiguracja systemu</h1><p>Ustawienia odpowiadają sekcjom konfiguracji Shopro Legacy.</p></div></div>
+{% if not storage_available %}<div class="flash flash--error">Migracja konfiguracji nie została jeszcze wykonana. Formularz jest tymczasowo dostępny tylko do odczytu; uruchom ponownie wdrożenie.</div>{% endif %}
 {{ form_start(form, {attr: {class: 'settings-form'}}) }}
 {% set groups = {
     'Dane witryny': ['site_name','company','site_url','site_email','theme'],
@@ -22,6 +23,6 @@
     </div>
 </section>
 {% endfor %}
-<div class="settings-actions"><button class="modern-button modern-button--primary" type="submit">Zapisz konfigurację</button></div>
+<div class="settings-actions"><button class="modern-button modern-button--primary" type="submit"{{ storage_available ? '' : ' disabled' }}>Zapisz konfigurację</button></div>
 {{ form_end(form) }}
 {% endblock %}

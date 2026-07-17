@@ -2,6 +2,8 @@
 
 set -Eeuo pipefail
 
+trap 'status=$?; echo "[Shopro] Deployment failed at line $LINENO (exit $status)" >&2; exit $status' ERR
+
 cd "$(dirname "$0")/.."
 
 PHP_BIN=""
@@ -28,7 +30,9 @@ echo "[Shopro] Using PHP: $PHP_BIN"
 echo "[Shopro] Installing Composer dependencies"
 # On Plesk, `composer` can be a phpenv shell shim rather than a PHP/PHAR file.
 # It must therefore be executed directly instead of being passed to PHP.
-"$COMPOSER_BIN" install --prefer-dist --no-interaction --no-progress
+# Symfony auto-scripts may boot the new application. They must not run before
+# migrations required by that version of the code have completed.
+"$COMPOSER_BIN" install --prefer-dist --no-interaction --no-progress --no-scripts
 
 if [ ! -f vendor/symfony/html-sanitizer/HtmlSanitizer.php ]; then
     echo "[Shopro] Composer did not install symfony/html-sanitizer" >&2
@@ -37,6 +41,9 @@ fi
 
 echo "[Shopro] Running database migrations"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console doctrine:migrations:migrate --no-interaction
+
+echo "[Shopro] Validating Doctrine mapping"
+APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console doctrine:schema:validate --skip-sync
 
 echo "[Shopro] Installing bundle assets"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console assets:install public

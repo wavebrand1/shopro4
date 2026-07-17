@@ -20,9 +20,15 @@ final class SystemSettingsController extends AbstractController
     public function edit(Request $request, SystemSettingsRepository $repository): Response
     {
         $settings = $repository->get();
+        $storageAvailable = $repository->isStorageAvailable();
         $data = array_replace($this->defaults($request), $settings->getConfiguration());
         $form = $this->createForm(SystemSettingsType::class, $data);
         $form->handleRequest($request);
+
+        if ($form->isSubmitted() && !$storageAvailable) {
+            $this->addFlash('error', 'Konfiguracja nie może zostać zapisana, ponieważ migracja bazy danych nie została jeszcze wykonana. Uruchom ponownie wdrożenie.');
+            return $this->redirectToRoute('admin_system_settings_edit');
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var array<string, mixed> $configuration */
@@ -35,7 +41,7 @@ final class SystemSettingsController extends AbstractController
             return $this->redirectToRoute('admin_system_settings_edit');
         }
 
-        return $this->render('admin/settings/system.html.twig', ['form' => $form, 'settings' => $settings]);
+        return $this->render('admin/settings/system.html.twig', ['form' => $form, 'settings' => $settings, 'storage_available' => $storageAvailable]);
     }
 
     /** @return array<string, mixed> */

@@ -14,11 +14,24 @@ final class SystemSettingsRepository extends ServiceEntityRepository
 
     public function get(): SystemSettings
     {
+        if (!$this->isStorageAvailable()) {
+            return new SystemSettings();
+        }
+
         return $this->find(1) ?? new SystemSettings();
+    }
+
+    public function isStorageAvailable(): bool
+    {
+        return $this->getEntityManager()->getConnection()->createSchemaManager()->tablesExist(['system_settings']);
     }
 
     public function save(SystemSettings $settings): void
     {
+        if (!$this->isStorageAvailable()) {
+            throw new \LogicException('Tabela system_settings nie istnieje. Wdrożenie wymaga wykonania migracji Doctrine.');
+        }
+
         $this->getEntityManager()->persist($settings);
         $this->getEntityManager()->flush();
     }
