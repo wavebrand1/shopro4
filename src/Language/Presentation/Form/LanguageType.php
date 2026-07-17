@@ -19,6 +19,12 @@ final class LanguageType extends AbstractType
   ->add('direction',ChoiceType::class,['label'=>'Kierunek tekstu','choices'=>['Od lewej do prawej (LTR)'=>'ltr','Od prawej do lewej (RTL)'=>'rtl'],'expanded'=>true])
   ->add('author',TextType::class,['label'=>'Autor tłumaczenia','required'=>false])
   ->add('subdomain',TextType::class,['label'=>'Subdomena / adres języka','required'=>false,'help'=>'Opcjonalny pełny adres, np. https://en.example.pl'])
-  ->add('active',CheckboxType::class,['label'=>'Język aktywny','required'=>false]);}
+  ->add('locale',TextType::class,['label'=>'Locale','help'=>'Np. pl_PL, en_GB lub de_DE.'])
+  ->add('currency',TextType::class,['label'=>'Waluta','constraints'=>[new Assert\Regex('/^[A-Za-z]{3}$/')]])
+  ->add('currencySymbol',TextType::class,['label'=>'Symbol waluty'])
+  ->add('decimalSeparator',TextType::class,['label'=>'Separator dziesiętny'])
+  ->add('thousandsSeparator',TextType::class,['label'=>'Separator tysięcy'])
+  ->add('active',CheckboxType::class,['label'=>'Język aktywny','required'=>false])
+  ->add('defaultLanguage',CheckboxType::class,['label'=>'Język domyślny','required'=>false]);}
  public function configureOptions(OptionsResolver $r):void{$r->setDefaults(['data_class'=>Language::class]);}
 }

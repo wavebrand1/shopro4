@@ -43,7 +43,10 @@ final class LanguageController extends AbstractController
  }
  private function form(Language $language,Request $r,EntityManagerInterface $em):Response{
   $form=$this->createForm(LanguageType::class,$language);$form->handleRequest($r);
-  if($form->isSubmitted()&&$form->isValid()){$em->persist($language);$em->flush();$this->addFlash('success','Język został zapisany.');return $this->redirectToRoute('admin_language_index');}
+  if($form->isSubmitted()&&$form->isValid()){
+   if($language->isDefaultLanguage())foreach($em->getRepository(Language::class)->findAll() as $other)if($other!==$language)$other->setDefaultLanguage(false);
+   elseif($em->getRepository(Language::class)->count(['defaultLanguage'=>true])===0)$language->setDefaultLanguage(true);
+   $em->persist($language);$em->flush();$this->addFlash('success','Język został zapisany.');return $this->redirectToRoute('admin_language_index');}
   return $this->render('admin/language/form.html.twig',['form'=>$form,'language'=>$language]);
  }
 }
