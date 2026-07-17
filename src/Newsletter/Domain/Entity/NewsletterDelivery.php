@@ -28,4 +28,5 @@ class NewsletterDelivery
     public function getSentAt(): ?\DateTimeImmutable { return $this->sentAt; }
     public function markSent(): void { $this->status = 'sent'; $this->sentAt = new \DateTimeImmutable(); $this->error = null; }
     public function markFailed(string $error): void { $this->status = 'failed'; $this->error = mb_substr($error, 0, 4000); }
+    public function markQueued(): void { $this->status = 'queued'; $this->error = null; $this->sentAt = null; }
 }
