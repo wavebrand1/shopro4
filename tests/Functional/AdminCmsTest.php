@@ -108,6 +108,14 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.site-hero h1', 'działa poprawnie');
 
+        $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
+        self::assertNotNull($page);
+        $page->setHomePage(true);
+        self::getContainer()->get(PageRepository::class)->save($page);
+        $this->client->request('GET', '/');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('link[rel="alternate"][hreflang="x-default"]');
+
         $this->client->request('GET', '/admin/pages');
         self::assertSelectorExists('form[action="/admin/pages/'.$page->getId().'/duplicate"]');
 

@@ -11,5 +11,16 @@ final class PageTranslationController extends AbstractController
  public function index(Page $page,EntityManagerInterface $em):Response{$translations=[];foreach($em->getRepository(PageTranslation::class)->findBy(['page'=>$page]) as $t)$translations[$t->getLanguage()->getId()]=$t;return $this->render('admin/page/translations.html.twig',['page'=>$page,'languages'=>$em->getRepository(Language::class)->findBy(['active'=>true,'defaultLanguage'=>false],['name'=>'ASC']),'translations'=>$translations]);}
  #[Route('/{languageId}',name:'admin_page_translation_edit',requirements:['id'=>'\d+','languageId'=>'\d+'],methods:['GET','POST'])]
  public function edit(Page $page,int $languageId,Request $request,EntityManagerInterface $em):Response{$language=$em->find(Language::class,$languageId);if(!$language)throw $this->createNotFoundException('Język nie istnieje.');if($language->isDefaultLanguage()){$this->addFlash('success','Język bazowy edytuje się bezpośrednio w podstronie.');return $this->redirectToRoute('admin_page_edit',['id'=>$page->getId()]);}$translation=$em->getRepository(PageTranslation::class)->findOneBy(['page'=>$page,'language'=>$language])??new PageTranslation($page,$language);$form=$this->createForm(PageTranslationType::class,$translation);$form->handleRequest($request);if($form->isSubmitted()&&$form->isValid()){$translation->setBuilderData($this->sanitizeBuilder($translation->getBuilderData()));$em->persist($translation);$em->flush();$this->addFlash('success','Tłumaczenie zostało zapisane.');return $this->redirectToRoute('admin_page_translation_edit',['id'=>$page->getId(),'languageId'=>$language->getId()]);}return $this->render('admin/page/translation_form.html.twig',['form'=>$form,'page'=>$page,'translation'=>$translation,'language'=>$language]);}
- private function sanitizeBuilder(string $json):string{try{$data=json_decode($json,true,64,JSON_THROW_ON_ERROR);}catch(\JsonException){return '[]';}$walk=function(array &$items)use(&$walk):void{foreach($items as &$item){if(($item['type']??'')==='rich_text'&&isset($item['data']['content']))$item['data']['content']=$this->sanitizer->sanitize((string)$item['data']['content']);foreach(($item['data']['columns']??[]) as &$column)if(is_array($column))$walk($column);}};if(is_array($data))$walk($data);return json_encode($data,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);}
+ private function sanitizeBuilder(string $json):string
+ {
+  try{$data=json_decode($json,true,64,JSON_THROW_ON_ERROR);}catch(\JsonException){return '[]';}
+  $walk=function(mixed &$node)use(&$walk):void{
+   if(!is_array($node))return;
+   if(($node['type']??null)==='rich_text'&&isset($node['data']['content']))$node['data']['content']=$this->sanitizer->sanitize((string)$node['data']['content']);
+   if(isset($node['data']['columns'])&&is_array($node['data']['columns']))foreach($node['data']['columns'] as &$column)$walk($column);
+   if(array_is_list($node))foreach($node as &$child)$walk($child);
+  };
+  $walk($data);
+  return json_encode($data,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+ }
 }

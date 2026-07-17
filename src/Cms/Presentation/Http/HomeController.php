@@ -15,7 +15,11 @@ final class HomeController extends AbstractController
     public function __invoke(PageRepository $pages): Response
     {
         if (null !== $page = $pages->findPublishedHomePage()) {
-            return $this->render('cms/page/show.html.twig', ['page' => $page]);
+            return $this->render('cms/page/show.html.twig', [
+                'page' => $page,
+                'source_page' => $page,
+                'alternates' => [],
+            ]);
         }
         return $this->render('cms/home.html.twig');
     }
