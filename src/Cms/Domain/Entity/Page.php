@@ -117,7 +117,7 @@ class Page
     public function getSlug(): string { return $this->slug; }
     public function setSlug(string $slug): void { $this->slug = mb_strtolower(trim($slug)); }
     public function getContent(): string { return $this->content; }
-    public function setContent(string $content): void { $this->content = trim($content); }
+    public function setContent(?string $content): void { $this->content = trim($content ?? ''); }
     public function getEditorMode(): string { return $this->editorMode; }
     public function setEditorMode(string $editorMode): void { $this->editorMode = $editorMode; }
     public function usesComponentBuilder(): bool { return $this->editorMode === 'components'; }
