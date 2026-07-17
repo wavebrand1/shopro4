@@ -113,7 +113,6 @@ final class AdminCmsTest extends WebTestCase
             'menu_item[contentType]' => 'page',
             'menu_item[page]' => (string) $page->getId(),
             'menu_item[target]' => '_self',
-            'menu_item[position]' => 10,
             'menu_item[place]' => 1,
             'menu_item[active]' => true,
         ]);
@@ -122,6 +121,16 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/admin/menu/new');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('select[name="menu_item[parent]"] option');
+        self::assertSelectorNotExists('input[name="menu_item[position]"]');
+
+        $menuPage = $this->client->request('GET', '/admin/menu');
+        self::assertSelectorExists('[data-menu-sort-group] [data-menu-row]');
+        $sortContainer = $menuPage->filter('[data-menu-sort]');
+        $this->client->request('POST', '/admin/menu/reorder', [
+            '_token' => $sortContainer->attr('data-reorder-token'),
+            'items' => [(string) $menuPage->filter('[data-menu-row]')->attr('data-menu-id')],
+        ]);
+        self::assertResponseIsSuccessful();
 
         $settingsPage = $this->client->request('GET', '/admin/configuration/system');
         self::assertResponseIsSuccessful();

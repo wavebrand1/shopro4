@@ -10,7 +10,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,7 +26,6 @@ final class MenuItemType extends AbstractType
             ->add('page', EntityType::class, ['class' => Page::class, 'choice_label' => 'title', 'label' => 'Podstrona', 'placeholder' => 'Wybierz podstronę', 'required' => false])
             ->add('link', TextType::class, ['label' => 'Link zewnętrzny', 'help' => 'Np. https://example.com lub /#kontakt', 'required' => false])
             ->add('target', ChoiceType::class, ['label' => 'Otwieranie linku', 'choices' => ['W tej samej karcie' => '_self', 'W nowej karcie' => '_blank']])
-            ->add('position', IntegerType::class, ['label' => 'Kolejność'])
             ->add('place', ChoiceType::class, ['label' => 'Miejsce menu', 'choices' => ['Menu górne' => MenuItem::PLACE_HEADER, 'Menu dolne' => MenuItem::PLACE_FOOTER]])
             ->add('homePage', CheckboxType::class, ['label' => 'Link do strony głównej', 'required' => false])
             ->add('active', CheckboxType::class, ['label' => 'Aktywna', 'required' => false]);

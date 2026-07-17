@@ -4,7 +4,7 @@
 <div class="modern-page-heading"><div><p class="modern-kicker">ZARZĄDZANIE TREŚCIĄ</p><h1>{{ item.id ? 'Edytuj pozycję' : 'Nowa pozycja menu' }}</h1><p>Ustaw hierarchię, typ odnośnika, miejsce i widoczność.</p></div><a class="modern-button" href="{{ path('admin_menu_index') }}">← Wróć do listy</a></div>
 <section class="modern-card modern-form-card"><div class="modern-card__heading"><div><h2>Dane pozycji menu</h2><p>Model zachowuje pola i zachowanie menu Shopro Legacy.</p></div></div>
 {{ form_start(form, {attr: {class: 'admin-form admin-form--page'}}) }}
-<div class="modern-form-grid">{{ form_row(form.name) }}{{ form_row(form.caption) }}{{ form_row(form.parent) }}{{ form_row(form.contentType) }}{{ form_row(form.page) }}{{ form_row(form.link) }}{{ form_row(form.target) }}{{ form_row(form.position) }}{{ form_row(form.place) }}</div>
+<div class="modern-form-grid">{{ form_row(form.name) }}{{ form_row(form.caption) }}{{ form_row(form.parent) }}{{ form_row(form.contentType) }}{{ form_row(form.page) }}{{ form_row(form.link) }}{{ form_row(form.target) }}{{ form_row(form.place) }}</div>
 <div class="modern-publish-row">{{ form_row(form.homePage) }}{{ form_row(form.active) }}<p>Typ „Podstrona” korzysta z wybranej strony CMS, a typ „Link zewnętrzny” z pola URL.</p></div>
 <div class="modern-form-actions"><a class="modern-button" href="{{ path('admin_menu_index') }}">Anuluj</a><button class="modern-button modern-button--primary" type="submit">Zapisz pozycję</button></div>{{ form_end(form) }}
 </section>
