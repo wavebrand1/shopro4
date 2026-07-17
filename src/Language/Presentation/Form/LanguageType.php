@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Intl\Currencies;
+use Symfony\Component\Intl\Locales;
 
 final class LanguageType extends AbstractType
 {
@@ -19,11 +21,11 @@ final class LanguageType extends AbstractType
   ->add('direction',ChoiceType::class,['label'=>'Kierunek tekstu','choices'=>['Od lewej do prawej (LTR)'=>'ltr','Od prawej do lewej (RTL)'=>'rtl'],'expanded'=>true])
   ->add('author',TextType::class,['label'=>'Autor tłumaczenia','required'=>false])
   ->add('subdomain',TextType::class,['label'=>'Subdomena / adres języka','required'=>false,'help'=>'Opcjonalny pełny adres, np. https://en.example.pl'])
-  ->add('locale',TextType::class,['label'=>'Locale','help'=>'Np. pl_PL, en_GB lub de_DE.'])
-  ->add('currency',TextType::class,['label'=>'Waluta','constraints'=>[new Assert\Regex('/^[A-Za-z]{3}$/')]])
-  ->add('currencySymbol',TextType::class,['label'=>'Symbol waluty'])
-  ->add('decimalSeparator',TextType::class,['label'=>'Separator dziesiętny'])
-  ->add('thousandsSeparator',TextType::class,['label'=>'Separator tysięcy'])
+  ->add('locale',ChoiceType::class,['label'=>'Locale','choices'=>array_flip(Locales::getNames('pl')),'choice_translation_domain'=>false])
+  ->add('currency',ChoiceType::class,['label'=>'Waluta','choices'=>array_flip(Currencies::getNames('pl')),'choice_translation_domain'=>false])
+  ->add('currencySymbol',ChoiceType::class,['label'=>'Symbol waluty','choices'=>['zł'=>'zł','€'=>'€','$'=>'$','£'=>'£','Fr'=>'Fr','Kč'=>'Kč','kr'=>'kr','¥'=>'¥','د.إ'=>'د.إ','Brak symbolu'=>'']])
+  ->add('decimalSeparator',ChoiceType::class,['label'=>'Separator dziesiętny','choices'=>['Przecinek (,)'=>',','Kropka (.)'=>'.']])
+  ->add('thousandsSeparator',ChoiceType::class,['label'=>'Separator tysięcy','choices'=>['Spacja'=>' ','Kropka (.)'=>'.','Przecinek (,)'=>',','Bez separatora'=>'']])
   ->add('active',CheckboxType::class,['label'=>'Język aktywny','required'=>false])
   ->add('defaultLanguage',CheckboxType::class,['label'=>'Język domyślny','required'=>false]);}
  public function configureOptions(OptionsResolver $r):void{$r->setDefaults(['data_class'=>Language::class]);}
