@@ -11,6 +11,7 @@
     <form method="post" class="admin-form modern-login-form">
         <label>{{ shopro_trans('auth.identifier') }}<input type="text" name="_username" value="{{ last_username }}" required autofocus autocomplete="username" placeholder="{{ shopro_trans('auth.identifier_placeholder') }}"></label>
         <label>{{ shopro_trans('auth.password') }}<input type="password" name="_password" required autocomplete="current-password" placeholder="{{ shopro_trans('auth.password_placeholder') }}"></label>
+        <div class="ui-choice"><input id="admin_remember_me" type="checkbox" name="_remember_me" value="1"><div class="ui-choice__content"><label for="admin_remember_me">{{ shopro_trans('auth.remember_me') }}</label></div></div>
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
         <button class="modern-button modern-button--primary modern-button--wide" type="submit">{{ shopro_trans('auth.sign_in') }}</button>
     </form>

@@ -63,8 +63,10 @@ final class AdminCmsTest extends WebTestCase
         $this->client->submitForm('Zaloguj się', [
             '_username' => 'admin@example.test',
             '_password' => 'very-secure-password',
+            '_remember_me' => '1',
         ]);
         self::assertResponseRedirects('/admin');
+        self::assertNotNull($this->client->getCookieJar()->get('SHOPRO_ADMIN_REMEMBER', '/admin'));
 
         $this->client->followRedirect();
         self::assertSelectorTextContains('h1', 'Dzień dobry');
@@ -545,8 +547,9 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseRedirects('/login');
         $this->client->followRedirect();
         self::assertSelectorTextContains('h1', 'Sign in to the website');
-        $this->client->submitForm('Sign in', ['_username' => 'customer', '_password' => 'very-secure-password']);
+        $this->client->submitForm('Sign in', ['_username' => 'customer', '_password' => 'very-secure-password', '_remember_me' => '1']);
         self::assertResponseRedirects('http://localhost/o-nas');
+        self::assertNotNull($this->client->getCookieJar()->get('SHOPRO_SITE_REMEMBER'));
         $this->client->followRedirect();
         self::assertResponseStatusCodeSame(403);
 

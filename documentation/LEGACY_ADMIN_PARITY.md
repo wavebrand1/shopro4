@@ -140,3 +140,8 @@ link weryfikacyjny, `user_thans_for_registration` potwierdza aktywację,
 ustawieniem `notify_admin`, a `user_admin_activate_your_account` informuje o
 ręcznej aktywacji w PA. Awarie wiadomości informacyjnych nie wycofują poprawnie
 zapisanej rejestracji lub aktywacji.
+
+Opcjonalne „Zapamiętaj mnie” działa niezależnie dla operatorów PA i użytkowników
+witryny. Podpisane ciastka mają osobne nazwy, ważność 30 dni, `HttpOnly`,
+`SameSite=Lax` i automatyczne wymaganie HTTPS. Cookie operatora jest dodatkowo
+ograniczone ścieżką `/admin`, dzięki czemu nie jest wysyłane do frontu.

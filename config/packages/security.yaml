@@ -31,6 +31,14 @@ security:
                 default_target_path: admin_dashboard
             login_throttling:
                 limiter: App\Identity\Application\DynamicLoginRateLimiter
+            remember_me:
+                secret: '%kernel.secret%'
+                name: SHOPRO_ADMIN_REMEMBER
+                lifetime: 2592000
+                path: /admin
+                secure: auto
+                httponly: true
+                samesite: lax
             logout:
                 path: admin_logout
                 target: admin_login
@@ -45,6 +53,14 @@ security:
                 default_target_path: app_home
             login_throttling:
                 limiter: App\Identity\Application\DynamicLoginRateLimiter
+            remember_me:
+                secret: '%kernel.secret%'
+                name: SHOPRO_SITE_REMEMBER
+                lifetime: 2592000
+                path: /
+                secure: auto
+                httponly: true
+                samesite: lax
             logout:
                 path: site_logout
                 target: app_home
