@@ -15,6 +15,7 @@ use App\Identity\Application\PasswordResetManager;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
+use App\Module\Domain\Entity\InstalledModule;
 use App\Language\Domain\Entity\Language;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -469,15 +470,20 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('select[data-newsletter-template]');
         self::assertSelectorExists('button[data-newsletter-template-load][disabled]');
 
+        $orphanedModule = new InstalledModule('legacy-extension', '2.0.0');
+        self::getContainer()->get(EntityManagerInterface::class)->persist($orphanedModule);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
         $moduleSync = new CommandTester((new Application(self::$kernel))->find('app:modules:sync'));
         self::assertSame(0, $moduleSync->execute([]));
 
         $this->client->request('GET', '/admin/modules');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'System modules');
-        self::assertSelectorCount(6, '.admin-table tbody tr');
+        self::assertSelectorCount(6, 'section.modern-table-card:first-of-type .admin-table tbody tr');
         self::assertSelectorTextContains('.admin-table', 'CMS and Page Builder');
         self::assertSelectorCount(6, '.status--published');
+        self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'Orphaned records');
+        self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'legacy-extension');
 
         $campaign = new NewsletterCampaign();
         $campaign->setSubject('Testowa kampania');

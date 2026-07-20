@@ -18,9 +18,34 @@ final class ModuleRegistry
             $this->modules[$module->code()] = $module;
         }
         ksort($this->modules);
+        $this->validate();
     }
 
     /** @return array<string, ModuleDefinition> */
     public function all(): array { return $this->modules; }
     public function get(string $code): ?ModuleDefinition { return $this->modules[$code] ?? null; }
+
+    private function validate(): void
+    {
+        foreach ($this->modules as $code => $module) {
+            if (!preg_match('/^[a-z][a-z0-9_-]{1,79}$/', $code)) throw new \LogicException('Invalid Shopro module code: '.$code);
+            if (!preg_match('/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/', $module->version())) throw new \LogicException('Invalid version of Shopro module: '.$code);
+            foreach ($module->dependencies() as $dependency) {
+                if (!isset($this->modules[$dependency])) throw new \LogicException(sprintf('Shopro module "%s" requires missing module "%s".', $code, $dependency));
+                if ($dependency === $code) throw new \LogicException('Shopro module cannot depend on itself: '.$code);
+            }
+        }
+
+        $visiting = [];
+        $visited = [];
+        $visit = function (string $code) use (&$visit, &$visiting, &$visited): void {
+            if (isset($visited[$code])) return;
+            if (isset($visiting[$code])) throw new \LogicException('Cyclic Shopro module dependency detected at: '.$code);
+            $visiting[$code] = true;
+            foreach ($this->modules[$code]->dependencies() as $dependency) $visit($dependency);
+            unset($visiting[$code]);
+            $visited[$code] = true;
+        };
+        foreach (array_keys($this->modules) as $code) $visit($code);
+    }
 }

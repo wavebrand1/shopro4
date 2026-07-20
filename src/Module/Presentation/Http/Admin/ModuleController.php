@@ -21,6 +21,9 @@ final class ModuleController extends AbstractController
         foreach ($registry->all() as $definition) {
             $modules[] = ['definition' => $definition, 'state' => $states[$definition->code()] ?? null];
         }
-        return $this->render('admin/module/index.html.twig', ['modules' => $modules]);
+        return $this->render('admin/module/index.html.twig', [
+            'modules' => $modules,
+            'orphaned' => array_diff_key($states, $registry->all()),
+        ]);
     }
 }

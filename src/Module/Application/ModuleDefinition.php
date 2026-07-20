@@ -15,4 +15,6 @@ interface ModuleDefinition
     public function version(): string;
     public function category(): string;
     public function required(): bool;
+    /** @return list<string> */
+    public function dependencies(): array;
 }

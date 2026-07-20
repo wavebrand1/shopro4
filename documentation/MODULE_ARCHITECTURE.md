@@ -5,7 +5,8 @@
 Każdy obszar funkcjonalny implementuje `ModuleDefinition`. Definicja ma stabilny
 kod, wersję, kategorię, nazwę i opis interfejsu oraz informację, czy moduł jest
 wymagany. Symfony automatycznie oznacza implementacje tagiem `shopro.module`,
-a `ModuleRegistry` odrzuca zduplikowane kody podczas budowania kontenera.
+a `ModuleRegistry` odrzuca zduplikowane lub nieprawidłowe kody, błędne wersje,
+brakujące zależności i cykle zależności podczas budowania kontenera.
 
 Aktualny fundament rejestruje wyłącznie działające obszary: CMS, użytkowników,
 języki, media, newsletter i konfigurację. Są to moduły systemowe. Nie można ich
@@ -39,7 +40,7 @@ nigdy skutkiem zwykłego wyłączenia lub braku klasy w kodzie.
 
 Przed udostępnieniem przełączników dla modułów opcjonalnych trzeba dodać:
 
-1. walidację zależności i zgodności wersji,
+1. reguły zgodności wersji zależności (istnienie i cykle są już walidowane),
 2. blokadę wyłączenia podczas działania kolejek i zadań cyklicznych,
 3. kontrolę tras, menu PA, komponentów Page Buildera i konsumentów zdarzeń,
 4. historię operacji w audycie administratora,
