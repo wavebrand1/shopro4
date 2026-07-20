@@ -326,6 +326,17 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-page-heading h1', 'New campaign');
         self::assertSelectorTextContains('label[for="newsletter_campaign_customEmails"]', 'Additional email addresses');
 
+        $this->client->request('GET', '/admin/configuration/email-templates');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Email message templates');
+        self::assertSelectorTextContains('.admin-table thead', 'Subject');
+
+        $this->client->request('GET', '/admin/configuration/email-templates/new');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'New template');
+        self::assertSelectorTextContains('label[for="email_template_code"]', 'Event / technical code');
+        self::assertSelectorTextContains('select[name="email_template[code]"] option[value="user_activate_account"]', 'User — account activation');
+
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
 

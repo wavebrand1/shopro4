@@ -1,9 +1,10 @@
 {% extends 'admin/layout.html.twig' %}
-{% block title %}Szablon e-mail — Shopro 4.0{% endblock %}
+{% block title %}{{ shopro_trans(template.id ? 'email_template.edit' : 'email_template.new') }} — Shopro 4.0{% endblock %}
 {% block javascripts %}{{ importmap(['app', 'rich-editor', 'email-template-form']) }}{% endblock %}
 {% block body %}
-<div class="modern-page-heading"><div><p class="modern-kicker">KONFIGURACJA</p><h1>{{ template.id ? 'Edytuj szablon' : 'Nowy szablon' }}</h1><p>Treść zostanie automatycznie osadzona w responsywnej ramie o szerokości 600 px.</p></div><a class="modern-button" href="{{ path('admin_email_template_index') }}">← Wróć</a></div>
-{{ form_start(form, {attr: {class: 'admin-form'}}) }}
-<section class="modern-card"><div class="cms-card-body">{{ form_row(form.code) }}<div class="email-template-description" data-email-template-description></div>{{ form_row(form.name) }}{{ form_row(form.subject) }}<div class="email-rich-editor">{{ form_row(form.content) }}</div><p class="form-help">Zmienne: [SITE_NAME], [NAME], [USERNAME], [EMAIL], [LINK], [TOKEN], [PASSWORD], [IP], [MESSAGE], [SENDER], [PHONE], [URL], [RATE].</p></div></section>
-<div class="cms-sticky-actions"><button class="modern-button modern-button--primary">Zapisz szablon</button></div>{{ form_end(form) }}
+<div class="modern-page-heading"><div><p class="modern-kicker">{{ shopro_trans('language.configuration') }}</p><h1>{{ shopro_trans(template.id ? 'email_template.edit' : 'email_template.new') }}</h1><p>{{ shopro_trans('email_template.form_lead') }}</p></div><a class="modern-button" href="{{ path('admin_email_template_index') }}">← {{ shopro_trans('common.back') }}</a></div>
+{{ form_start(form) }}
+<section class="modern-card"><div class="cms-card-body">{{ form_row(form.code) }}<div class="email-template-description" data-email-template-description data-empty-description="{{ shopro_trans('email_template.select_usage_help') }}"></div>{{ form_row(form.name) }}{{ form_row(form.subject) }}<div class="email-rich-editor">{{ form_row(form.content) }}</div><p class="form-help">{{ shopro_trans('email_template.variables') }}: [SITE_NAME], [NAME], [USERNAME], [EMAIL], [LINK], [TOKEN], [PASSWORD], [IP], [MESSAGE], [SENDER], [PHONE], [URL], [RATE].</p></div></section>
+<div class="form-actions"><a class="modern-button" href="{{ path('admin_email_template_index') }}">{{ shopro_trans('common.cancel') }}</a><button class="modern-button modern-button--primary">{{ shopro_trans('common.save') }}</button></div>
+{{ form_end(form) }}
 {% endblock %}

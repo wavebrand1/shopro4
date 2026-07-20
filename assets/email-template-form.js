@@ -2,7 +2,13 @@ const initialize = () => document.querySelectorAll('[data-email-template-code]')
     if (select.dataset.descriptionInitialized) return;
     select.dataset.descriptionInitialized = 'true';
     const description = document.querySelector('[data-email-template-description]');
-    const update = () => { description.textContent = select.options[select.selectedIndex]?.dataset.description || 'Wybierz zdarzenie, aby zobaczyć, kiedy wiadomość jest używana.'; };
-    select.addEventListener('change', update); update();
+    if (!description) return;
+    const update = () => {
+        description.textContent = select.options[select.selectedIndex]?.dataset.description || description.dataset.emptyDescription || '';
+    };
+    select.addEventListener('change', update);
+    update();
 });
-document.addEventListener('turbo:load', initialize); initialize();
+
+document.addEventListener('turbo:load', initialize);
+initialize();
