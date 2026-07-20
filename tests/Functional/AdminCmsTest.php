@@ -47,6 +47,8 @@ final class AdminCmsTest extends WebTestCase
 
         $this->client->request('GET', '/admin');
         self::assertResponseRedirects('/admin/login');
+        self::assertResponseHasHeader('Cache-Control');
+        self::assertStringContainsString('no-store', (string) $this->client->getResponse()->headers->get('Cache-Control'));
 
         $this->client->followRedirect();
         $this->client->submitForm('Zaloguj się', [

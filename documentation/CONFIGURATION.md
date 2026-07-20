@@ -14,6 +14,10 @@ Formularz został odwzorowany na podstawie `stare/Wersja_2_00/Develop/admin/conf
 - klucze API są generowane per użytkownik, zapisywane wyłącznie jako SHA-256 i mają osobne zakresy uprawnień.
 - zakresy tokenów API są egzekwowane przez każdy endpoint; odczyt `/api/v1/me` wymaga zakresu `read`;
 - aktualnie zalogowane oraz ostatnie aktywne konto administratora nie może zostać wyłączone.
+- odpowiedzi mają globalnie `nosniff`, ochronę przed osadzaniem w obcej ramce,
+  bezpieczną politykę referrera i wyłączone zbędne API przeglądarki; HTTPS otrzymuje HSTS;
+- panel administracyjny i API używają `Cache-Control: private, no-store`, aby dane
+  uwierzytelnione nie pozostawały w pamięci współdzielonych proxy ani przeglądarki.
 
 ## Obrazy
 
