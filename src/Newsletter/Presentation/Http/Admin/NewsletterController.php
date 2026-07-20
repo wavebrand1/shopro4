@@ -9,6 +9,8 @@ use App\Language\Application\SystemTranslator;
 use App\Mail\Infrastructure\Persistence\Doctrine\EmailTemplateRepository;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
 use App\Newsletter\Application\RecipientCsvImporter;
+use App\Newsletter\Application\CampaignTestMailer;
+use App\Mail\Application\EmailLayoutRenderer;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Presentation\Form\NewsletterCampaignType;
@@ -87,6 +89,34 @@ final class NewsletterController extends AbstractController
         }
 
         return $this->renderForm($form, $campaign, $emailTemplates);
+    }
+
+    #[Route('/{id}/preview', name: 'admin_newsletter_preview', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function preview(NewsletterCampaign $campaign, EmailLayoutRenderer $layout): Response
+    {
+        return new Response($layout->render($campaign->getContent(), $campaign->getSubject()), headers: [
+            'Content-Type' => 'text/html; charset=UTF-8',
+            'Content-Security-Policy' => "default-src 'none'; img-src http: https: data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'",
+            'X-Robots-Tag' => 'noindex, nofollow',
+        ]);
+    }
+
+    #[Route('/{id}/test', name: 'admin_newsletter_test', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function sendTest(NewsletterCampaign $campaign, Request $request, CampaignTestMailer $mailer): Response
+    {
+        if (!$this->isCsrfTokenValid('test-newsletter-'.$campaign->getId(), (string) $request->request->get('_token'))) return $this->redirectToRoute('admin_newsletter_show', ['id' => $campaign->getId()]);
+        $recipient = mb_strtolower(trim((string) $request->request->get('recipient')));
+        if (filter_var($recipient, FILTER_VALIDATE_EMAIL) === false) {
+            $this->addFlash('error', $this->translator->translate('newsletter.test_invalid_email'));
+            return $this->redirectToRoute('admin_newsletter_show', ['id' => $campaign->getId()]);
+        }
+        try {
+            $mailer->send($campaign, $recipient);
+            $this->addFlash('success', sprintf($this->translator->translate('newsletter.test_sent'), $recipient));
+        } catch (\Throwable) {
+            $this->addFlash('error', $this->translator->translate('newsletter.test_failed'));
+        }
+        return $this->redirectToRoute('admin_newsletter_show', ['id' => $campaign->getId()]);
     }
 
     #[Route('/{id}/queue', name: 'admin_newsletter_queue', requirements: ['id' => '\d+'], methods: ['POST'])]

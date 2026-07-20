@@ -14,6 +14,7 @@ use App\Identity\Domain\Entity\AdminUser;
 use App\Identity\Application\PasswordResetManager;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
+use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Language\Domain\Entity\Language;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -465,6 +466,29 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('label[for="newsletter_campaign_recipientFile"]', 'Import recipients from CSV');
         self::assertSelectorExists('select[data-newsletter-template]');
         self::assertSelectorExists('button[data-newsletter-template-load][disabled]');
+
+        $campaign = new NewsletterCampaign();
+        $campaign->setSubject('Testowa kampania');
+        $campaign->setContent('<h1>Treść kampanii</h1><p>Wiadomość testowa.</p>');
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->persist($campaign);
+        $entityManager->flush();
+
+        $campaignPage = $this->client->request('GET', '/admin/newsletter/'.$campaign->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('a[href="/admin/newsletter/'.$campaign->getId().'/preview"][target="_blank"]');
+        self::assertSelectorExists('form[action="/admin/newsletter/'.$campaign->getId().'/test"] input[type="email"]');
+
+        $this->client->request('GET', '/admin/newsletter/'.$campaign->getId().'/preview');
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('X-Robots-Tag', 'noindex, nofollow');
+        self::assertStringContainsString('Treść kampanii', (string) $this->client->getResponse()->getContent());
+
+        $testForm = $campaignPage->filter('form[action="/admin/newsletter/'.$campaign->getId().'/test"]')->form();
+        $this->client->submit($testForm, ['recipient' => 'niepoprawny-adres']);
+        self::assertResponseRedirects('/admin/newsletter/'.$campaign->getId());
+        $this->client->followRedirect();
+        self::assertSelectorExists('.flash--error');
 
         $this->client->request('GET', '/admin/configuration/email-templates');
         self::assertResponseIsSuccessful();

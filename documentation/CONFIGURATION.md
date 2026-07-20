@@ -49,6 +49,11 @@ Podczas przygotowania kampanii można skopiować temat i treść z dowolnego
 szablonu wiadomości e-mail. Jest to kopia: dalsza edycja kampanii nie zmienia
 szablonu, a późniejsza zmiana szablonu nie modyfikuje historycznej kampanii.
 
+Szczegóły kampanii udostępniają podgląd końcowego dokumentu HTML oraz wysyłkę
+testową na dowolny poprawny adres. Test korzysta z tego samego dynamicznego SMTP,
+nadawcy i responsywnego układu co wysyłka właściwa, ale nie tworzy dostarczenia
+ani nie zmienia statusu kampanii.
+
 ## Decyzje modułowe
 
 - waluta pozostaje przejściowo w konfiguracji dla zgodności, ale docelowo należy do ustawień języka;
