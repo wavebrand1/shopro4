@@ -2,5 +2,6 @@ validation.user.email_exists: 'An account with this email address already exists
 validation.user.username_exists: 'An account with this username already exists.'
 validation.page.slug_exists: 'A page with this URL already exists.'
 validation.page.slug_format: 'The slug may contain lowercase letters, numbers and hyphens.'
+validation.page.membership_required: 'Select at least one membership for a membership-restricted page.'
 validation.menu.page_required: 'Select a page for this menu item.'
 validation.menu.link_required: 'Enter the external link URL.'

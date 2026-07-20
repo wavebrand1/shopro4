@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Cms\Domain\Entity;
 
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
+use App\Identity\Domain\Entity\Membership;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -15,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'cms_page')]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['slug'], message: 'validation.page.slug_exists')]
+#[Assert\Expression(expression: "this.getAccess() != 'Membership' or this.getMemberships().count() > 0", message: 'validation.page.membership_required')]
 class Page
 {
     #[ORM\Id]
@@ -65,6 +69,10 @@ class Page
     #[ORM\Column(length: 20, options: ['default' => 'Public'])]
     #[Assert\Choice(choices: ['Public', 'Registered', 'Membership'])]
     private string $access = 'Public';
+    /** @var Collection<int, Membership> */
+    #[ORM\ManyToMany(targetEntity: Membership::class)]
+    #[ORM\JoinTable(name: 'cms_page_membership')]
+    private Collection $memberships;
     #[ORM\Column(options: ['default' => true])]
     private bool $follow = true;
     #[ORM\Column(options: ['default' => false])]
@@ -99,6 +107,7 @@ class Page
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
+        $this->memberships = new ArrayCollection();
         $this->updatedAt = $this->createdAt;
         $this->builderData = json_encode([[
             'id' => 'initial-section',
@@ -159,6 +168,10 @@ class Page
     public function setCanonical(?string $v): void { $this->canonical = trim($v ?? ''); }
     public function getAccess(): string { return $this->access; }
     public function setAccess(string $v): void { $this->access = $v; }
+    /** @return Collection<int, Membership> */
+    public function getMemberships(): Collection { return $this->memberships; }
+    public function addMembership(Membership $membership): void { if (!$this->memberships->contains($membership)) $this->memberships->add($membership); }
+    public function removeMembership(Membership $membership): void { $this->memberships->removeElement($membership); }
     public function isFollow(): bool { return $this->follow; }
     public function setFollow(bool $v): void { $this->follow = $v; }
     public function isHomePage(): bool { return $this->homePage; }
@@ -189,6 +202,7 @@ class Page
         $copy = clone $this;
         $copy->id = null; $copy->slug = $slug; $copy->homePage = $copy->errorPage = false;
         $copy->loginPage = $copy->activationPage = $copy->accountPage = $copy->registrationPage = false;
+        $copy->memberships = new ArrayCollection($this->memberships->toArray());
         $copy->searchPage = $copy->sitemapPage = $copy->profilePage = $copy->termsPage = false;
         $copy->createdAt = $copy->updatedAt = new DateTimeImmutable();
         return $copy;

@@ -6,7 +6,10 @@ namespace App\Cms\Presentation\Form;
 
 use App\Cms\Domain\Entity\Page;
 use App\Language\Application\SystemTranslator;
+use App\Identity\Domain\Entity\Membership;
+use App\Identity\Infrastructure\Persistence\Doctrine\MembershipRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -34,6 +37,7 @@ final class PageType extends AbstractType
             ->add('caption', TextareaType::class, ['label' => $t('page.caption'), 'required' => false, 'attr' => ['rows' => 3, 'maxlength' => 600]])
             ->add('seoTitle', TextType::class, ['label' => $t('page.seo_title'), 'required' => false, 'attr' => ['maxlength' => 200]])
             ->add('access', ChoiceType::class, ['label' => $t('page.access'), 'choices' => [$t('page.access_public') => 'Public', $t('page.access_registered') => 'Registered', $t('page.access_membership') => 'Membership']])
+            ->add('memberships', EntityType::class, ['label' => $t('page.memberships'), 'help' => $t('page.memberships_help'), 'class' => Membership::class, 'choice_label' => 'title', 'query_builder' => static fn (MembershipRepository $repository) => $repository->createQueryBuilder('membership')->orderBy('membership.title', 'ASC'), 'multiple' => true, 'required' => false, 'attr' => ['size' => 6, 'data-page-memberships' => true]])
             ->add('canonical', TextType::class, ['label' => $t('page.canonical'), 'required' => false])
             ->add('published', CheckboxType::class, $checkbox + ['label' => $t('page.active_published')])
             ->add('follow', CheckboxType::class, $checkbox + ['label' => $t('page.follow')])

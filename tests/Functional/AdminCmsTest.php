@@ -11,6 +11,7 @@ use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
+use App\Identity\Domain\Entity\Membership;
 use App\Identity\Application\PasswordResetManager;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
@@ -497,6 +498,26 @@ final class AdminCmsTest extends WebTestCase
         $this->client->followRedirect();
         self::assertSelectorTextContains('.admin-table', 'Business customers');
         self::assertSelectorTextContains('.admin-table', 'Active');
+
+        $currentEntityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $membership = $currentEntityManager->getRepository(Membership::class)->findOneBy(['title' => 'Business customers']);
+        self::assertNotNull($membership);
+        $membershipPage = self::getContainer()->get(PageRepository::class)->find($page->getId());
+        self::assertNotNull($membershipPage);
+        $membershipPage->setAccess('Membership');
+        self::assertStringContainsString('Select at least one membership', (string) $validator->validate($membershipPage));
+        $membershipPage->addMembership($membership);
+        self::assertStringNotContainsString('Select at least one membership', (string) $validator->validate($membershipPage));
+        $currentEntityManager->flush();
+        $currentEntityManager->clear();
+        $membershipPage = self::getContainer()->get(PageRepository::class)->find($page->getId());
+        self::assertNotNull($membershipPage);
+        self::assertSame('Business customers', $membershipPage->getMemberships()->first()?->getTitle());
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('select[name="page[memberships][]"][multiple]');
+        self::assertSelectorExists('select[name="page[memberships][]"] option[value="'.$membership->getId().'"]');
 
         $campaign = new NewsletterCampaign();
         $campaign->setSubject('Testowa kampania');

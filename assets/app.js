@@ -38,6 +38,26 @@ const initializeSystemSettings = () => {
 document.addEventListener('turbo:load', initializeSystemSettings);
 initializeSystemSettings();
 
+const initializePageAccess = () => {
+    const form = document.querySelector('form[name="page"]');
+    if (!form || form.dataset.accessBehaviourReady === 'true') return;
+    form.dataset.accessBehaviourReady = 'true';
+
+    const access = form.querySelector('#page_access');
+    const memberships = form.querySelector('[data-membership-access-field]');
+    if (!access || !memberships) return;
+
+    const refresh = () => {
+        memberships.hidden = access.value !== 'Membership';
+    };
+
+    access.addEventListener('change', refresh);
+    refresh();
+};
+
+document.addEventListener('turbo:load', initializePageAccess);
+initializePageAccess();
+
 const initializeMenuSorting = () => {
     document.querySelectorAll('[data-menu-sort]').forEach((container) => {
         if (container.dataset.sortReady === 'true') return;
