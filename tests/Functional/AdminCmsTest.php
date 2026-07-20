@@ -562,6 +562,42 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('Strona z komponentów', (string) $this->client->getResponse()->getContent());
 
+        $this->client->request('GET', '/register');
+        self::assertResponseStatusCodeSame(404);
+
+        $registrationSettings = self::getContainer()->get(SystemSettingsRepository::class)->get();
+        $registrationConfiguration = $registrationSettings->getConfiguration();
+        $registrationConfiguration['registration_allowed'] = true;
+        $registrationConfiguration['registration_verify'] = false;
+        $registrationConfiguration['registration_auto_verify'] = true;
+        $registrationSettings->setConfiguration($registrationConfiguration);
+        self::getContainer()->get(SystemSettingsRepository::class)->save($registrationSettings);
+
+        $this->client->request('GET', '/register');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('form[name="site_registration"]');
+        $registrationForm = $this->client->getCrawler()->filter('form[name="site_registration"]')->form();
+        $this->client->submit($registrationForm, [
+            'site_registration[username]' => 'newcustomer',
+            'site_registration[email]' => 'newcustomer@example.test',
+            'site_registration[plainPassword][first]' => 'another-secure-password',
+            'site_registration[plainPassword][second]' => 'another-secure-password',
+            'site_registration[termsAccepted]' => true,
+        ]);
+        self::assertResponseRedirects('/login');
+        $registeredUser = self::getContainer()->get(EntityManagerInterface::class)->getRepository(SiteUser::class)->findOneBy(['username' => 'newcustomer']);
+        self::assertNotNull($registeredUser);
+        self::assertTrue($registeredUser->isActive());
+        self::assertTrue($hasher->isPasswordValid($registeredUser, 'another-secure-password'));
+
+        $pendingUser = new SiteUser('pending@example.test', 'pending');
+        $activationToken = $pendingUser->issueActivationToken();
+        self::assertFalse($pendingUser->isActive());
+        self::assertFalse($pendingUser->activateWithToken(str_repeat('0', 64)));
+        self::assertTrue($pendingUser->activateWithToken($activationToken));
+        self::assertTrue($pendingUser->isActive());
+        self::assertFalse($pendingUser->activateWithToken($activationToken));
+
         $campaign = new NewsletterCampaign();
         $campaign->setSubject('Testowa kampania');
         $campaign->setContent('<h1>Treść kampanii</h1><p>Wiadomość testowa.</p>');

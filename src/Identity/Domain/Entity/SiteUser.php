@@ -39,6 +39,10 @@ class SiteUser implements UserInterface, PasswordAuthenticatedUserInterface
     private \DateTimeImmutable $createdAt;
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $lastLoginAt = null;
+    #[ORM\Column(length: 64, nullable: true, unique: true)]
+    private ?string $activationTokenHash = null;
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $activationExpiresAt = null;
 
     public function __construct(string $email, ?string $username = null)
     {
@@ -69,4 +73,18 @@ class SiteUser implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
     public function getLastLoginAt(): ?\DateTimeImmutable { return $this->lastLoginAt; }
     public function recordLogin(): void { $this->lastLoginAt = new \DateTimeImmutable(); }
+    public function issueActivationToken(): string
+    {
+        $token = bin2hex(random_bytes(32));
+        $this->activationTokenHash = hash('sha256', $token);
+        $this->activationExpiresAt = new \DateTimeImmutable('+24 hours');
+        $this->active = false;
+        return $token;
+    }
+    public function activateWithToken(string $token): bool
+    {
+        if ($this->activationTokenHash === null || $this->activationExpiresAt === null || $this->activationExpiresAt < new \DateTimeImmutable() || !hash_equals($this->activationTokenHash, hash('sha256', $token))) return false;
+        $this->active = true; $this->activationTokenHash = null; $this->activationExpiresAt = null;
+        return true;
+    }
 }
