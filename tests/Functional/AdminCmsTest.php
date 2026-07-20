@@ -172,6 +172,11 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('link[rel="alternate"][hreflang="x-default"]');
         self::assertSelectorExists('link[rel="canonical"][href="http://localhost/"]');
+        self::assertSelectorExists('meta[property="og:title"][content="O nas — edycja"]');
+        self::assertSelectorExists('meta[property="og:url"][content="http://localhost/"]');
+        self::assertSelectorExists('meta[name="twitter:card"][content="summary"]');
+        self::assertSelectorExists('script[type="application/ld+json"]');
+        self::assertStringContainsString('"@type":"WebPage"', (string) $this->client->getResponse()->getContent());
 
         $this->client->request('GET', '/sitemap.xml');
         self::assertResponseIsSuccessful();
