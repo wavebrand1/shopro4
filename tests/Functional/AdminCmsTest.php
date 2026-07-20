@@ -9,6 +9,7 @@ use App\Audit\Domain\Entity\AuditLog;
 use App\Cms\Domain\Entity\MenuItemTranslation;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Domain\Entity\Page;
+use App\Cms\Domain\Entity\UrlRedirect;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
@@ -992,5 +993,32 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/admin/address-that-does-not-exist');
         self::assertResponseStatusCodeSame(404);
         self::assertSelectorNotExists('.public-page-hero');
+    }
+
+    public function testLegacyAndManagedUrlsRedirectSafely(): void
+    {
+        $page = new Page();
+        $page->setTitle('Oferta'); $page->setSlug('oferta'); $page->setPublished(true);
+        $redirect = new UrlRedirect();
+        $redirect->setSourcePath('/stara-oferta'); $redirect->setTargetPath('/oferta?source=legacy');
+        $this->entityManager->persist($page); $this->entityManager->persist($redirect); $this->entityManager->flush();
+
+        $this->client->request('GET', '/strona/oferta');
+        self::assertResponseRedirects('/oferta', 301);
+        $this->client->request('GET', '/content.php?url=oferta');
+        self::assertResponseRedirects('/oferta', 301);
+        $this->client->request('GET', '/index.php?url=oferta');
+        self::assertResponseRedirects('/oferta', 301);
+
+        $this->client->request('GET', '/stara-oferta');
+        self::assertResponseRedirects('/oferta?source=legacy', 301);
+        $this->entityManager->clear();
+        $stored = $this->entityManager->getRepository(UrlRedirect::class)->find($redirect->getId());
+        self::assertSame(1, $stored?->getHits());
+        self::assertNotNull($stored?->getLastUsedAt());
+
+        $unsafe = new UrlRedirect(); $unsafe->setSourcePath('/unsafe'); $unsafe->setTargetPath('/\\evil.example/path');
+        $errors = self::getContainer()->get(ValidatorInterface::class)->validate($unsafe);
+        self::assertGreaterThan(0, $errors->count());
     }
 }
