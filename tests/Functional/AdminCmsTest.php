@@ -14,6 +14,7 @@ use App\Identity\Domain\Entity\AdminUser;
 use App\Identity\Domain\Entity\Membership;
 use App\Identity\Domain\Entity\SiteUser;
 use App\Identity\Application\PasswordResetManager;
+use App\Identity\Application\SitePasswordResetManager;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
@@ -589,6 +590,22 @@ final class AdminCmsTest extends WebTestCase
         self::assertNotNull($registeredUser);
         self::assertTrue($registeredUser->isActive());
         self::assertTrue($hasher->isPasswordValid($registeredUser, 'another-secure-password'));
+
+        $siteResetToken = self::getContainer()->get(SitePasswordResetManager::class)->create($registeredUser);
+        $this->client->request('GET', '/password/reset/'.$siteResetToken);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('input[name="password_confirmation"]');
+        $siteResetForm = $this->client->getCrawler()->filter('form.modern-login-form')->form();
+        $this->client->submit($siteResetForm, [
+            'password' => 'changed-secure-password',
+            'password_confirmation' => 'changed-secure-password',
+        ]);
+        self::assertResponseRedirects('/login');
+        $resetUser = self::getContainer()->get(EntityManagerInterface::class)->getRepository(SiteUser::class)->findOneBy(['username' => 'newcustomer']);
+        self::assertNotNull($resetUser);
+        self::assertTrue($hasher->isPasswordValid($resetUser, 'changed-secure-password'));
+        $this->client->request('GET', '/password/reset/'.$siteResetToken);
+        self::assertResponseStatusCodeSame(410);
 
         $pendingUser = new SiteUser('pending@example.test', 'pending');
         $activationToken = $pendingUser->issueActivationToken();

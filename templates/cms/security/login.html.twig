@@ -12,6 +12,7 @@
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('site_authenticate') }}">
         <button class="modern-button modern-button--primary modern-button--wide" type="submit">{{ shopro_trans('auth.sign_in') }}</button>
     </form>
+    <a class="modern-login-footer" href="{{ path('site_password_forgot') }}">{{ shopro_trans('auth.forgot_password_link') }}</a>
     {% if shopro_setting('registration_allowed', false) %}
         <a class="modern-login-footer" href="{{ path('site_register') }}">{{ shopro_trans('site_registration.create_account') }}</a>
     {% endif %}

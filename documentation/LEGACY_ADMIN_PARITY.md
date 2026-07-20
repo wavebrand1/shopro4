@@ -115,3 +115,9 @@ Przy wymaganej weryfikacji system wysyła responsywny szablon
 `user_activate_account`. W bazie przechowywany jest wyłącznie skrót SHA-256
 jednorazowego tokenu, który wygasa po 24 godzinach. Nieudana wysyłka wiadomości
 nie aktywuje konta i jest jawnie komunikowana użytkownikowi.
+
+Konta witryny mają osobne odzyskiwanie hasła pod `/password/forgot` i nie
+korzystają z tokenów operatorów panelu. Odpowiedź formularza nie ujawnia, czy
+login lub e-mail istnieje. Link jest jednorazowy, ważny przez godzinę, a w bazie
+zapisywany jest wyłącznie jego skrót SHA-256. Po zmianie hasła wykorzystany token
+zwraca HTTP 410 i nie może zostać użyty ponownie.
