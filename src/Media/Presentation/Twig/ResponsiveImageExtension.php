@@ -16,12 +16,17 @@ final class ResponsiveImageExtension extends AbstractExtension
     public function getFunctions(): array { return [new TwigFunction('shopro_picture', $this->picture(...), ['is_safe' => ['html']])]; }
     public function picture(string $src, string $alt = '', ?int $width = null, ?int $height = null, bool $eager = false): Markup
     {
-        if (!str_starts_with($src, '/uploads/')) return new Markup('', 'UTF-8');
-        $source = $this->projectDir.'/public'.$src;
-        $realDirectory = realpath(dirname($source)); $uploads = realpath($this->projectDir.'/public/uploads');
-        if (!$uploads || !$realDirectory || !str_starts_with($realDirectory, $uploads) || !is_file($source)) return new Markup('', 'UTF-8');
+        $urlPath = parse_url($src, PHP_URL_PATH);
+        if (!is_string($urlPath) || !str_starts_with($urlPath, '/uploads/')) return new Markup('', 'UTF-8');
+        $decodedPath = rawurldecode($urlPath);
+        if (str_contains($decodedPath, "\0")) return new Markup('', 'UTF-8');
+        $source = realpath($this->projectDir.'/public'.$decodedPath);
+        $uploads = realpath($this->projectDir.'/public/uploads');
+        $normalizedSource = $source ? str_replace('\\', '/', $source) : '';
+        $normalizedUploads = $uploads ? rtrim(str_replace('\\', '/', $uploads), '/') : '';
+        if (!$source || !$uploads || !is_file($source) || !str_starts_with($normalizedSource, $normalizedUploads.'/')) return new Markup('', 'UTF-8');
         $widths = array_filter(array_map('intval', explode(',', (string) $this->settings->get('image_widths'))));
-        $baseUrl = preg_replace('/\.[^.]+$/', '', $src); $baseFile = preg_replace('/\.[^.]+$/', '', $source);
+        $baseUrl = preg_replace('/\.[^.]+$/', '', $urlPath); $baseFile = preg_replace('/\.[^.]+$/', '', $source);
         $sources = '';
         foreach (['avif' => 'image/avif', 'webp' => 'image/webp'] as $format => $mime) {
             $set = [];

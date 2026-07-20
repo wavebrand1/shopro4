@@ -118,6 +118,10 @@ final class AdminCmsTest extends WebTestCase
 
         $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
         self::assertNotNull($page);
+        $uploadsDirectory = dirname(__DIR__, 2).'/public/uploads';
+        if (!is_dir($uploadsDirectory)) mkdir($uploadsDirectory, 0775, true);
+        $testImage = $uploadsDirectory.'/test image.svg';
+        file_put_contents($testImage, '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="18"><rect width="32" height="18" fill="#5d87ff"/></svg>');
         $page->setEditorMode('components');
         $page->setBuilderData(json_encode([[
             'id' => 'hero-test',
@@ -132,7 +136,7 @@ final class AdminCmsTest extends WebTestCase
             'id' => 'image-test',
             'type' => 'image',
             'data' => [
-                'src' => '/uploads/missing-test-image.png',
+                'src' => '/uploads/test%20image.svg',
                 'alt' => 'Alternatywny opis',
                 'caption' => 'Podpis obrazu testowego',
                 'ratio' => '16/9',
@@ -145,6 +149,8 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.site-hero h1', 'działa poprawnie');
         self::assertSelectorTextContains('.builder-image figcaption', 'Podpis obrazu testowego');
+        self::assertSelectorExists('.builder-image img[src="/uploads/test%20image.svg"][alt="Alternatywny opis"]');
+        unlink($testImage);
 
         $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
         self::assertNotNull($page);
