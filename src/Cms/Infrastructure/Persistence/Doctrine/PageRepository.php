@@ -37,6 +37,16 @@ final class PageRepository extends ServiceEntityRepository
         return $this->findOneBy(['homePage' => true, 'published' => true]);
     }
 
+    public function findPublishedErrorPage(): ?Page
+    {
+        return $this->findOneBy([
+            'errorPage' => true,
+            'published' => true,
+            'access' => 'Public',
+            'adminOnly' => false,
+        ]);
+    }
+
     /** @return list<Page> */
     public function findPublicForSitemap(): array
     {

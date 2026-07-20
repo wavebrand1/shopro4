@@ -357,11 +357,13 @@ final class AdminCmsTest extends WebTestCase
 
         $this->client->request('GET', '/en/page-that-does-not-exist');
         self::assertResponseStatusCodeSame(404);
-        self::assertStringContainsString('The page translation does not exist or is not published.', (string) $this->client->getResponse()->getContent());
+        self::assertSelectorTextContains('h1', 'This page is not here');
+        self::assertStringNotContainsString('The page translation does not exist or is not published.', (string) $this->client->getResponse()->getContent());
 
         $this->client->request('GET', '/language/zz');
         self::assertResponseStatusCodeSame(404);
-        self::assertStringContainsString('The language does not exist.', (string) $this->client->getResponse()->getContent());
+        self::assertSelectorTextContains('h1', 'This page is not here');
+        self::assertStringNotContainsString('The language does not exist.', (string) $this->client->getResponse()->getContent());
 
         $this->client->request('GET', '/admin');
         self::assertResponseIsSuccessful();
@@ -961,5 +963,34 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/search?q=%25%25');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.site-search-summary', '0');
+    }
+
+    public function testPublicNotFoundUsesConfiguredPageAndLocalizedTranslation(): void
+    {
+        $polish = new Language();
+        $polish->setName('Polski'); $polish->setCode('pl'); $polish->setDefaultLanguage(true);
+        $english = new Language();
+        $english->setName('English'); $english->setCode('en');
+        $errorPage = new Page();
+        $errorPage->setTitle('Nie znaleziono strony'); $errorPage->setSlug('blad-404'); $errorPage->setContent('<p>Sprawdź wpisany adres.</p>');
+        $errorPage->setEditorMode('rich_text'); $errorPage->setPublished(true); $errorPage->setErrorPage(true);
+        $translation = new PageTranslation($errorPage, $english);
+        $translation->setTitle('Page not found'); $translation->setSlug('page-not-found'); $translation->setBuilderData('[{"id":"section","type":"layout_section","data":{"container":"grid","widths":[100],"columns":[[{"id":"text","type":"rich_text","data":{"content":"<p>Check the requested address.</p>"}}]]}}]'); $translation->setPublished(true);
+        $this->entityManager->persist($polish); $this->entityManager->persist($english); $this->entityManager->persist($errorPage); $this->entityManager->persist($translation);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/adres-ktory-nie-istnieje');
+        self::assertResponseStatusCodeSame(404);
+        self::assertResponseHeaderSame('X-Robots-Tag', 'noindex, nofollow');
+        self::assertSelectorTextContains('h1', 'Nie znaleziono strony');
+        self::assertSelectorTextContains('.public-article__body', 'Sprawdź wpisany adres.');
+
+        $this->client->request('GET', '/en/address-that-does-not-exist');
+        self::assertResponseStatusCodeSame(404);
+        self::assertSelectorTextContains('.builder-rich-text', 'Check the requested address.');
+
+        $this->client->request('GET', '/admin/address-that-does-not-exist');
+        self::assertResponseStatusCodeSame(404);
+        self::assertSelectorNotExists('.public-page-hero');
     }
 }

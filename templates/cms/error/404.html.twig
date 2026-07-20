@@ -1,0 +1,15 @@
+{% extends 'cms/layout.html.twig' %}
+{% block title %}{{ page ? page.effectiveSeoTitle : shopro_trans('error.404_title') }} — {{ shopro_setting('site_name', 'Shopro 4.0') }}{% endblock %}
+{% block meta %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block page_content %}
+{% if page %}
+    {% if page.usesComponentBuilder %}
+        {% for block in page.builderBlocks %}{% include 'cms/block/_render.html.twig' with {component:block} only %}{% else %}{% include 'cms/error/_fallback.html.twig' %}{% endfor %}
+    {% else %}
+        <section class="public-page-hero public-page-hero--error"><div class="public-page-hero__orb"></div><div class="site-container"><span class="site-kicker">404</span><h1>{{ page.title }}</h1><p>{{ page.caption ?: shopro_trans('error.404_lead') }}</p></div></section>
+        <section class="public-page-content"><div class="site-container public-page-grid"><article class="public-article"><div class="public-article__body">{{ page.content|raw }}</div></article><aside class="public-page-aside"><a class="site-button" href="{{ path('app_home') }}">← {{ shopro_trans('error.back_home') }}</a></aside></div></section>
+    {% endif %}
+{% else %}
+    {% include 'cms/error/_fallback.html.twig' %}
+{% endif %}
+{% endblock %}
