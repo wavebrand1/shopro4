@@ -59,7 +59,10 @@ razu optymalizowane, a front renderuje dostępne warianty AVIF/WebP przez
 Wartość `sizes` jest wyliczana z udziału kolumny: na urządzeniach mobilnych obraz
 zajmuje szerokość ekranu, a na desktopie przeglądarka uwzględnia procent kolumny
 i maksymalną szerokość grida 1180 px. Redaktor nadal wybiera jeden obraz źródłowy;
-właściwy plik z `srcset` wybiera przeglądarka.
+właściwy plik z `srcset` wybiera przeglądarka. Wygenerowane techniczne warianty
+rozmiarów są ukryte w Menedżerze plików. Zmiana nazwy obrazu
+usuwa stare warianty i generuje je pod nową nazwą, a usunięcie oryginału sprząta
+również wszystkie odpowiadające mu pliki AVIF/WebP.
 
 Przycisk „Cała strona główna” tworzy wszystkie powyższe sekcje w prawidłowej
 kolejności i wypełnia je treścią odpowiadającą bazowemu szablonowi.

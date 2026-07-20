@@ -32,6 +32,7 @@ final class AdminFileManager
             ];
             if ($item->isDir()) $directories[] = $entry;
             elseif ($item->isFile()) {
+                if (ResponsiveImageOptimizer::isVariant($item->getPathname())) continue;
                 $entry['size'] = $item->getSize();
                 $entry['image'] = str_starts_with((string) mime_content_type($item->getPathname()), 'image/');
                 $entry['url'] = '/uploads/'.str_replace('%2F', '/', rawurlencode($entry['path']));
@@ -78,15 +79,21 @@ final class AdminFileManager
         $source = $this->resolve($this->normalize($path));
         $target = dirname($source).'/'.$this->safeName($newName);
         if (file_exists($target) || !rename($source, $target)) throw new \RuntimeException('media.rename_failed');
+        if (is_file($target)) {
+            ResponsiveImageOptimizer::removeVariants($source);
+            if ($this->imageOptimizer && str_starts_with((string) mime_content_type($target), 'image/')) $this->imageOptimizer->optimize($target);
+        }
     }
 
     public function delete(string $path): void
     {
         $target = $this->resolve($this->normalize($path));
         if (is_dir($target)) {
+            $this->removeTechnicalFiles($target);
             $iterator = new \FilesystemIterator($target);
             if ($iterator->valid() || !rmdir($target)) throw new \RuntimeException('media.directory_not_empty');
         } elseif (!unlink($target)) throw new \RuntimeException('media.delete_failed');
+        else ResponsiveImageOptimizer::removeVariants($target);
     }
 
     private function resolveChild(string $path, string $name): string
@@ -128,5 +135,12 @@ final class AdminFileManager
         if (!in_array(strtolower(pathinfo($name, PATHINFO_EXTENSION)), self::ALLOWED_EXTENSIONS, true)) throw new \InvalidArgumentException('media.invalid_name');
 
         return $name;
+    }
+
+    private function removeTechnicalFiles(string $directory): void
+    {
+        foreach (new \DirectoryIterator($directory) as $item) {
+            if ($item->isFile() && !$item->isLink() && ResponsiveImageOptimizer::isVariant($item->getPathname())) @unlink($item->getPathname());
+        }
     }
 }

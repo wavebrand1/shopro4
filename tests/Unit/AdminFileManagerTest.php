@@ -50,6 +50,34 @@ final class AdminFileManagerTest extends TestCase
         $this->manager->createFile('', 'shell.php');
     }
 
+    public function testItHidesAndMaintainsResponsiveImageVariants(): void
+    {
+        file_put_contents($this->project.'/public/uploads/photo.jpg', 'original');
+        file_put_contents($this->project.'/public/uploads/photo.320.webp', 'variant');
+        file_put_contents($this->project.'/public/uploads/photo.640.avif', 'variant');
+
+        self::assertSame(['photo.jpg'], array_column($this->manager->listing('')['files'], 'name'));
+
+        $this->manager->rename('photo.jpg', 'renamed.jpg');
+        self::assertFileExists($this->project.'/public/uploads/renamed.jpg');
+        self::assertFileDoesNotExist($this->project.'/public/uploads/photo.320.webp');
+        self::assertFileDoesNotExist($this->project.'/public/uploads/photo.640.avif');
+
+        file_put_contents($this->project.'/public/uploads/renamed.320.webp', 'variant');
+        $this->manager->delete('renamed.jpg');
+        self::assertFileDoesNotExist($this->project.'/public/uploads/renamed.320.webp');
+    }
+
+    public function testItCanDeleteDirectoryContainingOnlyHiddenTechnicalVariants(): void
+    {
+        mkdir($this->project.'/public/uploads/gallery');
+        file_put_contents($this->project.'/public/uploads/gallery/removed.320.webp', 'variant');
+
+        self::assertSame([], $this->manager->listing('gallery')['files']);
+        $this->manager->delete('gallery');
+        self::assertDirectoryDoesNotExist($this->project.'/public/uploads/gallery');
+    }
+
     private function removeTree(string $path): void
     {
         if (!is_dir($path)) return;

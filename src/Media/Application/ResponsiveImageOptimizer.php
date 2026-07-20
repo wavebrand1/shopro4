@@ -13,6 +13,7 @@ final class ResponsiveImageOptimizer
     /** @return list<string> generated paths */
     public function optimize(string $source): array
     {
+        if (self::isVariant($source)) return [];
         if (!function_exists('imagecreatetruecolor')) return [];
         $info = @getimagesize($source);
         if (!$info || !in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP], true)) return [];
@@ -27,6 +28,7 @@ final class ResponsiveImageOptimizer
         sort($widths);
         $formats = (array) $this->settings->get('image_formats', ['avif', 'webp']);
         $quality = (int) $this->settings->get('image_quality', 82);
+        self::removeVariants($source);
         $generated = [];
         foreach ($widths as $width) {
             if ($width > $info[0]) continue;
@@ -41,5 +43,27 @@ final class ResponsiveImageOptimizer
         }
         imagedestroy($image);
         return $generated;
+    }
+
+    public static function isVariant(string $path): bool
+    {
+        return preg_match('/\.\d+\.(?:webp|avif)$/i', basename($path)) === 1;
+    }
+
+    /** @return list<string> */
+    public static function variants(string $source): array
+    {
+        if (self::isVariant($source)) return [];
+        $base = preg_replace('/\.[^.]+$/', '', $source);
+        if (!is_string($base)) return [];
+        $paths = glob($base.'.*.*') ?: [];
+        $expectedName = preg_quote(basename($base), '/');
+
+        return array_values(array_filter($paths, static fn (string $path): bool => is_file($path) && preg_match('/^'.$expectedName.'\.\d+\.(?:webp|avif)$/i', basename($path)) === 1));
+    }
+
+    public static function removeVariants(string $source): void
+    {
+        foreach (self::variants($source) as $variant) @unlink($variant);
     }
 }
