@@ -305,7 +305,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-page-heading h1', 'Translation:');
         self::assertSelectorTextContains('label[for="page_translation_published"]', 'Published translation');
 
-        $this->client->request('GET', '/admin/menu');
+        $englishMenuPage = $this->client->request('GET', '/admin/menu');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading', 'Drag items by the handle');
         self::assertSelectorTextContains('.menu-sort-table thead', 'Location');
@@ -316,6 +316,13 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('POST', '/admin/menu/reorder', ['_token' => 'invalid', 'items' => []]);
         self::assertResponseStatusCodeSame(403);
         self::assertStringContainsString('Invalid security token.', (string) $this->client->getResponse()->getContent());
+
+        $this->client->request('POST', '/admin/menu/reorder', [
+            '_token' => $englishMenuPage->filter('[data-menu-sort]')->attr('data-reorder-token'),
+            'items' => [],
+        ]);
+        self::assertResponseStatusCodeSame(422);
+        self::assertStringContainsString('The menu item list is invalid.', (string) $this->client->getResponse()->getContent());
 
         $this->client->request('GET', '/admin/menu/'.$headerItemId.'/edit');
         self::assertResponseIsSuccessful();

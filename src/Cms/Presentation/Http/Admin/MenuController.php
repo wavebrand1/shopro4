@@ -68,7 +68,7 @@ final class MenuController extends AbstractController
         try {
             $items->reorderSiblings($orderedIds);
         } catch (\InvalidArgumentException $exception) {
-            return $this->json(['message' => $exception->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->json(['message' => $this->translator->translate($exception->getMessage())], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         return $this->json(['message' => $this->translator->translate('menu.order_saved')]);
     }
@@ -86,7 +86,7 @@ final class MenuController extends AbstractController
         try {
             $items->move($item, $parent, $request->request->getInt('place'));
         } catch (\InvalidArgumentException $exception) {
-            return $this->json(['message' => $exception->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->json(['message' => $this->translator->translate($exception->getMessage())], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         return $this->json(['message' => $this->translator->translate('menu.hierarchy_saved')]);
     }

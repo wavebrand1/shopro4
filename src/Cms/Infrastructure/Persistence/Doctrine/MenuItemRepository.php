@@ -57,11 +57,11 @@ final class MenuItemRepository extends ServiceEntityRepository
     public function reorderSiblings(array $orderedIds): void
     {
         if ($orderedIds === [] || count($orderedIds) !== count(array_unique($orderedIds))) {
-            throw new \InvalidArgumentException('Nieprawidłowa lista pozycji menu.');
+            throw new \InvalidArgumentException('menu.error.invalid_list');
         }
         /** @var list<MenuItem> $items */
         $items = $this->findBy(['id' => $orderedIds]);
-        if (count($items) !== count($orderedIds)) throw new \InvalidArgumentException('Nie znaleziono wszystkich pozycji menu.');
+        if (count($items) !== count($orderedIds)) throw new \InvalidArgumentException('menu.error.items_missing');
 
         $byId = [];
         foreach ($items as $item) $byId[$item->getId()] = $item;
@@ -72,12 +72,12 @@ final class MenuItemRepository extends ServiceEntityRepository
         $siblingIds = array_map(static fn (MenuItem $item): int => (int) $item->getId(), $siblings);
         $submittedIds = $orderedIds;
         sort($siblingIds); sort($submittedIds);
-        if ($siblingIds !== $submittedIds) throw new \InvalidArgumentException('Lista nie zawiera wszystkich elementów tej grupy menu.');
+        if ($siblingIds !== $submittedIds) throw new \InvalidArgumentException('menu.error.incomplete_group');
 
         foreach ($orderedIds as $index => $id) {
             $item = $byId[$id];
             if ($item->getPlace() !== $place || $item->getParent()?->getId() !== $parentId) {
-                throw new \InvalidArgumentException('Pozycje nie należą do tej samej grupy menu.');
+                throw new \InvalidArgumentException('menu.error.different_group');
             }
             $item->setPosition(($index + 1) * 10);
         }
@@ -87,14 +87,14 @@ final class MenuItemRepository extends ServiceEntityRepository
     public function move(MenuItem $item, ?MenuItem $parent, int $place): void
     {
         if (!in_array($place, [MenuItem::PLACE_HEADER, MenuItem::PLACE_FOOTER], true)) {
-            throw new \InvalidArgumentException('Nieprawidłowe miejsce menu.');
+            throw new \InvalidArgumentException('menu.error.invalid_place');
         }
         if ($parent && $parent->getPlace() !== $place) {
-            throw new \InvalidArgumentException('Element nadrzędny należy do innego menu.');
+            throw new \InvalidArgumentException('menu.error.parent_different_menu');
         }
         $cursor = $parent;
         while ($cursor) {
-            if ($cursor === $item) throw new \InvalidArgumentException('Nie można przenieść pozycji pod nią samą ani pod jej element podrzędny.');
+            if ($cursor === $item) throw new \InvalidArgumentException('menu.error.cycle');
             $cursor = $cursor->getParent();
         }
 
