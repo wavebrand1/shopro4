@@ -485,6 +485,19 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'Orphaned records');
         self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'legacy-extension');
 
+        $this->client->request('GET', '/admin/memberships/new');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'New membership');
+        $this->client->submitForm('Save', [
+            'membership[title]' => 'Business customers',
+            'membership[description]' => 'Access to materials for business customers.',
+            'membership[active]' => true,
+        ]);
+        self::assertResponseRedirects('/admin/memberships');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.admin-table', 'Business customers');
+        self::assertSelectorTextContains('.admin-table', 'Active');
+
         $campaign = new NewsletterCampaign();
         $campaign->setSubject('Testowa kampania');
         $campaign->setContent('<h1>Treść kampanii</h1><p>Wiadomość testowa.</p>');
@@ -704,6 +717,9 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseStatusCodeSame(403);
 
         $this->client->request('GET', '/admin/modules');
+        self::assertResponseStatusCodeSame(403);
+
+        $this->client->request('GET', '/admin/memberships');
         self::assertResponseStatusCodeSame(403);
     }
 

@@ -1,0 +1,6 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}{{ shopro_trans(membership.id ? 'membership.edit' : 'membership.new') }} — Shopro 4.0{% endblock %}
+{% block body %}
+<div class="modern-page-heading"><div><p class="modern-kicker">{{ shopro_trans('admin.users_system') }}</p><h1>{{ shopro_trans(membership.id ? 'membership.edit' : 'membership.new') }}</h1><p>{{ shopro_trans('membership.form_help') }}</p></div><a class="modern-button" href="{{ path('admin_membership_index') }}">← {{ shopro_trans('common.back') }}</a></div>
+{{ form_start(form) }}<section class="modern-card"><div class="cms-card-body">{{ form_row(form.title) }}{{ form_row(form.description) }}{{ form_row(form.active) }}</div></section><div class="form-actions"><a class="modern-button" href="{{ path('admin_membership_index') }}">{{ shopro_trans('common.cancel') }}</a><button class="modern-button modern-button--primary">{{ shopro_trans('common.save') }}</button></div>{{ form_end(form) }}
+{% endblock %}

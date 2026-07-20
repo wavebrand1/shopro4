@@ -35,7 +35,7 @@ security:
     access_control:
         - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
         - { path: ^/admin/password/(forgot|reset), roles: PUBLIC_ACCESS }
-        - { path: ^/admin/(users|configuration/system|configuration/email-templates|configuration/languages|newsletter|logs|modules), roles: ROLE_ADMIN }
+        - { path: ^/admin/(users|memberships|configuration/system|configuration/email-templates|configuration/languages|newsletter|logs|modules), roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_EDITOR }
 
 when@test:

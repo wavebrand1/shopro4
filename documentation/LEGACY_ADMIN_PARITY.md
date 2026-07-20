@@ -96,3 +96,12 @@ sanityzowana.
 - pliki są walidowane po MIME i ścieżce kanonicznej;
 - konfiguracja i operacje CRUD zapisują wpis audytowy;
 - migracje zachowują pola potrzebne do późniejszego importu danych Legacy.
+# Członkostwa
+
+Shopro 4.0 odwzorowuje pola bazowego rekordu Legacy `memberships`: nazwę, opis
+i aktywność. Lista oraz dodawanie i edycja są dostępne administratorowi w
+`/admin/memberships`. Celowo nie udostępniono jeszcze kasowania: przed nim muszą
+powstać relacje z kontami użytkowników frontu i podstronami oraz kontrola użycia,
+aby nie tworzyć osieroconych uprawnień. Źródła Legacy:
+`setup/sql/structure.sql:93`, `lib/class_membership.php:31`,
+`lib/class_membership.php:57`, `admin/memberships.php`.
