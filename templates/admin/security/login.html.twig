@@ -6,6 +6,7 @@
     <p class="modern-kicker">{{ shopro_trans('auth.admin_panel') }}</p>
     <h1>{{ shopro_trans('auth.welcome_back') }}</h1>
     <p class="modern-login-lead">{{ shopro_trans('auth.login_lead') }}</p>
+    {% for type, messages in app.flashes %}{% for message in messages %}<div class="flash flash--{{ type }}">{{ message }}</div>{% endfor %}{% endfor %}
     {% if error %}<div class="flash flash--error">{{ shopro_trans('auth.invalid_credentials') }}</div>{% endif %}
     <form method="post" class="admin-form modern-login-form">
         <label>{{ shopro_trans('auth.identifier') }}<input type="text" name="_username" value="{{ last_username }}" required autofocus autocomplete="username" placeholder="{{ shopro_trans('auth.identifier_placeholder') }}"></label>
@@ -13,6 +14,7 @@
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
         <button class="modern-button modern-button--primary modern-button--wide" type="submit">{{ shopro_trans('auth.sign_in') }}</button>
     </form>
+    <a class="modern-login-footer" href="{{ path('admin_password_forgot') }}">{{ shopro_trans('auth.forgot_password_link') }}</a>
     <small class="modern-login-footer">Shopro 4.0 · {{ shopro_trans('admin.development_version') }}</small>
 </section>
 {% endblock %}

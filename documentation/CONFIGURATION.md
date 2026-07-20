@@ -29,6 +29,8 @@ Formularz został odwzorowany na podstawie `stare/Wersja_2_00/Develop/admin/conf
 - nie można zdegradować siebie ani ostatniego aktywnego administratora.
 - konta przechowują datę utworzenia i ostatniego poprawnego logowania; udane oraz
   nieudane próby logowania trafiają do dziennika audytowego wraz z adresem IP.
+- odzyskiwanie hasła używa jednorazowego tokenu ważnego przez godzinę; w bazie
+  zapisywany jest tylko SHA-256 tokenu, a formularz nie ujawnia istnienia konta.
 
 ## Obrazy
 

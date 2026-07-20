@@ -11,6 +11,7 @@ use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
+use App\Identity\Application\PasswordResetManager;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
 use App\Language\Domain\Entity\Language;
@@ -656,5 +657,41 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseStatusCodeSame(403);
         $this->client->request('GET', '/admin/configuration/system');
         self::assertResponseStatusCodeSame(403);
+    }
+
+    public function testAdministratorCanResetPasswordWithOneTimeToken(): void
+    {
+        $user = new AdminUser('reset@example.test', 'reset-user');
+        $hasher = self::getContainer()->get(UserPasswordHasherInterface::class);
+        $user->setPassword($hasher->hashPassword($user, 'old-secure-password'));
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/admin/password/forgot');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Odzyskiwanie hasła');
+        $this->client->submitForm('Wyślij link do zmiany hasła', ['identifier' => 'unknown@example.test']);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.flash--success', 'Jeśli aktywne konto istnieje');
+
+        $managedUser = self::getContainer()->get(AdminUserRepository::class)->find($user->getId());
+        self::assertNotNull($managedUser);
+        $token = self::getContainer()->get(PasswordResetManager::class)->create($managedUser);
+        $this->client->request('GET', '/admin/password/reset/'.$token);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Ustaw nowe hasło');
+        $this->client->submitForm('Zapisz nowe hasło', [
+            'password' => 'new-very-secure-password',
+            'password_confirmation' => 'new-very-secure-password',
+        ]);
+        self::assertResponseRedirects('/admin/login');
+
+        $updatedUser = self::getContainer()->get(AdminUserRepository::class)->find($user->getId());
+        self::assertNotNull($updatedUser);
+        self::assertTrue($hasher->isPasswordValid($updatedUser, 'new-very-secure-password'));
+
+        $this->client->request('GET', '/admin/password/reset/'.$token);
+        self::assertResponseStatusCodeSame(410);
+        self::assertSelectorTextContains('.flash--error', 'Link jest nieprawidłowy');
     }
 }

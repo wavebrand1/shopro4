@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: 'admin_user')]
 #[UniqueEntity(fields: ['email'], message: 'validation.user.email_exists')]
 #[UniqueEntity(fields: ['username'], message: 'validation.user.username_exists')]
-final class AdminUser implements UserInterface, PasswordAuthenticatedUserInterface
+class AdminUser implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
