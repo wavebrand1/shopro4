@@ -27,6 +27,8 @@ Formularz został odwzorowany na podstawie `stare/Wersja_2_00/Develop/admin/conf
 - administrator dziedziczy uprawnienia redaktora, a migracja zachowuje rolę
   administratora wszystkim istniejącym kontom;
 - nie można zdegradować siebie ani ostatniego aktywnego administratora.
+- konta przechowują datę utworzenia i ostatniego poprawnego logowania; udane oraz
+  nieudane próby logowania trafiają do dziennika audytowego wraz z adresem IP.
 
 ## Obrazy
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional;
 
 use App\Cms\Domain\Entity\MenuItem;
+use App\Audit\Domain\Entity\AuditLog;
 use App\Cms\Domain\Entity\MenuItemTranslation;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
@@ -59,6 +60,9 @@ final class AdminCmsTest extends WebTestCase
 
         $this->client->followRedirect();
         self::assertSelectorTextContains('h1', 'Dzień dobry');
+        $loggedInUser = self::getContainer()->get(AdminUserRepository::class)->find($user->getId());
+        self::assertNotNull($loggedInUser?->getLastLoginAt());
+        self::assertCount(1, $this->entityManager->getRepository(AuditLog::class)->findBy(['action' => 'login_success']));
 
         $this->client->request('GET', '/admin/pages/new');
         self::assertSelectorNotExists('.modern-nav a[href="/admin/pages/new"]');
@@ -405,6 +409,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'Users');
         self::assertSelectorTextContains('.admin-table thead', 'Email address');
+        self::assertSelectorTextContains('.admin-table thead', 'Last login');
 
         $this->client->request('GET', '/admin/users/'.$user->getId().'/edit');
         self::assertResponseIsSuccessful();
@@ -600,6 +605,14 @@ final class AdminCmsTest extends WebTestCase
         $user->setPassword($hasher->hashPassword($user, 'very-secure-password'));
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+
+        $this->client->request('GET', '/admin/login');
+        $this->client->submitForm('Zaloguj się', [
+            '_username' => 'administrator',
+            '_password' => 'invalid-password',
+        ]);
+        self::assertResponseRedirects('/admin/login');
+        self::assertCount(1, $this->entityManager->getRepository(AuditLog::class)->findBy(['action' => 'login_failure']));
 
         $this->client->request('GET', '/admin/login');
         $form = $this->client->getCrawler()->filter('form')->form([

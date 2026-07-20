@@ -60,10 +60,17 @@ final class AdminUser implements UserInterface, PasswordAuthenticatedUserInterfa
     #[ORM\Column]
     private string $password = '';
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private \DateTimeImmutable $createdAt;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $lastLoginAt = null;
+
     public function __construct(string $email, ?string $username = null)
     {
         $this->email = mb_strtolower(trim($email));
         $this->username = mb_strtolower(trim($username ?: strstr($this->email, '@', true) ?: $this->email));
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -113,6 +120,9 @@ final class AdminUser implements UserInterface, PasswordAuthenticatedUserInterfa
     /** @param list<string> $roles */
     public function setAssignedRoles(array $roles): void { $this->roles = array_values(array_intersect($roles, ['ROLE_ADMIN', 'ROLE_EDITOR'])); }
     public function isAdministrator(): bool { return in_array('ROLE_ADMIN', $this->roles, true); }
+    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
+    public function getLastLoginAt(): ?\DateTimeImmutable { return $this->lastLoginAt; }
+    public function recordLogin(): void { $this->lastLoginAt = new \DateTimeImmutable(); }
     public function getPassword(): string { return $this->password; }
     public function setPassword(string $password): void { $this->password = $password; }
     public function eraseCredentials(): void {}

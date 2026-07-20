@@ -55,5 +55,6 @@ final class SystemTranslationCatalog
   'media.select_image_help'=>['pl'=>'Wskaż obraz, który ma zostać użyty w komponencie Page Buildera.','en'=>'Choose the image to use in the Page Builder component.'],
   'media.use_image'=>['pl'=>'Użyj obrazu','en'=>'Use image'],
   'dashboard.files_help'=>['pl'=>'Przesyłaj i porządkuj obrazy oraz dokumenty.','en'=>'Upload and organize images and documents.'],
+  'users.created_at'=>['pl'=>'Utworzono','en'=>'Created'],'users.last_login'=>['pl'=>'Ostatnie logowanie','en'=>'Last login'],
  ];}
 }
