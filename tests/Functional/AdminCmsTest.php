@@ -77,7 +77,7 @@ final class AdminCmsTest extends WebTestCase
         $page = self::getContainer()->get(PageRepository::class)->findPublishedBySlug('o-nas');
         self::assertNotNull($page);
 
-        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        $editPage = $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('textarea[name="page[caption]"]');
         self::assertSelectorExists('input[name="page[homePage]"]');
@@ -88,6 +88,20 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('input[name="page[builderCss]"]');
         self::assertSelectorExists('.ui-field input[name="page[title]"]');
         self::assertSelectorExists('.ui-choice input[name="page[published]"]');
+        self::assertSelectorExists('button[data-preview-submit][formtarget="_blank"]');
+
+        $previewForm = $editPage->filter('button[data-preview-submit]')->form();
+        $previewForm['page[title]'] = 'Niezapisany podgląd';
+        $previewForm['page[builderData]'] = '[{"id":"preview","type":"layout_section","data":{"container":"grid","widths":[100],"columns":[[{"id":"preview-text","type":"rich_text","data":{"content":"<p>Treść tylko w podglądzie.</p><script>alert(1)</script>"}}]]}}]';
+        $this->client->submit($previewForm);
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('X-Robots-Tag', 'noindex, nofollow');
+        self::assertSelectorTextContains('.page-preview-banner', 'Tryb podglądu');
+        self::assertSelectorTextContains('.public-article__body', 'Treść tylko w podglądzie.');
+        self::assertStringNotContainsString('<script>alert(1)</script>', (string) $this->client->getResponse()->getContent());
+        self::assertSame('O nas', self::getContainer()->get(PageRepository::class)->find($page->getId())?->getTitle());
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
 
         $this->client->submitForm('Zapisz i kontynuuj edycję', [
             'page[title]' => 'O nas — edycja',

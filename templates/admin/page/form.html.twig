@@ -65,6 +65,6 @@
         <div class="cms-module-placeholder"><strong>{{ shopro_trans('page.module') }}</strong><span>{{ shopro_trans('page.module_help') }}</span></div>
     </div>
 </details>
-<div class="modern-form-actions cms-sticky-actions"><a class="modern-button" href="{{ path('admin_page_index') }}">{{ shopro_trans('common.cancel') }}</a><button class="modern-button" type="submit" name="_save_action" value="stay">{{ shopro_trans('page.save_continue') }}</button><button class="modern-button modern-button--primary" type="submit" name="_save_action" value="list">{{ shopro_trans('page.save') }}</button></div>
+<div class="modern-form-actions cms-sticky-actions"><a class="modern-button" href="{{ path('admin_page_index') }}">{{ shopro_trans('common.cancel') }}</a><button class="modern-button" type="submit" formaction="{{ path('admin_page_preview') }}" formtarget="_blank" data-preview-submit>{{ shopro_trans('page.preview') }}</button><button class="modern-button" type="submit" name="_save_action" value="stay">{{ shopro_trans('page.save_continue') }}</button><button class="modern-button modern-button--primary" type="submit" name="_save_action" value="list">{{ shopro_trans('page.save') }}</button></div>
 {{ form_end(form) }}
 {% endblock %}

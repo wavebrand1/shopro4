@@ -43,6 +43,33 @@ final class PageController extends AbstractController
         return $this->handleForm($request, new Page(), $pages, 'page.created');
     }
 
+    #[Route('/preview', name: 'admin_page_preview', methods: ['POST'])]
+    public function preview(Request $request): Response
+    {
+        $page = new Page();
+        $form = $this->createForm(PageType::class, $page, ['validation_groups' => false]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $page->setBuilderData($this->sanitizeBuilderData($page->getBuilderData()));
+            $response = $this->render('cms/page/show.html.twig', [
+                'page' => $page,
+                'source_page' => $page,
+                'alternates' => [],
+                'preview' => true,
+            ]);
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+            $response->headers->set('Cache-Control', 'no-store, private');
+
+            return $response;
+        }
+
+        return $this->render('admin/page/form.html.twig', [
+            'form' => $form,
+            'page' => $page,
+        ], new Response(status: Response::HTTP_UNPROCESSABLE_ENTITY));
+    }
+
     #[Route('/{id}/edit', name: 'admin_page_edit', requirements: ['id' => '\\d+'], methods: ['GET', 'POST'])]
     public function edit(Page $page, Request $request, PageRepository $pages): Response
     {
