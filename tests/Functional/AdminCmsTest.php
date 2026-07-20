@@ -349,7 +349,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('html[lang="en"]');
         self::assertSelectorTextContains('.modern-page-heading h1', 'Good morning');
         self::assertSelectorTextContains('.modern-nav', 'CONTENT MANAGEMENT');
-        self::assertSelectorCount(6, '.modern-module-card');
+        self::assertSelectorCount(7, '.modern-module-card');
         self::assertSelectorTextContains('.modern-dashboard-modules', 'Manage the entire system');
         self::assertSelectorExists('.admin-language-picker a[href^="/admin/language/en"]');
 
@@ -409,6 +409,7 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/admin/users/'.$user->getId().'/edit');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'Edit user');
+        self::assertSelectorTextContains('label[for="admin_user_assignedRoles_0"]', 'Administrator');
         self::assertSelectorTextContains('label[for="admin_user_apiScopes_0"]', 'Read data');
         $this->client->submitForm('Save user', ['admin_user[active]' => false]);
         self::assertResponseStatusCodeSame(422);
@@ -608,5 +609,39 @@ final class AdminCmsTest extends WebTestCase
         $this->client->submit($form);
 
         self::assertResponseRedirects('/admin');
+    }
+
+    public function testEditorCanManageContentButCannotOpenAdministratorSettings(): void
+    {
+        $user = new AdminUser('editor@example.test', 'editor');
+        $user->setAssignedRoles(['ROLE_EDITOR']);
+        $hasher = self::getContainer()->get(UserPasswordHasherInterface::class);
+        $user->setPassword($hasher->hashPassword($user, 'very-secure-password'));
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/admin/login');
+        $this->client->submitForm('Zaloguj się', [
+            '_username' => 'editor',
+            '_password' => 'very-secure-password',
+        ]);
+        self::assertResponseRedirects('/admin');
+
+        $this->client->request('GET', '/admin');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-user__data', 'Redaktor');
+        self::assertSelectorExists('.modern-nav a[href="/admin/pages"]');
+        self::assertSelectorExists('.modern-nav a[href="/admin/configuration/files"]');
+        self::assertSelectorNotExists('.modern-nav a[href="/admin/users"]');
+        self::assertSelectorCount(2, '.modern-module-card');
+
+        $this->client->request('GET', '/admin/pages');
+        self::assertResponseIsSuccessful();
+        $this->client->request('GET', '/admin/configuration/files');
+        self::assertResponseIsSuccessful();
+        $this->client->request('GET', '/admin/users');
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request('GET', '/admin/configuration/system');
+        self::assertResponseStatusCodeSame(403);
     }
 }

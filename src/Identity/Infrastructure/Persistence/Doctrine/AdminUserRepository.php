@@ -24,13 +24,9 @@ final class AdminUserRepository extends ServiceEntityRepository implements UserL
         $this->getEntityManager()->flush();
     }
 
-    public function countActive(): int
+    public function countActiveAdministrators(): int
     {
-        return (int) $this->createQueryBuilder('u')
-            ->select('COUNT(u.id)')
-            ->andWhere('u.active = true')
-            ->getQuery()
-            ->getSingleScalarResult();
+        return count(array_filter($this->findBy(['active' => true]), static fn (AdminUser $user): bool => $user->isAdministrator()));
     }
 
     public function loadUserByIdentifier(string $identifier): ?UserInterface

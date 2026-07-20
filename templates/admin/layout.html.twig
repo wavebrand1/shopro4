@@ -34,7 +34,7 @@
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
                     {{ shopro_trans('nav.menu') }}
                 </a>
-                <p class="modern-nav__label">{{ shopro_trans('admin.users_system') }}</p>
+                {% if is_granted('ROLE_ADMIN') %}<p class="modern-nav__label">{{ shopro_trans('admin.users_system') }}</p>
                 <a class="{{ route starts with 'admin_user_' ? 'is-active' : '' }}" href="{{ path('admin_user_index') }}">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3-7 8-7s8 3 8 7"/></svg></span>
                     {{ shopro_trans('nav.users') }}
@@ -51,6 +51,8 @@
                 <a class="{{ route starts with 'admin_language_' ? 'is-active' : '' }}" href="{{ path('admin_language_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18"/></svg></span>{{ shopro_trans('nav.languages') }}</a>
                 <a class="{{ route starts with 'admin_file_manager_' ? 'is-active' : '' }}" href="{{ path('admin_file_manager_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg></span>{{ shopro_trans('nav.file_manager') }}</a>
                 <a class="{{ route starts with 'admin_audit_log_' ? 'is-active' : '' }}" href="{{ path('admin_audit_log_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M5 3h14v18H5V3Zm3 5h8M8 12h8M8 16h5"/></svg></span>{{ shopro_trans('nav.logs') }}</a>
+                {% endif %}
+                {% if is_granted('ROLE_EDITOR') and not is_granted('ROLE_ADMIN') %}<a class="{{ route starts with 'admin_file_manager_' ? 'is-active' : '' }}" href="{{ path('admin_file_manager_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg></span>{{ shopro_trans('nav.file_manager') }}</a>{% endif %}
                 <p class="modern-nav__label">{{ shopro_trans('admin.website') }}</p>
                 <a href="{{ path('app_home') }}" target="_blank">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
@@ -81,7 +83,7 @@
                     </a>
                     <div class="modern-user">
                         <span class="modern-user__avatar">{{ app.user.userIdentifier|first|upper }}</span>
-                        <span class="modern-user__data"><strong>{{ shopro_trans('admin.administrator') }}</strong><small>{{ app.user.userIdentifier }}</small></span>
+                        <span class="modern-user__data"><strong>{{ shopro_trans(is_granted('ROLE_ADMIN') ? 'admin.administrator' : 'admin.editor') }}</strong><small>{{ app.user.userIdentifier }}</small></span>
                     </div>
                     <form method="post" action="{{ path('admin_logout') }}">
                         <button class="modern-logout" type="submit">{{ shopro_trans('nav.logout') }}</button>

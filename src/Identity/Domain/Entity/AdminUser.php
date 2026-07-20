@@ -55,7 +55,7 @@ final class AdminUser implements UserInterface, PasswordAuthenticatedUserInterfa
 
     /** @var list<string> */
     #[ORM\Column(type: Types::JSON)]
-    private array $roles = [];
+    private array $roles = ['ROLE_ADMIN'];
 
     #[ORM\Column]
     private string $password = '';
@@ -103,11 +103,16 @@ final class AdminUser implements UserInterface, PasswordAuthenticatedUserInterfa
     /** @return list<string> */
     public function getRoles(): array
     {
-        return array_values(array_unique([...$this->roles, 'ROLE_ADMIN']));
+        return array_values(array_unique([...$this->roles, 'ROLE_USER']));
     }
 
     /** @param list<string> $roles */
     public function setRoles(array $roles): void { $this->roles = $roles; }
+    /** @return list<string> */
+    public function getAssignedRoles(): array { return $this->roles; }
+    /** @param list<string> $roles */
+    public function setAssignedRoles(array $roles): void { $this->roles = array_values(array_intersect($roles, ['ROLE_ADMIN', 'ROLE_EDITOR'])); }
+    public function isAdministrator(): bool { return in_array('ROLE_ADMIN', $this->roles, true); }
     public function getPassword(): string { return $this->password; }
     public function setPassword(string $password): void { $this->password = $password; }
     public function eraseCredentials(): void {}

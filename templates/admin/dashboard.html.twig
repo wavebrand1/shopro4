@@ -33,12 +33,17 @@
     <div class="modern-modules-grid">
         {% set modules = [
             {route:'admin_menu_index',label:'nav.menu',help:'dashboard.menu_help',value:menu_count,meta:'dashboard.configured',icon:'☰'},
-            {route:'admin_user_index',label:'nav.users',help:'dashboard.users_help',value:user_count,meta:'dashboard.configured',icon:'♙'},
-            {route:'admin_language_index',label:'nav.languages',help:'dashboard.languages_help',value:language_count,meta:'dashboard.active_languages',icon:'◎'},
-            {route:'admin_newsletter_index',label:'nav.newsletter',help:'dashboard.newsletter_help',value:campaign_count,meta:'dashboard.campaigns',icon:'✉'},
-            {route:'admin_email_template_index',label:'nav.email_templates',help:'dashboard.email_help',value:email_template_count,meta:'dashboard.configured',icon:'▤'},
-            {route:'admin_system_settings_edit',label:'nav.configuration',help:'dashboard.settings_help',value:null,meta:null,icon:'⚙'}
+            {route:'admin_file_manager_index',label:'nav.file_manager',help:'dashboard.files_help',value:null,meta:null,icon:'▣'}
         ] %}
+        {% if is_granted('ROLE_ADMIN') %}
+            {% set modules = modules|merge([
+                {route:'admin_user_index',label:'nav.users',help:'dashboard.users_help',value:user_count,meta:'dashboard.configured',icon:'♙'},
+                {route:'admin_language_index',label:'nav.languages',help:'dashboard.languages_help',value:language_count,meta:'dashboard.active_languages',icon:'◎'},
+                {route:'admin_newsletter_index',label:'nav.newsletter',help:'dashboard.newsletter_help',value:campaign_count,meta:'dashboard.campaigns',icon:'✉'},
+                {route:'admin_email_template_index',label:'nav.email_templates',help:'dashboard.email_help',value:email_template_count,meta:'dashboard.configured',icon:'▤'},
+                {route:'admin_system_settings_edit',label:'nav.configuration',help:'dashboard.settings_help',value:null,meta:null,icon:'⚙'}
+            ]) %}
+        {% endif %}
         {% for module in modules %}<a class="modern-module-card" href="{{ path(module.route) }}"><span class="modern-module-card__icon">{{ module.icon }}</span><div><h3>{{ shopro_trans(module.label) }}</h3><p>{{ shopro_trans(module.help) }}</p><small>{% if module.value is not null %}<b>{{ module.value }}</b> {{ shopro_trans(module.meta) }} · {% endif %}{{ shopro_trans('dashboard.manage') }} →</small></div></a>{% endfor %}
     </div>
 </section>

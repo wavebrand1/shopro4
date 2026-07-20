@@ -19,6 +19,15 @@ Formularz został odwzorowany na podstawie `stare/Wersja_2_00/Develop/admin/conf
 - panel administracyjny i API używają `Cache-Control: private, no-store`, aby dane
   uwierzytelnione nie pozostawały w pamięci współdzielonych proxy ani przeglądarki.
 
+## Role panelu administracyjnego
+
+- `ROLE_ADMIN` ma pełny dostęp, w tym do użytkowników, konfiguracji, języków,
+  newslettera, szablonów e-mail i logów;
+- `ROLE_EDITOR` zarządza treścią, menu, tłumaczeniami podstron i plikami;
+- administrator dziedziczy uprawnienia redaktora, a migracja zachowuje rolę
+  administratora wszystkim istniejącym kontom;
+- nie można zdegradować siebie ani ostatniego aktywnego administratora.
+
 ## Obrazy
 
 Stałe rozmiary miniatur ze starego systemu zastąpił zestaw responsywnych szerokości. `app:images:optimize` generuje AVIF/WebP, a funkcja Twig `shopro_picture()` tworzy `picture/srcset`, dopisuje naturalne `width` i `height`, `decoding=async`, lazy loading poza pierwszym ekranem i `fetchpriority=high` dla obrazu LCP. Polecenie jest częścią `bin/deploy-dev`.

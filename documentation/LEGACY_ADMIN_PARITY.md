@@ -15,6 +15,11 @@ avatar, informacje, notatki, newsletter, członkostwo, status `y/n/b/t`, poziom
 użytkownika `9/8/1`, indywidualny dostęp i szablony uprawnień. Lista pokazuje
 użytkownika, e-mail, członkostwo, datę rejestracji, ostatnie logowanie i status.
 
+Shopro 4.0 mapuje poziomy dostępu Legacy na role panelu. Administrator ma pełny
+dostęp, a Redaktor zarządza podstronami, menu, ich tłumaczeniami oraz plikami.
+Użytkownicy, konfiguracja, języki, newsletter, poczta i logi wymagają roli
+Administratora.
+
 ## Konfiguracja systemu
 
 Źródła: `admin/config.php`, `admin/controller.php` (`processConfig`),

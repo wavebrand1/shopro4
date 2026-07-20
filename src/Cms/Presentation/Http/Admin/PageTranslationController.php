@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace App\Cms\Presentation\Http\Admin;
 use App\Cms\Domain\Entity\Page;use App\Cms\Domain\Entity\PageTranslation;use App\Cms\Presentation\Form\PageTranslationType;use App\Language\Domain\Entity\Language;use App\Language\Application\SystemTranslator;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\DependencyInjection\Attribute\Autowire;use Symfony\Component\HttpFoundation\Request;use Symfony\Component\HttpFoundation\Response;use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;use Symfony\Component\Routing\Attribute\Route;use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/admin/pages/{id}/translations')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_EDITOR')]
 final class PageTranslationController extends AbstractController
 {
  public function __construct(#[Autowire(service:'html_sanitizer.sanitizer.app.page_content')]private readonly HtmlSanitizerInterface $sanitizer,private readonly ?SystemTranslator $translator=null){}

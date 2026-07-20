@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/configuration/files', name: 'admin_file_manager_')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_EDITOR')]
 final class FileManagerController extends AbstractController
 {
     public function __construct(private readonly AdminFileManager $files, private readonly SystemTranslator $translator) {}

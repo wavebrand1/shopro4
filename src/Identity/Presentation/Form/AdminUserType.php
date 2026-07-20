@@ -16,6 +16,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Count;
 
 final class AdminUserType extends AbstractType
 {
@@ -33,6 +34,7 @@ final class AdminUserType extends AbstractType
             ->add('plainPassword', PasswordType::class, ['label' => $t($new ? 'users.password' : 'users.new_password'), 'mapped' => false, 'required' => $new, 'constraints' => $new ? [new NotBlank(), new Length(min: 12)] : [new Length(min: 12)]])
             ->add('active', CheckboxType::class, ['label' => $t('users.account_active'), 'required' => false])
             ->add('newsletter', CheckboxType::class, ['label' => $t('users.newsletter_subscribed'), 'required' => false])
+            ->add('assignedRoles', ChoiceType::class, ['label' => $t('users.panel_permissions'), 'expanded' => true, 'multiple' => true, 'choices' => [$t('users.role_admin') => 'ROLE_ADMIN', $t('users.role_editor') => 'ROLE_EDITOR'], 'constraints' => [new Count(min: 1, minMessage: $t('users.role_required'))]])
             ->add('apiEnabled', CheckboxType::class, ['label' => $t('users.api_active'), 'required' => false])
             ->add('apiScopes', ChoiceType::class, ['label' => $t('users.api_permissions'), 'expanded' => true, 'multiple' => true, 'choices' => [$t('users.api_read') => 'read', $t('users.api_write') => 'write', $t('users.api_cms') => 'cms']]);
     }

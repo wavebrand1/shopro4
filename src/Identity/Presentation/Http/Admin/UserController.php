@@ -73,16 +73,27 @@ final class UserController extends AbstractController
     private function form(Request $request, AdminUser $user, AdminUserRepository $users, UserPasswordHasherInterface $hasher): Response
     {
         $wasActive = $user->isActive();
+        $wasAdministrator = $user->isAdministrator();
         $form = $this->createForm(AdminUserType::class, $user); $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             if ($wasActive && !$user->isActive()) {
                 $currentUser = $this->getUser();
                 $message = $currentUser instanceof AdminUser && $currentUser->getId() === $user->getId()
                     ? 'users.cannot_deactivate_self'
-                    : ($users->countActive() <= 1 ? 'users.cannot_deactivate_last' : null);
+                    : ($user->isAdministrator() && $users->countActiveAdministrators() <= 1 ? 'users.cannot_deactivate_last' : null);
                 if ($message !== null) {
                     $user->setActive(true);
                     $form->get('active')->addError(new FormError($this->translator->translate($message)));
+                }
+            }
+            if ($wasAdministrator && !$user->isAdministrator()) {
+                $currentUser = $this->getUser();
+                $message = $currentUser instanceof AdminUser && $currentUser->getId() === $user->getId()
+                    ? 'users.cannot_demote_self'
+                    : ($users->countActiveAdministrators() <= 1 ? 'users.cannot_demote_last' : null);
+                if ($message !== null) {
+                    $user->setAssignedRoles(['ROLE_ADMIN']);
+                    $form->get('assignedRoles')->addError(new FormError($this->translator->translate($message)));
                 }
             }
         }
