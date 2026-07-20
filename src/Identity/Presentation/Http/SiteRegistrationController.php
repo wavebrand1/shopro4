@@ -24,9 +24,17 @@ final class SiteRegistrationController extends AbstractController
     #[Route('/register', name: 'site_register', methods: ['GET', 'POST'])]
     public function register(Request $request, SettingsProvider $settings, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer): Response
     {
-        if (!(bool) $settings->get('registration_allowed', false)) throw $this->createNotFoundException();
+        if (!(bool) $settings->get('registration_allowed', false)) {
+            return $this->render('cms/security/registration_unavailable.html.twig', [
+                'message' => 'site_registration.disabled',
+            ], new Response(status: Response::HTTP_NOT_FOUND));
+        }
         $limit = max(0, (int) $settings->get('user_limit', 0));
-        if ($limit > 0 && $users->count([]) >= $limit) return $this->render('cms/security/registration_unavailable.html.twig');
+        if ($limit > 0 && $users->count([]) >= $limit) {
+            return $this->render('cms/security/registration_unavailable.html.twig', [
+                'message' => 'site_registration.limit_reached',
+            ]);
+        }
         $user = new SiteUser('', ''); $form = $this->createForm(SiteRegistrationType::class, $user); $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($hasher->hashPassword($user, (string) $form->get('plainPassword')->getData()));
