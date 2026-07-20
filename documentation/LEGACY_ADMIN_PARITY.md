@@ -127,3 +127,9 @@ swoje aktywne członkostwa, zmienić unikalny login i adres e-mail oraz ustawić
 nowe hasło po potwierdzeniu obecnego. Zmiana danych i hasła jest audytowana, a
 trasy konta wymagają `ROLE_SITE_USER` i nie są dostępne operatorom PA wyłącznie
 z racji ich uprawnień administracyjnych.
+
+Nieaktywny użytkownik może poprosić o ponowną wiadomość pod
+`/activation/resend`. Formularz zawsze zwraca ten sam komunikat, niezależnie od
+istnienia i stanu konta. Poprzedni token jest zastępowany dopiero po skutecznym
+przekazaniu nowej wiadomości do transportu pocztowego. Endpoint ma limit trzech
+prób na 15 minut dla kombinacji adresu IP i identyfikatora konta.

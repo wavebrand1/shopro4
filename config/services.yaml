@@ -40,5 +40,9 @@ services:
             $pool: '@cache.rate_limiter'
             $kernelSecret: '%kernel.secret%'
 
+    App\Identity\Presentation\Http\SiteRegistrationController:
+        arguments:
+            $activationResendLimiter: '@limiter.activation_resend'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

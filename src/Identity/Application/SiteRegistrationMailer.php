@@ -18,7 +18,7 @@ final class SiteRegistrationMailer
     {
         $template = $this->templates->findOneBy(['code' => 'user_activate_account']);
         if (!$template) throw new \RuntimeException('Brak szablonu user_activate_account.');
-        $variables = ['[SITE_NAME]' => (string) $this->settings->get('site_name', 'Shopro'), '[USERNAME]' => $user->getUsername(), '[EMAIL]' => $user->getEmail(), '[LINK]' => $url];
+        $variables = ['[SITE_NAME]' => (string) $this->settings->get('site_name', 'Shopro'), '[NAME]' => $user->getUsername(), '[USERNAME]' => $user->getUsername(), '[EMAIL]' => $user->getEmail(), '[LINK]' => $url, '[URL]' => $url];
         $subject = strtr($template->getSubject(), $variables); $content = strtr($template->getContent(), $variables);
         $from = trim((string) ($this->settings->get('mail_from_address') ?: $this->settings->get('site_email')));
         if ($from === '') throw new \RuntimeException('Brak adresu nadawcy.');

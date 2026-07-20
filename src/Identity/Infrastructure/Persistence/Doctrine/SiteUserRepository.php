@@ -16,6 +16,13 @@ final class SiteUserRepository extends ServiceEntityRepository implements UserLo
     public function __construct(ManagerRegistry $registry) { parent::__construct($registry, SiteUser::class); }
     public function save(SiteUser $user): void { $this->getEntityManager()->persist($user); $this->getEntityManager()->flush(); }
     public function remove(SiteUser $user): void { $this->getEntityManager()->remove($user); $this->getEntityManager()->flush(); }
+    public function findByIdentifierIncludingInactive(string $identifier): ?SiteUser
+    {
+        return $this->createQueryBuilder('user')
+            ->andWhere('LOWER(user.username) = :identifier OR LOWER(user.email) = :identifier')
+            ->setParameter('identifier', mb_strtolower(trim($identifier)))
+            ->getQuery()->getOneOrNullResult();
+    }
     public function loadUserByIdentifier(string $identifier): ?UserInterface
     {
         return $this->createQueryBuilder('user')

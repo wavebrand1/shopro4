@@ -646,6 +646,21 @@ final class AdminCmsTest extends WebTestCase
         self::assertTrue($pendingUser->isActive());
         self::assertFalse($pendingUser->activateWithToken($activationToken));
 
+        $resendUser = new SiteUser('waiting@example.test', 'waiting');
+        $resendUser->setPassword($hasher->hashPassword($resendUser, 'waiting-secure-password'));
+        $originalActivationToken = $resendUser->issueActivationToken();
+        $resendManager = self::getContainer()->get(EntityManagerInterface::class);
+        $resendManager->persist($resendUser);
+        $resendManager->flush();
+        $this->client->request('GET', '/activation/resend');
+        self::assertResponseIsSuccessful();
+        $resendForm = $this->client->getCrawler()->filter('form.modern-login-form')->form();
+        $this->client->submit($resendForm, ['identifier' => 'waiting@example.test']);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.flash--success');
+        $this->client->request('GET', '/activate/'.$originalActivationToken);
+        self::assertResponseRedirects('/login');
+
         $campaign = new NewsletterCampaign();
         $campaign->setSubject('Testowa kampania');
         $campaign->setContent('<h1>Treść kampanii</h1><p>Wiadomość testowa.</p>');

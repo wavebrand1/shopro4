@@ -17,10 +17,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 
 final class SiteRegistrationController extends AbstractController
 {
-    public function __construct(private readonly SystemTranslator $translator) {}
+    public function __construct(private readonly SystemTranslator $translator, private readonly RateLimiterFactory $activationResendLimiter) {}
     #[Route('/register', name: 'site_register', methods: ['GET', 'POST'])]
     public function register(Request $request, SettingsProvider $settings, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer): Response
     {
@@ -65,5 +66,27 @@ final class SiteRegistrationController extends AbstractController
         if (!$user || !$user->activateWithToken($token)) throw $this->createNotFoundException($this->translator->translate('site_registration.activation_invalid'));
         $entityManager->flush(); $this->addFlash('success', $this->translator->translate('site_registration.activated'));
         return $this->redirectToRoute('site_login');
+    }
+
+    #[Route('/activation/resend', name: 'site_activation_resend', methods: ['GET', 'POST'])]
+    public function resend(Request $request, SiteUserRepository $users, SiteRegistrationMailer $mailer): Response
+    {
+        $sent = false;
+        if ($request->isMethod('POST') && $this->isCsrfTokenValid('site-activation-resend', (string) $request->request->get('_token'))) {
+            $identifier = mb_strtolower(trim((string) $request->request->get('identifier')));
+            $rateLimit = $this->activationResendLimiter->create(hash('sha256', ($request->getClientIp() ?? '').'|'.$identifier))->consume();
+            $user = $rateLimit->isAccepted() ? $users->findByIdentifierIncludingInactive($identifier) : null;
+            if ($user instanceof SiteUser && !$user->isActive()) {
+                try {
+                    $token = $user->issueActivationToken();
+                    $mailer->sendActivation($user, $this->generateUrl('site_activate', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL));
+                    $users->save($user);
+                } catch (\Throwable) {
+                    // Neutralna odpowiedź nie ujawnia istnienia ani stanu konta.
+                }
+            }
+            $sent = true;
+        }
+        return $this->render('cms/security/resend_activation.html.twig', ['sent' => $sent]);
     }
 }
