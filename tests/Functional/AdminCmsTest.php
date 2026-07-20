@@ -563,6 +563,37 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('Strona z komponentów', (string) $this->client->getResponse()->getContent());
 
+        $this->client->request('GET', '/account');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.site-account-details', 'customer@example.test');
+        self::assertSelectorTextContains('.site-membership-list', 'Business customers');
+        self::assertSelectorExists('a[href="/account/profile"]');
+        self::assertSelectorExists('a[href="/account/password"]');
+
+        $this->client->request('GET', '/account/profile');
+        self::assertResponseIsSuccessful();
+        $profileForm = $this->client->getCrawler()->filter('form[name="site_profile"]')->form();
+        $this->client->submit($profileForm, [
+            'site_profile[username]' => 'customer',
+            'site_profile[email]' => 'customer-updated@example.test',
+        ]);
+        self::assertResponseRedirects('/account/profile');
+        $updatedSiteUser = self::getContainer()->get(EntityManagerInterface::class)->getRepository(SiteUser::class)->findOneBy(['username' => 'customer']);
+        self::assertSame('customer-updated@example.test', $updatedSiteUser?->getEmail());
+
+        $this->client->request('GET', '/account/password');
+        self::assertResponseIsSuccessful();
+        $passwordForm = $this->client->getCrawler()->filter('form[name="site_password_change"]')->form();
+        $this->client->submit($passwordForm, [
+            'site_password_change[currentPassword]' => 'very-secure-password',
+            'site_password_change[newPassword][first]' => 'customer-changed-password',
+            'site_password_change[newPassword][second]' => 'customer-changed-password',
+        ]);
+        self::assertResponseRedirects('/account/password');
+        $passwordChangedUser = self::getContainer()->get(EntityManagerInterface::class)->getRepository(SiteUser::class)->findOneBy(['username' => 'customer']);
+        self::assertNotNull($passwordChangedUser);
+        self::assertTrue($hasher->isPasswordValid($passwordChangedUser, 'customer-changed-password'));
+
         $this->client->request('GET', '/register');
         self::assertResponseStatusCodeSame(404);
 

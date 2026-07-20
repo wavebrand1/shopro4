@@ -15,7 +15,7 @@
             <div class="site-header__actions">
                 {% if shopro_setting('show_search', true) %}<a class="site-search-link" href="{{ path('app_home') }}?q=" aria-label="{{ shopro_trans('front.search') }}">⌕</a>{% endif %}
                 {% if shopro_setting('show_language', false) %}{% include 'cms/_language_switcher.html.twig' %}{% endif %}
-                {% if shopro_setting('show_login', true) %}{% if app.user %}<form method="post" action="{{ path('site_logout') }}"><button class="site-login-link" type="submit">{{ shopro_trans('site_auth.logout') }}</button></form>{% else %}<a class="site-login-link" href="{{ path('site_login') }}">{{ shopro_trans('front.login') }}</a>{% endif %}{% endif %}
+                {% if shopro_setting('show_login', true) %}{% if app.user %}<a class="site-login-link" href="{{ path('site_account') }}">{{ shopro_trans('site_account.title') }}</a><form method="post" action="{{ path('site_logout') }}"><button class="site-login-link" type="submit">{{ shopro_trans('site_auth.logout') }}</button></form>{% else %}<a class="site-login-link" href="{{ path('site_login') }}">{{ shopro_trans('front.login') }}</a>{% endif %}{% endif %}
                 <a class="site-button site-button--small" href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.start') }}</a>
                 <button class="site-menu-toggle" type="button" data-site-menu aria-label="{{ shopro_trans('front.open_menu') }}"><span></span><span></span><span></span></button>
             </div>

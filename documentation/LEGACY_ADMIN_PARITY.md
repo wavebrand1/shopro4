@@ -121,3 +121,9 @@ korzystają z tokenów operatorów panelu. Odpowiedź formularza nie ujawnia, cz
 login lub e-mail istnieje. Link jest jednorazowy, ważny przez godzinę, a w bazie
 zapisywany jest wyłącznie jego skrót SHA-256. Po zmianie hasła wykorzystany token
 zwraca HTTP 410 i nie może zostać użyty ponownie.
+
+Zalogowany użytkownik witryny ma samoobsługowy panel `/account`. Może sprawdzić
+swoje aktywne członkostwa, zmienić unikalny login i adres e-mail oraz ustawić
+nowe hasło po potwierdzeniu obecnego. Zmiana danych i hasła jest audytowana, a
+trasy konta wymagają `ROLE_SITE_USER` i nie są dostępne operatorom PA wyłącznie
+z racji ich uprawnień administracyjnych.

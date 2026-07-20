@@ -1,0 +1,12 @@
+{% extends 'cms/layout.html.twig' %}
+{% block title %}{{ shopro_trans('site_account.title') }} — Shopro 4.0{% endblock %}
+{% block page_content %}
+<section class="site-section"><div class="site-container site-account-page">
+    <div class="site-account-heading"><div><p class="modern-kicker">{{ shopro_trans('site_auth.account') }}</p><h1>{{ shopro_trans('site_account.title') }}</h1><p>{{ shopro_trans('site_account.help') }}</p></div></div>
+    <div class="site-account-grid">
+        <article class="site-account-panel"><h2>{{ shopro_trans('site_account.details') }}</h2><dl class="site-account-details"><div><dt>{{ shopro_trans('site_users.login') }}</dt><dd>{{ site_user.username }}</dd></div><div><dt>{{ shopro_trans('site_users.email') }}</dt><dd>{{ site_user.email }}</dd></div><div><dt>{{ shopro_trans('site_users.last_login') }}</dt><dd>{{ site_user.lastLoginAt ? site_user.lastLoginAt|date('d.m.Y H:i') : '—' }}</dd></div></dl><a class="modern-button modern-button--primary" href="{{ path('site_account_profile') }}">{{ shopro_trans('site_account.edit_profile') }}</a></article>
+        <article class="site-account-panel"><h2>{{ shopro_trans('site_account.security') }}</h2><p>{{ shopro_trans('site_account.security_help') }}</p><a class="modern-button" href="{{ path('site_account_password') }}">{{ shopro_trans('site_account.change_password') }}</a></article>
+        <article class="site-account-panel site-account-panel--wide"><h2>{{ shopro_trans('site_users.memberships') }}</h2>{% if memberships|length %}<ul class="site-membership-list">{% for membership in memberships %}<li><strong>{{ membership.title }}</strong>{% if membership.description %}<span>{{ membership.description }}</span>{% endif %}</li>{% endfor %}</ul>{% else %}<p>{{ shopro_trans('site_account.no_memberships') }}</p>{% endif %}</article>
+    </div>
+</div></section>
+{% endblock %}

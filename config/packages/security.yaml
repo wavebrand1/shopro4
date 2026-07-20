@@ -55,6 +55,7 @@ security:
         - { path: ^/admin/password/(forgot|reset), roles: PUBLIC_ACCESS }
         - { path: ^/admin/(users|site-users|memberships|configuration/system|configuration/email-templates|configuration/languages|newsletter|logs|modules), roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_EDITOR }
+        - { path: ^/account, roles: ROLE_SITE_USER }
 
 when@test:
     security:
