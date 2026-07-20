@@ -280,6 +280,22 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-page-heading h1', 'Pages');
         self::assertSelectorTextContains('.modern-table-card', 'Page list');
 
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Edit page');
+        self::assertSelectorTextContains('.component-builder__library', 'Available components');
+        self::assertSelectorTextContains('label[for="page_access"]', 'Access');
+        self::assertSelectorTextContains('select[name="page[access]"] option[value="Registered"]', 'Signed-in users');
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/translations');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading', 'Language versions are linked');
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/translations/'.$english->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Translation:');
+        self::assertSelectorTextContains('label[for="page_translation_published"]', 'Published translation');
+
         $this->client->request('GET', '/admin/menu');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading', 'Drag items by the handle');

@@ -1,14 +1,14 @@
 {% extends 'admin/layout.html.twig' %}
-{% block title %}{{ page.id ? 'Edycja podstrony' : 'Nowa podstrona' }} — Shopro 4.0{% endblock %}
+{% block title %}{{ shopro_trans(page.id ? 'page.edit' : 'page.new') }} — Shopro 4.0{% endblock %}
 {% block javascripts %}{{ importmap(['app', 'component-builder']) }}{% endblock %}
 {% block body %}
 <div class="modern-page-heading">
-    <div><p class="modern-kicker">ZARZĄDZANIE TREŚCIĄ</p><h1>{{ page.id ? 'Edytuj podstronę' : 'Nowa podstrona' }}</h1><p>Formularz odwzorowuje ustawienia podstrony ze starego CMS.</p></div>
-    <a class="modern-button" href="{{ path('admin_page_index') }}">← Wróć do listy</a>
+    <div><p class="modern-kicker">{{ shopro_trans('admin.content_management') }}</p><h1>{{ shopro_trans(page.id ? 'page.edit' : 'page.new') }}</h1><p>{{ shopro_trans('page.form_lead') }}</p></div>
+    <a class="modern-button" href="{{ path('admin_page_index') }}">← {{ shopro_trans('page.back_list') }}</a>
 </div>
 {{ form_start(form, {attr: {class: 'admin-form admin-form--page'}}) }}
 <section class="modern-card modern-form-card">
-    <div class="modern-card__heading"><div><h2>Podstawowe informacje</h2><p>Tytuł, adres i sposób udostępniania strony.</p></div></div>
+    <div class="modern-card__heading"><div><h2>{{ shopro_trans('page.basic_info') }}</h2><p>{{ shopro_trans('page.basic_info_help') }}</p></div></div>
     <div class="cms-card-body">
     <div class="modern-form-grid">{{ form_row(form.title) }}{{ form_row(form.slug) }}</div>
     <div class="modern-form-grid">{{ form_row(form.caption) }}{{ form_row(form.seoTitle) }}</div>
@@ -17,30 +17,30 @@
     </div>
 </section>
 <section class="modern-card modern-form-card cms-editor-card">
-    <div class="modern-card__heading"><div><h2>Treść podstrony</h2><p>Buduj układ z sekcji, kolumn i komponentów przygotowanych dla klienta.</p></div></div>
+    <div class="modern-card__heading"><div><h2>{{ shopro_trans('page.content_heading') }}</h2><p>{{ shopro_trans('page.content_help') }}</p></div></div>
     <div class="cms-card-body">
     {{ form_widget(form.editorMode) }}{{ form_widget(form.content) }}
     <div class="cms-editor-mode">
         <div class="component-builder" data-component-builder data-project-field="page_builderData">
             <aside class="component-builder__library">
-                <p class="component-builder__label">Układ sekcji</p>
-                <button class="component-library-item" type="button" data-add-section><span class="component-library-item__icon">§</span><span><strong>Dodaj sekcję</strong><small>Kolumny dodasz wewnątrz sekcji</small></span></button>
-                <p class="component-builder__label">Dostępne komponenty</p>
-                <button class="component-library-item component-library-item--preset" type="button" data-add-preset="homepage"><span class="component-library-item__icon">⌂</span><span><strong>Cała strona główna</strong><small>Dodaje wszystkie sekcje w aktualnym układzie</small></span></button>
+                <p class="component-builder__label">{{ shopro_trans('builder.section_layout') }}</p>
+                <button class="component-library-item" type="button" data-add-section><span class="component-library-item__icon">§</span><span><strong>{{ shopro_trans('builder.add_section') }}</strong><small>{{ shopro_trans('builder.add_section_help') }}</small></span></button>
+                <p class="component-builder__label">{{ shopro_trans('builder.available_components') }}</p>
+                <button class="component-library-item component-library-item--preset" type="button" data-add-preset="homepage"><span class="component-library-item__icon">⌂</span><span><strong>{{ shopro_trans('builder.full_homepage') }}</strong><small>{{ shopro_trans('builder.full_homepage_help') }}</small></span></button>
                 <button class="component-library-item" type="button" data-add-component="feature_cards">
                     <span class="component-library-item__icon">▦</span>
-                    <span><strong>Karty funkcji</strong><small>Powtarzalne boxy z ikoną, treścią i linkiem</small></span>
+                    <span><strong>{{ shopro_trans('builder.feature_cards') }}</strong><small>{{ shopro_trans('builder.feature_cards_help') }}</small></span>
                 </button>
-                <button class="component-library-item" type="button" data-add-component="hero"><span class="component-library-item__icon">H</span><span><strong>Hero</strong><small>Nagłówek, przyciski i podgląd panelu</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="logo_bar"><span class="component-library-item__icon">L</span><span><strong>Pasek marek</strong><small>Powtarzalna lista nazw lub logotypów</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="process"><span class="component-library-item__icon">1</span><span><strong>Jak to działa</strong><small>Ilustracja i powtarzalne kroki procesu</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="audience"><span class="component-library-item__icon">A</span><span><strong>Dla kogo</strong><small>Powtarzalne grupy odbiorców</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="cta"><span class="component-library-item__icon">→</span><span><strong>Wezwanie do działania</strong><small>Tekst i dwa przyciski końcowe</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="rich_text"><span class="component-library-item__icon">T</span><span><strong>Edytor tekstu</strong><small>Darmowy edytor Quill bez konta i klucza</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="hero"><span class="component-library-item__icon">H</span><span><strong>Hero</strong><small>{{ shopro_trans('builder.hero_help') }}</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="logo_bar"><span class="component-library-item__icon">L</span><span><strong>{{ shopro_trans('builder.logo_bar') }}</strong><small>{{ shopro_trans('builder.logo_bar_help') }}</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="process"><span class="component-library-item__icon">1</span><span><strong>{{ shopro_trans('builder.process') }}</strong><small>{{ shopro_trans('builder.process_help') }}</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="audience"><span class="component-library-item__icon">A</span><span><strong>{{ shopro_trans('builder.audience') }}</strong><small>{{ shopro_trans('builder.audience_help') }}</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="cta"><span class="component-library-item__icon">→</span><span><strong>{{ shopro_trans('builder.cta') }}</strong><small>{{ shopro_trans('builder.cta_help') }}</small></span></button>
+                <button class="component-library-item" type="button" data-add-component="rich_text"><span class="component-library-item__icon">T</span><span><strong>{{ shopro_trans('builder.rich_text') }}</strong><small>{{ shopro_trans('builder.rich_text_help') }}</small></span></button>
             </aside>
             <div class="component-builder__workspace">
-                <div class="component-builder__toolbar"><div><strong>Układ strony</strong><small>Elementy są renderowane przez przygotowane szablony.</small></div></div>
-                <div class="component-builder__empty" data-builder-empty><strong>Ta strona nie ma jeszcze komponentów</strong><span>Dodaj pierwszy element z biblioteki po lewej stronie.</span></div>
+                <div class="component-builder__toolbar"><div><strong>{{ shopro_trans('builder.page_layout') }}</strong><small>{{ shopro_trans('builder.render_help') }}</small></div></div>
+                <div class="component-builder__empty" data-builder-empty><strong>{{ shopro_trans('builder.empty') }}</strong><span>{{ shopro_trans('builder.empty_help') }}</span></div>
                 <div class="component-builder__list" data-builder-list></div>
             </div>
         </div>
@@ -50,21 +50,21 @@
     </div>
 </section>
 <details class="modern-card modern-form-card cms-advanced" {{ not page.id ? 'open' : '' }}>
-    <summary><span><strong>Ustawienia zaawansowane</strong><small>SEO, role systemowe i kod strony</small></span><b>+</b></summary>
+    <summary><span><strong>{{ shopro_trans('page.advanced') }}</strong><small>{{ shopro_trans('page.advanced_help') }}</small></span><b>+</b></summary>
     <div class="cms-advanced__content">
-        <h3>Role strony</h3><p class="form-help">Każda rola systemowa oraz strona główna i 404 mogą być przypisane tylko do jednej podstrony.</p>
+        <h3>{{ shopro_trans('page.roles') }}</h3><p class="form-help">{{ shopro_trans('page.roles_help') }}</p>
         <div class="cms-option-grid cms-option-grid--roles">
             {{ form_row(form.homePage) }}{{ form_row(form.errorPage) }}{{ form_row(form.adminOnly) }}
             {{ form_row(form.loginPage) }}{{ form_row(form.activationPage) }}{{ form_row(form.accountPage) }}
             {{ form_row(form.registrationPage) }}{{ form_row(form.searchPage) }}{{ form_row(form.sitemapPage) }}
             {{ form_row(form.profilePage) }}{{ form_row(form.termsPage) }}
         </div>
-        <h3>SEO i kod</h3>
+        <h3>{{ shopro_trans('page.seo_code') }}</h3>
         <div class="modern-form-grid">{{ form_row(form.keywords) }}{{ form_row(form.meta) }}</div>
         {{ form_row(form.javascript) }}
-        <div class="cms-module-placeholder"><strong>Moduł podstrony</strong><span>Obsługa modułów i członkostw zostanie podłączona wraz z migracją systemu modułowego.</span></div>
+        <div class="cms-module-placeholder"><strong>{{ shopro_trans('page.module') }}</strong><span>{{ shopro_trans('page.module_help') }}</span></div>
     </div>
 </details>
-<div class="modern-form-actions cms-sticky-actions"><a class="modern-button" href="{{ path('admin_page_index') }}">Anuluj</a><button class="modern-button" type="submit" name="_save_action" value="stay">Zapisz i kontynuuj edycję</button><button class="modern-button modern-button--primary" type="submit" name="_save_action" value="list">Zapisz podstronę</button></div>
+<div class="modern-form-actions cms-sticky-actions"><a class="modern-button" href="{{ path('admin_page_index') }}">{{ shopro_trans('common.cancel') }}</a><button class="modern-button" type="submit" name="_save_action" value="stay">{{ shopro_trans('page.save_continue') }}</button><button class="modern-button modern-button--primary" type="submit" name="_save_action" value="list">{{ shopro_trans('page.save') }}</button></div>
 {{ form_end(form) }}
 {% endblock %}

@@ -8,6 +8,7 @@ use App\Cms\Domain\Entity\Page;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Cms\Presentation\Form\PageType;
 use App\Settings\Application\SettingsProvider;
+use App\Language\Application\SystemTranslator;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,7 @@ final class PageController extends AbstractController
     public function __construct(
         #[Autowire(service: 'html_sanitizer.sanitizer.app.page_content')]
         private readonly HtmlSanitizerInterface $htmlSanitizer,
+        private readonly SystemTranslator $translator,
     ) {}
 
     #[Route('', name: 'admin_page_index', methods: ['GET'])]
@@ -38,25 +40,25 @@ final class PageController extends AbstractController
     #[Route('/new', name: 'admin_page_new', methods: ['GET', 'POST'])]
     public function new(Request $request, PageRepository $pages): Response
     {
-        return $this->handleForm($request, new Page(), $pages, 'Podstrona została utworzona.');
+        return $this->handleForm($request, new Page(), $pages, 'page.created');
     }
 
     #[Route('/{id}/edit', name: 'admin_page_edit', requirements: ['id' => '\\d+'], methods: ['GET', 'POST'])]
     public function edit(Page $page, Request $request, PageRepository $pages): Response
     {
-        return $this->handleForm($request, $page, $pages, 'Zmiany zostały zapisane.');
+        return $this->handleForm($request, $page, $pages, 'page.changes_saved');
     }
 
     #[Route('/{id}/delete', name: 'admin_page_delete', requirements: ['id' => '\\d+'], methods: ['POST'])]
     public function delete(Page $page, Request $request, PageRepository $pages): Response
     {
         if ($page->isSystemPage()) {
-            $this->addFlash('error', 'Strony systemowej nie można usunąć. Najpierw przypisz jej rolę innej podstronie.');
+            $this->addFlash('error', $this->translator->translate('page.system_delete_forbidden'));
             return $this->redirectToRoute('admin_page_index');
         }
         if ($this->isCsrfTokenValid('delete-page-'.$page->getId(), (string) $request->request->get('_token'))) {
             $pages->remove($page);
-            $this->addFlash('success', 'Podstrona została usunięta.');
+            $this->addFlash('success', $this->translator->translate('page.deleted'));
         }
 
         return $this->redirectToRoute('admin_page_index');
@@ -68,7 +70,7 @@ final class PageController extends AbstractController
         if ($this->isCsrfTokenValid('duplicate-page-'.$page->getId(), (string) $request->request->get('_token'))) {
             $copy = $page->copyAs('kopia-'.date('YmdHis'));
             $pages->save($copy);
-            $this->addFlash('success', 'Podstrona została zduplikowana.');
+            $this->addFlash('success', $this->translator->translate('page.duplicated'));
             return $this->redirectToRoute('admin_page_edit', ['id' => $copy->getId()]);
         }
         return $this->redirectToRoute('admin_page_index');
@@ -96,7 +98,7 @@ final class PageController extends AbstractController
             try {
                 $page->setBuilderData($this->sanitizeBuilderData($page->getBuilderData()));
                 $pages->save($page);
-                $this->addFlash('success', $message);
+                $this->addFlash('success', $this->translator->translate($message));
 
                 if ('stay' === $request->request->get('_save_action')) {
                     return $this->redirectToRoute('admin_page_edit', ['id' => $page->getId()]);
@@ -104,7 +106,7 @@ final class PageController extends AbstractController
 
                 return $this->redirectToRoute('admin_page_index');
             } catch (UniqueConstraintViolationException) {
-                $this->addFlash('error', 'Podstrona z takim slugiem już istnieje.');
+                $this->addFlash('error', $this->translator->translate('page.slug_exists'));
             }
         }
 
