@@ -14,6 +14,12 @@
 .inline-form { display:inline-flex; align-items:center; gap:.4rem; margin:.15rem .5rem .15rem 0; }
 .inline-form input { width:150px; min-height:36px; padding:.35rem .55rem; }
 @media (max-width: 900px) { .file-manager-actions { grid-template-columns:1fr; } .file-manager-actions form { align-items:stretch; flex-direction:column; } }
+.audit-filters { display:flex; align-items:flex-end; gap:1rem; padding:1.25rem; flex-wrap:wrap; }
+.audit-filters label { min-width:150px; flex:1; }
+.audit-row--important { background:#fff7ed; }
+.pagination { display:flex; justify-content:center; gap:.4rem; padding:1rem; }
+.pagination a { min-width:36px; min-height:36px; display:grid; place-items:center; border:1px solid #dce3ef; border-radius:9px; color:#44516a; text-decoration:none; }
+.pagination a.is-active { background:#5d7cff; border-color:#5d7cff; color:#fff; }
 
 * { box-sizing: border-box; }
 

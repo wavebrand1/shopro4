@@ -345,6 +345,12 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/admin/configuration/files?path=../');
         self::assertResponseStatusCodeSame(404);
 
+        $this->client->request('GET', '/admin/logs?type=admin&limit=10');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'System logs');
+        self::assertSelectorTextContains('.audit-filters', 'Date from');
+        self::assertSelectorExists('.admin-table tbody tr');
+
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
 
