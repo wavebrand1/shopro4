@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Cms\Infrastructure\Persistence\Doctrine;
 
 use App\Cms\Domain\Entity\Page;
+use App\Cms\Domain\Entity\PageTranslation;
+use App\Language\Domain\Entity\Language;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -48,6 +50,74 @@ final class PageRepository extends ServiceEntityRepository
             ->orderBy('page.updatedAt', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /** @return list<Page> */
+    public function searchPublic(string $query, int $limit, int $offset): array
+    {
+        $needle = '%'.self::escapeLike(mb_strtolower($query)).'%';
+
+        return $this->createQueryBuilder('page')
+            ->andWhere('page.published = true')
+            ->andWhere('page.access = :access')
+            ->andWhere('page.adminOnly = false')
+            ->andWhere('page.errorPage = false')
+            ->andWhere('page.searchPage = false')
+            ->andWhere('(LOWER(page.title) LIKE :query ESCAPE \'!\' OR LOWER(page.caption) LIKE :query ESCAPE \'!\' OR LOWER(page.description) LIKE :query ESCAPE \'!\' OR LOWER(page.content) LIKE :query ESCAPE \'!\' OR LOWER(page.builderData) LIKE :query ESCAPE \'!\')')
+            ->setParameter('access', 'Public')
+            ->setParameter('query', $needle)
+            ->orderBy('page.title', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()->getResult();
+    }
+
+    public function countPublicSearch(string $query): int
+    {
+        $needle = '%'.self::escapeLike(mb_strtolower($query)).'%';
+
+        return (int) $this->createQueryBuilder('page')
+            ->select('COUNT(page.id)')
+            ->andWhere('page.published = true')->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
+            ->andWhere('page.errorPage = false')->andWhere('page.searchPage = false')
+            ->andWhere('(LOWER(page.title) LIKE :query ESCAPE \'!\' OR LOWER(page.caption) LIKE :query ESCAPE \'!\' OR LOWER(page.description) LIKE :query ESCAPE \'!\' OR LOWER(page.content) LIKE :query ESCAPE \'!\' OR LOWER(page.builderData) LIKE :query ESCAPE \'!\')')
+            ->setParameter('access', 'Public')->setParameter('query', $needle)
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    /** @return list<PageTranslation> */
+    public function searchPublicTranslations(Language $language, string $query, int $limit, int $offset): array
+    {
+        $needle = '%'.self::escapeLike(mb_strtolower($query)).'%';
+
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('translation')->from(PageTranslation::class, 'translation')->join('translation.page', 'page')
+            ->andWhere('translation.language = :language')->andWhere('translation.published = true')
+            ->andWhere('page.published = true')->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
+            ->andWhere('page.errorPage = false')->andWhere('page.searchPage = false')
+            ->andWhere('(LOWER(translation.title) LIKE :query ESCAPE \'!\' OR LOWER(translation.caption) LIKE :query ESCAPE \'!\' OR LOWER(translation.description) LIKE :query ESCAPE \'!\' OR LOWER(translation.content) LIKE :query ESCAPE \'!\' OR LOWER(translation.builderData) LIKE :query ESCAPE \'!\')')
+            ->setParameter('language', $language)->setParameter('access', 'Public')->setParameter('query', $needle)
+            ->orderBy('translation.title', 'ASC')->setFirstResult($offset)->setMaxResults($limit)
+            ->getQuery()->getResult();
+    }
+
+    public function countPublicTranslationSearch(Language $language, string $query): int
+    {
+        $needle = '%'.self::escapeLike(mb_strtolower($query)).'%';
+
+        return (int) $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(translation.id)')->from(PageTranslation::class, 'translation')->join('translation.page', 'page')
+            ->andWhere('translation.language = :language')->andWhere('translation.published = true')
+            ->andWhere('page.published = true')->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
+            ->andWhere('page.errorPage = false')->andWhere('page.searchPage = false')
+            ->andWhere('(LOWER(translation.title) LIKE :query ESCAPE \'!\' OR LOWER(translation.caption) LIKE :query ESCAPE \'!\' OR LOWER(translation.description) LIKE :query ESCAPE \'!\' OR LOWER(translation.content) LIKE :query ESCAPE \'!\' OR LOWER(translation.builderData) LIKE :query ESCAPE \'!\')')
+            ->setParameter('language', $language)->setParameter('access', 'Public')->setParameter('query', $needle)
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    private static function escapeLike(string $value): string
+    {
+        return str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $value);
     }
 
     public function save(Page $page): void

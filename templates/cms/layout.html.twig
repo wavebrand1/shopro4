@@ -13,7 +13,7 @@
                 {% if header_menu %}{{ menu.render(header_menu) }}{% else %}<a href="{{ path('app_home') }}#mozliwosci">{{ shopro_trans('front.features') }}</a><a href="{{ path('app_home') }}#jak-dziala">{{ shopro_trans('front.how_it_works') }}</a><a href="{{ path('app_home') }}#dla-kogo">{{ shopro_trans('front.for_whom') }}</a><a href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.contact') }}</a>{% endif %}
             </nav>
             <div class="site-header__actions">
-                {% if shopro_setting('show_search', true) %}<a class="site-search-link" href="{{ path('app_home') }}?q=" aria-label="{{ shopro_trans('front.search') }}">⌕</a>{% endif %}
+                {% if shopro_setting('show_search', true) %}{% set current_language = shopro_language() %}<a class="site-search-link" href="{{ current_language and not current_language.defaultLanguage ? path('cms_search_localized',{_locale:current_language.code}) : path('cms_search') }}" aria-label="{{ shopro_trans('front.search') }}">⌕</a>{% endif %}
                 {% if shopro_setting('show_language', false) %}{% include 'cms/_language_switcher.html.twig' %}{% endif %}
                 {% if shopro_setting('show_login', true) %}{% if app.user %}<a class="site-login-link" href="{{ path('site_account') }}">{{ shopro_trans('site_account.title') }}</a><form method="post" action="{{ path('site_logout') }}"><button class="site-login-link" type="submit">{{ shopro_trans('site_auth.logout') }}</button></form>{% else %}<a class="site-login-link" href="{{ path('site_login') }}">{{ shopro_trans('front.login') }}</a>{% endif %}{% endif %}
                 <a class="site-button site-button--small" href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.start') }}</a>

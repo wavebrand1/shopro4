@@ -8,6 +8,7 @@ use App\Cms\Domain\Entity\MenuItem;
 use App\Audit\Domain\Entity\AuditLog;
 use App\Cms\Domain\Entity\MenuItemTranslation;
 use App\Cms\Domain\Entity\PageTranslation;
+use App\Cms\Domain\Entity\Page;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
@@ -926,5 +927,39 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/admin/password/reset/'.$token);
         self::assertResponseStatusCodeSame(410);
         self::assertSelectorTextContains('.flash--error', 'Link jest nieprawidłowy');
+    }
+
+    public function testPublicSearchUsesLocalizedContentAndHidesRestrictedPages(): void
+    {
+        $polish = new Language();
+        $polish->setName('Polski'); $polish->setCode('pl'); $polish->setDefaultLanguage(true);
+        $english = new Language();
+        $english->setName('English'); $english->setCode('en');
+        $this->entityManager->persist($polish); $this->entityManager->persist($english);
+
+        $public = new Page();
+        $public->setTitle('Oferta wdrożeniowa'); $public->setSlug('oferta'); $public->setCaption('Nowoczesne wdrożenia Symfony'); $public->setPublished(true);
+        $restricted = new Page();
+        $restricted->setTitle('Poufna oferta'); $restricted->setSlug('poufna-oferta'); $restricted->setContent('Nowoczesne wdrożenia tylko dla klientów'); $restricted->setPublished(true); $restricted->setAccess('Registered');
+        $translation = new PageTranslation($public, $english);
+        $translation->setTitle('Implementation services'); $translation->setSlug('implementation-services'); $translation->setContent('Modern Symfony implementation'); $translation->setPublished(true);
+        $this->entityManager->persist($public); $this->entityManager->persist($restricted); $this->entityManager->persist($translation);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/search?q=wdrożenia');
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('X-Robots-Tag', 'noindex, follow');
+        self::assertSelectorTextContains('.site-search-summary', '1');
+        self::assertSelectorExists('.site-search-results a[href="/oferta"]');
+        self::assertSelectorTextNotContains('.site-search-results', 'Poufna oferta');
+
+        $this->client->request('GET', '/en/search?q=implementation');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.site-search-results a[href="/en/implementation-services"]');
+        self::assertSelectorExists('.site-search-link[href="/en/search"]');
+
+        $this->client->request('GET', '/search?q=%25%25');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.site-search-summary', '0');
     }
 }

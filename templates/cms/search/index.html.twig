@@ -1,0 +1,25 @@
+{% extends 'cms/layout.html.twig' %}
+{% block title %}{{ shopro_trans('search.title') }} — Shopro 4.0{% endblock %}
+{% block meta %}<meta name="robots" content="noindex, follow">{% endblock %}
+{% block page_content %}
+<section class="site-section site-search-page">
+    <div class="site-container site-search-page__inner">
+        <span class="site-kicker">{{ shopro_trans('search.kicker') }}</span>
+        <h1>{{ shopro_trans('search.title') }}</h1>
+        <p>{{ shopro_trans('search.lead') }}</p>
+        <form method="get" action="{{ language ? path('cms_search_localized',{_locale:language.code}) : path('cms_search') }}" class="site-search-form" role="search">
+            <label class="sr-only" for="site-search-query">{{ shopro_trans('search.label') }}</label>
+            <input id="site-search-query" name="q" value="{{ query }}" minlength="2" maxlength="120" placeholder="{{ shopro_trans('search.placeholder') }}" autofocus>
+            <button class="site-button" type="submit">{{ shopro_trans('common.search') }}</button>
+        </form>
+        {% if query and not searchable %}<div class="site-search-state">{{ shopro_trans('search.too_short') }}</div>{% endif %}
+        {% if searchable %}
+            <div class="site-search-summary">{{ shopro_trans('search.results') }}: <strong>{{ total }}</strong></div>
+            {% if results %}<div class="site-search-results">
+                {% for result in results %}<article><h2><a href="{{ result.url }}">{{ result.title }}</a></h2>{% if result.caption %}<p class="site-search-results__caption">{{ result.caption }}</p>{% endif %}{% if result.snippet %}<p>{{ result.snippet }}</p>{% endif %}<a class="site-search-results__link" href="{{ result.url }}">{{ shopro_trans('search.open') }} →</a></article>{% endfor %}
+            </div>{% else %}<div class="site-search-state"><strong>{{ shopro_trans('search.empty_title') }}</strong><span>{{ shopro_trans('search.empty_help') }}</span></div>{% endif %}
+            {% if last_page > 1 %}<nav class="pagination" aria-label="{{ shopro_trans('pagination.label') }}">{% for number in 1..last_page %}<a class="{{ number == current_page ? 'is-active' }}" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|default({})|merge({q:query,page:number})) }}">{{ number }}</a>{% endfor %}</nav>{% endif %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
