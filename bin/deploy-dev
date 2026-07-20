@@ -49,6 +49,13 @@ if [ ! -f vendor/symfony/html-sanitizer/HtmlSanitizer.php ]; then
     exit 1
 fi
 
+if APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console doctrine:migrations:up-to-date --no-interaction >/dev/null 2>&1; then
+    echo "[Shopro] Database is up to date; pre-migration backup is not required"
+else
+    echo "[Shopro] Creating pre-migration backup"
+    APP_ENV=dev APP_DEBUG=1 bash bin/create-backup
+fi
+
 echo "[Shopro] Running database migrations"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console doctrine:migrations:migrate --no-interaction
 

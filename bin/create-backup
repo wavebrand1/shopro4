@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PHP_BIN=""
+for candidate in /opt/plesk/php/8.3/bin/php /opt/plesk/php/8.2/bin/php /usr/bin/php; do
+    if [ -x "$candidate" ]; then PHP_BIN="$candidate"; break; fi
+done
+[ -n "$PHP_BIN" ] || { echo "[Shopro backup] Nie znaleziono PHP." >&2; exit 1; }
+
+BACKUP_ROOT="${SHOPRO_BACKUP_DIR:-$ROOT/var/backups}"
+RETENTION_DAYS="${SHOPRO_BACKUP_RETENTION_DAYS:-14}"
+STAMP="$(date -u +%Y%m%d-%H%M%S)"
+STAGING="$BACKUP_ROOT/.shopro-$STAMP-$$"
+ARCHIVE="$BACKUP_ROOT/shopro-$STAMP.tar.gz"
+
+mkdir -p "$BACKUP_ROOT" "$STAGING"
+chmod 700 "$BACKUP_ROOT" "$STAGING"
+trap 'rm -rf "$STAGING"' EXIT
+
+echo "[Shopro backup] Tworzenie zrzutu bazy"
+APP_ENV="${APP_ENV:-dev}" APP_DEBUG="${APP_DEBUG:-1}" "$PHP_BIN" "$ROOT/bin/console" app:backup:database "$STAGING/database.sql.gz"
+
+echo "[Shopro backup] Archiwizacja danych użytkowników"
+if [ -d "$ROOT/public/uploads" ]; then
+    tar -czf "$ARCHIVE.tmp" -C "$STAGING" database.sql.gz -C "$ROOT" public/uploads
+else
+    tar -czf "$ARCHIVE.tmp" -C "$STAGING" database.sql.gz
+fi
+chmod 600 "$ARCHIVE.tmp"
+mv "$ARCHIVE.tmp" "$ARCHIVE"
+
+if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$ARCHIVE" > "$ARCHIVE.sha256"
+    chmod 600 "$ARCHIVE.sha256"
+fi
+
+find "$BACKUP_ROOT" -maxdepth 1 -type f \( -name 'shopro-*.tar.gz' -o -name 'shopro-*.tar.gz.sha256' \) -mtime "+$RETENTION_DAYS" -delete
+echo "[Shopro backup] Gotowe: $ARCHIVE"

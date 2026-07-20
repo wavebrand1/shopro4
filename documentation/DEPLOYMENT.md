@@ -59,3 +59,27 @@ assetów i nie podawało przeglądarce poprzednich adresów CSS.
 - Niepowodzenie któregokolwiek polecenia przerywa skrypt z kodem błędu.
 - Cała domena developerska jest chroniona uwierzytelnianiem HTTP w Plesku.
 - Sekrety oraz `.env.local` pozostają poza repozytorium.
+
+## Automatyczna kopia przed migracją
+
+Jeśli są dostępne nowe migracje, `bin/deploy-dev` przed ich wykonaniem uruchamia
+`bin/create-backup`. Wdrożenie bez zmian schematu nie powiela dużych archiwów.
+Kopia trafia poza katalog publiczny do `var/backups/shopro-RRRRMMDD-GGMMSS.tar.gz`
+i zawiera skompresowany zrzut MariaDB oraz `public/uploads`. Obok archiwum
+zapisywana jest suma SHA-256. Jeśli `mariadb-dump`/`mysqldump` jest niedostępny
+albo zrzut się nie powiedzie, wdrożenie zostaje przerwane przed zmianą schematu.
+
+Domyślna retencja wynosi 14 dni. Zmienna `SHOPRO_BACKUP_RETENTION_DAYS` ustawia
+inną liczbę dni, a `SHOPRO_BACKUP_DIR` pozwala wskazać katalog na osobnym
+woluminie. Backup Pleska powinien dodatkowo kopiować ten katalog poza serwer.
+
+Ręczne utworzenie kopii:
+
+```bash
+cd /var/www/vhosts/shopro4.orangestudio.pl/httpdocs
+APP_ENV=dev APP_DEBUG=1 bash bin/create-backup
+```
+
+Przywracanie należy najpierw przećwiczyć na osobnej bazie: zweryfikować plik
+`.sha256`, rozpakować archiwum, zaimportować `database.sql.gz` i odtworzyć
+`public/uploads`. Bieżącej bazy nie wolno nadpisywać bez dodatkowej kopii.

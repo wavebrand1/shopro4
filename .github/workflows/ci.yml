@@ -31,7 +31,11 @@ jobs:
         run: composer install --prefer-dist --no-interaction --no-progress
 
       - name: Validate container and configuration
-        run: php bin/console lint:container
+        run: |
+          php bin/console lint:yaml config --parse-tags
+          php bin/console lint:twig templates
+          php bin/console lint:container
+          bash -n bin/deploy-dev bin/create-backup bin/run-queue-worker bin/setup-queue-worker
 
       - name: Run tests
         run: php bin/phpunit
