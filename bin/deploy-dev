@@ -65,6 +65,9 @@ APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console doctrine:schema:validate --skip-s
 echo "[Shopro] Synchronizing system translations"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console app:translations:sync
 
+echo "[Shopro] Synchronizing module registry"
+APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console app:modules:sync
+
 echo "[Shopro] Installing bundle assets"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console assets:install public
 

@@ -1,0 +1,12 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}{{ shopro_trans('module.heading') }} — Shopro 4.0{% endblock %}
+{% block body %}
+<div class="modern-page-heading"><div><p class="modern-kicker">SHOPRO 4.0</p><h1>{{ shopro_trans('module.heading') }}</h1><p>{{ shopro_trans('module.lead') }}</p></div></div>
+<section class="modern-card modern-table-card">
+    <div class="modern-card__heading"><div><h2>{{ shopro_trans('module.registered') }}</h2><p>{{ shopro_trans('module.registered_help') }}</p></div></div>
+    <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>{{ shopro_trans('module.name') }}</th><th>{{ shopro_trans('module.category') }}</th><th>{{ shopro_trans('module.version') }}</th><th>{{ shopro_trans('common.status') }}</th><th>{{ shopro_trans('module.type') }}</th></tr></thead><tbody>
+    {% for module in modules %}<tr><td><strong>{{ shopro_trans(module.definition.name) }}</strong><small class="table-help">{{ shopro_trans(module.definition.description) }}</small><code>{{ module.definition.code }}</code></td><td>{{ shopro_trans('module.category_'~module.definition.category) }}</td><td>{{ module.state ? module.state.version : module.definition.version }}</td><td><span class="status status--{{ module.state and module.state.enabled ? 'published' : 'draft' }}">{{ shopro_trans(module.state and module.state.enabled ? 'module.enabled' : 'module.awaiting_sync') }}</span></td><td>{{ shopro_trans(module.definition.required ? 'module.required' : 'module.optional') }}</td></tr>{% else %}<tr><td colspan="5" class="empty">{{ shopro_trans('module.empty') }}</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+<section class="modern-card"><div class="modern-card__heading"><div><h2>{{ shopro_trans('module.lifecycle_heading') }}</h2><p>{{ shopro_trans('module.lifecycle_help') }}</p></div></div></section>
+{% endblock %}

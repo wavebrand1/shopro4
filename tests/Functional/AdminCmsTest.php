@@ -21,6 +21,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -467,6 +469,16 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('select[data-newsletter-template]');
         self::assertSelectorExists('button[data-newsletter-template-load][disabled]');
 
+        $moduleSync = new CommandTester((new Application(self::$kernel))->find('app:modules:sync'));
+        self::assertSame(0, $moduleSync->execute([]));
+
+        $this->client->request('GET', '/admin/modules');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'System modules');
+        self::assertSelectorCount(6, '.admin-table tbody tr');
+        self::assertSelectorTextContains('.admin-table', 'CMS and Page Builder');
+        self::assertSelectorCount(6, '.status--published');
+
         $campaign = new NewsletterCampaign();
         $campaign->setSubject('Testowa kampania');
         $campaign->setContent('<h1>Treść kampanii</h1><p>Wiadomość testowa.</p>');
@@ -683,6 +695,9 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/admin/users');
         self::assertResponseStatusCodeSame(403);
         $this->client->request('GET', '/admin/configuration/system');
+        self::assertResponseStatusCodeSame(403);
+
+        $this->client->request('GET', '/admin/modules');
         self::assertResponseStatusCodeSame(403);
     }
 

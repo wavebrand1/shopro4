@@ -412,3 +412,5 @@ body {
 .menu-sort-status.is-saving { color: #527ff2; }
 .menu-sort-status.is-saved { color: #15936d; }
 .menu-sort-status.is-error { color: #d14352; }
+.admin-table td .table-help { display: block; max-width: 540px; margin: 4px 0 7px; color: #77859a; font-size: .76rem; line-height: 1.45; }
+.admin-table td code { display: inline-flex; padding: 3px 7px; border-radius: 6px; background: #f1f4f9; color: #59677d; font-size: .7rem; }
