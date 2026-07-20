@@ -1,18 +1,18 @@
 {% extends 'admin/layout.html.twig' %}
-{% block title %}Logowanie — Shopro 4.0{% endblock %}
+{% block title %}{{ shopro_trans('auth.login_title') }} — Shopro 4.0{% endblock %}
 {% block body %}
 <section class="modern-login-card">
     <div class="modern-login-brand"><span class="modern-logo">S</span><span>Shopro <b>4.0</b></span></div>
-    <p class="modern-kicker">PANEL ADMINISTRACYJNY</p>
-    <h1>Witaj ponownie</h1>
-    <p class="modern-login-lead">Zaloguj się, aby zarządzać witryną.</p>
-    {% if error %}<div class="flash flash--error">Nieprawidłowy e-mail lub hasło.</div>{% endif %}
+    <p class="modern-kicker">{{ shopro_trans('auth.admin_panel') }}</p>
+    <h1>{{ shopro_trans('auth.welcome_back') }}</h1>
+    <p class="modern-login-lead">{{ shopro_trans('auth.login_lead') }}</p>
+    {% if error %}<div class="flash flash--error">{{ shopro_trans('auth.invalid_credentials') }}</div>{% endif %}
     <form method="post" class="admin-form modern-login-form">
-        <label>Login lub adres e-mail<input type="text" name="_username" value="{{ last_username }}" required autofocus autocomplete="username" placeholder="admin lub admin@example.pl"></label>
-        <label>Hasło<input type="password" name="_password" required autocomplete="current-password" placeholder="Wprowadź hasło"></label>
+        <label>{{ shopro_trans('auth.identifier') }}<input type="text" name="_username" value="{{ last_username }}" required autofocus autocomplete="username" placeholder="{{ shopro_trans('auth.identifier_placeholder') }}"></label>
+        <label>{{ shopro_trans('auth.password') }}<input type="password" name="_password" required autocomplete="current-password" placeholder="{{ shopro_trans('auth.password_placeholder') }}"></label>
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-        <button class="modern-button modern-button--primary modern-button--wide" type="submit">Zaloguj się</button>
+        <button class="modern-button modern-button--primary modern-button--wide" type="submit">{{ shopro_trans('auth.sign_in') }}</button>
     </form>
-    <small class="modern-login-footer">Shopro 4.0 · Środowisko developerskie</small>
+    <small class="modern-login-footer">Shopro 4.0 · {{ shopro_trans('admin.development_version') }}</small>
 </section>
 {% endblock %}
