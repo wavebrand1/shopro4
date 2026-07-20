@@ -171,6 +171,19 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('link[rel="alternate"][hreflang="x-default"]');
+        self::assertSelectorExists('link[rel="canonical"][href="http://localhost/"]');
+
+        $this->client->request('GET', '/sitemap.xml');
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'application/xml; charset=UTF-8');
+        self::assertStringContainsString('<loc>http://localhost/</loc>', (string) $this->client->getResponse()->getContent());
+        self::assertStringNotContainsString('/admin', (string) $this->client->getResponse()->getContent());
+
+        $this->client->request('GET', '/robots.txt');
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/plain; charset=UTF-8');
+        self::assertStringContainsString("Disallow: /admin", (string) $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Sitemap: http://localhost/sitemap.xml', (string) $this->client->getResponse()->getContent());
 
         $this->client->request('GET', '/admin/pages');
         self::assertSelectorExists('form[action="/admin/pages/'.$page->getId().'/duplicate"]');

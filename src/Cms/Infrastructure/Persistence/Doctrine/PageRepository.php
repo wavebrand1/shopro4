@@ -35,6 +35,21 @@ final class PageRepository extends ServiceEntityRepository
         return $this->findOneBy(['homePage' => true, 'published' => true]);
     }
 
+    /** @return list<Page> */
+    public function findPublicForSitemap(): array
+    {
+        return $this->createQueryBuilder('page')
+            ->andWhere('page.published = :published')
+            ->andWhere('page.access = :access')
+            ->andWhere('page.adminOnly = :adminOnly')
+            ->setParameter('published', true)
+            ->setParameter('access', 'Public')
+            ->setParameter('adminOnly', false)
+            ->orderBy('page.updatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function save(Page $page): void
     {
         $roles = [
