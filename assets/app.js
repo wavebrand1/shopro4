@@ -61,13 +61,13 @@ const initializeMenuSorting = () => {
                 parent: parentId || '0',
                 place,
             });
-            status.textContent = 'Przenoszenie…';
+            status.textContent = container.dataset.moving;
             status.className = 'menu-sort-status is-saving';
             try {
                 const response = await fetch(container.dataset.moveUrl, { method: 'POST', body, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
                 const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'Nie udało się przenieść pozycji.');
-                status.textContent = 'Hierarchia zapisana';
+                if (!response.ok) throw new Error(result.message || container.dataset.moveError);
+                status.textContent = container.dataset.hierarchySaved;
                 status.className = 'menu-sort-status is-saved';
                 window.location.reload();
             } catch (error) {
@@ -86,13 +86,13 @@ const initializeMenuSorting = () => {
             siblings.splice(targetIndex + (insertAfter ? 1 : 0), 0, draggedRow);
             const body = new URLSearchParams({ _token: container.dataset.reorderToken });
             siblings.forEach((row) => body.append('items[]', row.dataset.menuId));
-            status.textContent = 'Zapisywanie…';
+            status.textContent = container.dataset.saving;
             status.className = 'menu-sort-status is-saving';
             try {
                 const response = await fetch(container.dataset.reorderUrl, { method: 'POST', body, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
                 const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'Nie udało się zapisać kolejności.');
-                status.textContent = 'Kolejność zapisana';
+                if (!response.ok) throw new Error(result.message || container.dataset.orderError);
+                status.textContent = container.dataset.orderSaved;
                 status.className = 'menu-sort-status is-saved';
                 window.location.reload();
             } catch (error) {

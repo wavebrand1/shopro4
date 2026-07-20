@@ -301,6 +301,12 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-page-heading', 'Drag items by the handle');
         self::assertSelectorTextContains('.menu-sort-table thead', 'Location');
         self::assertSelectorTextContains('.menu-group-heading', 'Header menu');
+        self::assertSelectorExists('[data-menu-sort][data-saving="Saving…"]');
+        self::assertSelectorExists('[data-menu-sort][data-order-saved="The menu order has been saved."]');
+
+        $this->client->request('POST', '/admin/menu/reorder', ['_token' => 'invalid', 'items' => []]);
+        self::assertResponseStatusCodeSame(403);
+        self::assertStringContainsString('Invalid security token.', (string) $this->client->getResponse()->getContent());
 
         $this->client->request('GET', '/admin/menu/'.$headerItemId.'/edit');
         self::assertResponseIsSuccessful();

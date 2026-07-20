@@ -7,6 +7,7 @@ namespace App\Cms\Presentation\Http\Admin;
 use App\Cms\Domain\Entity\MenuItem;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Presentation\Form\MenuItemType;
+use App\Language\Application\SystemTranslator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,6 +19,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class MenuController extends AbstractController
 {
+    public function __construct(private readonly SystemTranslator $translator)
+    {
+    }
+
     #[Route('', name: 'admin_menu_index', methods: ['GET'])]
     public function index(MenuItemRepository $items): Response
     {
@@ -28,7 +33,7 @@ final class MenuController extends AbstractController
         }
 
         $trees = [];
-        foreach ([MenuItem::PLACE_HEADER => 'Menu górne', MenuItem::PLACE_FOOTER => 'Menu dolne'] as $place => $label) {
+        foreach ([MenuItem::PLACE_HEADER => $this->translator->translate('menu.header'), MenuItem::PLACE_FOOTER => $this->translator->translate('menu.footer')] as $place => $label) {
             $flatItems = [];
             $visited = [];
             $appendBranch = function (int $parentId, int $depth) use (&$appendBranch, &$flatItems, &$visited, $children, $place): void {
@@ -57,7 +62,7 @@ final class MenuController extends AbstractController
     public function reorder(Request $request, MenuItemRepository $items): JsonResponse
     {
         if (!$this->isCsrfTokenValid('reorder-menu', (string) $request->request->get('_token'))) {
-            return $this->json(['message' => 'Nieprawidłowy token bezpieczeństwa.'], Response::HTTP_FORBIDDEN);
+            return $this->json(['message' => $this->translator->translate('menu.invalid_token')], Response::HTTP_FORBIDDEN);
         }
         $orderedIds = array_map('intval', $request->request->all('items'));
         try {
@@ -65,37 +70,37 @@ final class MenuController extends AbstractController
         } catch (\InvalidArgumentException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        return $this->json(['message' => 'Kolejność menu została zapisana.']);
+        return $this->json(['message' => $this->translator->translate('menu.order_saved')]);
     }
 
     #[Route('/move', name: 'admin_menu_move', methods: ['POST'])]
     public function move(Request $request, MenuItemRepository $items): JsonResponse
     {
         if (!$this->isCsrfTokenValid('reorder-menu', (string) $request->request->get('_token'))) {
-            return $this->json(['message' => 'Nieprawidłowy token bezpieczeństwa.'], Response::HTTP_FORBIDDEN);
+            return $this->json(['message' => $this->translator->translate('menu.invalid_token')], Response::HTTP_FORBIDDEN);
         }
         $item = $items->find($request->request->getInt('item'));
         $parentId = $request->request->getInt('parent');
         $parent = $parentId > 0 ? $items->find($parentId) : null;
-        if (!$item || ($parentId > 0 && !$parent)) return $this->json(['message' => 'Nie znaleziono pozycji menu.'], Response::HTTP_NOT_FOUND);
+        if (!$item || ($parentId > 0 && !$parent)) return $this->json(['message' => $this->translator->translate('menu.not_found')], Response::HTTP_NOT_FOUND);
         try {
             $items->move($item, $parent, $request->request->getInt('place'));
         } catch (\InvalidArgumentException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        return $this->json(['message' => 'Hierarchia menu została zapisana.']);
+        return $this->json(['message' => $this->translator->translate('menu.hierarchy_saved')]);
     }
 
     #[Route('/new', name: 'admin_menu_new', methods: ['GET', 'POST'])]
     public function new(Request $request, MenuItemRepository $items): Response
     {
-        return $this->handleForm($request, new MenuItem(), $items, 'Pozycja menu została utworzona.');
+        return $this->handleForm($request, new MenuItem(), $items, 'menu.created');
     }
 
     #[Route('/{id}/edit', name: 'admin_menu_edit', requirements: ['id' => '\\d+'], methods: ['GET', 'POST'])]
     public function edit(MenuItem $item, Request $request, MenuItemRepository $items): Response
     {
-        return $this->handleForm($request, $item, $items, 'Pozycja menu została zaktualizowana.');
+        return $this->handleForm($request, $item, $items, 'menu.updated');
     }
 
     #[Route('/{id}/delete', name: 'admin_menu_delete', requirements: ['id' => '\\d+'], methods: ['POST'])]
@@ -103,13 +108,13 @@ final class MenuController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete-menu-'.$item->getId(), (string) $request->request->get('_token'))) {
             $items->remove($item);
-            $this->addFlash('success', 'Pozycja menu została usunięta.');
+            $this->addFlash('success', $this->translator->translate('menu.deleted'));
         }
 
         return $this->redirectToRoute('admin_menu_index');
     }
 
-    private function handleForm(Request $request, MenuItem $item, MenuItemRepository $items, string $message): Response
+    private function handleForm(Request $request, MenuItem $item, MenuItemRepository $items, string $messageKey): Response
     {
         $wasNew = $item->getId() === null;
         $originalParentId = $item->getParent()?->getId();
@@ -119,13 +124,13 @@ final class MenuController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($this->createsCycle($item)) {
-                $this->addFlash('error', 'Wybrany element nadrzędny tworzyłby pętlę w drzewie menu.');
+                $this->addFlash('error', $this->translator->translate('menu.cycle_error'));
             } else {
                 if ($wasNew || $originalParentId !== $item->getParent()?->getId() || $originalPlace !== $item->getPlace()) {
                     $item->setPosition($items->nextPosition($item->getParent(), $item->getPlace()));
                 }
                 $items->save($item);
-                $this->addFlash('success', $message);
+                $this->addFlash('success', $this->translator->translate($messageKey));
 
                 return $this->redirectToRoute('admin_menu_index');
             }
