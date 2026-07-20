@@ -95,11 +95,11 @@ class MenuItem
     public function validateLinkConfiguration(ExecutionContextInterface $context): void
     {
         if ($this->contentType === self::TYPE_PAGE && $this->page === null && !$this->homePage) {
-            $context->buildViolation('Wybierz podstronę dla tej pozycji menu.')->atPath('page')->addViolation();
+            $context->buildViolation('validation.menu.page_required')->atPath('page')->addViolation();
         }
 
         if ($this->contentType === self::TYPE_WEB && $this->link === null) {
-            $context->buildViolation('Podaj adres linku zewnętrznego.')->atPath('link')->addViolation();
+            $context->buildViolation('validation.menu.link_required')->atPath('link')->addViolation();
         }
     }
 }

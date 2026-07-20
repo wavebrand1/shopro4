@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: PageRepository::class)]
 #[ORM\Table(name: 'cms_page')]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['slug'], message: 'Podstrona z takim adresem już istnieje.')]
+#[UniqueEntity(fields: ['slug'], message: 'validation.page.slug_exists')]
 class Page
 {
     #[ORM\Id]
@@ -29,7 +29,7 @@ class Page
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
-    #[Assert\Regex(pattern: '/^[a-z0-9]+(?:-[a-z0-9]+)*$/', message: 'Slug może zawierać małe litery, cyfry i myślniki.')]
+    #[Assert\Regex(pattern: '/^[a-z0-9]+(?:-[a-z0-9]+)*$/', message: 'validation.page.slug_format')]
     private string $slug = '';
 
     #[ORM\Column(type: Types::TEXT)]

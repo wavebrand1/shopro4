@@ -19,6 +19,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class AdminCmsTest extends WebTestCase
 {
@@ -322,6 +323,22 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'Edit user');
         self::assertSelectorTextContains('label[for="admin_user_apiScopes_0"]', 'Read data');
+
+        $validator = self::getContainer()->get(ValidatorInterface::class);
+        $duplicateUser = new AdminUser($user->getEmail(), $user->getUsername());
+        $userViolations = $validator->validate($duplicateUser);
+        self::assertStringContainsString('An account with this email address already exists.', (string) $userViolations);
+        self::assertStringContainsString('An account with this username already exists.', (string) $userViolations);
+
+        $invalidPage = new \App\Cms\Domain\Entity\Page();
+        $invalidPage->setTitle('Invalid URL');
+        $invalidPage->setSlug('Invalid URL');
+        self::assertStringContainsString('The slug may contain lowercase letters, numbers and hyphens.', (string) $validator->validate($invalidPage));
+
+        $invalidMenuItem = new MenuItem();
+        $invalidMenuItem->setName('Missing page');
+        $invalidMenuItem->setContentType(MenuItem::TYPE_PAGE);
+        self::assertStringContainsString('Select a page for this menu item.', (string) $validator->validate($invalidMenuItem));
 
         $this->client->request('GET', '/admin/configuration/languages');
         self::assertResponseIsSuccessful();

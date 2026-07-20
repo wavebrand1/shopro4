@@ -13,8 +13,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: AdminUserRepository::class)]
 #[ORM\Table(name: 'admin_user')]
-#[UniqueEntity(fields: ['email'], message: 'Konto z tym adresem e-mail już istnieje.')]
-#[UniqueEntity(fields: ['username'], message: 'Konto z tym loginem już istnieje.')]
+#[UniqueEntity(fields: ['email'], message: 'validation.user.email_exists')]
+#[UniqueEntity(fields: ['username'], message: 'validation.user.username_exists')]
 final class AdminUser implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
