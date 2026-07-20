@@ -12,6 +12,7 @@ use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
 use App\Identity\Domain\Entity\Membership;
+use App\Identity\Domain\Entity\SiteUser;
 use App\Identity\Application\PasswordResetManager;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
@@ -334,6 +335,10 @@ final class AdminCmsTest extends WebTestCase
         $languageConfiguration['show_language'] = true;
         $systemSettings->setConfiguration($languageConfiguration);
         $settingsRepository->save($systemSettings);
+        $publishedTranslation = self::getContainer()->get(EntityManagerInterface::class)->getRepository(PageTranslation::class)->find($translation->getId());
+        self::assertNotNull($publishedTranslation);
+        $publishedTranslation->setPublished(true);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
 
         $this->client->request('GET', '/language/en?page='.$page->getId());
         self::assertResponseRedirects('/en/about-us');
@@ -518,6 +523,34 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('select[name="page[memberships][]"][multiple]');
         self::assertSelectorExists('select[name="page[memberships][]"] option[value="'.$membership->getId().'"]');
+
+        $siteUser = new SiteUser('customer@example.test', 'customer');
+        $siteUser->setPassword($hasher->hashPassword($siteUser, 'very-secure-password'));
+        $siteUserManager = self::getContainer()->get(EntityManagerInterface::class);
+        $siteUserManager->persist($siteUser);
+        $siteUserManager->flush();
+
+        $this->client->request('GET', '/o-nas');
+        self::assertResponseRedirects('/login');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('h1', 'Sign in to the website');
+        $this->client->submitForm('Sign in', ['_username' => 'customer', '_password' => 'very-secure-password']);
+        self::assertResponseRedirects('http://localhost/o-nas');
+        $this->client->followRedirect();
+        self::assertResponseStatusCodeSame(403);
+
+        $siteUserManager = self::getContainer()->get(EntityManagerInterface::class);
+        $loggedSiteUser = $siteUserManager->getRepository(SiteUser::class)->findOneBy(['username' => 'customer']);
+        $allowedMembership = $siteUserManager->getRepository(Membership::class)->findOneBy(['title' => 'Business customers']);
+        self::assertNotNull($loggedSiteUser);
+        self::assertNotNull($allowedMembership);
+        $loggedSiteUser->addMembership($allowedMembership);
+        $siteUserManager->flush();
+        $this->client->request('GET', '/o-nas');
+        self::assertResponseRedirects('/en/about-us');
+        $this->client->followRedirect();
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('Strona z komponentów', (string) $this->client->getResponse()->getContent());
 
         $campaign = new NewsletterCampaign();
         $campaign->setSubject('Testowa kampania');

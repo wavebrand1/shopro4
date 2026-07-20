@@ -15,7 +15,7 @@
             <div class="site-header__actions">
                 {% if shopro_setting('show_search', true) %}<a class="site-search-link" href="{{ path('app_home') }}?q=" aria-label="{{ shopro_trans('front.search') }}">⌕</a>{% endif %}
                 {% if shopro_setting('show_language', false) %}{% include 'cms/_language_switcher.html.twig' %}{% endif %}
-                {% if shopro_setting('show_login', true) %}<a class="site-login-link" href="{{ path('admin_dashboard') }}">{{ shopro_trans('front.login') }}</a>{% endif %}
+                {% if shopro_setting('show_login', true) %}{% if app.user %}<form method="post" action="{{ path('site_logout') }}"><button class="site-login-link" type="submit">{{ shopro_trans('site_auth.logout') }}</button></form>{% else %}<a class="site-login-link" href="{{ path('site_login') }}">{{ shopro_trans('front.login') }}</a>{% endif %}{% endif %}
                 <a class="site-button site-button--small" href="{{ path('app_home') }}#kontakt">{{ shopro_trans('front.start') }}</a>
                 <button class="site-menu-toggle" type="button" data-site-menu aria-label="{{ shopro_trans('front.open_menu') }}"><span></span><span></span><span></span></button>
             </div>
@@ -28,7 +28,7 @@
         <div class="site-container site-footer__grid">
             {% include 'cms/_brand.html.twig' %}
             <p>{{ shopro_trans('front.tagline') }}</p>
-            <div>{% set footer_menu = shopro_menu(0) %}{% for item in footer_menu %}{% if item.url %}<a href="{{ item.url }}" target="{{ item.target }}">{{ item.name }}</a>{% endif %}{% else %}<a href="{{ path('app_home') }}#mozliwosci">{{ shopro_trans('front.features') }}</a><a href="{{ path('app_home') }}#jak-dziala">{{ shopro_trans('front.how_it_works') }}</a><a href="{{ path('admin_dashboard') }}">Panel</a>{% endfor %}</div>
+            <div>{% set footer_menu = shopro_menu(0) %}{% for item in footer_menu %}{% if item.url %}<a href="{{ item.url }}" target="{{ item.target }}">{{ item.name }}</a>{% endif %}{% else %}<a href="{{ path('app_home') }}#mozliwosci">{{ shopro_trans('front.features') }}</a><a href="{{ path('app_home') }}#jak-dziala">{{ shopro_trans('front.how_it_works') }}</a><a href="{{ path('site_login') }}">{{ shopro_trans('front.login') }}</a>{% endfor %}</div>
         </div>
         <div class="site-container site-footer__bottom"><span>© {{ 'now'|date('Y') }} Wavebrand. {{ shopro_trans('front.rights') }}</span><span>Symfony 7.4 LTS</span></div>
     </footer>

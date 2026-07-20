@@ -22,9 +22,14 @@ bez implementacji odpowiadających im modułów.
 
 Przypisania członkostw są przechowywane relacyjnie w `cms_page_membership`, zamiast
 listy identyfikatorów w pojedynczym polu używanej przez Legacy. Zapewnia to integralność
-danych i zachowuje możliwość wyboru wielu grup. Weryfikacja członkostwa zalogowanego
-użytkownika frontu zostanie podłączona razem z kontami użytkowników witryny; do tego
-czasu strony inne niż publiczne zachowują dotychczasową blokadę dostępu.
+danych i zachowuje możliwość wyboru wielu grup.
+
+Konta użytkowników witryny są oddzielone od operatorów panelu administracyjnego
+(`site_user` i `admin_user`) oraz używają osobnych zapór i sesji Symfony. Dostęp
+`Registered` wymaga aktywnego konta frontowego, natomiast `Membership` dodatkowo
+wymaga co najmniej jednej aktywnej grupy wspólnej dla konta i podstrony. Próba wejścia
+bez sesji zachowuje adres docelowy i prowadzi do `/login`; zalogowane konto bez
+wymaganej grupy otrzymuje odpowiedź 403.
 
 Implementacja: `src/Cms/Domain/Entity/Page.php`,
 `src/Cms/Presentation/Form/PageType.php`,
