@@ -18,10 +18,12 @@ const initializeRichEditors = () => {
             placeholder: english ? 'Enter the message content…' : 'Wpisz treść wiadomości…',
             modules: { toolbar: [[{ header: [1, 2, 3, false] }], ['bold', 'italic', 'underline', 'strike'], [{ color: [] }, { background: [] }], [{ list: 'ordered' }, { list: 'bullet' }], [{ align: [] }], ['blockquote', 'link'], ['clean']] },
         });
+        textarea.shoproRichEditor = editor;
         editor.clipboard.dangerouslyPasteHTML(textarea.value || '');
         const synchronize = () => { textarea.value = editor.root.innerHTML; };
         editor.on('text-change', synchronize);
         textarea.form?.addEventListener('submit', synchronize);
+        textarea.dispatchEvent(new CustomEvent('shopro:rich-editor-ready'));
     });
 };
 

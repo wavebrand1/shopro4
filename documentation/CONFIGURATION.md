@@ -45,6 +45,10 @@ Importer rozpoznaje przecinek, średnik i tabulator, wyszukuje adresy we wszystk
 kolumnach, normalizuje wielkość liter, usuwa duplikaty i przyjmuje maksymalnie
 10 000 unikalnych poprawnych adresów.
 
+Podczas przygotowania kampanii można skopiować temat i treść z dowolnego
+szablonu wiadomości e-mail. Jest to kopia: dalsza edycja kampanii nie zmienia
+szablonu, a późniejsza zmiana szablonu nie modyfikuje historycznej kampanii.
+
 ## Decyzje modułowe
 
 - waluta pozostaje przejściowo w konfiguracji dla zgodności, ale docelowo należy do ustawień języka;

@@ -6,6 +6,7 @@ namespace App\Newsletter\Presentation\Http\Admin;
 
 use App\Identity\Domain\Entity\AdminUser;
 use App\Language\Application\SystemTranslator;
+use App\Mail\Infrastructure\Persistence\Doctrine\EmailTemplateRepository;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
 use App\Newsletter\Application\RecipientCsvImporter;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
@@ -43,13 +44,13 @@ final class NewsletterController extends AbstractController
     }
 
     #[Route('/new', name: 'admin_newsletter_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, RecipientCsvImporter $csvImporter): Response
+    public function new(Request $request, EntityManagerInterface $em, RecipientCsvImporter $csvImporter, EmailTemplateRepository $emailTemplates): Response
     {
         $campaign = new NewsletterCampaign();
         $form = $this->createForm(NewsletterCampaignType::class, $campaign);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (!$this->applyRecipientFile($form->get('recipientFile')->getData(), $campaign, $csvImporter)) return $this->render('admin/newsletter/form.html.twig', ['form' => $form, 'campaign' => $campaign]);
+            if (!$this->applyRecipientFile($form->get('recipientFile')->getData(), $campaign, $csvImporter)) return $this->renderForm($form, $campaign, $emailTemplates);
             $em->persist($campaign);
             $em->flush();
             $this->addFlash('success', $this->translator->translate('newsletter.draft_saved'));
@@ -57,7 +58,7 @@ final class NewsletterController extends AbstractController
             return $this->redirectToRoute('admin_newsletter_index');
         }
 
-        return $this->render('admin/newsletter/form.html.twig', ['form' => $form, 'campaign' => $campaign]);
+        return $this->renderForm($form, $campaign, $emailTemplates);
     }
 
     #[Route('/{id}', name: 'admin_newsletter_show', requirements: ['id' => '\d+'], methods: ['GET'])]
@@ -73,19 +74,19 @@ final class NewsletterController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'admin_newsletter_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function edit(NewsletterCampaign $campaign, Request $request, EntityManagerInterface $em, RecipientCsvImporter $csvImporter): Response
+    public function edit(NewsletterCampaign $campaign, Request $request, EntityManagerInterface $em, RecipientCsvImporter $csvImporter, EmailTemplateRepository $emailTemplates): Response
     {
         $form = $this->createForm(NewsletterCampaignType::class, $campaign);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (!$this->applyRecipientFile($form->get('recipientFile')->getData(), $campaign, $csvImporter)) return $this->render('admin/newsletter/form.html.twig', ['form' => $form, 'campaign' => $campaign]);
+            if (!$this->applyRecipientFile($form->get('recipientFile')->getData(), $campaign, $csvImporter)) return $this->renderForm($form, $campaign, $emailTemplates);
             $em->flush();
             $this->addFlash('success', $this->translator->translate('newsletter.changes_saved'));
 
             return $this->redirectToRoute('admin_newsletter_show', ['id' => $campaign->getId()]);
         }
 
-        return $this->render('admin/newsletter/form.html.twig', ['form' => $form, 'campaign' => $campaign]);
+        return $this->renderForm($form, $campaign, $emailTemplates);
     }
 
     #[Route('/{id}/queue', name: 'admin_newsletter_queue', requirements: ['id' => '\d+'], methods: ['POST'])]
@@ -196,5 +197,14 @@ final class NewsletterController extends AbstractController
             $this->addFlash('error', $this->translator->translate('newsletter.recipient_csv_error'));
             return false;
         }
+    }
+
+    private function renderForm(mixed $form, NewsletterCampaign $campaign, EmailTemplateRepository $templates): Response
+    {
+        return $this->render('admin/newsletter/form.html.twig', [
+            'form' => $form,
+            'campaign' => $campaign,
+            'email_templates' => $templates->findBy([], ['name' => 'ASC']),
+        ]);
     }
 }

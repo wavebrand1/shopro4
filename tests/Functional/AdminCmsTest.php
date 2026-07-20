@@ -463,6 +463,8 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-page-heading h1', 'New campaign');
         self::assertSelectorTextContains('label[for="newsletter_campaign_customEmails"]', 'Additional email addresses');
         self::assertSelectorTextContains('label[for="newsletter_campaign_recipientFile"]', 'Import recipients from CSV');
+        self::assertSelectorExists('select[data-newsletter-template]');
+        self::assertSelectorExists('button[data-newsletter-template-load][disabled]');
 
         $this->client->request('GET', '/admin/configuration/email-templates');
         self::assertResponseIsSuccessful();
