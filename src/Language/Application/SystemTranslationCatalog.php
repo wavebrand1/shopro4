@@ -48,5 +48,10 @@ final class SystemTranslationCatalog
   'page.preview_mode'=>['pl'=>'Tryb podglądu','en'=>'Preview mode'],
   'page.preview_not_saved'=>['pl'=>'Ta wersja nie została jeszcze zapisana ani opublikowana.','en'=>'This version has not been saved or published yet.'],
   'page.preview_expired'=>['pl'=>'Podgląd wygasł. Otwórz go ponownie z formularza podstrony.','en'=>'The preview has expired. Open it again from the page form.'],
+  'builder.image'=>['pl'=>'Obraz','en'=>'Image'],
+  'builder.image_help'=>['pl'=>'Responsywny obraz z Menedżera plików','en'=>'Responsive image from the File manager'],
+  'media.select_image'=>['pl'=>'Wybierz obraz','en'=>'Select an image'],
+  'media.select_image_help'=>['pl'=>'Wskaż obraz, który ma zostać użyty w komponencie Page Buildera.','en'=>'Choose the image to use in the Page Builder component.'],
+  'media.use_image'=>['pl'=>'Użyj obrazu','en'=>'Use image'],
  ];}
 }

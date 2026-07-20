@@ -15,7 +15,7 @@ final class AdminFileManager
     ];
     private const ALLOWED_EXTENSIONS = ['', 'jpg', 'jpeg', 'png', 'webp', 'avif', 'gif', 'pdf', 'txt', 'csv', 'zip', 'docx', 'xlsx'];
 
-    public function __construct(private readonly string $projectDir) {}
+    public function __construct(private readonly string $projectDir, private readonly ?ResponsiveImageOptimizer $imageOptimizer = null) {}
 
     /** @return array{path:string,parent:?string,directories:list<array<string,mixed>>,files:list<array<string,mixed>>} */
     public function listing(string $relativePath): array
@@ -65,7 +65,8 @@ final class AdminFileManager
             if (!$file->isValid() || !in_array($file->getMimeType(), self::ALLOWED_MIME_TYPES, true) || $file->getSize() > 20 * 1024 * 1024) continue;
             $name = $this->safeName($file->getClientOriginalName());
             if (file_exists($directory.'/'.$name)) $name = pathinfo($name, PATHINFO_FILENAME).'-'.bin2hex(random_bytes(4)).($file->getClientOriginalExtension() ? '.'.strtolower($file->getClientOriginalExtension()) : '');
-            $file->move($directory, $name);
+            $stored = $file->move($directory, $name);
+            if ($this->imageOptimizer && str_starts_with((string) $stored->getMimeType(), 'image/')) $this->imageOptimizer->optimize($stored->getPathname());
             ++$uploaded;
         }
 

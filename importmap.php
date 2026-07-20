@@ -20,6 +20,10 @@ return [
         'path' => './assets/component-builder.js',
         'entrypoint' => true,
     ],
+    'file-manager' => [
+        'path' => './assets/file-manager.js',
+        'entrypoint' => true,
+    ],
     'rich-editor' => [
         'path' => './assets/rich-editor.js',
         'entrypoint' => true,

@@ -22,6 +22,7 @@ final class FileManagerController extends AbstractController
     public function index(Request $request): Response
     {
         $path = (string) ($request->isMethod('POST') ? $request->request->get('path', '') : $request->query->get('path', ''));
+        $picker = $request->isMethod('POST') ? $request->request->getBoolean('picker') : $request->query->getBoolean('picker');
         if ($request->isMethod('POST')) {
             if (!$this->isCsrfTokenValid('file-manager', (string) $request->request->get('_token'))) throw $this->createAccessDeniedException();
             try {
@@ -33,14 +34,14 @@ final class FileManagerController extends AbstractController
                 elseif ($action === 'upload') {
                     $uploaded = $this->files->upload($path, array_values(array_filter($request->files->all('files'), static fn ($file): bool => $file instanceof UploadedFile)));
                     $this->addFlash('success', sprintf($this->translator->translate('media.uploaded'), $uploaded));
-                    return $this->redirectToRoute('admin_file_manager_index', ['path' => $path]);
+                    return $this->redirectToRoute('admin_file_manager_index', ['path' => $path, 'picker' => $picker ? 1 : null]);
                 }
                 $this->addFlash('success', $this->translator->translate('media.operation_done'));
             } catch (\InvalidArgumentException|\RuntimeException $exception) {
                 $this->addFlash('error', $this->translator->translate($exception->getMessage()));
             }
 
-            return $this->redirectToRoute('admin_file_manager_index', ['path' => $path]);
+            return $this->redirectToRoute('admin_file_manager_index', ['path' => $path, 'picker' => $picker ? 1 : null]);
         }
 
         try {
@@ -49,6 +50,6 @@ final class FileManagerController extends AbstractController
             throw $this->createNotFoundException($this->translator->translate('media.invalid_path'));
         }
 
-        return $this->render('admin/file_manager/index.html.twig', ['listing' => $listing]);
+        return $this->render('admin/file_manager/index.html.twig', ['listing' => $listing, 'picker' => $picker]);
     }
 }

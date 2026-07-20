@@ -12,6 +12,7 @@ const initializeComponentBuilder = () => {
     let blocks = [];
     let selectedSlot = null;
     let draggedComponentId = null;
+    let mediaPickerTarget = null;
     let dirty = false;
     let submitting = false;
     const language = document.documentElement.lang || 'pl';
@@ -23,6 +24,7 @@ const initializeComponentBuilder = () => {
     const text = (label, key) => ({label, key, type: 'text'});
     const area = (label, key) => ({label, key, type: 'textarea'});
     const select = (label, key, options) => ({label, key, type: 'select', options});
+    const media = (label, key) => ({label, key, type: 'media'});
     const linkFields = [text(t('Adres linku','Link URL'), 'url'), text(t('Tekst przycisku','Button label'), 'buttonLabel')];
     const cardFields = [text(t('Nagłówek','Heading'), 'title'), area(t('Treść','Content'), 'text'), ...linkFields, select(t('Ikona','Icon'), 'icon', [[t('Dokument','Document'),'document'],['Command','command'],[t('Cel','Target'),'target'],[t('Gwiazda','Star'),'star']]), select(t('Kolor ikony','Icon color'), 'color', [[t('Niebieski','Blue'),'blue'],[t('Zielony','Green'),'green'],[t('Pomarańczowy','Orange'),'orange'],[t('Fioletowy','Violet'),'purple']])];
     const stepFields = [text(t('Numer','Number'), 'number'), text(t('Nagłówek','Heading'), 'title'), area(t('Opis','Description'), 'text')];
@@ -58,6 +60,10 @@ const initializeComponentBuilder = () => {
         rich_text: {
             label:t('Edytor tekstu','Text editor'),itemLabel:'',fields:[{label:t('Treść','Content'),key:'content',type:'richtext'}],
             defaults:{content:'<p>Rozpocznij pisanie treści…</p>'}
+        },
+        image: {
+            label:t('Obraz','Image'),itemLabel:'',fields:[media(t('Plik obrazu','Image file'),'src'),text(t('Tekst alternatywny','Alternative text'),'alt'),area(t('Podpis','Caption'),'caption'),select(t('Proporcje','Aspect ratio'),'ratio',[[t('Oryginalne','Original'),'auto'],['16:9','16/9'],['4:3','4/3'],['1:1','1/1']]),select(t('Dopasowanie','Fit'),'fit',[[t('Wypełnij','Cover'),'cover'],[t('Pokaż cały obraz','Contain'),'contain']]),select(t('Ładowanie','Loading'),'loading',[[t('Leniwe','Lazy'),'lazy'],[t('Priorytetowe','Priority'),'eager']])],
+            defaults:{src:'',alt:'',caption:'',ratio:'auto',fit:'cover',loading:'lazy'}
         }
     };
 
@@ -112,6 +118,7 @@ const initializeComponentBuilder = () => {
         if(definition.type==='richtext')return '<label class="component-rich-field">'+escape(definition.label)+'<div class="component-quill-editor" data-rich-text-component data-content="'+escape(value)+'"'+attr+'></div></label>';
         if(definition.type==='textarea')return '<label>'+escape(definition.label)+'<textarea rows="3"'+attr+'>'+escape(value)+'</textarea></label>';
         if(definition.type==='select')return '<label>'+escape(definition.label)+'<select'+attr+'>'+definition.options.map(option=>'<option value="'+escape(option[1])+'"'+(String(value)===option[1]?' selected':'')+'>'+escape(option[0])+'</option>').join('')+'</select></label>';
+        if(definition.type==='media')return '<label class="component-media-field">'+escape(definition.label)+'<span><input type="text" value="'+escape(value)+'" placeholder="/uploads/..."'+attr+'><button class="modern-button" type="button" data-media-picker data-media-key="'+escape(definition.key)+'">'+t('Wybierz plik','Select file')+'</button></span></label>';
         return '<label>'+escape(definition.label)+'<input type="text" value="'+escape(value)+'"'+attr+'></label>';
     };
     const fields=(schema,data,scope)=>'<div class="component-fields">'+schema.map(definition=>field(definition,data[definition.key]??'',scope)).join('')+'</div>';
@@ -145,6 +152,7 @@ const initializeComponentBuilder = () => {
         const columnElement=event.target.closest('[data-column]');if(columnElement&&!event.target.closest('button,summary,input,textarea,select,label')){selectedSlot={sectionId:section.id,column:Number(columnElement.dataset.column)};render();return;}
         const componentElement=event.target.closest('[data-component-id]');const component=componentElement?findComponent(componentElement.dataset.componentId):null;const column=component?section.data.columns.find(items=>items.some(item=>item.id===component.id)):null;const componentIndex=column?.findIndex(item=>item.id===component.id)??-1;
         const itemElement=event.target.closest('[data-item-id]');const itemIndex=itemElement&&component?component.data.items.findIndex(item=>item.id===itemElement.dataset.itemId):-1;const definition=component?definitions[component.type]:null;
+        if(event.target.closest('[data-media-picker]')&&component){mediaPickerTarget={componentId:component.id,key:event.target.closest('[data-media-picker]').dataset.mediaKey};globalThis.open('/admin/configuration/files?picker=1','shopro-media-picker','width=1180,height=760,resizable=yes,scrollbars=yes');return;}
         if(event.target.closest('[data-add-column]')){section.data.columns.push([]);section.data.widths=section.data.columns.map(()=>Math.round(100/section.data.columns.length));selectedSlot={sectionId:section.id,column:section.data.columns.length-1};}
         else if(event.target.closest('[data-remove-column]')){const index=Number(event.target.closest('[data-remove-column]').dataset.removeColumn);if(section.data.columns.length>1&&!section.data.columns[index].length){section.data.columns.splice(index,1);section.data.widths.splice(index,1);selectedSlot={sectionId:section.id,column:0};}else if(section.data.columns[index].length)globalThis.alert(t('Najpierw usuń lub przenieś komponenty z tej kolumny.','Delete or move the components from this column first.'));}
         else if(event.target.closest('[data-remove-section]'))blocks.splice(sectionIndex,1);
@@ -158,6 +166,9 @@ const initializeComponentBuilder = () => {
         else if(event.target.closest('[data-move-item]')){const next=itemIndex+Number(event.target.closest('[data-move-item]').dataset.moveItem);if(next>=0&&next<component.data.items.length)[component.data.items[itemIndex],component.data.items[next]]=[component.data.items[next],component.data.items[itemIndex]];}
         else return;markDirty();render();
     });
+    const receiveMedia=event=>{if(event.origin!==globalThis.location.origin||event.data?.type!=='shopro:media-selected'||!mediaPickerTarget)return;const component=findComponent(mediaPickerTarget.componentId);if(!component)return;component.data[mediaPickerTarget.key]=String(event.data.url||'');mediaPickerTarget=null;markDirty();render();};
+    globalThis.addEventListener('message',receiveMedia);
+    document.addEventListener('turbo:before-cache',()=>globalThis.removeEventListener('message',receiveMedia),{once:true});
     const leaveMessage=t('Masz niezapisane zmiany. Czy na pewno chcesz opuścić edycję?','You have unsaved changes. Are you sure you want to leave the editor?');
     const beforeUnload=event=>{if(!dirty||submitting)return;event.preventDefault();event.returnValue='';};
     const beforeVisit=event=>{if(!dirty||submitting)return;if(!globalThis.confirm(leaveMessage))event.preventDefault();else{dirty=false;document.removeEventListener('turbo:before-visit',beforeVisit);}};

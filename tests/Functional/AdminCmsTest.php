@@ -83,6 +83,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('input[name="page[homePage]"]');
         self::assertSelectorExists('textarea[name="page[javascript]"]');
         self::assertSelectorExists('[data-component-builder]');
+        self::assertSelectorExists('[data-add-component="image"]');
         self::assertSelectorExists('input[name="page[editorMode]"]');
         self::assertSelectorExists('input[name="page[builderData]"]');
         self::assertSelectorExists('input[name="page[builderCss]"]');
@@ -127,11 +128,23 @@ final class AdminCmsTest extends WebTestCase
                 'highlight' => 'działa poprawnie',
                 'text' => 'Kontrolowana treść strony.',
             ],
+        ], [
+            'id' => 'image-test',
+            'type' => 'image',
+            'data' => [
+                'src' => '/uploads/missing-test-image.png',
+                'alt' => 'Alternatywny opis',
+                'caption' => 'Podpis obrazu testowego',
+                'ratio' => '16/9',
+                'fit' => 'cover',
+                'loading' => 'lazy',
+            ],
         ]], JSON_THROW_ON_ERROR));
         self::getContainer()->get(PageRepository::class)->save($page);
         $this->client->request('GET', '/o-nas');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.site-hero h1', 'działa poprawnie');
+        self::assertSelectorTextContains('.builder-image figcaption', 'Podpis obrazu testowego');
 
         $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
         self::assertNotNull($page);
@@ -416,6 +429,10 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'File manager');
         self::assertSelectorTextContains('.file-manager-actions', 'New directory');
+
+        $this->client->request('GET', '/admin/configuration/files?picker=1');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Select an image');
 
         $this->client->request('GET', '/admin/configuration/files?path=../');
         self::assertResponseStatusCodeSame(404);

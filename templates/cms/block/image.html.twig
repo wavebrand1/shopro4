@@ -1,0 +1,9 @@
+{% set src = block.src|default('') %}
+{% set ratio = block.ratio|default('auto') in ['auto','16/9','4/3','1/1'] ? block.ratio|default('auto') : 'auto' %}
+{% set fit = block.fit|default('cover') in ['cover','contain'] ? block.fit|default('cover') : 'cover' %}
+{% if src %}
+<figure class="builder-image builder-image--{{ fit }}" style="--builder-image-ratio:{{ ratio }}">
+    {{ shopro_picture(src, block.alt|default(''), null, null, block.loading|default('lazy') == 'eager') }}
+    {% if block.caption|default('') %}<figcaption>{{ block.caption }}</figcaption>{% endif %}
+</figure>
+{% endif %}

@@ -50,6 +50,13 @@ Builder udostępnia kompletny zestaw sekcji aktualnej strony startowej:
 - Dla kogo — nagłówek i powtarzalne grupy odbiorców,
 - Wezwanie do działania — treść i dwa linki końcowe.
 
+Biblioteka zawiera również ogólny komponent Obraz. Redaktor wybiera plik bezpośrednio
+z Menedżera plików, uzupełnia tekst alternatywny i opcjonalny podpis oraz ustawia
+proporcje, dopasowanie i priorytet ładowania. Wybór pliku odbywa się przez bezpieczny
+komunikat same-origin do okna edytora. Obrazy przesłane przez Menedżer plików są od
+razu optymalizowane, a front renderuje dostępne warianty AVIF/WebP przez
+`shopro_picture()` z wymiarami, lazy loadingiem i asynchronicznym dekodowaniem.
+
 Przycisk „Cała strona główna” tworzy wszystkie powyższe sekcje w prawidłowej
 kolejności i wypełnia je treścią odpowiadającą bazowemu szablonowi.
 
