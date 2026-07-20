@@ -27,6 +27,10 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    App\Media\Application\AdminFileManager:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     App\Newsletter\Application\UnsubscribeToken:
         arguments:
             $kernelSecret: '%kernel.secret%'

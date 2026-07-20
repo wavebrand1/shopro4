@@ -337,6 +337,14 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('label[for="email_template_code"]', 'Event / technical code');
         self::assertSelectorTextContains('select[name="email_template[code]"] option[value="user_activate_account"]', 'User — account activation');
 
+        $this->client->request('GET', '/admin/configuration/files');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'File manager');
+        self::assertSelectorTextContains('.file-manager-actions', 'New directory');
+
+        $this->client->request('GET', '/admin/configuration/files?path=../');
+        self::assertResponseStatusCodeSame(404);
+
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
 
