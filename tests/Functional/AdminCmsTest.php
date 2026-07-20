@@ -94,12 +94,19 @@ final class AdminCmsTest extends WebTestCase
         $previewForm['page[title]'] = 'Niezapisany podgląd';
         $previewForm['page[builderData]'] = '[{"id":"preview","type":"layout_section","data":{"container":"grid","widths":[100],"columns":[[{"id":"preview-text","type":"rich_text","data":{"content":"<p>Treść tylko w podglądzie.</p><script>alert(1)</script>"}}]]}}]';
         $this->client->submit($previewForm);
+        self::assertResponseRedirects();
+        $previewUrl = (string) $this->client->getResponse()->headers->get('Location');
+        self::assertMatchesRegularExpression('#^/admin/pages/preview/[a-f0-9]{32}$#', $previewUrl);
+        $this->client->followRedirect();
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('X-Robots-Tag', 'noindex, nofollow');
         self::assertSelectorTextContains('.page-preview-banner', 'Tryb podglądu');
         self::assertSelectorTextContains('.public-article__body', 'Treść tylko w podglądzie.');
         self::assertStringNotContainsString('<script>alert(1)</script>', (string) $this->client->getResponse()->getContent());
         self::assertSame('O nas', self::getContainer()->get(PageRepository::class)->find($page->getId())?->getTitle());
+        $this->client->request('GET', $previewUrl);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.page-preview-banner', 'Tryb podglądu');
 
         $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
 

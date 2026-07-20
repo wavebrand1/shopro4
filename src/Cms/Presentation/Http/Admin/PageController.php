@@ -52,22 +52,39 @@ final class PageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $page->setBuilderData($this->sanitizeBuilderData($page->getBuilderData()));
-            $response = $this->render('cms/page/show.html.twig', [
+            $content = $this->renderView('cms/page/show.html.twig', [
                 'page' => $page,
                 'source_page' => $page,
                 'alternates' => [],
                 'preview' => true,
             ]);
-            $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
-            $response->headers->set('Cache-Control', 'no-store, private');
+            $token = bin2hex(random_bytes(16));
+            $previews = $request->getSession()->get('page_previews', []);
+            $previews[$token] = $content;
+            $request->getSession()->set('page_previews', array_slice($previews, -5, null, true));
 
-            return $response;
+            return $this->redirectToRoute('admin_page_preview_show', ['token' => $token]);
         }
 
         return $this->render('admin/page/form.html.twig', [
             'form' => $form,
             'page' => $page,
         ], new Response(status: Response::HTTP_UNPROCESSABLE_ENTITY));
+    }
+
+    #[Route('/preview/{token}', name: 'admin_page_preview_show', requirements: ['token' => '[a-f0-9]{32}'], methods: ['GET'])]
+    public function previewShow(string $token, Request $request): Response
+    {
+        $content = $request->getSession()->get('page_previews', [])[$token] ?? null;
+        if (!is_string($content)) {
+            throw $this->createNotFoundException($this->translator->translate('page.preview_expired'));
+        }
+
+        $response = new Response($content);
+        $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+        $response->headers->set('Cache-Control', 'no-store, private');
+
+        return $response;
     }
 
     #[Route('/{id}/edit', name: 'admin_page_edit', requirements: ['id' => '\\d+'], methods: ['GET', 'POST'])]

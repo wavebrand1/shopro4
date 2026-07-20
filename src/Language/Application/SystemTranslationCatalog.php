@@ -47,5 +47,6 @@ final class SystemTranslationCatalog
   'page.preview'=>['pl'=>'Podgląd','en'=>'Preview'],
   'page.preview_mode'=>['pl'=>'Tryb podglądu','en'=>'Preview mode'],
   'page.preview_not_saved'=>['pl'=>'Ta wersja nie została jeszcze zapisana ani opublikowana.','en'=>'This version has not been saved or published yet.'],
+  'page.preview_expired'=>['pl'=>'Podgląd wygasł. Otwórz go ponownie z formularza podstrony.','en'=>'The preview has expired. Open it again from the page form.'],
  ];}
 }
