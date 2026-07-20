@@ -9,6 +9,7 @@ use App\Settings\Application\BrandingAssetManager;
 use App\Settings\Application\SensitiveDataCipher;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
 use App\Settings\Presentation\Form\SystemSettingsType;
+use App\Language\Application\SystemTranslator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class SystemSettingsController extends AbstractController
 {
+    public function __construct(private readonly SystemTranslator $translator) {}
     #[Route('', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, SystemSettingsRepository $repository, SensitiveDataCipher $cipher, BrandingAssetManager $branding): Response
     {
@@ -32,7 +34,7 @@ final class SystemSettingsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && !$storageAvailable) {
-            $this->addFlash('error', 'Konfiguracja nie może zostać zapisana, ponieważ migracja bazy danych nie została jeszcze wykonana. Uruchom ponownie wdrożenie.');
+            $this->addFlash('error', $this->translator->translate('settings.save_storage_error'));
             return $this->redirectToRoute('admin_system_settings_edit');
         }
 
@@ -61,7 +63,7 @@ final class SystemSettingsController extends AbstractController
             $settings->setConfiguration($configuration);
             if ($password = $form->get('smtp_password')->getData()) $settings->setSmtpPassword($cipher->encrypt($password));
             $repository->save($settings);
-            $this->addFlash('success', 'Konfiguracja systemu została zapisana.');
+            $this->addFlash('success', $this->translator->translate('settings.saved'));
             return $this->redirectToRoute('admin_system_settings_edit');
         }
 

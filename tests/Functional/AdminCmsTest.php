@@ -351,6 +351,14 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.audit-filters', 'Date from');
         self::assertSelectorExists('.admin-table tbody tr');
 
+        $this->client->request('GET', '/admin/configuration/system');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'System configuration');
+        self::assertSelectorTextContains('.settings-card', 'Website details and themes');
+        self::assertSelectorTextContains('label[for="system_settings_site_name"]', 'Website name');
+        self::assertSelectorTextContains('label[for="system_settings_registration_allowed_0"]', 'Yes');
+        self::assertSelectorTextContains('select[name="system_settings[theme_variant]"] option[value="orange"]', 'Orange');
+
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/en/about-us');
 

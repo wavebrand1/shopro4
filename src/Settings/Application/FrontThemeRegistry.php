@@ -7,7 +7,7 @@ namespace App\Settings\Application;
 final class FrontThemeRegistry
 {
     /** @return array<string, string> label => identifier */
-    public function frontChoices(): array
+    public function frontChoices(string $locale = 'pl'): array
     {
         return [
             'Shopro Modernize' => 'modernize',
@@ -16,18 +16,18 @@ final class FrontThemeRegistry
     }
 
     /** @return array<string, string> */
-    public function frontVariantChoices(): array
+    public function frontVariantChoices(string $locale = 'pl'): array
     {
         return [
-            'Niebieski' => 'blue',
-            'Fioletowy' => 'violet',
-            'Zielony' => 'emerald',
-            'Pomarańczowy' => 'orange',
+            ($locale === 'en' ? 'Blue' : 'Niebieski') => 'blue',
+            ($locale === 'en' ? 'Violet' : 'Fioletowy') => 'violet',
+            ($locale === 'en' ? 'Green' : 'Zielony') => 'emerald',
+            ($locale === 'en' ? 'Orange' : 'Pomarańczowy') => 'orange',
         ];
     }
 
     /** @return array<string, string> */
-    public function adminChoices(): array
+    public function adminChoices(string $locale = 'pl'): array
     {
         return [
             'Shopro 4.0 Modernize' => 'modernize',
@@ -36,5 +36,5 @@ final class FrontThemeRegistry
     }
 
     /** @return array<string, string> */
-    public function adminVariantChoices(): array { return $this->frontVariantChoices(); }
+    public function adminVariantChoices(string $locale = 'pl'): array { return $this->frontVariantChoices($locale); }
 }
