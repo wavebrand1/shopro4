@@ -11,6 +11,8 @@ const initializeComponentBuilder = () => {
     const empty = root.querySelector('[data-builder-empty]');
     let blocks = [];
     let selectedSlot = null;
+    let dirty = false;
+    let submitting = false;
     const language = document.documentElement.lang || 'pl';
     const t = (pl, en) => language.startsWith('en') ? en : pl;
 
@@ -63,7 +65,19 @@ const initializeComponentBuilder = () => {
         if (data.items) data.items = data.items.map(item => ({id:uid(),...item}));
         return {id:uid(),type,data};
     };
+    const duplicateComponent = component => {
+        const copy = clone(component);
+        copy.id = uid();
+        if (Array.isArray(copy.data?.items)) copy.data.items = copy.data.items.map(item => ({...item, id:uid()}));
+        return copy;
+    };
     const createSection = (container = 'grid', components = []) => ({id:uid(),type:'layout_section',data:{container,columns:[components],widths:[100]}});
+    const duplicateSection = section => {
+        const copy = clone(section);
+        copy.id = uid();
+        copy.data.columns = copy.data.columns.map(column => column.map(duplicateComponent));
+        return copy;
+    };
     const normalizeSection = section => {
         if (!Array.isArray(section.data.columns) || !section.data.columns.length) section.data.columns=[[]];
         if (!section.data.container) section.data.container=section.data.layout === 'full' ? 'full' : 'grid';
@@ -93,24 +107,25 @@ const initializeComponentBuilder = () => {
     };
     const fields=(schema,data,scope)=>'<div class="component-fields">'+schema.map(definition=>field(definition,data[definition.key]??'',scope)).join('')+'</div>';
     const itemTemplate=(item,index,definition)=>'<details class="component-card-editor" data-item-id="'+escape(item.id)+'"><summary><span class="component-card-editor__icon component-card-editor__icon--blue">'+(index+1)+'</span><span><strong>'+escape(item.title||item.name||definition.itemLabel)+'</strong><small>'+t('Element ','Item ')+(index+1)+'</small></span><b>⌄</b></summary><div class="component-card-editor__body">'+fields(definition.itemFields,item,'item')+'<div class="component-item-actions"><button type="button" data-move-item="-1">↑</button><button type="button" data-move-item="1">↓</button><button class="is-danger" type="button" data-remove-item>'+t('Usuń','Delete')+'</button></div></div></details>';
-    const componentTemplate=component=>{const definition=definitions[component.type];if(!definition)return '';const items=Array.isArray(component.data.items)?component.data.items:[];return '<details class="component-block" data-component-id="'+escape(component.id)+'"><summary class="component-block__header"><span class="component-block__handle">⋮⋮</span><div><strong>'+escape(definition.label)+'</strong><small>'+items.length+(definition.itemFields?t(' elementów',' items'):'')+'</small></div><div class="component-item-actions"><button type="button" data-move-component="-1">↑</button><button type="button" data-move-component="1">↓</button><button class="is-danger" type="button" data-remove-component>'+t('Usuń','Delete')+'</button></div><b>⌄</b></summary><div class="component-block__settings">'+fields(definition.fields,component.data,'component')+'</div>'+(definition.itemFields?'<div class="component-block__items">'+items.map((item,index)=>itemTemplate(item,index,definition)).join('')+'</div><button class="component-add-card" type="button" data-add-item>+ '+t('Dodaj ','Add ')+escape(definition.itemLabel)+'</button>':'')+'</details>';};
+    const componentTemplate=component=>{const definition=definitions[component.type];if(!definition)return '';const items=Array.isArray(component.data.items)?component.data.items:[];return '<details class="component-block" data-component-id="'+escape(component.id)+'"><summary class="component-block__header"><span class="component-block__handle">⋮⋮</span><div><strong>'+escape(definition.label)+'</strong><small>'+items.length+(definition.itemFields?t(' elementów',' items'):'')+'</small></div><div class="component-item-actions"><button type="button" data-move-component="-1" title="'+t('Przenieś wyżej','Move up')+'">↑</button><button type="button" data-move-component="1" title="'+t('Przenieś niżej','Move down')+'">↓</button><button type="button" data-duplicate-component>'+t('Duplikuj','Duplicate')+'</button><button class="is-danger" type="button" data-remove-component>'+t('Usuń','Delete')+'</button></div><b>⌄</b></summary><div class="component-block__settings">'+fields(definition.fields,component.data,'component')+'</div>'+(definition.itemFields?'<div class="component-block__items">'+items.map((item,index)=>itemTemplate(item,index,definition)).join('')+'</div><button class="component-add-card" type="button" data-add-item>+ '+t('Dodaj ','Add ')+escape(definition.itemLabel)+'</button>':'')+'</details>';};
     const sectionTemplate = (section, index) => {
         const columns = section.data.columns.map((column, columnIndex) => '<div class="builder-section__column'+(selectedSlot?.sectionId===section.id&&selectedSlot.column===columnIndex?' is-selected':'')+'" data-column="'+columnIndex+'"><div class="builder-column-toolbar"><strong>'+t('Kolumna ','Column ')+(columnIndex+1)+'</strong><label>'+t('Szerokość kolumny ','Column width ')+'<span><input type="number" min="1" max="100" value="'+escape(section.data.widths[columnIndex]||1)+'" data-column-width="'+columnIndex+'">%</span></label><button type="button" class="is-danger" data-remove-column="'+columnIndex+'"'+(section.data.columns.length===1?' disabled':'')+'>'+t('Usuń kolumnę','Delete column')+'</button></div>'+column.map(componentTemplate).join('')+'</div>').join('');
 
         return '<details class="builder-section" data-section-id="'+escape(section.id)+'" open>'+
-            '<summary class="builder-section__header"><span><strong>'+t('Sekcja ','Section ')+(index+1)+'</strong><small>'+section.data.columns.length+' '+(section.data.columns.length===1?t('kolumna','column'):t('kolumny','columns'))+'</small></span><div class="component-item-actions"><button type="button" data-move-section="-1">↑</button><button type="button" data-move-section="1">↓</button><button class="is-danger" type="button" data-remove-section>'+t('Usuń sekcję','Delete section')+'</button></div><b>⌄</b></summary>'+
+            '<summary class="builder-section__header"><span><strong>'+t('Sekcja ','Section ')+(index+1)+'</strong><small>'+section.data.columns.length+' '+(section.data.columns.length===1?t('kolumna','column'):t('kolumny','columns'))+'</small></span><div class="component-item-actions"><button type="button" data-move-section="-1" title="'+t('Przenieś wyżej','Move up')+'">↑</button><button type="button" data-move-section="1" title="'+t('Przenieś niżej','Move down')+'">↓</button><button type="button" data-duplicate-section>'+t('Duplikuj','Duplicate')+'</button><button class="is-danger" type="button" data-remove-section>'+t('Usuń sekcję','Delete section')+'</button></div><b>⌄</b></summary>'+
             '<div class="builder-section__settings"><div><strong>'+t('Ustawienia sekcji','Section settings')+'</strong><small>'+t('Określ szerokość sekcji i liczbę kolumn.','Set the section width and number of columns.')+'</small></div><label>'+t('Szerokość sekcji','Section width')+'<select data-section-field="container"><option value="grid"'+(section.data.container==='grid'?' selected':'')+'>'+t('W gridzie strony','Website grid')+'</option><option value="full"'+(section.data.container==='full'?' selected':'')+'>'+t('Pełna szerokość ekranu','Full screen width')+'</option></select></label><button class="modern-button modern-button--primary" type="button" data-add-column>+ '+t('Dodaj kolumnę','Add column')+'</button></div>'+
             '<div class="builder-section__columns" style="grid-template-columns:'+section.data.widths.map(width=>Math.max(1,Number(width)||1)+'fr').join(' ')+'">'+columns+'</div></details>';
     };
     const synchronize=()=>{projectField.value=JSON.stringify(blocks);};
-    const initializeEditors=()=>root.querySelectorAll('[data-rich-text-component]').forEach(element=>{const editor=new Quill(element,{theme:'snow',modules:{toolbar:[[{header:[1,2,3,false]}],['bold','italic','underline','strike'],[{list:'ordered'},{list:'bullet'}],['blockquote','link'],[{align:[]}],['clean']]}});editor.clipboard.dangerouslyPasteHTML(element.dataset.content||'');editor.on('text-change',()=>{const component=findComponent(element.closest('[data-component-id]').dataset.componentId);if(component){component.data.content=editor.root.innerHTML;synchronize();}});});
+    const initializeEditors=()=>root.querySelectorAll('[data-rich-text-component]').forEach(element=>{const editor=new Quill(element,{theme:'snow',modules:{toolbar:[[{header:[1,2,3,false]}],['bold','italic','underline','strike'],[{list:'ordered'},{list:'bullet'}],['blockquote','link'],[{align:[]}],['clean']]}});editor.clipboard.dangerouslyPasteHTML(element.dataset.content||'');editor.on('text-change',()=>{const component=findComponent(element.closest('[data-component-id]').dataset.componentId);if(component){component.data.content=editor.root.innerHTML;markDirty();synchronize();}});});
     const render=()=>{list.innerHTML=blocks.map(sectionTemplate).join('');empty.hidden=blocks.length>0;synchronize();initializeEditors();};
     const selectedColumn=()=>{const section=blocks.find(item=>item.id===selectedSlot?.sectionId);return section?.data.columns[selectedSlot.column];};
 
-    root.querySelectorAll('[data-add-section]').forEach(button=>button.addEventListener('click',()=>{const section=createSection();blocks.push(section);selectedSlot={sectionId:section.id,column:0};render();}));
-    root.querySelectorAll('[data-add-component]').forEach(button=>button.addEventListener('click',()=>{let column=selectedColumn();if(!column){const section=createSection();blocks.push(section);selectedSlot={sectionId:section.id,column:0};column=section.data.columns[0];}column.push(createComponent(button.dataset.addComponent));render();}));
-    root.querySelector('[data-add-preset]')?.addEventListener('click',()=>{if(blocks.length&&!globalThis.confirm(t('Zastąpić aktualny układ kompletną stroną główną?','Replace the current layout with the complete homepage?')))return;blocks=homepagePreset();selectedSlot={sectionId:blocks[0].id,column:0};render();});
-    list.addEventListener('input',event=>{const section=blocks.find(item=>item.id===event.target.closest('[data-section-id]')?.dataset.sectionId);if(section&&event.target.dataset.sectionField){section.data[event.target.dataset.sectionField]=event.target.value;synchronize();return;}if(section&&event.target.dataset.columnWidth!==undefined){section.data.widths[Number(event.target.dataset.columnWidth)]=Number(event.target.value);synchronize();return;}const component=findComponent(event.target.closest('[data-component-id]')?.dataset.componentId);if(!component||!event.target.dataset.field)return;const itemElement=event.target.closest('[data-item-id]');const target=itemElement?component.data.items.find(item=>item.id===itemElement.dataset.itemId):component.data;target[event.target.dataset.field]=event.target.dataset.field==='columns'?Number(event.target.value):event.target.value;synchronize();});
+    const markDirty=()=>{dirty=true;};
+    root.querySelectorAll('[data-add-section]').forEach(button=>button.addEventListener('click',()=>{const section=createSection();blocks.push(section);selectedSlot={sectionId:section.id,column:0};markDirty();render();}));
+    root.querySelectorAll('[data-add-component]').forEach(button=>button.addEventListener('click',()=>{let column=selectedColumn();if(!column){const section=createSection();blocks.push(section);selectedSlot={sectionId:section.id,column:0};column=section.data.columns[0];}column.push(createComponent(button.dataset.addComponent));markDirty();render();}));
+    root.querySelector('[data-add-preset]')?.addEventListener('click',()=>{if(blocks.length&&!globalThis.confirm(t('Zastąpić aktualny układ kompletną stroną główną?','Replace the current layout with the complete homepage?')))return;blocks=homepagePreset();selectedSlot={sectionId:blocks[0].id,column:0};markDirty();render();});
+    list.addEventListener('input',event=>{const section=blocks.find(item=>item.id===event.target.closest('[data-section-id]')?.dataset.sectionId);if(section&&event.target.dataset.sectionField){section.data[event.target.dataset.sectionField]=event.target.value;markDirty();synchronize();return;}if(section&&event.target.dataset.columnWidth!==undefined){section.data.widths[Number(event.target.dataset.columnWidth)]=Number(event.target.value);markDirty();synchronize();return;}const component=findComponent(event.target.closest('[data-component-id]')?.dataset.componentId);if(!component||!event.target.dataset.field)return;const itemElement=event.target.closest('[data-item-id]');const target=itemElement?component.data.items.find(item=>item.id===itemElement.dataset.itemId):component.data;target[event.target.dataset.field]=event.target.dataset.field==='columns'?Number(event.target.value):event.target.value;markDirty();synchronize();});
     list.addEventListener('click',event=>{
         const sectionElement=event.target.closest('[data-section-id]');if(!sectionElement)return;const sectionIndex=blocks.findIndex(item=>item.id===sectionElement.dataset.sectionId);const section=blocks[sectionIndex];
         const columnElement=event.target.closest('[data-column]');if(columnElement&&!event.target.closest('button,summary,input,textarea,select,label')){selectedSlot={sectionId:section.id,column:Number(columnElement.dataset.column)};render();return;}
@@ -119,15 +134,24 @@ const initializeComponentBuilder = () => {
         if(event.target.closest('[data-add-column]')){section.data.columns.push([]);section.data.widths=section.data.columns.map(()=>Math.round(100/section.data.columns.length));selectedSlot={sectionId:section.id,column:section.data.columns.length-1};}
         else if(event.target.closest('[data-remove-column]')){const index=Number(event.target.closest('[data-remove-column]').dataset.removeColumn);if(section.data.columns.length>1&&!section.data.columns[index].length){section.data.columns.splice(index,1);section.data.widths.splice(index,1);selectedSlot={sectionId:section.id,column:0};}else if(section.data.columns[index].length)globalThis.alert(t('Najpierw usuń lub przenieś komponenty z tej kolumny.','Delete or move the components from this column first.'));}
         else if(event.target.closest('[data-remove-section]'))blocks.splice(sectionIndex,1);
+        else if(event.target.closest('[data-duplicate-section]')){const copy=duplicateSection(section);blocks.splice(sectionIndex+1,0,copy);selectedSlot={sectionId:copy.id,column:0};}
         else if(event.target.closest('[data-move-section]')){const next=sectionIndex+Number(event.target.closest('[data-move-section]').dataset.moveSection);if(next>=0&&next<blocks.length)[blocks[sectionIndex],blocks[next]]=[blocks[next],blocks[sectionIndex]];}
         else if(event.target.closest('[data-remove-component]'))column.splice(componentIndex,1);
+        else if(event.target.closest('[data-duplicate-component]'))column.splice(componentIndex+1,0,duplicateComponent(component));
         else if(event.target.closest('[data-move-component]')){const next=componentIndex+Number(event.target.closest('[data-move-component]').dataset.moveComponent);if(next>=0&&next<column.length)[column[componentIndex],column[next]]=[column[next],column[componentIndex]];}
         else if(event.target.closest('[data-add-item]')){const item={id:uid()};definition.itemFields.forEach(field=>item[field.key]='');component.data.items.push(item);}
         else if(event.target.closest('[data-remove-item]'))component.data.items.splice(itemIndex,1);
         else if(event.target.closest('[data-move-item]')){const next=itemIndex+Number(event.target.closest('[data-move-item]').dataset.moveItem);if(next>=0&&next<component.data.items.length)[component.data.items[itemIndex],component.data.items[next]]=[component.data.items[next],component.data.items[itemIndex]];}
-        else return;render();
+        else return;markDirty();render();
     });
-    form?.addEventListener('submit',synchronize);
+    const leaveMessage=t('Masz niezapisane zmiany. Czy na pewno chcesz opuścić edycję?','You have unsaved changes. Are you sure you want to leave the editor?');
+    const beforeUnload=event=>{if(!dirty||submitting)return;event.preventDefault();event.returnValue='';};
+    const beforeVisit=event=>{if(!dirty||submitting)return;if(!globalThis.confirm(leaveMessage))event.preventDefault();else{dirty=false;document.removeEventListener('turbo:before-visit',beforeVisit);}};
+    globalThis.addEventListener('beforeunload',beforeUnload);
+    document.addEventListener('turbo:before-visit',beforeVisit);
+    form?.addEventListener('input',markDirty);
+    form?.addEventListener('change',markDirty);
+    form?.addEventListener('submit',()=>{submitting=true;dirty=false;synchronize();document.removeEventListener('turbo:before-visit',beforeVisit);});
     render();
 };
 
