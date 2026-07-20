@@ -264,6 +264,14 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.preview-stats', 'Published');
         self::assertSelectorTextContains('.preview-chart', 'Last 7 days');
 
+        $this->client->request('GET', '/en/page-that-does-not-exist');
+        self::assertResponseStatusCodeSame(404);
+        self::assertStringContainsString('The page translation does not exist or is not published.', (string) $this->client->getResponse()->getContent());
+
+        $this->client->request('GET', '/language/zz');
+        self::assertResponseStatusCodeSame(404);
+        self::assertStringContainsString('The language does not exist.', (string) $this->client->getResponse()->getContent());
+
         $this->client->request('GET', '/admin');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('html[lang="en"]');

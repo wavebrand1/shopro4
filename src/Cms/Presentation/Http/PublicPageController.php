@@ -8,6 +8,7 @@ use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Language\Domain\Entity\Language;
 use App\Language\Application\LocalizedPageUrlGenerator;
+use App\Language\Application\SystemTranslator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,19 +17,23 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PublicPageController extends AbstractController
 {
+    public function __construct(private readonly SystemTranslator $translator)
+    {
+    }
+
     #[Route('/{_locale}/{slug}', name: 'cms_page_show_localized', requirements: ['_locale' => '[a-z]{2}', 'slug' => '[a-z0-9-]+'], methods: ['GET'], priority: -90)]
     public function localized(string $_locale, string $slug, EntityManagerInterface $em): Response
     {
         $language = $em->getRepository(Language::class)->findOneBy(['code' => $_locale, 'active' => true]);
         if ($language?->isDefaultLanguage()) {
             $basePage = $em->getRepository(\App\Cms\Domain\Entity\Page::class)->findOneBy(['slug' => $slug, 'published' => true]);
-            if (!$basePage) throw $this->createNotFoundException('Podstrona nie istnieje.');
+            if (!$basePage) throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
             return $this->redirectToRoute('cms_page_show', ['slug' => $basePage->getSlug()], Response::HTTP_FOUND);
         }
         $translation = $language ? $em->getRepository(PageTranslation::class)->findOneBy(['language' => $language, 'slug' => $slug]) : null;
-        if (!$translation || (!$translation->isPublished() && !$this->isGranted('ROLE_ADMIN'))) throw $this->createNotFoundException('Tłumaczenie podstrony nie istnieje lub nie jest opublikowane.');
+        if (!$translation || (!$translation->isPublished() && !$this->isGranted('ROLE_ADMIN'))) throw $this->createNotFoundException($this->translator->translate('page.public_translation_not_found'));
         $page = $translation->getPage();
-        if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) throw $this->createNotFoundException('Podstrona nie istnieje.');
+        if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
         if ('Public' !== $page->getAccess() && !$this->getUser()) return $this->redirectToRoute('admin_login');
 
         return $this->render('cms/page/show.html.twig', ['page' => $translation, 'source_page' => $page, 'alternates' => $em->getRepository(PageTranslation::class)->findBy(['page' => $page, 'published' => true])]);
@@ -39,10 +44,10 @@ final class PublicPageController extends AbstractController
     {
         $page = $pages->findPublishedBySlug($slug);
         if ($page === null) {
-            throw $this->createNotFoundException('Podstrona nie istnieje lub nie jest opublikowana.');
+            throw $this->createNotFoundException($this->translator->translate('page.public_unpublished'));
         }
         if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) {
-            throw $this->createNotFoundException('Podstrona nie istnieje.');
+            throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
         }
         if ('Public' !== $page->getAccess() && !$this->getUser()) {
             return $this->redirectToRoute('admin_login');
