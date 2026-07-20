@@ -87,6 +87,7 @@ final class AdminUser implements UserInterface, PasswordAuthenticatedUserInterfa
     public function getApiScopes(): array { return $this->apiScopes; }
     /** @param list<string> $scopes */
     public function setApiScopes(array $scopes): void { $this->apiScopes = array_values(array_unique($scopes)); }
+    public function hasApiScope(string $scope): bool { return in_array($scope, $this->apiScopes, true); }
     public function rotateApiToken(): string
     {
         $token = 'shp4_'.bin2hex(random_bytes(32));

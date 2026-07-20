@@ -12,6 +12,7 @@ use App\Settings\Application\SettingsProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -71,7 +72,20 @@ final class UserController extends AbstractController
 
     private function form(Request $request, AdminUser $user, AdminUserRepository $users, UserPasswordHasherInterface $hasher): Response
     {
+        $wasActive = $user->isActive();
         $form = $this->createForm(AdminUserType::class, $user); $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($wasActive && !$user->isActive()) {
+                $currentUser = $this->getUser();
+                $message = $currentUser instanceof AdminUser && $currentUser->getId() === $user->getId()
+                    ? 'users.cannot_deactivate_self'
+                    : ($users->countActive() <= 1 ? 'users.cannot_deactivate_last' : null);
+                if ($message !== null) {
+                    $user->setActive(true);
+                    $form->get('active')->addError(new FormError($this->translator->translate($message)));
+                }
+            }
+        }
         if ($form->isSubmitted() && $form->isValid()) {
             $password = (string) $form->get('plainPassword')->getData();
             if ($password !== '') $user->setPassword($hasher->hashPassword($user, $password));

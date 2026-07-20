@@ -408,6 +408,10 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'Edit user');
         self::assertSelectorTextContains('label[for="admin_user_apiScopes_0"]', 'Read data');
+        $this->client->submitForm('Save user', ['admin_user[active]' => false]);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.ui-field__errors', 'You cannot deactivate the currently signed-in account.');
+        self::assertTrue(self::getContainer()->get(AdminUserRepository::class)->find($user->getId())?->isActive());
 
         $validator = self::getContainer()->get(ValidatorInterface::class);
         $duplicateUser = new AdminUser($user->getEmail(), $user->getUsername());
@@ -570,6 +574,14 @@ final class AdminCmsTest extends WebTestCase
         $apiResponse = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
         self::assertSame('admin', $apiResponse['username']);
         self::assertSame(['read'], $apiResponse['scopes']);
+        $userRepository = self::getContainer()->get(AdminUserRepository::class);
+        $apiUser = $userRepository->findOneBy(['email' => 'admin@example.test']);
+        self::assertNotNull($apiUser);
+        $apiUser->setApiScopes([]);
+        $userRepository->save($apiUser);
+        $this->client->request('GET', '/api/v1/me', server: ['HTTP_AUTHORIZATION' => 'Bearer '.$apiToken]);
+        self::assertResponseStatusCodeSame(403);
+        self::assertJsonStringEqualsJsonString('{"error":"insufficient_scope","required_scope":"read"}', (string) $this->client->getResponse()->getContent());
 
         $unsubscribeToken = self::getContainer()->get(UnsubscribeToken::class)->create('admin@example.test');
         $this->client->request('POST', '/newsletter/unsubscribe', ['token' => $unsubscribeToken]);

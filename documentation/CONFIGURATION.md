@@ -12,6 +12,8 @@ Formularz został odwzorowany na podstawie `stare/Wersja_2_00/Develop/admin/conf
 - limity prób logowania i czas blokady są egzekwowane dla pary login+IP oraz globalnie dla IP;
 - SMTP jest pojedynczym transportem, a hasło jest szyfrowane przy użyciu `APP_SECRET`;
 - klucze API są generowane per użytkownik, zapisywane wyłącznie jako SHA-256 i mają osobne zakresy uprawnień.
+- zakresy tokenów API są egzekwowane przez każdy endpoint; odczyt `/api/v1/me` wymaga zakresu `read`;
+- aktualnie zalogowane oraz ostatnie aktywne konto administratora nie może zostać wyłączone.
 
 ## Obrazy
 

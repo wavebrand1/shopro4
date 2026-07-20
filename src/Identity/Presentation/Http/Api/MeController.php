@@ -21,6 +21,7 @@ final class MeController extends AbstractController
         if (!str_starts_with($token, 'shp4_') || strlen($token) !== 69) return $this->json(['error' => 'invalid_token'], 401);
         $user = $users->findOneBy(['apiTokenHash' => hash('sha256', $token), 'apiEnabled' => true, 'active' => true]);
         if (!$user) return $this->json(['error' => 'invalid_token'], 401);
+        if (!$user->hasApiScope('read')) return $this->json(['error' => 'insufficient_scope', 'required_scope' => 'read'], 403);
         return $this->json(['id' => $user->getId(), 'username' => $user->getUsername(), 'email' => $user->getEmail(), 'scopes' => $user->getApiScopes()]);
     }
 }
