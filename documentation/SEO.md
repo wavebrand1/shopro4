@@ -18,3 +18,6 @@ czemu link ma spójny tytuł oraz opis po udostępnieniu. Dane JSON-LD opisują 
 witrynę i organizację w jednym grafie `@graph`. Nazwa witryny, firmy oraz logo są
 pobierane z Konfiguracji systemu, a tytuł i opis z ustawień bieżącej podstrony.
 Podgląd niezapisanej strony nie emituje canonical, danych social ani JSON-LD.
+Opcjonalną grafikę kart można przesłać w grupie „SEO i analityka” w Konfiguracji
+systemu. Akceptowane są PNG, JPG i WebP (zalecane 1200 × 630 px). Bez grafiki
+system świadomie generuje kartę tekstową `summary`, zamiast używać niepasującego logo.

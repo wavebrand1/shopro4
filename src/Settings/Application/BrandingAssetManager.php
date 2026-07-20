@@ -11,6 +11,7 @@ final class BrandingAssetManager
     private const EXTENSIONS = [
         'logo' => ['image/png' => 'png', 'image/jpeg' => 'jpg', 'image/webp' => 'webp', 'image/svg+xml' => 'svg'],
         'favicon' => ['image/png' => 'png', 'image/webp' => 'webp', 'image/x-icon' => 'ico', 'image/vnd.microsoft.icon' => 'ico'],
+        'social' => ['image/png' => 'png', 'image/jpeg' => 'jpg', 'image/webp' => 'webp'],
     ];
 
     public function __construct(private readonly string $projectDir) {}

@@ -13,13 +13,14 @@
     'settings.group_pagination': ['per_page','currency','currency_symbol','thousands_separator','decimal_separator'],
     'settings.group_security': ['registration_allowed','registration_verify','registration_auto_verify','notify_admin','user_limit','login_attempts','flood_seconds','logging','alert_email_template'],
     'settings.group_social': ['facebook','instagram','twitter','pinterest','linkedin','youtube','tiktok'],
-    'settings.group_seo': ['analytics_measurement_id','analytics_consent_required','meta_keywords','meta_description'],
+    'settings.group_seo': ['analytics_measurement_id','analytics_consent_required','meta_keywords','meta_description','social_image_file','remove_social_image'],
     'settings.group_smtp': ['smtp_host','smtp_user','smtp_password','smtp_port','smtp_encryption','mail_from_address','mail_from_name','mail_reply_to']
 } %}
 {% for title, fields in groups %}
 <section class="modern-card settings-card">
     <div class="modern-card__heading"><h2>{{ shopro_trans(title) }}</h2></div>
     {% if loop.first and (shopro_setting('site_logo') or shopro_setting('favicon')) %}<div class="branding-preview">{% if shopro_setting('site_logo') %}<div><span>{{ shopro_trans('settings.current_logo') }}</span><img src="{{ shopro_setting('site_logo') }}" alt="{{ shopro_trans('settings.current_logo') }}"></div>{% endif %}{% if shopro_setting('favicon') %}<div><span>{{ shopro_trans('settings.current_favicon') }}</span><img class="branding-preview__favicon" src="{{ shopro_setting('favicon') }}" alt="{{ shopro_trans('settings.current_favicon') }}"></div>{% endif %}</div>{% endif %}
+    {% if title == 'settings.group_seo' and shopro_setting('social_image') %}<div class="branding-preview"><div><span>{{ shopro_trans('settings.current_social_image') }}</span><img src="{{ shopro_setting('social_image') }}" alt="{{ shopro_trans('settings.current_social_image') }}"></div></div>{% endif %}
     <div class="settings-grid">
         {% for name in fields %}{% set control = attribute(form, name) %}<div class="settings-field settings-field--{{ control.vars.block_prefixes|last }}">{{ form_row(control) }}</div>{% endfor %}
     </div>

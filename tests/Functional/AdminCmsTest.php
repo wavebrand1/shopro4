@@ -510,6 +510,8 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorNotExists('input[name="system_settings[tenor_api_key]"]');
         self::assertSelectorNotExists('select[name="system_settings[api_auth_module]"]');
         self::assertSelectorExists('select[name="system_settings[smtp_encryption]"]');
+        self::assertSelectorExists('input[name="system_settings[social_image_file]"]');
+        self::assertSelectorExists('input[name="system_settings[remove_social_image]"]');
         $this->client->submit($settingsPage->selectButton('Zapisz konfigurację')->form(), [
             'system_settings[site_name]' => 'Shopro test',
             'system_settings[theme]' => 'classic',
@@ -518,12 +520,20 @@ final class AdminCmsTest extends WebTestCase
         ]);
         self::assertResponseRedirects('/admin/configuration/system');
 
+        $settingsRepository = self::getContainer()->get(SystemSettingsRepository::class);
+        $systemSettings = $settingsRepository->get();
+        $configuration = $systemSettings->getConfiguration();
+        $configuration['social_image'] = '/uploads/branding/social-test.webp';
+        $systemSettings->setConfiguration($configuration);
+        $settingsRepository->save($systemSettings);
+
         $this->client->request('GET', '/');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('body.front-theme--classic.theme-variant--orange');
         self::assertSelectorTextContains('.site-nav', 'O nas');
+        self::assertSelectorExists('meta[property="og:image"][content="http://localhost/uploads/branding/social-test.webp"]');
+        self::assertSelectorExists('meta[name="twitter:card"][content="summary_large_image"]');
 
-        $settingsRepository = self::getContainer()->get(SystemSettingsRepository::class);
         $systemSettings = $settingsRepository->get();
         $configuration = $systemSettings->getConfiguration();
         $configuration['maintenance'] = true;

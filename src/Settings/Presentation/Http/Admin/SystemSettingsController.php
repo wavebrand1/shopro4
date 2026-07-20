@@ -41,7 +41,7 @@ final class SystemSettingsController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var array<string, mixed> $configuration */
             $configuration = array_replace($settings->getConfiguration(), $form->getData());
-            unset($configuration['smtp_password'], $configuration['site_logo_file'], $configuration['favicon_file'], $configuration['remove_site_logo'], $configuration['remove_favicon']);
+            unset($configuration['smtp_password'], $configuration['site_logo_file'], $configuration['favicon_file'], $configuration['social_image_file'], $configuration['remove_site_logo'], $configuration['remove_favicon'], $configuration['remove_social_image']);
             if ($form->get('remove_site_logo')->getData()) {
                 $branding->remove($configuration['site_logo'] ?? null);
                 $configuration['site_logo'] = '';
@@ -49,6 +49,10 @@ final class SystemSettingsController extends AbstractController
             if ($form->get('remove_favicon')->getData()) {
                 $branding->remove($configuration['favicon'] ?? null);
                 $configuration['favicon'] = '';
+            }
+            if ($form->get('remove_social_image')->getData()) {
+                $branding->remove($configuration['social_image'] ?? null);
+                $configuration['social_image'] = '';
             }
             if ($file = $form->get('site_logo_file')->getData()) {
                 $previous = $configuration['site_logo'] ?? null;
@@ -58,6 +62,11 @@ final class SystemSettingsController extends AbstractController
             if ($file = $form->get('favicon_file')->getData()) {
                 $previous = $configuration['favicon'] ?? null;
                 $configuration['favicon'] = $branding->store($file, 'favicon');
+                $branding->remove($previous);
+            }
+            if ($file = $form->get('social_image_file')->getData()) {
+                $previous = $configuration['social_image'] ?? null;
+                $configuration['social_image'] = $branding->store($file, 'social');
                 $branding->remove($previous);
             }
             $settings->setConfiguration($configuration);

@@ -98,6 +98,8 @@ final class SystemSettingsType extends AbstractType
             ->add('analytics_consent_required', ChoiceType::class, $yesNo($t('settings.analytics_consent')))
             ->add('meta_keywords', TextareaType::class, ['label' => $t('settings.meta_keywords'), 'required' => false])
             ->add('meta_description', TextareaType::class, ['label' => $t('settings.meta_description'), 'required' => false])
+            ->add('social_image_file', FileType::class, ['label' => $t('settings.social_image'), 'mapped' => false, 'required' => false, 'help' => $t('settings.social_image_help'), 'constraints' => [new File(maxSize: '5M', mimeTypes: ['image/png', 'image/jpeg', 'image/webp'])]])
+            ->add('remove_social_image', CheckboxType::class, ['label' => $t('settings.remove_social_image'), 'mapped' => false, 'required' => false])
             ->add('smtp_host', TextType::class, ['label' => 'SMTP host', 'required' => false])
             ->add('smtp_user', TextType::class, ['label' => $t('settings.smtp_user'), 'required' => false])
             ->add('smtp_password', PasswordType::class, ['label' => $t('settings.smtp_password'), 'mapped' => false, 'required' => false, 'help' => $t('settings.smtp_password_help'), 'constraints' => [new Length(max: 255)]])
