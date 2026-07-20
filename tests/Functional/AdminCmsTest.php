@@ -660,6 +660,9 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('.flash--success');
         $this->client->request('GET', '/activate/'.$originalActivationToken);
         self::assertResponseRedirects('/login');
+        $this->client->request('GET', '/activate/'.$originalActivationToken);
+        self::assertResponseStatusCodeSame(410);
+        self::assertSelectorExists('a[href="/activation/resend"]');
 
         $campaign = new NewsletterCampaign();
         $campaign->setSubject('Testowa kampania');

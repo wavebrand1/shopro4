@@ -133,3 +133,10 @@ Nieaktywny użytkownik może poprosić o ponowną wiadomość pod
 istnienia i stanu konta. Poprzedni token jest zastępowany dopiero po skutecznym
 przekazaniu nowej wiadomości do transportu pocztowego. Endpoint ma limit trzech
 prób na 15 minut dla kombinacji adresu IP i identyfikatora konta.
+
+Szablony systemowe są powiązane z cyklem konta: `user_activate_account` wysyła
+link weryfikacyjny, `user_thans_for_registration` potwierdza aktywację,
+`admin_new_user` lub `admin_accept_new_user` informuje administratora zgodnie z
+ustawieniem `notify_admin`, a `user_admin_activate_your_account` informuje o
+ręcznej aktywacji w PA. Awarie wiadomości informacyjnych nie wycofują poprawnie
+zapisanej rejestracji lub aktywacji.

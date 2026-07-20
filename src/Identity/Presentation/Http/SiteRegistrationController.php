@@ -49,6 +49,11 @@ final class SiteRegistrationController extends AbstractController
                 } catch (\Throwable) {
                     $emailSent = false;
                 }
+            } else {
+                try { $mailer->sendWelcome($user, $this->generateUrl('site_login', [], UrlGeneratorInterface::ABSOLUTE_URL)); } catch (\Throwable) {}
+            }
+            if ((bool) $settings->get('notify_admin', true)) {
+                try { $mailer->notifyAdministrator($user, $request->getClientIp() ?? '', $this->generateUrl('admin_site_user_edit', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL)); } catch (\Throwable) {}
             }
             $this->addFlash(
                 $emailSent ? 'success' : 'error',
@@ -60,11 +65,15 @@ final class SiteRegistrationController extends AbstractController
     }
 
     #[Route('/activate/{token}', name: 'site_activate', requirements: ['token' => '[a-f0-9]{64}'], methods: ['GET'])]
-    public function activate(string $token, EntityManagerInterface $entityManager): Response
+    public function activate(string $token, EntityManagerInterface $entityManager, SiteRegistrationMailer $mailer): Response
     {
         $user = $entityManager->getRepository(SiteUser::class)->findOneBy(['activationTokenHash' => hash('sha256', $token)]);
-        if (!$user || !$user->activateWithToken($token)) throw $this->createNotFoundException($this->translator->translate('site_registration.activation_invalid'));
-        $entityManager->flush(); $this->addFlash('success', $this->translator->translate('site_registration.activated'));
+        if (!$user || !$user->activateWithToken($token)) {
+            return $this->render('cms/security/activation_invalid.html.twig', [], new Response(status: Response::HTTP_GONE));
+        }
+        $entityManager->flush();
+        try { $mailer->sendWelcome($user, $this->generateUrl('site_login', [], UrlGeneratorInterface::ABSOLUTE_URL)); } catch (\Throwable) {}
+        $this->addFlash('success', $this->translator->translate('site_registration.activated'));
         return $this->redirectToRoute('site_login');
     }
 

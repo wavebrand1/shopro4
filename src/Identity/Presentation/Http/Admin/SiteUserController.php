@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Identity\Presentation\Http\Admin;
 
+use App\Identity\Application\SiteRegistrationMailer;
 use App\Identity\Domain\Entity\SiteUser;
 use App\Identity\Infrastructure\Persistence\Doctrine\SiteUserRepository;
 use App\Identity\Presentation\Form\SiteUserType;
@@ -14,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/site-users')]
@@ -36,22 +38,27 @@ final class SiteUserController extends AbstractController
     }
 
     #[Route('/new', name: 'admin_site_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, SiteUserRepository $users, UserPasswordHasherInterface $hasher): Response { return $this->form($request, new SiteUser('', ''), $users, $hasher); }
+    public function new(Request $request, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer): Response { return $this->form($request, new SiteUser('', ''), $users, $hasher, $mailer); }
     #[Route('/{id}/edit', name: 'admin_site_user_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function edit(SiteUser $user, Request $request, SiteUserRepository $users, UserPasswordHasherInterface $hasher): Response { return $this->form($request, $user, $users, $hasher); }
+    public function edit(SiteUser $user, Request $request, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer): Response { return $this->form($request, $user, $users, $hasher, $mailer); }
     #[Route('/{id}/delete', name: 'admin_site_user_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(SiteUser $user, Request $request, SiteUserRepository $users): Response
     {
         if ($this->isCsrfTokenValid('delete-site-user-'.$user->getId(), (string) $request->request->get('_token'))) { $users->remove($user); $this->addFlash('success', $this->translator->translate('site_users.deleted')); }
         return $this->redirectToRoute('admin_site_user_index');
     }
-    private function form(Request $request, SiteUser $user, SiteUserRepository $users, UserPasswordHasherInterface $hasher): Response
+    private function form(Request $request, SiteUser $user, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer): Response
     {
+        $wasActive = $user->isActive(); $existing = $user->getId() !== null;
         $form = $this->createForm(SiteUserType::class, $user); $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $password = (string) $form->get('plainPassword')->getData();
             if ($password !== '') $user->setPassword($hasher->hashPassword($user, $password));
-            $users->save($user); $this->addFlash('success', $this->translator->translate('site_users.saved'));
+            $users->save($user);
+            if ($existing && !$wasActive && $user->isActive()) {
+                try { $mailer->sendAdminActivated($user, $this->generateUrl('site_login', [], UrlGeneratorInterface::ABSOLUTE_URL)); } catch (\Throwable) {}
+            }
+            $this->addFlash('success', $this->translator->translate('site_users.saved'));
             return $this->redirectToRoute('admin_site_user_index');
         }
         return $this->render('admin/site_user/form.html.twig', ['form' => $form, 'user' => $user]);
