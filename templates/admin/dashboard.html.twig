@@ -37,7 +37,8 @@
         ] %}
         {% if is_granted('ROLE_ADMIN') %}
             {% set modules = modules|merge([
-                {route:'admin_user_index',label:'nav.users',help:'dashboard.users_help',value:user_count,meta:'dashboard.configured',icon:'♙'},
+                {route:'admin_site_user_index',label:'nav.site_users',help:'dashboard.site_users_help',value:site_user_count,meta:'dashboard.configured',icon:'♙'},
+                {route:'admin_user_index',label:'nav.panel_users',help:'dashboard.users_help',value:user_count,meta:'dashboard.configured',icon:'♙'},
                 {route:'admin_language_index',label:'nav.languages',help:'dashboard.languages_help',value:language_count,meta:'dashboard.active_languages',icon:'◎'},
                 {route:'admin_newsletter_index',label:'nav.newsletter',help:'dashboard.newsletter_help',value:campaign_count,meta:'dashboard.campaigns',icon:'✉'},
                 {route:'admin_email_template_index',label:'nav.email_templates',help:'dashboard.email_help',value:email_template_count,meta:'dashboard.configured',icon:'▤'},

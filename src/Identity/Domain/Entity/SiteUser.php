@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SiteUserRepository::class)]
 #[ORM\Table(name: 'site_user')]
@@ -21,8 +22,10 @@ class SiteUser implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank, Assert\Email, Assert\Length(max: 180)]
     private string $email;
     #[ORM\Column(length: 80, unique: true)]
+    #[Assert\NotBlank, Assert\Length(min: 2, max: 80), Assert\Regex(pattern: '/^[a-z0-9._-]+$/i')]
     private string $username;
     #[ORM\Column]
     private string $password = '';

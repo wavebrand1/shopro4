@@ -35,9 +35,13 @@
                     {{ shopro_trans('nav.menu') }}
                 </a>
                 {% if is_granted('ROLE_ADMIN') %}<p class="modern-nav__label">{{ shopro_trans('admin.users_system') }}</p>
+                <a class="{{ route starts with 'admin_site_user_' ? 'is-active' : '' }}" href="{{ path('admin_site_user_index') }}">
+                    <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="9" r="2.5"/><path d="M2 20c0-4 2.5-7 6-7s6 3 6 7M13 14c4-1 7 1.5 7 6"/></svg></span>
+                    {{ shopro_trans('nav.site_users') }}
+                </a>
                 <a class="{{ route starts with 'admin_user_' ? 'is-active' : '' }}" href="{{ path('admin_user_index') }}">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3-7 8-7s8 3 8 7"/></svg></span>
-                    {{ shopro_trans('nav.users') }}
+                    {{ shopro_trans('nav.panel_users') }}
                 </a>
                 <a class="{{ route starts with 'admin_membership_' ? 'is-active' : '' }}" href="{{ path('admin_membership_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm4 4h8M8 13h5"/></svg></span>{{ shopro_trans('nav.memberships') }}</a>
                 <a class="{{ route starts with 'admin_system_settings_' ? 'is-active' : '' }}" href="{{ path('admin_system_settings_edit') }}">

@@ -100,8 +100,11 @@ sanityzowana.
 
 Shopro 4.0 odwzorowuje pola bazowego rekordu Legacy `memberships`: nazwę, opis
 i aktywność. Lista oraz dodawanie i edycja są dostępne administratorowi w
-`/admin/memberships`. Celowo nie udostępniono jeszcze kasowania: przed nim muszą
-powstać relacje z kontami użytkowników frontu i podstronami oraz kontrola użycia,
-aby nie tworzyć osieroconych uprawnień. Źródła Legacy:
+`/admin/memberships`. Relacje z podstronami i kontami frontowymi są znormalizowane
+w tabelach łączących. Kontami klientów zarządza osobna sekcja
+`/admin/site-users`; obsługuje wyszukiwanie, aktywność, bezpieczną zmianę hasła oraz
+przypisywanie wielu grup. Operatorzy PA pozostają oddzieleni w `/admin/users`.
+Kasowanie grupy nadal jest zablokowane, aby nie tworzyć osieroconych uprawnień.
+Źródła Legacy:
 `setup/sql/structure.sql:93`, `lib/class_membership.php:31`,
 `lib/class_membership.php:57`, `admin/memberships.php`.

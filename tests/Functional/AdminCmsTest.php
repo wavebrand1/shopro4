@@ -364,7 +364,8 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('html[lang="en"]');
         self::assertSelectorTextContains('.modern-page-heading h1', 'Good morning');
         self::assertSelectorTextContains('.modern-nav', 'CONTENT MANAGEMENT');
-        self::assertSelectorCount(7, '.modern-module-card');
+        self::assertSelectorCount(8, '.modern-module-card');
+        self::assertSelectorExists('.modern-module-card[href="/admin/site-users"]');
         self::assertSelectorTextContains('.modern-dashboard-modules', 'Manage the entire system');
         self::assertSelectorExists('.admin-language-picker a[href^="/admin/language/en"]');
 
@@ -524,11 +525,20 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('select[name="page[memberships][]"][multiple]');
         self::assertSelectorExists('select[name="page[memberships][]"] option[value="'.$membership->getId().'"]');
 
-        $siteUser = new SiteUser('customer@example.test', 'customer');
-        $siteUser->setPassword($hasher->hashPassword($siteUser, 'very-secure-password'));
-        $siteUserManager = self::getContainer()->get(EntityManagerInterface::class);
-        $siteUserManager->persist($siteUser);
-        $siteUserManager->flush();
+        $this->client->request('GET', '/admin/site-users/new');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'New website user');
+        self::assertSelectorExists('select[name="site_user[memberships][]"][multiple]');
+        $this->client->submitForm('Save user', [
+            'site_user[username]' => 'customer',
+            'site_user[email]' => 'customer@example.test',
+            'site_user[plainPassword]' => 'very-secure-password',
+            'site_user[active]' => true,
+            'site_user[memberships]' => [],
+        ]);
+        self::assertResponseRedirects('/admin/site-users');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.admin-table', 'customer@example.test');
 
         $this->client->request('GET', '/o-nas');
         self::assertResponseRedirects('/login');

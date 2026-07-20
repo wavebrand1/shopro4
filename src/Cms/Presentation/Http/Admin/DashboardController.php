@@ -7,6 +7,7 @@ namespace App\Cms\Presentation\Http\Admin;
 use App\Cms\Domain\Entity\MenuItem;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
+use App\Identity\Domain\Entity\SiteUser;
 use App\Language\Domain\Entity\Language;
 use App\Mail\Domain\Entity\EmailTemplate;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
@@ -27,6 +28,7 @@ final class DashboardController extends AbstractController
             'published_count' => $pages->count(['published' => true]),
             'menu_count' => $entityManager->getRepository(MenuItem::class)->count([]),
             'user_count' => $entityManager->getRepository(AdminUser::class)->count([]),
+            'site_user_count' => $entityManager->getRepository(SiteUser::class)->count([]),
             'language_count' => $entityManager->getRepository(Language::class)->count(['active' => true]),
             'campaign_count' => $entityManager->getRepository(NewsletterCampaign::class)->count([]),
             'email_template_count' => $entityManager->getRepository(EmailTemplate::class)->count([]),
