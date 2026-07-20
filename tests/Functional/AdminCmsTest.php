@@ -121,7 +121,9 @@ final class AdminCmsTest extends WebTestCase
         $uploadsDirectory = dirname(__DIR__, 2).'/public/uploads';
         if (!is_dir($uploadsDirectory)) mkdir($uploadsDirectory, 0775, true);
         $testImage = $uploadsDirectory.'/test image.svg';
+        $testVariant = $uploadsDirectory.'/test image.320.webp';
         file_put_contents($testImage, '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="18"><rect width="32" height="18" fill="#5d87ff"/></svg>');
+        file_put_contents($testVariant, 'responsive-test-variant');
         $page->setEditorMode('components');
         $page->setBuilderData(json_encode([[
             'id' => 'hero-test',
@@ -133,15 +135,23 @@ final class AdminCmsTest extends WebTestCase
                 'text' => 'Kontrolowana treść strony.',
             ],
         ], [
-            'id' => 'image-test',
-            'type' => 'image',
+            'id' => 'image-section-test',
+            'type' => 'layout_section',
             'data' => [
-                'src' => '/uploads/test%20image.svg',
-                'alt' => 'Alternatywny opis',
-                'caption' => 'Podpis obrazu testowego',
-                'ratio' => '16/9',
-                'fit' => 'cover',
-                'loading' => 'lazy',
+                'container' => 'grid',
+                'widths' => [70, 30],
+                'columns' => [[], [[
+                    'id' => 'image-test',
+                    'type' => 'image',
+                    'data' => [
+                        'src' => '/uploads/test%20image.svg',
+                        'alt' => 'Alternatywny opis',
+                        'caption' => 'Podpis obrazu testowego',
+                        'ratio' => '16/9',
+                        'fit' => 'cover',
+                        'loading' => 'lazy',
+                    ],
+                ]]],
             ],
         ]], JSON_THROW_ON_ERROR));
         self::getContainer()->get(PageRepository::class)->save($page);
@@ -150,7 +160,9 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.site-hero h1', 'działa poprawnie');
         self::assertSelectorTextContains('.builder-image figcaption', 'Podpis obrazu testowego');
         self::assertSelectorExists('.builder-image img[src="/uploads/test%20image.svg"][alt="Alternatywny opis"]');
+        self::assertSelectorExists('.builder-image source[srcset="/uploads/test%20image.320.webp 320w"][sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1220px) 30vw, 354px"]');
         unlink($testImage);
+        unlink($testVariant);
 
         $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
         self::assertNotNull($page);

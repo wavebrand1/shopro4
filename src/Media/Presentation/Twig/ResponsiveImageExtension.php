@@ -14,7 +14,7 @@ final class ResponsiveImageExtension extends AbstractExtension
 {
     public function __construct(#[Autowire('%kernel.project_dir%')] private readonly string $projectDir, private readonly SettingsProvider $settings) {}
     public function getFunctions(): array { return [new TwigFunction('shopro_picture', $this->picture(...), ['is_safe' => ['html']])]; }
-    public function picture(string $src, string $alt = '', ?int $width = null, ?int $height = null, bool $eager = false): Markup
+    public function picture(string $src, string $alt = '', ?int $width = null, ?int $height = null, bool $eager = false, string $sizes = '100vw'): Markup
     {
         $urlPath = parse_url($src, PHP_URL_PATH);
         if (!is_string($urlPath) || !str_starts_with($urlPath, '/uploads/')) return new Markup('', 'UTF-8');
@@ -31,7 +31,7 @@ final class ResponsiveImageExtension extends AbstractExtension
         foreach (['avif' => 'image/avif', 'webp' => 'image/webp'] as $format => $mime) {
             $set = [];
             foreach ($widths as $candidate) if (is_file($baseFile.'.'.$candidate.'.'.$format)) $set[] = htmlspecialchars($baseUrl.'.'.$candidate.'.'.$format, ENT_QUOTES).' '.$candidate.'w';
-            if ($set) $sources .= '<source type="'.$mime.'" srcset="'.implode(', ', $set).'" sizes="100vw">';
+            if ($set) $sources .= '<source type="'.$mime.'" srcset="'.implode(', ', $set).'" sizes="'.htmlspecialchars($sizes, ENT_QUOTES | ENT_SUBSTITUTE).'">';
         }
         if (!$width || !$height) {
             $imageSize = @getimagesize($source);

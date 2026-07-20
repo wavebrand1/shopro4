@@ -10,5 +10,5 @@
     cta: 'cms/block/cta.html.twig'
 } %}
 {% if templates[component.type] is defined %}
-    {% include templates[component.type] with {block: component.data} only %}
+    {% include templates[component.type] with {block: component.data, image_sizes: image_sizes|default('100vw')} only %}
 {% endif %}

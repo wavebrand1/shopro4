@@ -56,6 +56,10 @@ proporcje, dopasowanie i priorytet ładowania. Wybór pliku odbywa się przez be
 komunikat same-origin do okna edytora. Obrazy przesłane przez Menedżer plików są od
 razu optymalizowane, a front renderuje dostępne warianty AVIF/WebP przez
 `shopro_picture()` z wymiarami, lazy loadingiem i asynchronicznym dekodowaniem.
+Wartość `sizes` jest wyliczana z udziału kolumny: na urządzeniach mobilnych obraz
+zajmuje szerokość ekranu, a na desktopie przeglądarka uwzględnia procent kolumny
+i maksymalną szerokość grida 1180 px. Redaktor nadal wybiera jeden obraz źródłowy;
+właściwy plik z `srcset` wybiera przeglądarka.
 
 Przycisk „Cała strona główna” tworzy wszystkie powyższe sekcje w prawidłowej
 kolejności i wypełnia je treścią odpowiadającą bazowemu szablonowi.

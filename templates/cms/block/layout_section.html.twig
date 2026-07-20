@@ -1,21 +1,27 @@
 {% set container = block.container|default('grid') == 'full' ? 'full' : 'grid' %}
 {% set widths = block.widths|default([]) %}
 {% set columns = block.columns|default([]) %}
+{% set total_width = 0 %}
+{% for column in columns %}{% set total_width = total_width + widths[loop.index0]|default(1) %}{% endfor %}
 
 {# Full-width single-column sections are transparent. This keeps page-level
    components such as Hero, Process and CTA structurally identical to the
    hand-built homepage and avoids wrapping their own internal grids. #}
 {% if container == 'full' and columns|length == 1 %}
     {% for component in columns[0] %}
-        {% include 'cms/block/_render.html.twig' with {component: component} only %}
+        {% include 'cms/block/_render.html.twig' with {component: component, image_sizes: '100vw'} only %}
     {% endfor %}
 {% else %}
     <section class="builder-public-section builder-public-section--{{ container }}">
         <div class="{{ container == 'grid' ? 'site-container ' : '' }}builder-public-section__columns" style="grid-template-columns:{% for column in columns %}{{ widths[loop.index0]|default(1) }}fr {% endfor %}">
             {% for column in columns %}
+                {% set column_percent = ((widths[loop.index0]|default(1)) * 100 / max(total_width, 1))|round %}
+                {% set column_sizes = container == 'grid'
+                    ? '(max-width: 760px) calc(100vw - 30px), (max-width: 1220px) '~column_percent~'vw, '~(1180 * column_percent / 100)|round~'px'
+                    : '(max-width: 760px) 100vw, '~column_percent~'vw' %}
                 <div class="builder-public-section__column">
                     {% for component in column %}
-                        {% include 'cms/block/_render.html.twig' with {component: component} only %}
+                        {% include 'cms/block/_render.html.twig' with {component: component, image_sizes: column_sizes} only %}
                     {% endfor %}
                 </div>
             {% endfor %}
