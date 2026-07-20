@@ -40,6 +40,11 @@ Stałe rozmiary miniatur ze starego systemu zastąpił zestaw responsywnych szer
 
 Kampania tworzy osobną dostawę dla każdego zapisanego odbiorcy i przekazuje ją do Symfony Messenger. Historia przechowuje status, czas wysłania i błąd; nieudane wiadomości mają retry i failed transport. Każdy newsletter zawiera podpisany, roczny link wypisu oraz nagłówki `List-Unsubscribe` i `List-Unsubscribe-Post`.
 
+Odbiorców można wskazać z kont, wpisać ręcznie albo zaimportować z CSV do 2 MB.
+Importer rozpoznaje przecinek, średnik i tabulator, wyszukuje adresy we wszystkich
+kolumnach, normalizuje wielkość liter, usuwa duplikaty i przyjmuje maksymalnie
+10 000 unikalnych poprawnych adresów.
+
 ## Decyzje modułowe
 
 - waluta pozostaje przejściowo w konfiguracji dla zgodności, ale docelowo należy do ustawień języka;

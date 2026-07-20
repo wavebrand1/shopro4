@@ -7,6 +7,7 @@ namespace App\Newsletter\Presentation\Http\Admin;
 use App\Identity\Domain\Entity\AdminUser;
 use App\Language\Application\SystemTranslator;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
+use App\Newsletter\Application\RecipientCsvImporter;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Presentation\Form\NewsletterCampaignType;
@@ -14,6 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -41,12 +43,13 @@ final class NewsletterController extends AbstractController
     }
 
     #[Route('/new', name: 'admin_newsletter_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, RecipientCsvImporter $csvImporter): Response
     {
         $campaign = new NewsletterCampaign();
         $form = $this->createForm(NewsletterCampaignType::class, $campaign);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            if (!$this->applyRecipientFile($form->get('recipientFile')->getData(), $campaign, $csvImporter)) return $this->render('admin/newsletter/form.html.twig', ['form' => $form, 'campaign' => $campaign]);
             $em->persist($campaign);
             $em->flush();
             $this->addFlash('success', $this->translator->translate('newsletter.draft_saved'));
@@ -70,11 +73,12 @@ final class NewsletterController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'admin_newsletter_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function edit(NewsletterCampaign $campaign, Request $request, EntityManagerInterface $em): Response
+    public function edit(NewsletterCampaign $campaign, Request $request, EntityManagerInterface $em, RecipientCsvImporter $csvImporter): Response
     {
         $form = $this->createForm(NewsletterCampaignType::class, $campaign);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            if (!$this->applyRecipientFile($form->get('recipientFile')->getData(), $campaign, $csvImporter)) return $this->render('admin/newsletter/form.html.twig', ['form' => $form, 'campaign' => $campaign]);
             $em->flush();
             $this->addFlash('success', $this->translator->translate('newsletter.changes_saved'));
 
@@ -178,5 +182,19 @@ final class NewsletterController extends AbstractController
         $emails = array_map(static fn (string $email): string => mb_strtolower(trim($email)), $emails);
 
         return array_values(array_unique(array_filter($emails, static fn (string $email): bool => filter_var($email, FILTER_VALIDATE_EMAIL) !== false)));
+    }
+
+    private function applyRecipientFile(mixed $file, NewsletterCampaign $campaign, RecipientCsvImporter $importer): bool
+    {
+        if (!$file instanceof UploadedFile) return true;
+        try {
+            $imported = $importer->import($file->getPathname());
+            $campaign->setCustomEmails([...$campaign->getCustomEmails(), ...$imported]);
+            $this->addFlash('success', sprintf($this->translator->translate('newsletter.recipient_csv_imported'), count($imported)));
+            return true;
+        } catch (\Throwable) {
+            $this->addFlash('error', $this->translator->translate('newsletter.recipient_csv_error'));
+            return false;
+        }
     }
 }

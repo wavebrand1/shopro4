@@ -9,12 +9,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class NewsletterCampaignType extends AbstractType
@@ -30,6 +32,7 @@ final class NewsletterCampaignType extends AbstractType
             ->add('includeSubscribers', CheckboxType::class, ['label'=>$t('newsletter.include_subscribers'),'required'=>false])
             ->add('selectedUserIds', ChoiceType::class, ['label'=>$t('newsletter.selected_users'),'choices'=>$choices,'multiple'=>true,'expanded'=>true,'required'=>false,'help'=>$t('newsletter.selected_users_help')])
             ->add('customEmails', TextareaType::class, ['label'=>$t('newsletter.custom_emails'),'required'=>false,'help'=>$t('newsletter.custom_emails_help'),'attr'=>['rows'=>5],'constraints'=>[new All([new Email()])]])
+            ->add('recipientFile', FileType::class, ['label'=>$t('newsletter.recipient_csv'),'mapped'=>false,'required'=>false,'help'=>$t('newsletter.recipient_csv_help'),'constraints'=>[new File(maxSize:'2M',mimeTypes:['text/plain','text/csv','application/csv','application/vnd.ms-excel'],mimeTypesMessage:$t('newsletter.recipient_csv_invalid'))]])
             ->add('content', TextareaType::class, ['label'=>$t('newsletter.html_content'),'attr'=>['rows'=>16,'data-rich-editor'=>true],'constraints'=>[new NotBlank()]]);
         $builder->get('customEmails')->addModelTransformer(new CallbackTransformer(
             static fn(array $emails): string => implode("\n", $emails),
