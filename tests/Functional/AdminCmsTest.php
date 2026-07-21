@@ -1173,8 +1173,15 @@ final class AdminCmsTest extends WebTestCase
         $user->setAssignedRoles(['ROLE_EDITOR']);
         $hasher = self::getContainer()->get(UserPasswordHasherInterface::class);
         $user->setPassword($hasher->hashPassword($user, 'very-secure-password'));
+        $page = new Page();
+        $page->setTitle('Treść redaktora');
+        $page->setSlug('tresc-redaktora');
+        $page->setMeta('<meta name="admin-only" content="protected">');
+        $page->setJavascript('window.adminOnly = true;');
         $this->entityManager->persist($user);
+        $this->entityManager->persist($page);
         $this->entityManager->flush();
+        $revision = self::getContainer()->get(PageRevisionManager::class)->snapshot($page, null);
 
         $this->client->request('GET', '/admin/login');
         $this->client->submitForm('Zaloguj się', [
@@ -1194,6 +1201,19 @@ final class AdminCmsTest extends WebTestCase
 
         $this->client->request('GET', '/admin/pages');
         self::assertResponseIsSuccessful();
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('textarea[name="page[meta]"]');
+        self::assertSelectorNotExists('textarea[name="page[javascript]"]');
+        self::assertSelectorNotExists('input[name="page[homePage]"]');
+        self::assertSelectorExists('textarea[name="page[keywords]"]');
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/revisions');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('form[action="/admin/pages/'.$page->getId().'/revisions/'.$revision->getId().'/restore"]');
+        $this->client->request('POST', '/admin/pages/'.$page->getId().'/revisions/'.$revision->getId().'/restore', ['_token' => 'irrelevant']);
+        self::assertResponseStatusCodeSame(403);
+
         $this->client->request('GET', '/admin/configuration/files');
         self::assertResponseIsSuccessful();
         $this->client->request('GET', '/admin/users');

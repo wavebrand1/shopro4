@@ -24,6 +24,10 @@ Formularz został odwzorowany na podstawie `stare/Wersja_2_00/Develop/admin/conf
 - `ROLE_ADMIN` ma pełny dostęp, w tym do użytkowników, konfiguracji, języków,
   newslettera, szablonów e-mail i logów;
 - `ROLE_EDITOR` zarządza treścią, menu, tłumaczeniami podstron i plikami;
+- redaktor nie może wstrzykiwać surowego HTML do sekcji `<head>`, wykonywać własnego
+  JavaScriptu, zmieniać ról stron systemowych ani odtwarzać pełnych rewizji, ponieważ
+  te operacje mogą zmienić konfigurację i kod całej witryny; pozostają one dla
+  `ROLE_ADMIN`;
 - administrator dziedziczy uprawnienia redaktora, a migracja zachowuje rolę
   administratora wszystkim istniejącym kontom;
 - nie można zdegradować siebie ani ostatniego aktywnego administratora.

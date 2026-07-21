@@ -70,6 +70,7 @@ final class PageRevisionController extends AbstractController
     }
 
     #[Route('/{revisionId}/restore', name: 'admin_page_revision_restore', requirements: ['revisionId' => '\d+'], methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function restore(Page $page, int $revisionId, Request $request, PageRevisionRepository $repository, PageRevisionManager $manager, PageRepository $pages, UrlRedirectManager $redirects, EntityManagerInterface $em): Response
     {
         if ($page->isDeleted()) return $this->redirectToRoute('admin_page_trash');

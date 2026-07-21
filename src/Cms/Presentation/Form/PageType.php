@@ -20,11 +20,16 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class PageType extends AbstractType
 {
-    public function __construct(private readonly SluggerInterface $slugger, private readonly SystemTranslator $translator)
+    public function __construct(
+        private readonly SluggerInterface $slugger,
+        private readonly SystemTranslator $translator,
+        private readonly AuthorizationCheckerInterface $authorization,
+    )
     {
     }
 
@@ -50,20 +55,24 @@ final class PageType extends AbstractType
             ->add('builderData', HiddenType::class, ['required' => false, 'empty_data' => ''])
             ->add('builderCss', HiddenType::class, ['required' => false, 'empty_data' => ''])
             ->add('description', TextareaType::class, ['label' => $t('page.meta_description'), 'required' => false, 'attr' => ['rows' => 3, 'maxlength' => 160]])
-            ->add('keywords', TextareaType::class, ['label' => $t('page.keywords'), 'required' => false, 'attr' => ['rows' => 3]])
-            ->add('meta', TextareaType::class, ['label' => $t('page.extra_meta'), 'required' => false, 'attr' => ['rows' => 3]])
-            ->add('javascript', TextareaType::class, ['label' => $t('page.javascript'), 'required' => false, 'attr' => ['rows' => 5]])
-            ->add('homePage', CheckboxType::class, $checkbox + ['label' => $t('page.role_home')])
-            ->add('errorPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_error')])
-            ->add('adminOnly', CheckboxType::class, $checkbox + ['label' => $t('page.role_admin')])
-            ->add('loginPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_login')])
-            ->add('activationPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_activation')])
-            ->add('accountPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_account')])
-            ->add('registrationPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_registration')])
-            ->add('searchPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_search')])
-            ->add('sitemapPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_sitemap')])
-            ->add('profilePage', CheckboxType::class, $checkbox + ['label' => $t('page.role_profile')])
-            ->add('termsPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_terms')]);
+            ->add('keywords', TextareaType::class, ['label' => $t('page.keywords'), 'required' => false, 'attr' => ['rows' => 3]]);
+
+        if ($this->authorization->isGranted('ROLE_ADMIN')) {
+            $builder
+                ->add('meta', TextareaType::class, ['label' => $t('page.extra_meta'), 'required' => false, 'attr' => ['rows' => 3]])
+                ->add('javascript', TextareaType::class, ['label' => $t('page.javascript'), 'required' => false, 'attr' => ['rows' => 5]])
+                ->add('homePage', CheckboxType::class, $checkbox + ['label' => $t('page.role_home')])
+                ->add('errorPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_error')])
+                ->add('adminOnly', CheckboxType::class, $checkbox + ['label' => $t('page.role_admin')])
+                ->add('loginPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_login')])
+                ->add('activationPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_activation')])
+                ->add('accountPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_account')])
+                ->add('registrationPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_registration')])
+                ->add('searchPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_search')])
+                ->add('sitemapPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_sitemap')])
+                ->add('profilePage', CheckboxType::class, $checkbox + ['label' => $t('page.role_profile')])
+                ->add('termsPage', CheckboxType::class, $checkbox + ['label' => $t('page.role_terms')]);
+        }
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
             $data = $event->getData();

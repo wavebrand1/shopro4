@@ -56,6 +56,7 @@
 <details class="modern-card modern-form-card cms-advanced" {{ not page.id ? 'open' : '' }}>
     <summary><span><strong>{{ shopro_trans('page.advanced') }}</strong><small>{{ shopro_trans('page.advanced_help') }}</small></span><b>+</b></summary>
     <div class="cms-advanced__content">
+        {% if form.homePage is defined %}
         <h3>{{ shopro_trans('page.roles') }}</h3><p class="form-help">{{ shopro_trans('page.roles_help') }}</p>
         <div class="cms-option-grid cms-option-grid--roles">
             {{ form_row(form.homePage) }}{{ form_row(form.errorPage) }}{{ form_row(form.adminOnly) }}
@@ -63,9 +64,10 @@
             {{ form_row(form.registrationPage) }}{{ form_row(form.searchPage) }}{{ form_row(form.sitemapPage) }}
             {{ form_row(form.profilePage) }}{{ form_row(form.termsPage) }}
         </div>
+        {% endif %}
         <h3>{{ shopro_trans('page.seo_code') }}</h3>
-        <div class="modern-form-grid">{{ form_row(form.keywords) }}{{ form_row(form.meta) }}</div>
-        {{ form_row(form.javascript) }}
+        <div class="modern-form-grid">{{ form_row(form.keywords) }}{% if form.meta is defined %}{{ form_row(form.meta) }}{% endif %}</div>
+        {% if form.javascript is defined %}{{ form_row(form.javascript) }}{% endif %}
         <div class="cms-module-placeholder"><strong>{{ shopro_trans('page.module') }}</strong><span>{{ shopro_trans('page.module_help') }}</span></div>
     </div>
 </details>
