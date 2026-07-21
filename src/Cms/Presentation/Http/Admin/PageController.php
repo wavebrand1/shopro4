@@ -327,10 +327,14 @@ final class PageController extends AbstractController
     public function duplicate(Page $page, Request $request, PageRepository $pages): Response
     {
         if ($this->isCsrfTokenValid('duplicate-page-'.$page->getId(), (string) $request->request->get('_token'))) {
-            $copy = $page->copyAs('kopia-'.date('YmdHis'));
-            $pages->save($copy);
-            $this->addFlash('success', $this->translator->translate('page.duplicated'));
-            return $this->redirectToRoute('admin_page_edit', ['id' => $copy->getId()]);
+            try {
+                $copy = $page->copyAs($pages->nextCopySlug($page->getSlug()));
+                $pages->save($copy);
+                $this->addFlash('success', $this->translator->translate('page.duplicated'));
+                return $this->redirectToRoute('admin_page_edit', ['id' => $copy->getId()]);
+            } catch (UniqueConstraintViolationException) {
+                $this->addFlash('error', $this->translator->translate('page.slug_exists'));
+            }
         }
         return $this->redirectToRoute('admin_page_index');
     }

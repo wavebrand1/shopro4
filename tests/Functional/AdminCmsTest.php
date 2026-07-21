@@ -1499,4 +1499,34 @@ final class AdminCmsTest extends WebTestCase
         self::assertFalse($this->client->getResponse()->isRedirect());
         self::assertStringNotContainsString('Sekretna treść administracyjna', (string) $this->client->getResponse()->getContent());
     }
+
+    public function testDuplicatedPageIsSafeDraftWithUniquePredictableSlug(): void
+    {
+        $admin = new AdminUser('duplicate-page@example.test', 'duplicate-page');
+        $source = new Page();
+        $source->setTitle('Oferta specjalna'); $source->setSlug('oferta-specjalna');
+        $source->setPublished(true); $source->setPublishAt(new \DateTimeImmutable('+1 day')); $source->setUnpublishAt(new \DateTimeImmutable('+2 days'));
+        $source->setCanonical('https://example.test/oferta-specjalna');
+        $source->setHomePage(true); $source->setErrorPage(true); $source->setSearchPage(true); $source->setTermsPage(true); $source->setAdminOnly(true);
+        $occupied = new Page(); $occupied->setTitle('Stara kopia'); $occupied->setSlug('oferta-specjalna-kopia'); $occupied->moveToTrash();
+        foreach ([$admin, $source, $occupied] as $entity) $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages');
+        $token = (string) $this->client->getCrawler()->filter('form[action="/admin/pages/'.$source->getId().'/duplicate"] input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/'.$source->getId().'/duplicate', ['_token' => $token]);
+        self::assertResponseRedirects();
+        self::assertMatchesRegularExpression('#^/admin/pages/\d+/edit$#', (string) $this->client->getResponse()->headers->get('Location'));
+
+        $copy = self::getContainer()->get(PageRepository::class)->findOneBy(['slug' => 'oferta-specjalna-kopia-2']);
+        self::assertNotNull($copy);
+        self::assertSame('Oferta specjalna', $copy->getTitle());
+        self::assertFalse($copy->isPublished());
+        self::assertNull($copy->getPublishAt()); self::assertNull($copy->getUnpublishAt());
+        self::assertSame('', $copy->getCanonical());
+        self::assertFalse($copy->isSystemPage());
+        self::assertTrue($copy->isAdminOnly());
+        self::assertSame(1, $copy->getLockVersion());
+    }
 }

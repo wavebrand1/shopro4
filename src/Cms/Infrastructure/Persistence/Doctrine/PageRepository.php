@@ -129,6 +129,19 @@ final class PageRepository extends ServiceEntityRepository
         return (int) $this->applyPublicationWindow($builder)->getQuery()->getSingleScalarResult();
     }
 
+    public function nextCopySlug(string $sourceSlug): string
+    {
+        $base = rtrim(mb_substr($sourceSlug, 0, 168), '-').'-kopia';
+        $candidate = $base;
+        $number = 2;
+        while ($this->count(['slug' => $candidate]) > 0) {
+            $suffix = '-'.$number++;
+            $candidate = rtrim(mb_substr($base, 0, 180 - mb_strlen($suffix)), '-').$suffix;
+        }
+
+        return $candidate;
+    }
+
     private function applyPublicationWindow(QueryBuilder $builder, string $alias = 'page'): QueryBuilder
     {
         return $builder

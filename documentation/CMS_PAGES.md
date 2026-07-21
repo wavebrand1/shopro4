@@ -96,6 +96,13 @@ Zmiana slugu tworzy przekierowanie ze starego adresu. `UrlRedirectManager` bloku
 pętle, skraca łańcuchy do końcowego celu i pozwala bezpiecznie cofnąć zmianę przez
 odtworzenie wcześniejszej rewizji.
 
+## Duplikowanie
+
+Duplikowanie tworzy zawsze nieopublikowany szkic bez harmonogramu, canonical i ról
+systemowych. Treść, komponenty, SEO, poziom dostępu i przypisane członkostwa są
+kopiowane. Slug otrzymuje przewidywalny sufiks `-kopia`, a kolejne kopie `-kopia-2`,
+`-kopia-3` itd.; generator uwzględnia również slugi zajęte przez rekordy w koszu.
+
 ## Testy kontraktu
 
 Scenariusze funkcjonalne znajdują się w `tests/Functional/AdminCmsTest.php`. Obejmują

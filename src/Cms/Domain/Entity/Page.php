@@ -240,7 +240,11 @@ class Page
         $copy->loginPage = $copy->activationPage = $copy->accountPage = $copy->registrationPage = false;
         $copy->memberships = new ArrayCollection($this->memberships->toArray());
         $copy->searchPage = $copy->sitemapPage = $copy->profilePage = $copy->termsPage = false;
+        $copy->published = false;
+        $copy->publishAt = $copy->unpublishAt = null;
+        $copy->canonical = '';
         $copy->deletedAt = null;
+        $copy->lockVersion = 1;
         $copy->createdAt = $copy->updatedAt = new DateTimeImmutable();
         return $copy;
     }
