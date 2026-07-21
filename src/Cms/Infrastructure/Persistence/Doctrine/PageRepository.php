@@ -8,6 +8,7 @@ use App\Cms\Domain\Entity\Page;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Language\Domain\Entity\Language;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /** @extends ServiceEntityRepository<Page> */
@@ -29,37 +30,34 @@ final class PageRepository extends ServiceEntityRepository
 
     public function findPublishedBySlug(string $slug): ?Page
     {
-        return $this->findOneBy(['slug' => $slug, 'published' => true]);
+        $query = $this->createQueryBuilder('page')->andWhere('page.slug = :slug')->setParameter('slug', $slug);
+        return $this->applyPublicationWindow($query)->getQuery()->getOneOrNullResult();
     }
 
     public function findPublishedHomePage(): ?Page
     {
-        return $this->findOneBy(['homePage' => true, 'published' => true]);
+        $query = $this->createQueryBuilder('page')->andWhere('page.homePage = true');
+        return $this->applyPublicationWindow($query)->getQuery()->getOneOrNullResult();
     }
 
     public function findPublishedErrorPage(): ?Page
     {
-        return $this->findOneBy([
-            'errorPage' => true,
-            'published' => true,
-            'access' => 'Public',
-            'adminOnly' => false,
-        ]);
+        $query = $this->createQueryBuilder('page')
+            ->andWhere('page.errorPage = true')->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
+            ->setParameter('access', 'Public');
+        return $this->applyPublicationWindow($query)->getQuery()->getOneOrNullResult();
     }
 
     /** @return list<Page> */
     public function findPublicForSitemap(): array
     {
-        return $this->createQueryBuilder('page')
-            ->andWhere('page.published = :published')
+        $query = $this->createQueryBuilder('page')
             ->andWhere('page.access = :access')
             ->andWhere('page.adminOnly = :adminOnly')
-            ->setParameter('published', true)
             ->setParameter('access', 'Public')
             ->setParameter('adminOnly', false)
-            ->orderBy('page.updatedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->orderBy('page.updatedAt', 'DESC');
+        return $this->applyPublicationWindow($query)->getQuery()->getResult();
     }
 
     /** @return list<Page> */
@@ -67,8 +65,7 @@ final class PageRepository extends ServiceEntityRepository
     {
         $needle = '%'.self::escapeLike(mb_strtolower($query)).'%';
 
-        return $this->createQueryBuilder('page')
-            ->andWhere('page.published = true')
+        $builder = $this->createQueryBuilder('page')
             ->andWhere('page.access = :access')
             ->andWhere('page.adminOnly = false')
             ->andWhere('page.errorPage = false')
@@ -78,21 +75,21 @@ final class PageRepository extends ServiceEntityRepository
             ->setParameter('query', $needle)
             ->orderBy('page.title', 'ASC')
             ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getQuery()->getResult();
+            ->setMaxResults($limit);
+        return $this->applyPublicationWindow($builder)->getQuery()->getResult();
     }
 
     public function countPublicSearch(string $query): int
     {
         $needle = '%'.self::escapeLike(mb_strtolower($query)).'%';
 
-        return (int) $this->createQueryBuilder('page')
+        $builder = $this->createQueryBuilder('page')
             ->select('COUNT(page.id)')
-            ->andWhere('page.published = true')->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
+            ->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
             ->andWhere('page.errorPage = false')->andWhere('page.searchPage = false')
             ->andWhere('(LOWER(page.title) LIKE :query ESCAPE \'!\' OR LOWER(page.caption) LIKE :query ESCAPE \'!\' OR LOWER(page.description) LIKE :query ESCAPE \'!\' OR LOWER(page.content) LIKE :query ESCAPE \'!\' OR LOWER(page.builderData) LIKE :query ESCAPE \'!\')')
-            ->setParameter('access', 'Public')->setParameter('query', $needle)
-            ->getQuery()->getSingleScalarResult();
+            ->setParameter('access', 'Public')->setParameter('query', $needle);
+        return (int) $this->applyPublicationWindow($builder)->getQuery()->getSingleScalarResult();
     }
 
     /** @return list<PageTranslation> */
@@ -100,29 +97,44 @@ final class PageRepository extends ServiceEntityRepository
     {
         $needle = '%'.self::escapeLike(mb_strtolower($query)).'%';
 
-        return $this->getEntityManager()->createQueryBuilder()
+        $builder = $this->getEntityManager()->createQueryBuilder()
             ->select('translation')->from(PageTranslation::class, 'translation')->join('translation.page', 'page')
             ->andWhere('translation.language = :language')->andWhere('translation.published = true')
-            ->andWhere('page.published = true')->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
+            ->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
             ->andWhere('page.errorPage = false')->andWhere('page.searchPage = false')
             ->andWhere('(LOWER(translation.title) LIKE :query ESCAPE \'!\' OR LOWER(translation.caption) LIKE :query ESCAPE \'!\' OR LOWER(translation.description) LIKE :query ESCAPE \'!\' OR LOWER(translation.content) LIKE :query ESCAPE \'!\' OR LOWER(translation.builderData) LIKE :query ESCAPE \'!\')')
             ->setParameter('language', $language)->setParameter('access', 'Public')->setParameter('query', $needle)
-            ->orderBy('translation.title', 'ASC')->setFirstResult($offset)->setMaxResults($limit)
-            ->getQuery()->getResult();
+            ->orderBy('translation.title', 'ASC')->setFirstResult($offset)->setMaxResults($limit);
+        return $this->applyPublicationWindow($builder)->getQuery()->getResult();
     }
 
     public function countPublicTranslationSearch(Language $language, string $query): int
     {
         $needle = '%'.self::escapeLike(mb_strtolower($query)).'%';
 
-        return (int) $this->getEntityManager()->createQueryBuilder()
+        $builder = $this->getEntityManager()->createQueryBuilder()
             ->select('COUNT(translation.id)')->from(PageTranslation::class, 'translation')->join('translation.page', 'page')
             ->andWhere('translation.language = :language')->andWhere('translation.published = true')
-            ->andWhere('page.published = true')->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
+            ->andWhere('page.access = :access')->andWhere('page.adminOnly = false')
             ->andWhere('page.errorPage = false')->andWhere('page.searchPage = false')
             ->andWhere('(LOWER(translation.title) LIKE :query ESCAPE \'!\' OR LOWER(translation.caption) LIKE :query ESCAPE \'!\' OR LOWER(translation.description) LIKE :query ESCAPE \'!\' OR LOWER(translation.content) LIKE :query ESCAPE \'!\' OR LOWER(translation.builderData) LIKE :query ESCAPE \'!\')')
-            ->setParameter('language', $language)->setParameter('access', 'Public')->setParameter('query', $needle)
-            ->getQuery()->getSingleScalarResult();
+            ->setParameter('language', $language)->setParameter('access', 'Public')->setParameter('query', $needle);
+        return (int) $this->applyPublicationWindow($builder)->getQuery()->getSingleScalarResult();
+    }
+
+    public function countPubliclyAvailable(): int
+    {
+        $builder = $this->createQueryBuilder('page')->select('COUNT(page.id)');
+        return (int) $this->applyPublicationWindow($builder)->getQuery()->getSingleScalarResult();
+    }
+
+    private function applyPublicationWindow(QueryBuilder $builder, string $alias = 'page'): QueryBuilder
+    {
+        return $builder
+            ->andWhere($alias.'.published = true')
+            ->andWhere('('.$alias.'.publishAt IS NULL OR '.$alias.'.publishAt <= :publicationNow)')
+            ->andWhere('('.$alias.'.unpublishAt IS NULL OR '.$alias.'.unpublishAt > :publicationNow)')
+            ->setParameter('publicationNow', new \DateTimeImmutable());
     }
 
     private static function escapeLike(string $value): string

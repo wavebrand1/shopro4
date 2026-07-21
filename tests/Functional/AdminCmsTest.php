@@ -114,6 +114,8 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('input[name="page[builderCss]"]');
         self::assertSelectorExists('.ui-field input[name="page[title]"]');
         self::assertSelectorExists('.ui-choice input[name="page[published]"]');
+        self::assertSelectorExists('input[name="page[publishAt]"][type="datetime-local"]');
+        self::assertSelectorExists('input[name="page[unpublishAt]"][type="datetime-local"]');
         self::assertSelectorExists('button[data-preview-submit][formtarget="_blank"]');
 
         $previewForm = $editPage->filter('button[data-preview-submit]')->form();
@@ -835,6 +837,38 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         $apiUser = self::getContainer()->get(AdminUserRepository::class)->findOneBy(['email' => 'admin@example.test']);
         self::assertFalse($apiUser->isNewsletter());
+    }
+
+    public function testScheduledPublicationWindowControlsPublicAvailability(): void
+    {
+        $page = new Page();
+        $page->setTitle('Zaplanowana strona');
+        $page->setSlug('zaplanowana-strona');
+        $page->setPublished(true);
+        $page->setPublishAt(new \DateTimeImmutable('+1 day'));
+        $this->entityManager->persist($page);
+        $this->entityManager->flush();
+
+        self::assertSame('scheduled', $page->getPublicationStatus());
+        self::assertFalse($page->isPubliclyAvailable());
+        $this->client->request('GET', '/zaplanowana-strona');
+        self::assertResponseStatusCodeSame(404);
+
+        $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
+        self::assertNotNull($page);
+        $page->setPublishAt(new \DateTimeImmutable('-1 hour'));
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        self::assertSame('published', $page->getPublicationStatus());
+        $this->client->request('GET', '/zaplanowana-strona');
+        self::assertResponseIsSuccessful();
+
+        $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
+        self::assertNotNull($page);
+        $page->setUnpublishAt(new \DateTimeImmutable('-1 minute'));
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        self::assertSame('expired', $page->getPublicationStatus());
+        $this->client->request('GET', '/zaplanowana-strona');
+        self::assertResponseStatusCodeSame(404);
     }
 
     public function testAdministratorCanLogInWithUsername(): void

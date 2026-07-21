@@ -25,7 +25,7 @@ final class DashboardController extends AbstractController
     {
         return $this->render('admin/dashboard.html.twig', [
             'page_count' => $pages->count([]),
-            'published_count' => $pages->count(['published' => true]),
+            'published_count' => $pages->countPubliclyAvailable(),
             'menu_count' => $entityManager->getRepository(MenuItem::class)->count([]),
             'user_count' => $entityManager->getRepository(AdminUser::class)->count([]),
             'site_user_count' => $entityManager->getRepository(SiteUser::class)->count([]),

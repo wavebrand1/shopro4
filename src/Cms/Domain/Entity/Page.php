@@ -19,6 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['slug'], message: 'validation.page.slug_exists')]
 #[Assert\Expression(expression: "this.getAccess() != 'Membership' or this.getMemberships().count() > 0", message: 'validation.page.membership_required')]
+#[Assert\Expression(expression: "this.getUnpublishAt() == null or this.getPublishAt() == null or this.getUnpublishAt() > this.getPublishAt()", message: 'validation.page.publication_window')]
 class Page
 {
     #[ORM\Id]
@@ -51,6 +52,12 @@ class Page
 
     #[ORM\Column(options: ['default' => false])]
     private bool $published = false;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $publishAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $unpublishAt = null;
 
     #[ORM\Column(length: 600, options: ['default' => ''])]
     private string $caption = '';
@@ -151,6 +158,27 @@ class Page
     public function setBuilderCss(?string $value): void { $this->builderCss = trim($value ?? ''); }
     public function isPublished(): bool { return $this->published; }
     public function setPublished(bool $published): void { $this->published = $published; }
+    public function getPublishAt(): ?DateTimeImmutable { return $this->publishAt; }
+    public function setPublishAt(?DateTimeImmutable $publishAt): void { $this->publishAt = $publishAt; }
+    public function getUnpublishAt(): ?DateTimeImmutable { return $this->unpublishAt; }
+    public function setUnpublishAt(?DateTimeImmutable $unpublishAt): void { $this->unpublishAt = $unpublishAt; }
+    public function isPubliclyAvailable(?DateTimeImmutable $at = null): bool
+    {
+        $at ??= new DateTimeImmutable();
+
+        return $this->published
+            && ($this->publishAt === null || $this->publishAt <= $at)
+            && ($this->unpublishAt === null || $this->unpublishAt > $at);
+    }
+    public function getPublicationStatus(): string
+    {
+        if (!$this->published) return 'draft';
+        $now = new DateTimeImmutable();
+        if ($this->publishAt !== null && $this->publishAt > $now) return 'scheduled';
+        if ($this->unpublishAt !== null && $this->unpublishAt <= $now) return 'expired';
+
+        return 'published';
+    }
     public function getCaption(): string { return $this->caption; }
     public function setCaption(?string $v): void { $this->caption = trim($v ?? ''); }
     public function getSeoTitle(): string { return $this->seoTitle; }

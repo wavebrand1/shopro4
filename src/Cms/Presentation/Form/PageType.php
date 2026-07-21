@@ -12,6 +12,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -40,6 +41,8 @@ final class PageType extends AbstractType
             ->add('memberships', EntityType::class, ['label' => $t('page.memberships'), 'help' => $t('page.memberships_help'), 'class' => Membership::class, 'choice_label' => 'title', 'query_builder' => static fn (MembershipRepository $repository) => $repository->createQueryBuilder('membership')->orderBy('membership.title', 'ASC'), 'multiple' => true, 'required' => false, 'attr' => ['size' => 6, 'data-page-memberships' => true]])
             ->add('canonical', TextType::class, ['label' => $t('page.canonical'), 'required' => false])
             ->add('published', CheckboxType::class, $checkbox + ['label' => $t('page.active_published')])
+            ->add('publishAt', DateTimeType::class, ['label' => $t('page.publish_at'), 'help' => $t('page.publish_at_help'), 'required' => false, 'widget' => 'single_text', 'input' => 'datetime_immutable'])
+            ->add('unpublishAt', DateTimeType::class, ['label' => $t('page.unpublish_at'), 'help' => $t('page.unpublish_at_help'), 'required' => false, 'widget' => 'single_text', 'input' => 'datetime_immutable'])
             ->add('follow', CheckboxType::class, $checkbox + ['label' => $t('page.follow')])
             ->add('editorMode', HiddenType::class)
             ->add('content', HiddenType::class, ['required' => false, 'empty_data' => ''])

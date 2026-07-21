@@ -25,17 +25,18 @@ final class PublicPageController extends AbstractController
     }
 
     #[Route('/{_locale}/{slug}', name: 'cms_page_show_localized', requirements: ['_locale' => '[a-z]{2}', 'slug' => '[a-z0-9-]+'], methods: ['GET'], priority: -90)]
-    public function localized(string $_locale, string $slug, EntityManagerInterface $em, Request $request, PageAccess $access): Response
+    public function localized(string $_locale, string $slug, EntityManagerInterface $em, PageRepository $pages, Request $request, PageAccess $access): Response
     {
         $language = $em->getRepository(Language::class)->findOneBy(['code' => $_locale, 'active' => true]);
         if ($language?->isDefaultLanguage()) {
-            $basePage = $em->getRepository(\App\Cms\Domain\Entity\Page::class)->findOneBy(['slug' => $slug, 'published' => true]);
+            $basePage = $pages->findPublishedBySlug($slug);
             if (!$basePage) throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
             return $this->redirectToRoute('cms_page_show', ['slug' => $basePage->getSlug()], Response::HTTP_FOUND);
         }
         $translation = $language ? $em->getRepository(PageTranslation::class)->findOneBy(['language' => $language, 'slug' => $slug]) : null;
         if (!$translation || (!$translation->isPublished() && !$this->isGranted('ROLE_ADMIN'))) throw $this->createNotFoundException($this->translator->translate('page.public_translation_not_found'));
         $page = $translation->getPage();
+        if (!$page->isPubliclyAvailable()) throw $this->createNotFoundException($this->translator->translate('page.public_unpublished'));
         if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
         if ($denied = $this->guard($page, $request, $access)) return $denied;
 
