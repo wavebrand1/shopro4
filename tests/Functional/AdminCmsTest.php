@@ -1175,6 +1175,39 @@ final class AdminCmsTest extends WebTestCase
         $manager->prepare($loop);
     }
 
+    public function testStalePageEditCannotOverwriteAnotherOperatorsChanges(): void
+    {
+        $admin = new AdminUser('concurrency-admin@example.test', 'concurrency-admin');
+        $admin->setPassword(self::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'very-secure-password'));
+        $page = new Page();
+        $page->setTitle('Pierwotny tytuł');
+        $page->setSlug('edycja-rownolegla');
+        $this->entityManager->persist($admin);
+        $this->entityManager->persist($page);
+        $this->entityManager->flush();
+        $pageId = $page->getId();
+        $this->client->loginUser($admin, 'admin');
+
+        $crawler = $this->client->request('GET', '/admin/pages/'.$pageId.'/edit');
+        self::assertResponseIsSuccessful();
+        $form = $crawler->filter('form[name="page"]')->form();
+        self::assertSame('1', $form['page[lockVersion]']->getValue());
+
+        // A second operator saves the page after this form has already been opened.
+        self::getContainer()->get(EntityManagerInterface::class)->getConnection()->executeStatement(
+            'UPDATE cms_page SET title = ?, lock_version = lock_version + 1 WHERE id = ?',
+            ['Zmiana drugiego operatora', $pageId],
+        );
+
+        $this->client->submit($form, ['page[title]' => 'Nadpisana zmiana']);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorExists('.page-form-error');
+
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        self::assertSame('Zmiana drugiego operatora', $entityManager->find(Page::class, $pageId)?->getTitle());
+    }
+
     public function testPageHistoryCapturesChangesAndRestoresCompleteRevision(): void
     {
         $admin = new AdminUser('history-admin@example.test', 'history-admin');

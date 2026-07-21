@@ -7,6 +7,7 @@
     <div class="modern-heading-actions">{% if page.id %}<a class="modern-button" href="{{ path('admin_page_revision_index',{id:page.id}) }}">{{ shopro_trans('revision.history') }}</a>{% endif %}<a class="modern-button" href="{{ path('admin_page_index') }}">← {{ shopro_trans('page.back_list') }}</a></div>
 </div>
 {{ form_start(form, {attr: {class: 'admin-form admin-form--page'}}) }}
+{% if form.vars.errors|length %}<div class="flash flash--error page-form-error">{{ form_errors(form) }}</div>{% endif %}
 <section class="modern-card modern-form-card">
     <div class="modern-card__heading"><div><h2>{{ shopro_trans('page.basic_info') }}</h2><p>{{ shopro_trans('page.basic_info_help') }}</p></div></div>
     <div class="cms-card-body">

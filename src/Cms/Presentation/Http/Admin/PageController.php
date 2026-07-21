@@ -14,9 +14,11 @@ use App\Settings\Application\SettingsProvider;
 use App\Language\Application\SystemTranslator;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Attribute\Route;
@@ -214,6 +216,7 @@ final class PageController extends AbstractController
     private function handleForm(Request $request, Page $page, PageRepository $pages, string $message): Response
     {
         $previousSlug = $page->getId() !== null ? $page->getSlug() : null;
+        $currentLockVersion = $page->getLockVersion();
         if (!$page->usesComponentBuilder()) {
             $legacyContent = $page->getContent();
             $page->setEditorMode('components');
@@ -227,8 +230,12 @@ final class PageController extends AbstractController
                 ]]]],
             ]], JSON_THROW_ON_ERROR));
         }
-        $form = $this->createForm(PageType::class, $page);
+        $form = $this->createForm(PageType::class, $page, ['page_version' => $currentLockVersion]);
         $form->handleRequest($request);
+
+        if ($page->getId() !== null && $form->isSubmitted() && (int) $form->get('lockVersion')->getData() !== $currentLockVersion) {
+            $form->addError(new FormError($this->translator->translate('page.concurrent_edit')));
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
@@ -246,6 +253,9 @@ final class PageController extends AbstractController
                 }
 
                 return $this->redirectToRoute('admin_page_index');
+            } catch (OptimisticLockException) {
+                if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
+                $form->addError(new FormError($this->translator->translate('page.concurrent_edit')));
             } catch (UniqueConstraintViolationException) {
                 if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
                 $this->addFlash('error', $this->translator->translate('page.slug_exists'));

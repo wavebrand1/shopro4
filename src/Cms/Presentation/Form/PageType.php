@@ -45,6 +45,7 @@ final class PageType extends AbstractType
             ->add('unpublishAt', DateTimeType::class, ['label' => $t('page.unpublish_at'), 'help' => $t('page.unpublish_at_help'), 'required' => false, 'widget' => 'single_text', 'input' => 'datetime_immutable'])
             ->add('follow', CheckboxType::class, $checkbox + ['label' => $t('page.follow')])
             ->add('editorMode', HiddenType::class)
+            ->add('lockVersion', HiddenType::class, ['mapped' => false, 'data' => (string) $options['page_version']])
             ->add('content', HiddenType::class, ['required' => false, 'empty_data' => ''])
             ->add('builderData', HiddenType::class, ['required' => false, 'empty_data' => ''])
             ->add('builderCss', HiddenType::class, ['required' => false, 'empty_data' => ''])
@@ -77,6 +78,7 @@ final class PageType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => Page::class]);
+        $resolver->setDefaults(['data_class' => Page::class, 'page_version' => 1]);
+        $resolver->setAllowedTypes('page_version', 'int');
     }
 }

@@ -114,6 +114,10 @@ class Page
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?DateTimeImmutable $deletedAt = null;
 
+    #[ORM\Version]
+    #[ORM\Column(type: 'integer', options: ['default' => 1])]
+    private int $lockVersion = 1;
+
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
@@ -243,6 +247,7 @@ class Page
     public function getCreatedAt(): DateTimeImmutable { return $this->createdAt; }
     public function getUpdatedAt(): DateTimeImmutable { return $this->updatedAt; }
     public function getDeletedAt(): ?DateTimeImmutable { return $this->deletedAt; }
+    public function getLockVersion(): int { return $this->lockVersion; }
     public function isDeleted(): bool { return $this->deletedAt !== null; }
     public function moveToTrash(): void { $this->deletedAt = new DateTimeImmutable(); $this->published = false; }
     public function restoreFromTrash(): void { $this->deletedAt = null; }
