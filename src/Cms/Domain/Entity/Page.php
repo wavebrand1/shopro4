@@ -72,6 +72,8 @@ class Page
     #[ORM\Column(type: Types::TEXT, options: ['default' => ''])]
     private string $javascript = '';
     #[ORM\Column(length: 300, options: ['default' => ''])]
+    #[Assert\Length(max: 300)]
+    #[Assert\Url(protocols: ['http', 'https'], requireTld: true, message: 'validation.page.canonical_url')]
     private string $canonical = '';
     #[ORM\Column(length: 20, options: ['default' => 'Public'])]
     #[Assert\Choice(choices: ['Public', 'Registered', 'Membership'])]

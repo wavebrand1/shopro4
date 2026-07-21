@@ -486,7 +486,9 @@ final class AdminCmsTest extends WebTestCase
         $invalidPage = new \App\Cms\Domain\Entity\Page();
         $invalidPage->setTitle('Invalid URL');
         $invalidPage->setSlug('Invalid URL');
+        $invalidPage->setCanonical('/relative-address');
         self::assertStringContainsString('The slug may contain lowercase letters, numbers and hyphens.', (string) $validator->validate($invalidPage));
+        self::assertStringContainsString('Enter a complete canonical URL beginning with https:// or http://.', (string) $validator->validate($invalidPage));
 
         $invalidMenuItem = new MenuItem();
         $invalidMenuItem->setName('Missing page');

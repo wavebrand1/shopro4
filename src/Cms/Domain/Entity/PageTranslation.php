@@ -5,6 +5,7 @@ namespace App\Cms\Domain\Entity;
 use App\Language\Domain\Entity\Language;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name:'cms_page_translation')]
@@ -23,7 +24,7 @@ class PageTranslation
  #[ORM\Column(type:Types::TEXT)]private string $content='';
  #[ORM\Column(type:Types::TEXT)]private string $builderData='';
  #[ORM\Column(type:Types::TEXT)]private string $builderCss='';
- #[ORM\Column(length:300)]private string $canonical='';
+ #[ORM\Column(length:300),Assert\Length(max:300),Assert\Url(protocols:['http','https'],requireTld:true,message:'validation.page.canonical_url')]private string $canonical='';
  #[ORM\Column(options:['default'=>false])]private bool $published=false;
  public function __construct(Page $page,Language $language){$this->page=$page;$this->language=$language;$this->title=$page->getTitle();$this->slug=$page->getSlug();$this->caption=$page->getCaption();$this->seoTitle=$page->getSeoTitle();$this->description=$page->getDescription();$this->content=$page->getContent();$this->builderData=$page->getBuilderData();$this->builderCss=$page->getBuilderCss();$this->canonical=$page->getCanonical();}
  public function getId():?int{return $this->id;} public function getPage():Page{return $this->page;} public function getLanguage():Language{return $this->language;}

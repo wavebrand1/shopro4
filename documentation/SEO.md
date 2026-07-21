@@ -4,6 +4,9 @@ Shopro generuje automatyczny adres canonical dla każdej opublikowanej podstrony
 Wartość wpisana ręcznie w ustawieniach podstrony ma pierwszeństwo. Wersje językowe
 otrzymują własny canonical oraz wzajemne odnośniki `hreflang`; wersja bazowa jest
 oznaczona także jako `x-default`.
+Ręczny canonical musi być pełnym adresem HTTP lub HTTPS (najlepiej HTTPS). Formularz
+odrzuca ścieżki względne, inne protokoły i nieprawidłowe adresy, aby ten sam poprawny
+URL mógł zostać użyty w canonical, Open Graph oraz danych JSON-LD.
 
 `/sitemap.xml` zawiera tylko aktywne, opublikowane strony z dostępem publicznym.
 Do każdego dokumentu dołączane są opublikowane tłumaczenia w aktywnych językach.
