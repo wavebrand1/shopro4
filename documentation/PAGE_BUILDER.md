@@ -81,7 +81,10 @@ Nie należy zapisywać w JSON haseł, sekretów ani wykonywalnego JavaScriptu.
 Adresy linków komponentu korzystają z tej samej centralnej walidacji `MenuLink`
 co menu witryny. Dopuszczone są bezpieczne ścieżki wewnętrzne, kotwice, HTTP/HTTPS,
 `mailto:` i `tel:`; blokowane są między innymi protokoły wykonywalne, adresy `//`,
-backslashe, białe znaki oraz znaki kontrolne.
+backslashe, białe znaki oraz znaki kontrolne. Ta sama reguła działa w formularzu
+strony bazowej i tłumaczenia. Niepoprawny JSON lub niebezpieczny link blokuje zapis
+z komunikatem walidacji, a kontrola w szablonach pozostaje dodatkową ochroną dla
+danych zapisanych przez starsze wersje systemu.
 
 ## Sekcje i kolumny
 

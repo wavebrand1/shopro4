@@ -6,6 +6,8 @@ validation.page.slug_reserved: 'This slug is reserved by a system feature. Choos
 validation.page.membership_required: 'Select at least one membership for a membership-restricted page.'
 validation.page.publication_window: 'The publication end date must be later than the start date.'
 validation.page.canonical_url: 'Enter a complete canonical URL beginning with https:// or http://.'
+validation.page_builder.invalid_json: 'The Page Builder data is corrupted. Refresh the form and try again.'
+validation.page_builder.link_invalid: 'The Page Builder contains an unsafe link. Use an internal path, anchor, HTTPS/HTTP URL, email address, or phone number.'
 validation.menu.page_required: 'Select a page for this menu item.'
 validation.menu.link_required: 'Enter the external link URL.'
 validation.menu.link_invalid: 'Enter a safe HTTPS/HTTP URL, internal path, anchor, email address, or phone number.'

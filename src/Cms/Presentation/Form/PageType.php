@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Cms\Presentation\Form;
 
 use App\Cms\Domain\Entity\Page;
+use App\Cms\Domain\PageBuilderData;
 use App\Language\Application\SystemTranslator;
 use App\Identity\Domain\Entity\Membership;
 use App\Identity\Infrastructure\Persistence\Doctrine\MembershipRepository;
@@ -22,6 +23,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 final class PageType extends AbstractType
 {
@@ -52,7 +54,7 @@ final class PageType extends AbstractType
             ->add('editorMode', HiddenType::class)
             ->add('lockVersion', HiddenType::class, ['mapped' => false, 'data' => (string) $options['page_version']])
             ->add('content', HiddenType::class, ['required' => false, 'empty_data' => ''])
-            ->add('builderData', HiddenType::class, ['required' => false, 'empty_data' => ''])
+            ->add('builderData', HiddenType::class, ['required' => false, 'empty_data' => '', 'constraints' => [new Assert\Callback([PageBuilderData::class, 'validate'])]])
             ->add('builderCss', HiddenType::class, ['required' => false, 'empty_data' => ''])
             ->add('description', TextareaType::class, ['label' => $t('page.meta_description'), 'required' => false, 'attr' => ['rows' => 3, 'maxlength' => 160]])
             ->add('keywords', TextareaType::class, ['label' => $t('page.keywords'), 'required' => false, 'attr' => ['rows' => 3]]);

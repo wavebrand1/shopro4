@@ -6,6 +6,8 @@ validation.page.slug_reserved: 'Ten slug jest zarezerwowany przez funkcję syste
 validation.page.membership_required: 'Wybierz co najmniej jedno członkostwo dla podstrony z takim poziomem dostępu.'
 validation.page.publication_window: 'Data zakończenia publikacji musi być późniejsza niż data rozpoczęcia.'
 validation.page.canonical_url: 'Podaj pełny adres canonical rozpoczynający się od https:// lub http://.'
+validation.page_builder.invalid_json: 'Dane Page Buildera są uszkodzone. Odśwież formularz i spróbuj ponownie.'
+validation.page_builder.link_invalid: 'Page Builder zawiera niebezpieczny adres odnośnika. Użyj ścieżki wewnętrznej, kotwicy, HTTPS/HTTP, adresu e-mail lub telefonu.'
 validation.menu.page_required: 'Wybierz podstronę dla tej pozycji menu.'
 validation.menu.link_required: 'Podaj adres linku zewnętrznego.'
 validation.menu.link_invalid: 'Podaj bezpieczny adres HTTPS/HTTP, ścieżkę wewnętrzną, kotwicę, adres e-mail lub telefon.'

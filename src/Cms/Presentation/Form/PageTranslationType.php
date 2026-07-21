@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Cms\Presentation\Form;
 
 use App\Cms\Domain\Entity\PageTranslation;
+use App\Cms\Domain\PageBuilderData;
 use App\Language\Application\SystemTranslator;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -29,7 +30,7 @@ final class PageTranslationType extends AbstractType
             ->add('description', TextareaType::class, ['label' => $t('page.meta_description'), 'required' => false])
             ->add('canonical', TextType::class, ['label' => $t('page.canonical'), 'required' => false])
             ->add('content', HiddenType::class, ['required' => false])
-            ->add('builderData', HiddenType::class, ['required' => false])
+            ->add('builderData', HiddenType::class, ['required' => false, 'constraints' => [new Assert\Callback([PageBuilderData::class, 'validate'])]])
             ->add('builderCss', HiddenType::class, ['required' => false])
             ->add('published', CheckboxType::class, ['label' => $t('page.translation_published'), 'required' => false]);
     }
