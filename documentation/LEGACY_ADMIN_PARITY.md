@@ -81,6 +81,9 @@ wyłącznie przez zmianę jego rozszerzenia.
 Wieloplikowy upload zwraca osobno liczbę zapisanych i odrzuconych plików. Panel
 pokazuje też przyczynę odrzucenia, a błąd jednego elementu nie wycofuje poprawnych
 plików z tej samej paczki.
+Widok pokazuje liczbę katalogów, liczbę plików oraz ich łączny rozmiar dla
+aktualnie otwartego katalogu. Warianty responsywne WebP/AVIF pozostają techniczne,
+więc nie zawyżają tych liczników.
 
 ## Logi
 

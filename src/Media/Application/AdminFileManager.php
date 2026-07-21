@@ -30,7 +30,7 @@ final class AdminFileManager
 
     public function __construct(private readonly string $projectDir, private readonly ?ResponsiveImageOptimizer $imageOptimizer = null) {}
 
-    /** @return array{path:string,parent:?string,directories:list<array<string,mixed>>,files:list<array<string,mixed>>} */
+    /** @return array{path:string,parent:?string,directories:list<array<string,mixed>>,files:list<array<string,mixed>>,directory_count:int,file_count:int,total_size:int} */
     public function listing(string $relativePath): array
     {
         $path = $this->normalize($relativePath);
@@ -55,7 +55,15 @@ final class AdminFileManager
         usort($directories, static fn (array $a, array $b): int => strnatcasecmp($a['name'], $b['name']));
         usort($files, static fn (array $a, array $b): int => strnatcasecmp($a['name'], $b['name']));
 
-        return ['path' => $path, 'parent' => $path === '' ? null : (dirname($path) === '.' ? '' : dirname($path)), 'directories' => $directories, 'files' => $files];
+        return [
+            'path' => $path,
+            'parent' => $path === '' ? null : (dirname($path) === '.' ? '' : dirname($path)),
+            'directories' => $directories,
+            'files' => $files,
+            'directory_count' => count($directories),
+            'file_count' => count($files),
+            'total_size' => array_sum(array_column($files, 'size')),
+        ];
     }
 
     public function createDirectory(string $path, string $name): void
