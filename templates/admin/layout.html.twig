@@ -35,6 +35,10 @@
                     {{ shopro_trans('nav.menu') }}
                 </a>
                 {% if is_granted('ROLE_ADMIN') %}<p class="modern-nav__label">{{ shopro_trans('admin.users_system') }}</p>
+                {% set users_group_active = route starts with 'admin_site_user_' or route starts with 'admin_user_' or route starts with 'admin_membership_' %}
+                <details class="modern-nav-group{{ users_group_active ? ' is-active' : '' }}"{{ users_group_active ? ' open' : '' }}>
+                    <summary><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20c0-4 2.5-7 6-7s6 3 6 7M14 14c4-1 7 1.5 7 6"/></svg></span>{{ shopro_trans('nav.users') }}<span class="modern-nav-group__chevron">⌄</span></summary>
+                    <div class="modern-nav-group__items">
                 <a class="{{ route starts with 'admin_site_user_' ? 'is-active' : '' }}" href="{{ path('admin_site_user_index') }}">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="9" r="2.5"/><path d="M2 20c0-4 2.5-7 6-7s6 3 6 7M13 14c4-1 7 1.5 7 6"/></svg></span>
                     {{ shopro_trans('nav.site_users') }}
@@ -44,9 +48,15 @@
                     {{ shopro_trans('nav.panel_users') }}
                 </a>
                 <a class="{{ route starts with 'admin_membership_' ? 'is-active' : '' }}" href="{{ path('admin_membership_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm4 4h8M8 13h5"/></svg></span>{{ shopro_trans('nav.memberships') }}</a>
+                    </div>
+                </details>
+                {% set configuration_group_active = route starts with 'admin_system_settings_' or route starts with 'admin_newsletter_' or route starts with 'admin_email_template_' or route starts with 'admin_language_' or route starts with 'admin_file_manager_' or route starts with 'admin_url_redirect_' %}
+                <details class="modern-nav-group{{ configuration_group_active ? ' is-active' : '' }}"{{ configuration_group_active ? ' open' : '' }}>
+                    <summary><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 15a2 2 0 0 0 .4 2l-2.4 2.4a2 2 0 0 0-2-.4M9 19a2 2 0 0 0-2 .4L4.6 17A2 2 0 0 0 5 15M5 9a2 2 0 0 0-.4-2L7 4.6A2 2 0 0 0 9 5M15 5a2 2 0 0 0 2-.4L19.4 7A2 2 0 0 0 19 9"/></svg></span>{{ shopro_trans('nav.configuration') }}<span class="modern-nav-group__chevron">⌄</span></summary>
+                    <div class="modern-nav-group__items">
                 <a class="{{ route starts with 'admin_system_settings_' ? 'is-active' : '' }}" href="{{ path('admin_system_settings_edit') }}">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 15a2 2 0 0 0 .4 2l-2.4 2.4a2 2 0 0 0-2-.4 2 2 0 0 0-1 1.7V21h-4v-.3A2 2 0 0 0 9 19a2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.7-1H3v-4h.3A2 2 0 0 0 5 9a2 2 0 0 0-.4-2L7 4.6A2 2 0 0 0 9 5a2 2 0 0 0 1-1.7V3h4v.3A2 2 0 0 0 15 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.7 1h.3v4h-.3A2 2 0 0 0 19 15Z"/></svg></span>
-                    {{ shopro_trans('nav.configuration') }}
+                    {{ shopro_trans('nav.system_configuration') }}
                 </a>
                 <a class="{{ route starts with 'admin_newsletter_' ? 'is-active' : '' }}" href="{{ path('admin_newsletter_index') }}">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5Zm1 1 8 7 8-7"/></svg></span>
@@ -56,8 +66,16 @@
                 <a class="{{ route starts with 'admin_language_' ? 'is-active' : '' }}" href="{{ path('admin_language_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18"/></svg></span>{{ shopro_trans('nav.languages') }}</a>
                 <a class="{{ route starts with 'admin_file_manager_' ? 'is-active' : '' }}" href="{{ path('admin_file_manager_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg></span>{{ shopro_trans('nav.file_manager') }}</a>
                 <a class="{{ route starts with 'admin_url_redirect_' ? 'is-active' : '' }}" href="{{ path('admin_url_redirect_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M7 7h10l-3-3m3 3-3 3M17 17H7l3 3m-3-3 3-3"/></svg></span>{{ shopro_trans('nav.redirects') }}</a>
+                    </div>
+                </details>
+                {% set system_group_active = route starts with 'admin_audit_log_' or route starts with 'admin_module_' %}
+                <details class="modern-nav-group{{ system_group_active ? ' is-active' : '' }}"{{ system_group_active ? ' open' : '' }}>
+                    <summary><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5V4Zm4 4h6M9 12h6M9 16h4"/></svg></span>{{ shopro_trans('nav.system') }}<span class="modern-nav-group__chevron">⌄</span></summary>
+                    <div class="modern-nav-group__items">
                 <a class="{{ route starts with 'admin_audit_log_' ? 'is-active' : '' }}" href="{{ path('admin_audit_log_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M5 3h14v18H5V3Zm3 5h8M8 12h8M8 16h5"/></svg></span>{{ shopro_trans('nav.logs') }}</a>
                 <a class="{{ route starts with 'admin_module_' ? 'is-active' : '' }}" href="{{ path('admin_module_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z"/></svg></span>{{ shopro_trans('nav.modules') }}</a>
+                    </div>
+                </details>
                 {% endif %}
                 {% if is_granted('ROLE_EDITOR') and not is_granted('ROLE_ADMIN') %}<a class="{{ route starts with 'admin_file_manager_' ? 'is-active' : '' }}" href="{{ path('admin_file_manager_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg></span>{{ shopro_trans('nav.file_manager') }}</a>{% endif %}
                 <p class="modern-nav__label">{{ shopro_trans('admin.website') }}</p>

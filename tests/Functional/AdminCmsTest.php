@@ -74,6 +74,11 @@ final class AdminCmsTest extends WebTestCase
 
         $this->client->followRedirect();
         self::assertSelectorTextContains('h1', 'Dzień dobry');
+        self::assertSelectorCount(3, '.modern-nav-group');
+        self::assertSelectorExists('.modern-nav-group summary');
+        self::assertSelectorExists('.modern-nav-group a[href="/admin/site-users"]');
+        self::assertSelectorExists('.modern-nav-group a[href="/admin/users"]');
+        self::assertSelectorExists('.modern-nav-group a[href="/admin/memberships"]');
         $loggedInUser = self::getContainer()->get(AdminUserRepository::class)->find($user->getId());
         self::assertNotNull($loggedInUser?->getLastLoginAt());
         self::assertCount(1, $this->entityManager->getRepository(AuditLog::class)->findBy(['action' => 'login_success']));
@@ -880,6 +885,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('.modern-nav a[href="/admin/pages"]');
         self::assertSelectorExists('.modern-nav a[href="/admin/configuration/files"]');
         self::assertSelectorNotExists('.modern-nav a[href="/admin/users"]');
+        self::assertSelectorNotExists('.modern-nav-group');
         self::assertSelectorCount(2, '.modern-module-card');
 
         $this->client->request('GET', '/admin/pages');
