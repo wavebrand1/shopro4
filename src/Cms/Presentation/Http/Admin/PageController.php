@@ -7,6 +7,7 @@ namespace App\Cms\Presentation\Http\Admin;
 use App\Cms\Domain\Entity\Page;
 use App\Cms\Application\UrlRedirectManager;
 use App\Cms\Application\PageRevisionManager;
+use App\Cms\Application\PageBuilderSanitizer;
 use App\Identity\Domain\Entity\AdminUser;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
@@ -20,8 +21,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -30,8 +29,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class PageController extends AbstractController
 {
     public function __construct(
-        #[Autowire(service: 'html_sanitizer.sanitizer.app.page_content')]
-        private readonly HtmlSanitizerInterface $htmlSanitizer,
+        private readonly PageBuilderSanitizer $builderSanitizer,
         private readonly SystemTranslator $translator,
         private readonly UrlRedirectManager $redirectManager,
         private readonly EntityManagerInterface $entityManager,
@@ -163,7 +161,7 @@ final class PageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $page->setBuilderData($this->sanitizeBuilderData($page->getBuilderData()));
+            $page->setBuilderData($this->builderSanitizer->sanitize($page->getBuilderData()));
             $content = $this->renderView('cms/page/show.html.twig', [
                 'page' => $page,
                 'source_page' => $page,
@@ -369,7 +367,7 @@ final class PageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $page->setBuilderData($this->sanitizeBuilderData($page->getBuilderData()));
+                $page->setBuilderData($this->builderSanitizer->sanitize($page->getBuilderData()));
                 $this->entityManager->getConnection()->beginTransaction();
                 $pages->save($page);
                 if ($previousSlug !== null && $previousSlug !== $page->getSlug()) $this->redirectManager->registerSlugChange($previousSlug, $page->getSlug(), $page->isHomePage());
@@ -402,38 +400,6 @@ final class PageController extends AbstractController
             'form' => $form,
             'page' => $page,
         ]);
-    }
-
-    private function sanitizeBuilderData(string $json): string
-    {
-        try {
-            $project = json_decode($json, true, 64, JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
-            return '[]';
-        }
-        $sanitize = function (array &$components) use (&$sanitize): void {
-            foreach ($components as &$component) {
-                if (($component['type'] ?? null) === 'rich_text' && isset($component['data']['content'])) {
-                    $component['data']['content'] = $this->htmlSanitizer->sanitize((string) $component['data']['content']);
-                }
-
-                if (isset($component['data']['columns']) && is_array($component['data']['columns'])) {
-                    foreach ($component['data']['columns'] as &$column) {
-                        if (is_array($column)) {
-                            $sanitize($column);
-                        }
-                    }
-                    unset($column);
-                }
-            }
-            unset($component);
-        };
-
-        if (is_array($project)) {
-            $sanitize($project);
-        }
-
-        return json_encode($project, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     private static function escapeLike(string $value): string

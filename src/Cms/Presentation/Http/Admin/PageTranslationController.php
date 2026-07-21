@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 namespace App\Cms\Presentation\Http\Admin;
-use App\Cms\Domain\Entity\Page;use App\Cms\Domain\Entity\PageTranslation;use App\Cms\Presentation\Form\PageTranslationType;use App\Language\Domain\Entity\Language;use App\Language\Application\SystemTranslator;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\DependencyInjection\Attribute\Autowire;use Symfony\Component\HttpFoundation\Request;use Symfony\Component\HttpFoundation\Response;use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;use Symfony\Component\Routing\Attribute\Route;use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Cms\Application\PageBuilderSanitizer;use App\Cms\Domain\Entity\Page;use App\Cms\Domain\Entity\PageTranslation;use App\Cms\Presentation\Form\PageTranslationType;use App\Language\Domain\Entity\Language;use App\Language\Application\SystemTranslator;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\HttpFoundation\Request;use Symfony\Component\HttpFoundation\Response;use Symfony\Component\Routing\Attribute\Route;use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/admin/pages/{id}/translations')]
 #[IsGranted('ROLE_EDITOR')]
 final class PageTranslationController extends AbstractController
 {
- public function __construct(#[Autowire(service:'html_sanitizer.sanitizer.app.page_content')]private readonly HtmlSanitizerInterface $sanitizer,private readonly ?SystemTranslator $translator=null){}
+ public function __construct(private readonly PageBuilderSanitizer $builderSanitizer,private readonly ?SystemTranslator $translator=null){}
  #[Route('',name:'admin_page_translation_index',requirements:['id'=>'\d+'],methods:['GET'])]
  public function index(Page $page,EntityManagerInterface $em):Response{$translations=[];foreach($em->getRepository(PageTranslation::class)->findBy(['page'=>$page]) as $t)$translations[$t->getLanguage()->getId()]=$t;return $this->render('admin/page/translations.html.twig',['page'=>$page,'languages'=>$em->getRepository(Language::class)->findBy(['active'=>true,'defaultLanguage'=>false],['name'=>'ASC']),'translations'=>$translations]);}
  #[Route('/{languageId}',name:'admin_page_translation_edit',requirements:['id'=>'\d+','languageId'=>'\d+'],methods:['GET','POST'])]
@@ -19,7 +19,7 @@ final class PageTranslationController extends AbstractController
   $form=$this->createForm(PageTranslationType::class,$translation);
   $form->handleRequest($request);
   if($form->isSubmitted()&&$form->isValid()){
-   $translation->setBuilderData($this->sanitizeBuilder($translation->getBuilderData()));
+   $translation->setBuilderData($this->builderSanitizer->sanitize($translation->getBuilderData()));
    $this->addFlash('success',$this->translator->translate('page.translation_saved'));
    $em->persist($translation);$em->flush();
    return $this->redirectToRoute('admin_page_translation_edit',['id'=>$page->getId(),'languageId'=>$language->getId()]);
@@ -39,17 +39,5 @@ final class PageTranslationController extends AbstractController
   $em->persist($translation);$em->flush();
   $this->addFlash('success',$this->translator->translate('page.base_template_applied'));
   return $this->redirectToRoute('admin_page_translation_edit',['id'=>$page->getId(),'languageId'=>$languageId]);
- }
- private function sanitizeBuilder(string $json):string
- {
-  try{$data=json_decode($json,true,64,JSON_THROW_ON_ERROR);}catch(\JsonException){return '[]';}
-  $walk=function(mixed &$node)use(&$walk):void{
-   if(!is_array($node))return;
-   if(($node['type']??null)==='rich_text'&&isset($node['data']['content']))$node['data']['content']=$this->sanitizer->sanitize((string)$node['data']['content']);
-   if(isset($node['data']['columns'])&&is_array($node['data']['columns']))foreach($node['data']['columns'] as &$column)$walk($column);
-   if(array_is_list($node))foreach($node as &$child)$walk($child);
-  };
-  $walk($data);
-  return json_encode($data,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
  }
 }

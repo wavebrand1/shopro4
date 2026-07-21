@@ -85,6 +85,9 @@ backslashe, białe znaki oraz znaki kontrolne. Ta sama reguła działa w formula
 strony bazowej i tłumaczenia. Niepoprawny JSON lub niebezpieczny link blokuje zapis
 z komunikatem walidacji, a kontrola w szablonach pozostaje dodatkową ochroną dla
 danych zapisanych przez starsze wersje systemu.
+Oczyszczanie treści HTML jest wspólne dla strony bazowej i tłumaczeń oraz realizuje
+je serwis `PageBuilderSanitizer`. Każdy komponent `rich_text`, również zagnieżdżony
+w sekcji lub kolumnie, przechodzi przez skonfigurowany sanitizer Symfony.
 
 ## Sekcje i kolumny
 
