@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Cms\Infrastructure\Persistence\Doctrine;
 
 use App\Cms\Domain\Entity\MenuItem;
+use App\Cms\Domain\Entity\Page;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -26,6 +27,24 @@ final class MenuItemRepository extends ServiceEntityRepository
     public function findAllForAdministration(): array
     {
         return $this->findBy([], ['place' => 'DESC', 'parent' => 'ASC', 'position' => 'ASC', 'id' => 'ASC']);
+    }
+
+    public function countForPage(Page $page): int
+    {
+        return $this->count(['page' => $page]);
+    }
+
+    /** @param list<int> $pageIds @return array<int,int> */
+    public function usageByPageIds(array $pageIds): array
+    {
+        if ($pageIds === []) return [];
+        $rows = $this->createQueryBuilder('item')
+            ->select('IDENTITY(item.page) AS pageId', 'COUNT(item.id) AS usageCount')
+            ->andWhere('item.page IN (:pages)')->setParameter('pages', $pageIds)
+            ->groupBy('item.page')->getQuery()->getArrayResult();
+        $usage = [];
+        foreach ($rows as $row) $usage[(int) $row['pageId']] = (int) $row['usageCount'];
+        return $usage;
     }
 
     public function save(MenuItem $item): void

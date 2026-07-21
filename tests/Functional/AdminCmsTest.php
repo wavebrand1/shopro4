@@ -910,6 +910,24 @@ final class AdminCmsTest extends WebTestCase
         $pageId = $page->getId();
         $this->client->loginUser($admin, 'admin');
 
+        $menuItem = new MenuItem();
+        $menuItem->setName('Link do usuwanej strony');
+        $menuItem->setPage($page);
+        $this->entityManager->persist($menuItem);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/admin/pages');
+        self::assertSelectorTextContains('.admin-table tbody', 'menu: 1');
+        $deleteToken = (string) $this->client->getCrawler()->filter('form[action="/admin/pages/'.$pageId.'/delete"] input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/'.$pageId.'/delete', ['_token' => $deleteToken]);
+        self::assertResponseRedirects('/admin/pages');
+        self::assertFalse(self::getContainer()->get(PageRepository::class)->find($pageId)?->isDeleted());
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.flash--error', 'pozycji menu');
+        $storedMenuItem = self::getContainer()->get(MenuItemRepository::class)->find($menuItem->getId());
+        self::assertNotNull($storedMenuItem);
+        self::getContainer()->get(MenuItemRepository::class)->remove($storedMenuItem);
+
         $this->client->request('GET', '/admin/pages');
         self::assertResponseIsSuccessful();
         $deleteToken = (string) $this->client->getCrawler()->filter('form[action="/admin/pages/'.$pageId.'/delete"] input[name="_token"]')->attr('value');
@@ -917,6 +935,8 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseRedirects('/admin/pages');
         $this->client->request('GET', '/strona-do-kosza');
         self::assertResponseStatusCodeSame(404);
+        $this->client->request('GET', '/admin/menu/new');
+        self::assertSelectorNotExists('select[name="menu_item[page]"] option[value="'.$pageId.'"]');
 
         $this->client->request('GET', '/admin/pages/trash');
         self::assertResponseIsSuccessful();

@@ -9,6 +9,7 @@ use App\Cms\Application\UrlRedirectManager;
 use App\Cms\Application\PageRevisionManager;
 use App\Identity\Domain\Entity\AdminUser;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
+use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Presentation\Form\PageType;
 use App\Settings\Application\SettingsProvider;
 use App\Language\Application\SystemTranslator;
@@ -38,7 +39,7 @@ final class PageController extends AbstractController
     ) {}
 
     #[Route('', name: 'admin_page_index', methods: ['GET'])]
-    public function index(Request $request, PageRepository $pages, SettingsProvider $settings): Response
+    public function index(Request $request, PageRepository $pages, MenuItemRepository $menuItems, SettingsProvider $settings): Response
     {
         $page = max(1, $request->query->getInt('page', 1)); $limit = max(1, min(200, (int) $settings->get('per_page', 20)));
         $search = trim($request->query->getString('q'));
@@ -58,7 +59,9 @@ final class PageController extends AbstractController
             default => null,
         };
         $total = (int) (clone $query)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
-        return $this->render('admin/page/index.html.twig', ['pages' => $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult(), 'current_page' => $page, 'last_page' => max(1, (int) ceil($total / $limit)), 'total' => $total, 'search' => $search, 'status_filter' => $status, 'query_params' => array_filter(['q' => $search, 'status' => $status], static fn (string $value): bool => $value !== '')]);
+        $listedPages = $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult();
+        $menuUsage = $menuItems->usageByPageIds(array_map(static fn (Page $listedPage): int => (int) $listedPage->getId(), $listedPages));
+        return $this->render('admin/page/index.html.twig', ['pages' => $listedPages, 'menu_usage' => $menuUsage, 'current_page' => $page, 'last_page' => max(1, (int) ceil($total / $limit)), 'total' => $total, 'search' => $search, 'status_filter' => $status, 'query_params' => array_filter(['q' => $search, 'status' => $status], static fn (string $value): bool => $value !== '')]);
     }
 
     #[Route('/new', name: 'admin_page_new', methods: ['GET', 'POST'])]
@@ -158,10 +161,14 @@ final class PageController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'admin_page_delete', requirements: ['id' => '\\d+'], methods: ['POST'])]
-    public function delete(Page $page, Request $request, PageRepository $pages): Response
+    public function delete(Page $page, Request $request, PageRepository $pages, MenuItemRepository $menuItems): Response
     {
         if ($page->isSystemPage()) {
             $this->addFlash('error', $this->translator->translate('page.system_delete_forbidden'));
+            return $this->redirectToRoute('admin_page_index');
+        }
+        if (($usage = $menuItems->countForPage($page)) > 0) {
+            $this->addFlash('error', sprintf($this->translator->translate('page.menu_usage_delete_forbidden'), $usage));
             return $this->redirectToRoute('admin_page_index');
         }
         if ($this->isCsrfTokenValid('delete-page-'.$page->getId(), (string) $request->request->get('_token'))) {
@@ -191,9 +198,13 @@ final class PageController extends AbstractController
     }
 
     #[Route('/{id}/destroy', name: 'admin_page_destroy', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function destroy(Page $page, Request $request, PageRepository $pages): Response
+    public function destroy(Page $page, Request $request, PageRepository $pages, MenuItemRepository $menuItems): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        if (($usage = $menuItems->countForPage($page)) > 0) {
+            $this->addFlash('error', sprintf($this->translator->translate('page.menu_usage_destroy_forbidden'), $usage));
+            return $this->redirectToRoute('admin_page_trash');
+        }
         if ($page->isDeleted() && $this->isCsrfTokenValid('destroy-page-'.$page->getId(), $request->request->getString('_token'))) {
             $pages->remove($page);
             $this->addFlash('success', $this->translator->translate('page.deleted_permanently'));

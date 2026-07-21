@@ -6,6 +6,7 @@ namespace App\Cms\Presentation\Form;
 
 use App\Cms\Domain\Entity\MenuItem;
 use App\Cms\Domain\Entity\Page;
+use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Language\Application\SystemTranslator;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -27,7 +28,7 @@ final class MenuItemType extends AbstractType
             ->add('caption', TextType::class, ['label' => $t('menu.caption'), 'required' => false])
             ->add('parent', EntityType::class, ['class' => MenuItem::class, 'choice_label' => 'name', 'label' => $t('menu.parent'), 'placeholder' => $t('menu.root_level'), 'required' => false])
             ->add('contentType', ChoiceType::class, ['label' => $t('menu.type'), 'choices' => [$t('menu.type_page') => MenuItem::TYPE_PAGE, $t('menu.type_web') => MenuItem::TYPE_WEB, $t('menu.type_placeholder') => MenuItem::TYPE_PLACEHOLDER]])
-            ->add('page', EntityType::class, ['class' => Page::class, 'choice_label' => 'title', 'label' => $t('pages.page'), 'placeholder' => $t('menu.select_page'), 'required' => false])
+            ->add('page', EntityType::class, ['class' => Page::class, 'query_builder' => static fn (PageRepository $pages) => $pages->createQueryBuilder('page')->andWhere('page.deletedAt IS NULL')->orderBy('page.title', 'ASC'), 'choice_label' => 'title', 'label' => $t('pages.page'), 'placeholder' => $t('menu.select_page'), 'required' => false])
             ->add('link', TextType::class, ['label' => $t('menu.external_link'), 'help' => $t('menu.link_help'), 'required' => false])
             ->add('target', ChoiceType::class, ['label' => $t('menu.link_target'), 'choices' => [$t('menu.same_tab') => '_self', $t('menu.new_tab') => '_blank']])
             ->add('place', ChoiceType::class, ['label' => $t('menu.place'), 'choices' => [$t('menu.header') => MenuItem::PLACE_HEADER, $t('menu.footer') => MenuItem::PLACE_FOOTER]])
