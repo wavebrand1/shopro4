@@ -910,6 +910,33 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextNotContains('.site-nav', 'Zaplanowany link');
     }
 
+    public function testSitemapExcludesScheduledAndTechnicalPagesWithTheirTranslations(): void
+    {
+        $english = new Language();
+        $english->setName('English'); $english->setCode('en'); $english->setActive(true);
+        $visible = new Page();
+        $visible->setTitle('Oferta publiczna'); $visible->setSlug('oferta-publiczna'); $visible->setPublished(true);
+        $translation = new PageTranslation($visible, $english);
+        $translation->setTitle('Public offer'); $translation->setSlug('public-offer'); $translation->setPublished(true);
+        $scheduled = new Page();
+        $scheduled->setTitle('Oferta zaplanowana'); $scheduled->setSlug('oferta-zaplanowana'); $scheduled->setPublished(true); $scheduled->setPublishAt(new \DateTimeImmutable('+1 day'));
+        $error = new Page();
+        $error->setTitle('Błąd 404'); $error->setSlug('blad-techniczny'); $error->setPublished(true); $error->setErrorPage(true);
+        $search = new Page();
+        $search->setTitle('Wyszukiwarka'); $search->setSlug('wyszukiwarka-techniczna'); $search->setPublished(true); $search->setSearchPage(true);
+        foreach ([$english, $visible, $translation, $scheduled, $error, $search] as $entity) $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/sitemap.xml');
+        self::assertResponseIsSuccessful();
+        $xml = (string) $this->client->getResponse()->getContent();
+        self::assertStringContainsString('<loc>http://localhost/oferta-publiczna</loc>', $xml);
+        self::assertStringContainsString('hreflang="en" href="http://localhost/en/public-offer"', $xml);
+        self::assertStringNotContainsString('oferta-zaplanowana', $xml);
+        self::assertStringNotContainsString('blad-techniczny', $xml);
+        self::assertStringNotContainsString('wyszukiwarka-techniczna', $xml);
+    }
+
     public function testBulkTrashSkipsSystemPagesAndPagesUsedByMenu(): void
     {
         $admin = new AdminUser('bulk-trash@example.test', 'bulk-trash');

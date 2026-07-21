@@ -55,6 +55,8 @@ final class PageRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('page')
             ->andWhere('page.access = :access')
             ->andWhere('page.adminOnly = :adminOnly')
+            ->andWhere('page.errorPage = false')
+            ->andWhere('page.searchPage = false')
             ->setParameter('access', 'Public')
             ->setParameter('adminOnly', false)
             ->orderBy('page.updatedAt', 'DESC');

@@ -56,6 +56,10 @@ strona oczekująca na publikację, wygasła lub znajdująca się w koszu nie jes
 w menu frontu, nawet jeżeli sama pozycja menu pozostaje aktywna. Link pojawia się i
 znika na podstawie aktualnego czasu, bez zadania cron.
 
+`sitemap.xml` korzysta z tego samego okna publikacji i zawiera wyłącznie publiczne
+podstrony. Strona obsługująca błąd 404 oraz techniczna strona wyszukiwarki są
+wykluczone z mapy również wtedy, gdy mają opublikowaną treść lub tłumaczenia.
+
 Lista `/admin/pages` obsługuje:
 
 - wyszukiwanie po tytule i slugu;
