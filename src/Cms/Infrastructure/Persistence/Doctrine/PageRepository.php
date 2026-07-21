@@ -131,6 +131,19 @@ final class PageRepository extends ServiceEntityRepository
         return (int) $this->applyPublicationWindow($builder)->getQuery()->getSingleScalarResult();
     }
 
+    /** @return list<PageTranslation> */
+    public function findPublishedActiveTranslations(Page $page): array
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('translation')->from(PageTranslation::class, 'translation')
+            ->join('translation.language', 'language')
+            ->andWhere('translation.page = :page')->andWhere('translation.published = true')
+            ->andWhere('language.active = true')->andWhere('language.defaultLanguage = false')
+            ->setParameter('page', $page)
+            ->orderBy('language.name', 'ASC')
+            ->getQuery()->getResult();
+    }
+
     public function nextCopySlug(string $sourceSlug): string
     {
         $base = rtrim(mb_substr($sourceSlug, 0, 168), '-').'-kopia';

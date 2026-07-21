@@ -914,24 +914,33 @@ final class AdminCmsTest extends WebTestCase
     {
         $english = new Language();
         $english->setName('English'); $english->setCode('en'); $english->setActive(true);
+        $german = new Language();
+        $german->setName('Deutsch'); $german->setCode('de'); $german->setActive(false);
         $visible = new Page();
-        $visible->setTitle('Oferta publiczna'); $visible->setSlug('oferta-publiczna'); $visible->setPublished(true);
+        $visible->setTitle('Oferta publiczna'); $visible->setSlug('oferta-publiczna'); $visible->setPublished(true); $visible->setHomePage(true);
         $translation = new PageTranslation($visible, $english);
         $translation->setTitle('Public offer'); $translation->setSlug('public-offer'); $translation->setPublished(true);
+        $inactiveTranslation = new PageTranslation($visible, $german);
+        $inactiveTranslation->setTitle('Öffentliches Angebot'); $inactiveTranslation->setSlug('offentliches-angebot'); $inactiveTranslation->setPublished(true);
         $scheduled = new Page();
         $scheduled->setTitle('Oferta zaplanowana'); $scheduled->setSlug('oferta-zaplanowana'); $scheduled->setPublished(true); $scheduled->setPublishAt(new \DateTimeImmutable('+1 day'));
         $error = new Page();
         $error->setTitle('Błąd 404'); $error->setSlug('blad-techniczny'); $error->setPublished(true); $error->setErrorPage(true);
         $search = new Page();
         $search->setTitle('Wyszukiwarka'); $search->setSlug('wyszukiwarka-techniczna'); $search->setPublished(true); $search->setSearchPage(true);
-        foreach ([$english, $visible, $translation, $scheduled, $error, $search] as $entity) $this->entityManager->persist($entity);
+        foreach ([$english, $german, $visible, $translation, $inactiveTranslation, $scheduled, $error, $search] as $entity) $this->entityManager->persist($entity);
         $this->entityManager->flush();
 
+        $this->client->request('GET', '/');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('link[rel="alternate"][hreflang="en"][href="http://localhost/en/public-offer"]');
+        self::assertSelectorNotExists('link[rel="alternate"][hreflang="de"]');
         $this->client->request('GET', '/sitemap.xml');
         self::assertResponseIsSuccessful();
         $xml = (string) $this->client->getResponse()->getContent();
-        self::assertStringContainsString('<loc>http://localhost/oferta-publiczna</loc>', $xml);
+        self::assertStringContainsString('<loc>http://localhost/</loc>', $xml);
         self::assertStringContainsString('hreflang="en" href="http://localhost/en/public-offer"', $xml);
+        self::assertStringNotContainsString('offentliches-angebot', $xml);
         self::assertStringNotContainsString('oferta-zaplanowana', $xml);
         self::assertStringNotContainsString('blad-techniczny', $xml);
         self::assertStringNotContainsString('wyszukiwarka-techniczna', $xml);

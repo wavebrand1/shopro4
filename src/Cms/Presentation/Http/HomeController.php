@@ -37,7 +37,7 @@ final class HomeController extends AbstractController
             return $this->render('cms/page/show.html.twig', [
                 'page' => $page,
                 'source_page' => $page,
-                'alternates' => [],
+                'alternates' => $pages->findPublishedActiveTranslations($page),
             ]);
         }
         return $this->render('cms/home.html.twig');

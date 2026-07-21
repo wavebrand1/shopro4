@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Cms\Presentation\Http;
 
 use App\Cms\Domain\Entity\Page;
-use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Settings\Application\SettingsProvider;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,14 +15,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class SeoController extends AbstractController
 {
     #[Route('/sitemap.xml', name: 'cms_sitemap', methods: ['GET'], priority: 100)]
-    public function sitemap(PageRepository $pages, EntityManagerInterface $entityManager): Response
+    public function sitemap(PageRepository $pages): Response
     {
         $entries = [];
         foreach ($pages->findPublicForSitemap() as $page) {
             $entries[] = [
                 'location' => $this->pageUrl($page),
                 'modified' => $page->getUpdatedAt(),
-                'alternates' => $this->translationUrls($page, $entityManager),
+                'alternates' => $this->translationUrls($page, $pages),
             ];
         }
 
@@ -61,13 +59,11 @@ final class SeoController extends AbstractController
     }
 
     /** @return list<array{language:string, location:string}> */
-    private function translationUrls(Page $page, EntityManagerInterface $entityManager): array
+    private function translationUrls(Page $page, PageRepository $pages): array
     {
-        $translations = $entityManager->getRepository(PageTranslation::class)->findBy(['page' => $page, 'published' => true]);
         $urls = [];
-        foreach ($translations as $translation) {
+        foreach ($pages->findPublishedActiveTranslations($page) as $translation) {
             $language = $translation->getLanguage();
-            if (!$language->isActive() || $language->isDefaultLanguage()) continue;
             $urls[] = [
                 'language' => $language->getCode(),
                 'location' => $this->generateUrl('cms_page_show_localized', ['_locale' => $language->getCode(), 'slug' => $translation->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL),

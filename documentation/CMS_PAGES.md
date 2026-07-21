@@ -59,6 +59,9 @@ znika na podstawie aktualnego czasu, bez zadania cron.
 `sitemap.xml` korzysta z tego samego okna publikacji i zawiera wyłącznie publiczne
 podstrony. Strona obsługująca błąd 404 oraz techniczna strona wyszukiwarki są
 wykluczone z mapy również wtedy, gdy mają opublikowaną treść lub tłumaczenia.
+Adresy `hreflang` na podstronie, stronie głównej i w mapie witryny pochodzą z jednego
+zapytania: uwzględniają wyłącznie opublikowane tłumaczenia aktywnych języków innych niż
+język bazowy. Wyłączenie języka usuwa więc jego adresy ze wszystkich sygnałów SEO.
 
 Lista `/admin/pages` obsługuje:
 

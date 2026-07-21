@@ -40,11 +40,11 @@ final class PublicPageController extends AbstractController
         if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
         if ($denied = $this->guard($page, $request, $access)) return $denied;
 
-        return $this->render('cms/page/show.html.twig', ['page' => $translation, 'source_page' => $page, 'alternates' => $em->getRepository(PageTranslation::class)->findBy(['page' => $page, 'published' => true])]);
+        return $this->render('cms/page/show.html.twig', ['page' => $translation, 'source_page' => $page, 'alternates' => $pages->findPublishedActiveTranslations($page)]);
     }
 
     #[Route('/{slug}', name: 'cms_page_show', requirements: ['slug' => '[a-z0-9-]+'], methods: ['GET'], priority: -100)]
-    public function __invoke(string $slug, PageRepository $pages, EntityManagerInterface $em, Request $request, LocalizedPageUrlGenerator $localizedUrls, PageAccess $access): Response
+    public function __invoke(string $slug, PageRepository $pages, Request $request, LocalizedPageUrlGenerator $localizedUrls, PageAccess $access): Response
     {
         $page = $pages->findPublishedBySlug($slug);
         if ($page === null) {
@@ -61,7 +61,7 @@ final class PublicPageController extends AbstractController
             if($localizedUrl!==$baseUrl)return $this->redirect($localizedUrl);
         }
 
-        return $this->render('cms/page/show.html.twig', ['page' => $page, 'source_page' => $page, 'alternates' => $em->getRepository(PageTranslation::class)->findBy(['page' => $page, 'published' => true])]);
+        return $this->render('cms/page/show.html.twig', ['page' => $page, 'source_page' => $page, 'alternates' => $pages->findPublishedActiveTranslations($page)]);
     }
 
     private function guard(Page $page, Request $request, PageAccess $access): ?Response
