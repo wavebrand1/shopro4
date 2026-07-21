@@ -192,9 +192,16 @@ final class PageController extends AbstractController
     }
 
     #[Route('/trash', name: 'admin_page_trash', methods: ['GET'])]
-    public function trash(PageRepository $pages): Response
+    public function trash(Request $request, PageRepository $pages, SettingsProvider $settings): Response
     {
-        return $this->render('admin/page/trash.html.twig', ['pages' => $pages->createQueryBuilder('page')->andWhere('page.deletedAt IS NOT NULL')->orderBy('page.deletedAt', 'DESC')->getQuery()->getResult()]);
+        $currentPage = max(1, $request->query->getInt('page', 1));
+        $limit = max(1, min(200, (int) $settings->get('per_page', 20)));
+        $search = trim($request->query->getString('q'));
+        $query = $pages->createQueryBuilder('page')->andWhere('page.deletedAt IS NOT NULL')->orderBy('page.deletedAt', 'DESC');
+        if ($search !== '') $query->andWhere('LOWER(page.title) LIKE :trashSearch OR LOWER(page.slug) LIKE :trashSearch')->setParameter('trashSearch', '%'.mb_strtolower($search).'%');
+        $total = (int) (clone $query)->select('COUNT(page.id)')->getQuery()->getSingleScalarResult();
+        $listedPages = $query->setFirstResult(($currentPage - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult();
+        return $this->render('admin/page/trash.html.twig', ['pages' => $listedPages, 'search' => $search, 'total' => $total, 'current_page' => $currentPage, 'last_page' => max(1, (int) ceil($total / $limit)), 'query_params' => array_filter(['q' => $search])]);
     }
 
     #[Route('/trash/bulk-restore', name: 'admin_page_trash_bulk_restore', methods: ['POST'])]

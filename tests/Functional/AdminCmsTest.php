@@ -1002,6 +1002,12 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorCount(2, '[data-page-select]');
         self::assertSelectorExists('button[form="trash-bulk-form"]');
+        $this->client->request('GET', '/admin/pages/trash?q=Pierwsza');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorCount(1, '[data-page-select]');
+        self::assertSelectorTextContains('.admin-table tbody', 'Pierwsza usunięta');
+        self::assertSelectorTextNotContains('.admin-table tbody', 'Druga usunięta');
+        $this->client->request('GET', '/admin/pages/trash');
         $token = (string) $this->client->getCrawler()->filter('#trash-bulk-form input[name="_token"]')->attr('value');
         $this->client->request('POST', '/admin/pages/trash/bulk-restore', ['_token' => $token, 'pages' => [$first->getId(), $second->getId()]]);
         self::assertResponseRedirects('/admin/pages/trash');
