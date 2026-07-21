@@ -67,9 +67,11 @@ final class PageController extends AbstractController
             default => null,
         };
         $total = (int) (clone $query)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
+        $lastPage = max(1, (int) ceil($total / $limit));
+        $page = min($page, $lastPage);
         $listedPages = $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult();
         $menuUsage = $menuItems->usageByPageIds(array_map(static fn (Page $listedPage): int => (int) $listedPage->getId(), $listedPages));
-        return $this->render('admin/page/index.html.twig', ['pages' => $listedPages, 'menu_usage' => $menuUsage, 'current_page' => $page, 'last_page' => max(1, (int) ceil($total / $limit)), 'total' => $total, 'search' => $search, 'status_filter' => $status, 'sort' => $sort, 'direction' => $direction, 'query_params' => array_filter(['q' => $search, 'status' => $status, 'sort' => $sort === 'updated' ? '' : $sort, 'direction' => $direction === 'desc' ? '' : $direction], static fn (string $value): bool => $value !== '')]);
+        return $this->render('admin/page/index.html.twig', ['pages' => $listedPages, 'menu_usage' => $menuUsage, 'current_page' => $page, 'last_page' => $lastPage, 'total' => $total, 'search' => $search, 'status_filter' => $status, 'sort' => $sort, 'direction' => $direction, 'query_params' => array_filter(['q' => $search, 'status' => $status, 'sort' => $sort === 'updated' ? '' : $sort, 'direction' => $direction === 'desc' ? '' : $direction], static fn (string $value): bool => $value !== '')]);
     }
 
     #[Route('/new', name: 'admin_page_new', methods: ['GET', 'POST'])]
@@ -87,11 +89,13 @@ final class PageController extends AbstractController
         if (!in_array($returnSort, ['updated', 'title', 'created'], true)) $returnSort = 'updated';
         $returnDirection = strtolower($request->request->getString('return_direction', 'desc'));
         if (!in_array($returnDirection, ['asc', 'desc'], true)) $returnDirection = 'desc';
+        $returnPage = max(1, min(100000, $request->request->getInt('return_page', 1)));
         $redirectParameters = array_filter([
             'q' => trim($request->request->getString('return_q')),
             'status' => $returnStatus,
             'sort' => $returnSort === 'updated' ? '' : $returnSort,
             'direction' => $returnDirection === 'desc' ? '' : $returnDirection,
+            'page' => $returnPage === 1 ? '' : (string) $returnPage,
         ], static fn (string $value): bool => $value !== '');
         if (!$this->isCsrfTokenValid('bulk-pages', $request->request->getString('_token'))) {
             $this->addFlash('error', $this->translator->translate('page.bulk_invalid_token'));
@@ -219,14 +223,17 @@ final class PageController extends AbstractController
         $query = $pages->createQueryBuilder('page')->andWhere('page.deletedAt IS NOT NULL')->orderBy('page.deletedAt', 'DESC');
         if ($search !== '') $query->andWhere('LOWER(page.title) LIKE :trashSearch OR LOWER(page.slug) LIKE :trashSearch')->setParameter('trashSearch', '%'.mb_strtolower($search).'%');
         $total = (int) (clone $query)->select('COUNT(page.id)')->getQuery()->getSingleScalarResult();
+        $lastPage = max(1, (int) ceil($total / $limit));
+        $currentPage = min($currentPage, $lastPage);
         $listedPages = $query->setFirstResult(($currentPage - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult();
-        return $this->render('admin/page/trash.html.twig', ['pages' => $listedPages, 'search' => $search, 'total' => $total, 'current_page' => $currentPage, 'last_page' => max(1, (int) ceil($total / $limit)), 'query_params' => array_filter(['q' => $search])]);
+        return $this->render('admin/page/trash.html.twig', ['pages' => $listedPages, 'search' => $search, 'total' => $total, 'current_page' => $currentPage, 'last_page' => $lastPage, 'query_params' => array_filter(['q' => $search])]);
     }
 
     #[Route('/trash/bulk-restore', name: 'admin_page_trash_bulk_restore', methods: ['POST'])]
     public function bulkRestore(Request $request, PageRepository $pages): Response
     {
-        $redirectParameters = array_filter(['q' => trim($request->request->getString('return_q'))]);
+        $returnPage = max(1, min(100000, $request->request->getInt('return_page', 1)));
+        $redirectParameters = array_filter(['q' => trim($request->request->getString('return_q')), 'page' => $returnPage === 1 ? '' : (string) $returnPage]);
         if (!$this->isCsrfTokenValid('bulk-restore-pages', $request->request->getString('_token'))) {
             $this->addFlash('error', $this->translator->translate('page.bulk_invalid_token'));
             return $this->redirectToRoute('admin_page_trash', $redirectParameters);
@@ -252,7 +259,8 @@ final class PageController extends AbstractController
     public function bulkDestroy(Request $request, PageRepository $pages, MenuItemRepository $menuItems): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $redirectParameters = array_filter(['q' => trim($request->request->getString('return_q'))]);
+        $returnPage = max(1, min(100000, $request->request->getInt('return_page', 1)));
+        $redirectParameters = array_filter(['q' => trim($request->request->getString('return_q')), 'page' => $returnPage === 1 ? '' : (string) $returnPage]);
         if (!$this->isCsrfTokenValid('bulk-destroy-pages', $request->request->getString('_destroy_token'))) {
             $this->addFlash('error', $this->translator->translate('page.bulk_invalid_token'));
             return $this->redirectToRoute('admin_page_trash', $redirectParameters);

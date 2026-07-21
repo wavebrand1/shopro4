@@ -25,6 +25,7 @@ use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Module\Domain\Entity\InstalledModule;
 use App\Language\Domain\Entity\Language;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
+use App\Settings\Domain\Entity\SystemSettings;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -1390,5 +1391,37 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('select[name="sort"] option[value="updated"][selected]');
         self::assertSelectorExists('select[name="direction"] option[value="desc"][selected]');
+    }
+
+    public function testPagePaginationClampsInvalidNumberAndBulkActionKeepsCurrentPage(): void
+    {
+        $admin = new AdminUser('pagination-admin@example.test', 'pagination-admin');
+        $admin->setPassword(self::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'very-secure-password'));
+        $settings = new SystemSettings();
+        $settings->setConfiguration(['per_page' => 1]);
+        $pages = [];
+        foreach (['Alfa', 'Beta', 'Gamma'] as $index => $title) {
+            $page = new Page(); $page->setTitle($title); $page->setSlug('strona-'.($index + 1)); $pages[] = $page;
+            $this->entityManager->persist($page);
+        }
+        $this->entityManager->persist($admin);
+        $this->entityManager->persist($settings);
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages?page=999');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.admin-pagination', '3');
+        self::assertSelectorExists('#page-bulk-form input[name="return_page"][value="3"]');
+        self::assertSelectorCount(1, '[data-page-select]');
+        $pageId = (int) $this->client->getCrawler()->filter('[data-page-select]')->attr('value');
+        $token = (string) $this->client->getCrawler()->filter('#page-bulk-form input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/bulk', [
+            '_token' => $token,
+            'bulk_action' => 'draft',
+            'pages' => [$pageId],
+            'return_page' => 3,
+        ]);
+        self::assertResponseRedirects('/admin/pages?page=3');
     }
 }
