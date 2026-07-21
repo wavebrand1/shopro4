@@ -10,6 +10,7 @@ use App\Cms\Domain\Entity\MenuItemTranslation;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Domain\Entity\Page;
 use App\Cms\Domain\Entity\UrlRedirect;
+use App\Cms\Application\UrlRedirectManager;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\AdminUser;
@@ -1020,5 +1021,38 @@ final class AdminCmsTest extends WebTestCase
         $unsafe = new UrlRedirect(); $unsafe->setSourcePath('/unsafe'); $unsafe->setTargetPath('/\\evil.example/path');
         $errors = self::getContainer()->get(ValidatorInterface::class)->validate($unsafe);
         self::assertGreaterThan(0, $errors->count());
+    }
+
+    public function testChangingPageSlugCreatesAndFlattensPermanentRedirects(): void
+    {
+        $admin = new AdminUser('slug-admin@example.test', 'slug-admin');
+        $admin->setPassword(self::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'very-secure-password'));
+        $page = new Page(); $page->setTitle('Stary adres'); $page->setSlug('stary-adres'); $page->setPublished(true);
+        $this->entityManager->persist($admin); $this->entityManager->persist($page); $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        $this->client->submitForm('Zapisz i kontynuuj edycję', ['page[title]' => 'Nowy adres', 'page[slug]' => 'nowy-adres']);
+        self::assertResponseRedirects('/admin/pages/'.$page->getId().'/edit');
+        $this->client->request('GET', '/stary-adres');
+        self::assertResponseRedirects('/nowy-adres', 301);
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        $this->client->submitForm('Zapisz i kontynuuj edycję', ['page[slug]' => 'aktualny-adres']);
+        self::assertResponseRedirects('/admin/pages/'.$page->getId().'/edit');
+        $redirects = $this->entityManager->getRepository(UrlRedirect::class);
+        self::assertSame('/aktualny-adres', $redirects->findOneBy(['sourcePath' => '/stary-adres'])?->getTargetPath());
+        self::assertSame('/aktualny-adres', $redirects->findOneBy(['sourcePath' => '/nowy-adres'])?->getTargetPath());
+
+        $manager = self::getContainer()->get(UrlRedirectManager::class);
+        $chainEnd = new UrlRedirect(); $chainEnd->setSourcePath('/chain-middle'); $chainEnd->setTargetPath('/chain-end');
+        $this->entityManager->persist($chainEnd); $this->entityManager->flush();
+        $chainStart = new UrlRedirect(); $chainStart->setSourcePath('/chain-start'); $chainStart->setTargetPath('/chain-middle');
+        $manager->prepare($chainStart);
+        self::assertSame('/chain-end', $chainStart->getTargetPath());
+        $this->entityManager->persist($chainStart); $this->entityManager->flush();
+        $loop = new UrlRedirect(); $loop->setSourcePath('/chain-end'); $loop->setTargetPath('/chain-start');
+        $this->expectException(\LogicException::class);
+        $manager->prepare($loop);
     }
 }

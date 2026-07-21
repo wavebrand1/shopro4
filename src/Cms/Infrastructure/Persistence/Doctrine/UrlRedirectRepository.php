@@ -13,6 +13,14 @@ final class UrlRedirectRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry) { parent::__construct($registry, UrlRedirect::class); }
     public function findActive(string $path): ?UrlRedirect { return $this->findOneBy(['sourcePath' => $path, 'active' => true]); }
+    public function findActiveExcept(string $path, ?int $excludedId): ?UrlRedirect
+    {
+        $builder = $this->createQueryBuilder('redirect')->andWhere('redirect.sourcePath = :path')->andWhere('redirect.active = true')->setParameter('path', $path);
+        if ($excludedId !== null) $builder->andWhere('redirect.id != :id')->setParameter('id', $excludedId);
+        return $builder->getQuery()->getOneOrNullResult();
+    }
     public function save(UrlRedirect $redirect): void { $this->getEntityManager()->persist($redirect); $this->getEntityManager()->flush(); }
+    /** @param iterable<UrlRedirect> $redirects */
+    public function saveAll(iterable $redirects): void { foreach ($redirects as $redirect) $this->getEntityManager()->persist($redirect); $this->getEntityManager()->flush(); }
     public function remove(UrlRedirect $redirect): void { $this->getEntityManager()->remove($redirect); $this->getEntityManager()->flush(); }
 }

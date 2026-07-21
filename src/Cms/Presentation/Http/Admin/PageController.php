@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Cms\Presentation\Http\Admin;
 
 use App\Cms\Domain\Entity\Page;
+use App\Cms\Application\UrlRedirectManager;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Cms\Presentation\Form\PageType;
 use App\Settings\Application\SettingsProvider;
 use App\Language\Application\SystemTranslator;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +28,8 @@ final class PageController extends AbstractController
         #[Autowire(service: 'html_sanitizer.sanitizer.app.page_content')]
         private readonly HtmlSanitizerInterface $htmlSanitizer,
         private readonly SystemTranslator $translator,
+        private readonly UrlRedirectManager $redirectManager,
+        private readonly EntityManagerInterface $entityManager,
     ) {}
 
     #[Route('', name: 'admin_page_index', methods: ['GET'])]
@@ -122,6 +126,7 @@ final class PageController extends AbstractController
 
     private function handleForm(Request $request, Page $page, PageRepository $pages, string $message): Response
     {
+        $previousSlug = $page->getId() !== null ? $page->getSlug() : null;
         if (!$page->usesComponentBuilder()) {
             $legacyContent = $page->getContent();
             $page->setEditorMode('components');
@@ -141,7 +146,10 @@ final class PageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $page->setBuilderData($this->sanitizeBuilderData($page->getBuilderData()));
+                $this->entityManager->getConnection()->beginTransaction();
                 $pages->save($page);
+                if ($previousSlug !== null && $previousSlug !== $page->getSlug()) $this->redirectManager->registerSlugChange($previousSlug, $page->getSlug(), $page->isHomePage());
+                $this->entityManager->getConnection()->commit();
                 $this->addFlash('success', $this->translator->translate($message));
 
                 if ('stay' === $request->request->get('_save_action')) {
@@ -150,7 +158,14 @@ final class PageController extends AbstractController
 
                 return $this->redirectToRoute('admin_page_index');
             } catch (UniqueConstraintViolationException) {
+                if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
                 $this->addFlash('error', $this->translator->translate('page.slug_exists'));
+            } catch (\LogicException $exception) {
+                if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
+                $this->addFlash('error', $this->translator->translate($exception->getMessage()));
+            } catch (\Throwable $exception) {
+                if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
+                throw $exception;
             }
         }
 
