@@ -1,0 +1,10 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}{{ shopro_trans('revision.details') }} #{{ revision.version }} — Shopro 4.0{% endblock %}
+{% block body %}
+<div class="modern-page-heading"><div><p class="modern-kicker">{{ shopro_trans('revision.heading') }}</p><h1>{{ shopro_trans('revision.details') }} #{{ revision.version }}</h1><p>{{ revision.title }} · {{ shopro_date(revision.createdAt) }} {{ shopro_date(revision.createdAt, 'time') }} · {{ revision.createdBy ?: '—' }}</p></div><a class="modern-button" href="{{ path('admin_page_revision_index',{id:page.id}) }}">← {{ shopro_trans('revision.back_history') }}</a></div>
+<section class="modern-card revision-comparison">
+    <div class="modern-card__heading"><div><h2>{{ shopro_trans('revision.comparison') }}</h2><p>{{ previous ? shopro_trans('revision.comparison_help') : shopro_trans('revision.initial_help') }}</p></div></div>
+    <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>{{ shopro_trans('revision.field') }}</th>{% if previous %}<th>#{{ previous.version }}</th>{% endif %}<th>#{{ revision.version }}</th></tr></thead><tbody>{% for row in comparison %}<tr class="{{ row.changed ? 'revision-comparison__changed' : '' }}"><th>{{ shopro_trans(row.label) }}</th>{% if previous %}<td>{{ row.previous }}</td>{% endif %}<td>{{ row.current }}{% if row.changed %}<span class="revision-change-marker">{{ shopro_trans('revision.changed') }}</span>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+</section>
+<form class="revision-restore-action" method="post" action="{{ path('admin_page_revision_restore',{id:page.id,revisionId:revision.id}) }}" onsubmit="return confirm('{{ shopro_trans('revision.restore_confirm') }}')"><input type="hidden" name="_token" value="{{ csrf_token('restore-revision-'~revision.id) }}"><button class="modern-button modern-button--primary">{{ shopro_trans('revision.restore') }}</button></form>
+{% endblock %}

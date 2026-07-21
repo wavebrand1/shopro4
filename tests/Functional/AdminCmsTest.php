@@ -1230,7 +1230,12 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('table', 'Wersja druga');
         self::assertSelectorTextContains('.revision-tags', 'Treść i układ');
+        self::assertSelectorExists('a[href="/admin/pages/'.$page->getId().'/revisions/'.$first->getId().'"]');
         $restoreForm = $history->filter('form[action$="/'.$first->getId().'/restore"]')->form();
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/revisions/'.$first->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', '#1');
+        self::assertSelectorExists('.revision-comparison__changed');
         $this->client->submit($restoreForm);
         self::assertResponseRedirects('/admin/pages/'.$page->getId().'/edit');
 
