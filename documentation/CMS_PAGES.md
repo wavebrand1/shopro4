@@ -59,6 +59,10 @@ Pola sortowania i filtrów korzystają z białych list w `PageController`; warto
 nie są używane bezpośrednio jako fragment DQL. Numer większy od liczby stron jest
 ograniczany do ostatniej istniejącej strony.
 
+Wyszukiwanie zabezpiecza operatory `LIKE`: znaki `%`, `_` oraz znak ucieczki są
+traktowane jako zwykła treść wpisana przez operatora. Ta sama reguła obowiązuje na
+liście aktywnych podstron i w koszu.
+
 ## Kosz i ochrona danych
 
 Usunięcie w panelu jest operacją miękką: `Page::moveToTrash()` ustawia `deletedAt`,

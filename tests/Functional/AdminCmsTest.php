@@ -1454,4 +1454,27 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('select[name="access"] option[value=""][selected]');
         self::assertSelectorCount(4, '[data-page-select]');
     }
+
+    public function testPageSearchTreatsSqlWildcardsAsLiteralText(): void
+    {
+        $admin = new AdminUser('literal-search@example.test', 'literal-search');
+        $price = new Page(); $price->setTitle('Oferta 100%'); $price->setSlug('oferta-100-procent');
+        $ordinary = new Page(); $ordinary->setTitle('Zwykła oferta'); $ordinary->setSlug('zwykla-oferta');
+        foreach ([$admin, $price, $ordinary] as $entity) $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages?q=%25');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorCount(1, '[data-page-select]');
+        self::assertSelectorTextContains('.admin-table tbody', 'Oferta 100%');
+        self::assertSelectorTextNotContains('.admin-table tbody', 'Zwykła oferta');
+
+        $price->moveToTrash(); $ordinary->moveToTrash(); $this->entityManager->flush();
+        $this->client->request('GET', '/admin/pages/trash?q=%25');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorCount(1, '[data-page-select]');
+        self::assertSelectorTextContains('.admin-table tbody', 'Oferta 100%');
+        self::assertSelectorTextNotContains('.admin-table tbody', 'Zwykła oferta');
+    }
 }

@@ -57,8 +57,8 @@ final class PageController extends AbstractController
             ->orderBy($sortFields[$sort], strtoupper($direction))
             ->addOrderBy('p.id', strtoupper($direction));
         if ($search !== '') {
-            $query->andWhere('LOWER(p.title) LIKE :adminSearch OR LOWER(p.slug) LIKE :adminSearch')
-                ->setParameter('adminSearch', '%'.mb_strtolower($search).'%');
+            $query->andWhere('LOWER(p.title) LIKE :adminSearch ESCAPE \'!\' OR LOWER(p.slug) LIKE :adminSearch ESCAPE \'!\'')
+                ->setParameter('adminSearch', '%'.self::escapeLike(mb_strtolower($search)).'%');
         }
         $now = new \DateTimeImmutable();
         match ($status) {
@@ -233,7 +233,7 @@ final class PageController extends AbstractController
         $limit = max(1, min(200, (int) $settings->get('per_page', 20)));
         $search = trim($request->query->getString('q'));
         $query = $pages->createQueryBuilder('page')->andWhere('page.deletedAt IS NOT NULL')->orderBy('page.deletedAt', 'DESC');
-        if ($search !== '') $query->andWhere('LOWER(page.title) LIKE :trashSearch OR LOWER(page.slug) LIKE :trashSearch')->setParameter('trashSearch', '%'.mb_strtolower($search).'%');
+        if ($search !== '') $query->andWhere('LOWER(page.title) LIKE :trashSearch ESCAPE \'!\' OR LOWER(page.slug) LIKE :trashSearch ESCAPE \'!\'')->setParameter('trashSearch', '%'.self::escapeLike(mb_strtolower($search)).'%');
         $total = (int) (clone $query)->select('COUNT(page.id)')->getQuery()->getSingleScalarResult();
         $lastPage = max(1, (int) ceil($total / $limit));
         $currentPage = min($currentPage, $lastPage);
@@ -426,5 +426,10 @@ final class PageController extends AbstractController
         }
 
         return json_encode($project, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
+    private static function escapeLike(string $value): string
+    {
+        return str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $value);
     }
 }
