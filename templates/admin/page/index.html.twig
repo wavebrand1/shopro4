@@ -13,11 +13,13 @@
         <button class="modern-button modern-button--primary" type="submit">{{ shopro_trans('common.filter') }}</button>
         {% if search or status_filter %}<a class="modern-button" href="{{ path('admin_page_index') }}">{{ shopro_trans('common.clear') }}</a>{% endif %}
     </form>
+    <form id="page-bulk-form" method="post" action="{{ path('admin_page_bulk') }}" data-page-bulk><input type="hidden" name="_token" value="{{ csrf_token('bulk-pages') }}"><input type="hidden" name="return_q" value="{{ search }}"><input type="hidden" name="return_status" value="{{ status_filter }}"></form>
+    <div class="admin-bulk-actions" data-page-bulk-actions hidden><strong><span data-page-bulk-count>0</span> {{ shopro_trans('pages.selected') }}</strong><select name="bulk_action" form="page-bulk-form" required><option value="">{{ shopro_trans('pages.choose_action') }}</option><option value="publish">{{ shopro_trans('pages.publish_selected') }}</option><option value="draft">{{ shopro_trans('pages.draft_selected') }}</option></select><button class="modern-button modern-button--primary" type="submit" form="page-bulk-form">{{ shopro_trans('common.apply') }}</button></div>
     <div class="admin-table-wrap"><table class="admin-table">
-        <thead><tr><th>{{ shopro_trans('pages.page') }}</th><th>{{ shopro_trans('pages.url') }}</th><th>{{ shopro_trans('common.status') }}</th><th>{{ shopro_trans('pages.updated') }}</th><th class="table-actions-heading">{{ shopro_trans('common.actions') }}</th></tr></thead>
+        <thead><tr><th class="table-select"><label class="ui-check ui-check--compact"><input type="checkbox" data-page-select-all aria-label="{{ shopro_trans('pages.select_all') }}"><span></span></label></th><th>{{ shopro_trans('pages.page') }}</th><th>{{ shopro_trans('pages.url') }}</th><th>{{ shopro_trans('common.status') }}</th><th>{{ shopro_trans('pages.updated') }}</th><th class="table-actions-heading">{{ shopro_trans('common.actions') }}</th></tr></thead>
         <tbody>
         {% for page in pages %}
-            <tr>
+            <tr><td class="table-select"><label class="ui-check ui-check--compact"><input type="checkbox" name="pages[]" value="{{ page.id }}" form="page-bulk-form" data-page-select aria-label="{{ shopro_trans('pages.select_page') }} {{ page.title }}"><span></span></label></td>
                 <td><div class="page-cell"><span class="page-cell__icon">{{ page.title|first|upper }}</span><div><strong>{{ page.title }}</strong><small>ID: {{ page.id }}{% if page.homePage %} · {{ shopro_trans('pages.home') }}{% elseif page.systemPage %} · {{ shopro_trans('pages.system') }}{% endif %}</small></div></div></td>
                 <td><code>/{{ page.slug }}</code></td>
                 <td>{% set publication_status = page.publicationStatus %}<span class="status status--{{ publication_status }}"><i></i>{{ shopro_trans('page.status_' ~ publication_status) }}</span>{% if page.publishAt and publication_status == 'scheduled' %}<small class="table-muted">{{ shopro_date(page.publishAt) }} {{ shopro_date(page.publishAt, 'time') }}</small>{% elseif page.unpublishAt and publication_status == 'expired' %}<small class="table-muted">{{ shopro_date(page.unpublishAt) }} {{ shopro_date(page.unpublishAt, 'time') }}</small>{% endif %}</td>
@@ -27,7 +29,7 @@
                     {% if not page.systemPage %}<form method="post" action="{{ path('admin_page_delete', {id: page.id}) }}" onsubmit="return confirm('{{ shopro_trans('pages.delete_confirm')|e('js') }}')"><input type="hidden" name="_token" value="{{ csrf_token('delete-page-' ~ page.id) }}"><button>{{ shopro_trans('common.delete') }}</button></form>{% endif %}
                 </td>
             </tr>
-        {% else %}<tr><td colspan="5" class="empty">{{ shopro_trans(search or status_filter ? 'pages.no_results' : 'pages.empty') }}</td></tr>{% endfor %}
+        {% else %}<tr><td colspan="6" class="empty">{{ shopro_trans(search or status_filter ? 'pages.no_results' : 'pages.empty') }}</td></tr>{% endfor %}
         </tbody>
     </table></div>{% include 'admin/_pagination.html.twig' %}
 </section>

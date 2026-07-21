@@ -65,6 +65,44 @@ final class PageController extends AbstractController
         return $this->handleForm($request, new Page(), $pages, 'page.created');
     }
 
+    #[Route('/bulk', name: 'admin_page_bulk', methods: ['POST'])]
+    public function bulk(Request $request, PageRepository $pages): Response
+    {
+        $redirectParameters = array_filter(['q' => trim($request->request->getString('return_q')), 'status' => $request->request->getString('return_status')], static fn (string $value): bool => $value !== '');
+        if (!$this->isCsrfTokenValid('bulk-pages', $request->request->getString('_token'))) {
+            $this->addFlash('error', $this->translator->translate('page.bulk_invalid_token'));
+            return $this->redirectToRoute('admin_page_index', $redirectParameters);
+        }
+        $action = $request->request->getString('bulk_action');
+        if (!in_array($action, ['publish', 'draft'], true)) {
+            $this->addFlash('error', $this->translator->translate('page.bulk_select_action'));
+            return $this->redirectToRoute('admin_page_index', $redirectParameters);
+        }
+        $ids = array_slice(array_values(array_unique(array_filter(array_map(static fn (mixed $id): int => max(0, (int) $id), $request->request->all('pages'))))), 0, 200);
+        if ($ids === []) {
+            $this->addFlash('error', $this->translator->translate('page.bulk_select_pages'));
+            return $this->redirectToRoute('admin_page_index', $redirectParameters);
+        }
+        $user = $this->getUser();
+        $changed = 0;
+        $this->entityManager->getConnection()->beginTransaction();
+        try {
+            foreach ($pages->findBy(['id' => $ids]) as $page) {
+                if ($action === 'publish') { $page->setPublished(true); $page->setPublishAt(null); $page->setUnpublishAt(null); }
+                else { $page->setPublished(false); }
+                $pages->save($page);
+                $this->revisionManager->snapshot($page, $user instanceof AdminUser ? $user : null);
+                ++$changed;
+            }
+            $this->entityManager->getConnection()->commit();
+        } catch (\Throwable $exception) {
+            if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
+            throw $exception;
+        }
+        $this->addFlash('success', sprintf($this->translator->translate($action === 'publish' ? 'page.bulk_published' : 'page.bulk_drafted'), $changed));
+        return $this->redirectToRoute('admin_page_index', $redirectParameters);
+    }
+
     #[Route('/preview', name: 'admin_page_preview', methods: ['POST'])]
     public function preview(Request $request): Response
     {

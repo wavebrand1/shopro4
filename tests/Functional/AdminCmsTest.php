@@ -112,6 +112,22 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.admin-table tbody', 'Nie znaleziono podstron spełniających kryteria');
 
+        $this->client->request('GET', '/admin/pages');
+        self::assertSelectorExists('[data-page-select][value="'.$page->getId().'"]');
+        self::assertSelectorExists('[data-page-select-all]');
+        $bulkToken = (string) $this->client->getCrawler()->filter('#page-bulk-form input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/bulk', ['_token' => $bulkToken, 'bulk_action' => 'draft', 'pages' => [$page->getId()]]);
+        self::assertResponseRedirects('/admin/pages');
+        $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
+        self::assertFalse($page?->isPublished());
+
+        $this->client->request('GET', '/admin/pages');
+        $bulkToken = (string) $this->client->getCrawler()->filter('#page-bulk-form input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/bulk', ['_token' => $bulkToken, 'bulk_action' => 'publish', 'pages' => [$page?->getId()]]);
+        self::assertResponseRedirects('/admin/pages');
+        $page = self::getContainer()->get(PageRepository::class)->find($page?->getId());
+        self::assertTrue($page?->isPubliclyAvailable());
+
         $editPage = $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('textarea[name="page[caption]"]');

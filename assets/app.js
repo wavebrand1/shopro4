@@ -58,6 +58,31 @@ const initializePageAccess = () => {
 document.addEventListener('turbo:load', initializePageAccess);
 initializePageAccess();
 
+const initializePageBulkActions = () => {
+    const form = document.querySelector('[data-page-bulk]');
+    if (!form || form.dataset.bulkReady === 'true') return;
+    form.dataset.bulkReady = 'true';
+    const checkboxes = [...document.querySelectorAll('[data-page-select]')];
+    const selectAll = document.querySelector('[data-page-select-all]');
+    const actions = document.querySelector('[data-page-bulk-actions]');
+    const count = actions?.querySelector('[data-page-bulk-count]');
+    const refresh = () => {
+        const selected = checkboxes.filter((checkbox) => checkbox.checked).length;
+        if (actions) actions.hidden = selected === 0;
+        if (count) count.textContent = String(selected);
+        if (selectAll) {
+            selectAll.checked = checkboxes.length > 0 && selected === checkboxes.length;
+            selectAll.indeterminate = selected > 0 && selected < checkboxes.length;
+        }
+    };
+    checkboxes.forEach((checkbox) => checkbox.addEventListener('change', refresh));
+    selectAll?.addEventListener('change', () => { checkboxes.forEach((checkbox) => { checkbox.checked = selectAll.checked; }); refresh(); });
+    refresh();
+};
+
+document.addEventListener('turbo:load', initializePageBulkActions);
+initializePageBulkActions();
+
 const initializeMenuSorting = () => {
     document.querySelectorAll('[data-menu-sort]').forEach((container) => {
         if (container.dataset.sortReady === 'true') return;
