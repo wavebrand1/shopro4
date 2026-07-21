@@ -92,6 +92,9 @@ Komponent obrazu przyjmuje wyłącznie lokalny adres `/uploads/...` zwrócony pr
 menedżer plików. Pełne zewnętrzne URL-e, query string, fragmenty, niepoprawne
 kodowanie i próby przejścia do katalogu nadrzędnego są odrzucane przy zapisie oraz
 ponownie podczas renderowania.
+Renderer sprawdza również MIME rzeczywistego pliku, a nie tylko jego rozszerzenie.
+Do znacznika `<img>` dopuszczane są JPEG, PNG, WebP, AVIF, GIF i SVG; dokument lub
+archiwum nazwane jak obraz nie zostanie publicznie wyrenderowane.
 
 ## Sekcje i kolumny
 

@@ -25,7 +25,7 @@ final class ResponsiveImageExtension extends AbstractExtension
         $uploads = realpath($this->projectDir.'/public/uploads');
         $normalizedSource = $source ? str_replace('\\', '/', $source) : '';
         $normalizedUploads = $uploads ? rtrim(str_replace('\\', '/', $uploads), '/') : '';
-        if (!$source || !$uploads || !is_file($source) || !str_starts_with($normalizedSource, $normalizedUploads.'/')) return new Markup('', 'UTF-8');
+        if (!$source || !$uploads || !MediaPath::isSupportedImageFile($source) || !str_starts_with($normalizedSource, $normalizedUploads.'/')) return new Markup('', 'UTF-8');
         $widths = array_filter(array_map('intval', explode(',', (string) $this->settings->get('image_widths'))));
         $baseUrl = preg_replace('/\.[^.]+$/', '', $urlPath); $baseFile = preg_replace('/\.[^.]+$/', '', $source);
         $sources = '';
