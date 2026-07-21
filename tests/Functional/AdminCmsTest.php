@@ -1325,6 +1325,23 @@ final class AdminCmsTest extends WebTestCase
         self::assertGreaterThan(0, $errors->count());
     }
 
+    public function testPublicPageWhoseSlugStartsWithAdminIsNotCapturedByPanelSecurity(): void
+    {
+        $page = new Page();
+        $page->setTitle('Administrator poradnik');
+        $page->setSlug('administrator-poradnik');
+        $page->setContent('<p>Publiczna treść poradnika.</p>');
+        $page->setPublished(true);
+        $this->entityManager->persist($page);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/administrator-poradnik');
+
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('Administrator poradnik', (string) $this->client->getResponse()->getContent());
+        self::assertSelectorExists('.public-article__body');
+    }
+
     public function testChangingPageSlugCreatesAndFlattensPermanentRedirects(): void
     {
         $admin = new AdminUser('slug-admin@example.test', 'slug-admin');

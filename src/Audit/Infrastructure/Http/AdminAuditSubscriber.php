@@ -21,7 +21,8 @@ final class AdminAuditSubscriber
     {
         if (!$event->isMainRequest()) return;
         $request = $event->getRequest();
-        if (!str_starts_with($request->getPathInfo(), '/admin') || in_array($request->getMethod(), ['GET', 'HEAD', 'OPTIONS'], true) || $event->getResponse()->getStatusCode() >= 400) return;
+        $path = $request->getPathInfo();
+        if (($path !== '/admin' && !str_starts_with($path, '/admin/')) || in_array($request->getMethod(), ['GET', 'HEAD', 'OPTIONS'], true) || $event->getResponse()->getStatusCode() >= 400) return;
 
         try {
             if (!$this->settings->get('logging', true)) return;

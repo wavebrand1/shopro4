@@ -21,7 +21,7 @@ security:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
         admin:
-            pattern: ^/admin
+            pattern: ^/admin(?:/|$)
             lazy: true
             provider: admin_users
             form_login:
@@ -70,7 +70,7 @@ security:
         - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
         - { path: ^/admin/password/(forgot|reset), roles: PUBLIC_ACCESS }
         - { path: ^/admin/(users|site-users|memberships|configuration/system|configuration/email-templates|configuration/languages|configuration/redirects|newsletter|logs|modules), roles: ROLE_ADMIN }
-        - { path: ^/admin, roles: ROLE_EDITOR }
+        - { path: ^/admin(?:/|$), roles: ROLE_EDITOR }
         - { path: ^/account, roles: ROLE_SITE_USER }
 
 when@test:

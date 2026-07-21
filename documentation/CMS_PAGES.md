@@ -119,6 +119,11 @@ Zmiana slugu tworzy przekierowanie ze starego adresu. `UrlRedirectManager` bloku
 pętle, skraca łańcuchy do końcowego celu i pozwala bezpiecznie cofnąć zmianę przez
 odtworzenie wcześniejszej rewizji.
 
+Przestrzeń panelu jest rozpoznawana po dokładnym prefiksie `/admin/` (oraz samym
+`/admin`), a nie po samym początku napisu. Publiczne slugi takie jak
+`/administrator-poradnik` pozostają dzięki temu zwykłymi podstronami i nie są
+przechwytywane przez firewall, obsługę błędów, konserwację ani audyt panelu.
+
 Odtworzenie jest blokowane, jeżeli historyczny slug zajmuje inna podstrona — także
 znajdująca się w koszu — i pokazuje czytelny komunikat zamiast błędu bazy. Role
 systemowe są przywracane przez `PageRepository::save()`, które atomowo odbiera daną

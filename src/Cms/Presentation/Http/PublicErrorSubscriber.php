@@ -32,7 +32,8 @@ final class PublicErrorSubscriber
 
         $request = $event->getRequest();
         if (!in_array($request->getMethod(), ['GET', 'HEAD'], true)) return;
-        if (str_starts_with($request->getPathInfo(), '/admin') || str_starts_with($request->getPathInfo(), '/api')) return;
+        $path = $request->getPathInfo();
+        if (self::isPathSpace($path, '/admin') || self::isPathSpace($path, '/api')) return;
         if (!$request->getPreferredFormat() || !in_array($request->getPreferredFormat(), ['html', 'txt'], true)) return;
 
         try {
@@ -54,5 +55,10 @@ final class PublicErrorSubscriber
         $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
         $response->headers->set('Cache-Control', 'no-store, private');
         $event->setResponse($response);
+    }
+
+    private static function isPathSpace(string $path, string $prefix): bool
+    {
+        return $path === $prefix || str_starts_with($path, $prefix.'/');
     }
 }

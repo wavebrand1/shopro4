@@ -19,11 +19,17 @@ final class MaintenanceSubscriber
     {
         if (!$event->isMainRequest() || !$this->settings->get('maintenance', false)) return;
         $request = $event->getRequest();
-        if (str_starts_with($request->getPathInfo(), '/admin') || str_starts_with($request->getPathInfo(), '/_') || $request->getPathInfo() === '/newsletter/unsubscribe') return;
+        $path = $request->getPathInfo();
+        if (self::isPathSpace($path, '/admin') || self::isPathSpace($path, '/_') || $path === '/newsletter/unsubscribe') return;
         $event->setResponse(new Response($this->twig->render('cms/maintenance.html.twig', [
             'message' => $this->settings->get('maintenance_message'),
             'date' => $this->settings->get('maintenance_date'),
             'time' => $this->settings->get('maintenance_time'),
         ]), Response::HTTP_SERVICE_UNAVAILABLE, ['Retry-After' => '3600']));
+    }
+
+    private static function isPathSpace(string $path, string $prefix): bool
+    {
+        return $path === $prefix || str_starts_with($path, $prefix.'/');
     }
 }

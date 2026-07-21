@@ -22,7 +22,7 @@ final class LegacyUrlRedirectSubscriber
         $request = $event->getRequest();
         if (!in_array($request->getMethod(), ['GET', 'HEAD'], true)) return;
         $path = $request->getPathInfo();
-        if (str_starts_with($path, '/admin') || str_starts_with($path, '/api')) return;
+        if (self::isPathSpace($path, '/admin') || self::isPathSpace($path, '/api')) return;
 
         try {
             $redirect = $this->redirects->findActive($path);
@@ -41,5 +41,10 @@ final class LegacyUrlRedirectSubscriber
             }
         } catch (\Throwable) {
         }
+    }
+
+    private static function isPathSpace(string $path, string $prefix): bool
+    {
+        return $path === $prefix || str_starts_with($path, $prefix.'/');
     }
 }
