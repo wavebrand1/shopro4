@@ -24,7 +24,7 @@ final class DashboardController extends AbstractController
     public function __invoke(PageRepository $pages, EntityManagerInterface $entityManager): Response
     {
         return $this->render('admin/dashboard.html.twig', [
-            'page_count' => $pages->count([]),
+            'page_count' => $pages->count(['deletedAt' => null]),
             'published_count' => $pages->countPubliclyAvailable(),
             'menu_count' => $entityManager->getRepository(MenuItem::class)->count([]),
             'user_count' => $entityManager->getRepository(AdminUser::class)->count([]),

@@ -23,6 +23,7 @@ final class PageRepository extends ServiceEntityRepository
     public function findAllForAdministration(): array
     {
         return $this->createQueryBuilder('page')
+            ->andWhere('page.deletedAt IS NULL')
             ->orderBy('page.updatedAt', 'DESC')
             ->getQuery()
             ->getResult();
@@ -131,6 +132,7 @@ final class PageRepository extends ServiceEntityRepository
     private function applyPublicationWindow(QueryBuilder $builder, string $alias = 'page'): QueryBuilder
     {
         return $builder
+            ->andWhere($alias.'.deletedAt IS NULL')
             ->andWhere($alias.'.published = true')
             ->andWhere('('.$alias.'.publishAt IS NULL OR '.$alias.'.publishAt <= :publicationNow)')
             ->andWhere('('.$alias.'.unpublishAt IS NULL OR '.$alias.'.unpublishAt > :publicationNow)')

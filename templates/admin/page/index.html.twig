@@ -3,7 +3,7 @@
 {% block body %}
 <div class="modern-page-heading">
     <div><p class="modern-kicker">{{ shopro_trans('admin.content_management') }}</p><h1>{{ shopro_trans('pages.heading') }}</h1><p>{{ shopro_trans('pages.lead') }}</p></div>
-    <a class="modern-button modern-button--primary" href="{{ path('admin_page_new') }}"><span>+</span> {{ shopro_trans('dashboard.new_page') }}</a>
+    <div class="modern-heading-actions"><a class="modern-button" href="{{ path('admin_page_trash') }}">{{ shopro_trans('pages.trash') }}</a><a class="modern-button modern-button--primary" href="{{ path('admin_page_new') }}"><span>+</span> {{ shopro_trans('dashboard.new_page') }}</a></div>
 </div>
 <section class="modern-card modern-table-card">
     <div class="modern-card__heading"><div><h2>{{ shopro_trans('pages.list') }}</h2><p>{{ total }} {{ shopro_trans(total == 1 ? 'pages.item' : 'pages.items') }}</p></div></div>

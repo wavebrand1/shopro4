@@ -897,6 +897,46 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
+    public function testDeletedPageCanBeRestoredFromTrashAndPermanentlyRemoved(): void
+    {
+        $admin = new AdminUser('trash-admin@example.test', 'trash-admin');
+        $page = new Page();
+        $page->setTitle('Strona do kosza');
+        $page->setSlug('strona-do-kosza');
+        $page->setPublished(true);
+        $this->entityManager->persist($admin);
+        $this->entityManager->persist($page);
+        $this->entityManager->flush();
+        $pageId = $page->getId();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages');
+        self::assertResponseIsSuccessful();
+        $deleteToken = (string) $this->client->getCrawler()->filter('form[action="/admin/pages/'.$pageId.'/delete"] input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/'.$pageId.'/delete', ['_token' => $deleteToken]);
+        self::assertResponseRedirects('/admin/pages');
+        $this->client->request('GET', '/strona-do-kosza');
+        self::assertResponseStatusCodeSame(404);
+
+        $this->client->request('GET', '/admin/pages/trash');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.admin-table tbody', 'Strona do kosza');
+        $restoreToken = (string) $this->client->getCrawler()->filter('form[action="/admin/pages/'.$pageId.'/restore"] input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/'.$pageId.'/restore', ['_token' => $restoreToken]);
+        self::assertResponseRedirects('/admin/pages/trash');
+        $page = self::getContainer()->get(PageRepository::class)->find($pageId);
+        self::assertFalse($page?->isDeleted());
+        self::assertFalse($page?->isPublished());
+
+        $page?->moveToTrash();
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        $this->client->request('GET', '/admin/pages/trash');
+        $destroyToken = (string) $this->client->getCrawler()->filter('form[action="/admin/pages/'.$pageId.'/destroy"] input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/'.$pageId.'/destroy', ['_token' => $destroyToken]);
+        self::assertResponseRedirects('/admin/pages/trash');
+        self::assertNull(self::getContainer()->get(PageRepository::class)->find($pageId));
+    }
+
     public function testAdministratorCanLogInWithUsername(): void
     {
         $user = new AdminUser('owner@example.test', 'administrator');

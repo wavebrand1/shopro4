@@ -42,7 +42,7 @@ final class PageController extends AbstractController
         $search = trim($request->query->getString('q'));
         $status = $request->query->getString('status');
         if (!in_array($status, ['', 'draft', 'scheduled', 'published', 'expired'], true)) $status = '';
-        $query = $pages->createQueryBuilder('p')->orderBy('p.updatedAt', 'DESC');
+        $query = $pages->createQueryBuilder('p')->andWhere('p.deletedAt IS NULL')->orderBy('p.updatedAt', 'DESC');
         if ($search !== '') {
             $query->andWhere('LOWER(p.title) LIKE :adminSearch OR LOWER(p.slug) LIKE :adminSearch')
                 ->setParameter('adminSearch', '%'.mb_strtolower($search).'%');
@@ -88,6 +88,7 @@ final class PageController extends AbstractController
         $this->entityManager->getConnection()->beginTransaction();
         try {
             foreach ($pages->findBy(['id' => $ids]) as $page) {
+                if ($page->isDeleted()) continue;
                 if ($action === 'publish') { $page->setPublished(true); $page->setPublishAt(null); $page->setUnpublishAt(null); }
                 else { $page->setPublished(false); }
                 $pages->save($page);
@@ -150,6 +151,7 @@ final class PageController extends AbstractController
     #[Route('/{id}/edit', name: 'admin_page_edit', requirements: ['id' => '\\d+'], methods: ['GET', 'POST'])]
     public function edit(Page $page, Request $request, PageRepository $pages): Response
     {
+        if ($page->isDeleted()) return $this->redirectToRoute('admin_page_trash');
         return $this->handleForm($request, $page, $pages, 'page.changes_saved');
     }
 
@@ -161,11 +163,40 @@ final class PageController extends AbstractController
             return $this->redirectToRoute('admin_page_index');
         }
         if ($this->isCsrfTokenValid('delete-page-'.$page->getId(), (string) $request->request->get('_token'))) {
-            $pages->remove($page);
-            $this->addFlash('success', $this->translator->translate('page.deleted'));
+            $page->moveToTrash();
+            $pages->save($page);
+            $this->addFlash('success', $this->translator->translate('page.moved_to_trash'));
         }
 
         return $this->redirectToRoute('admin_page_index');
+    }
+
+    #[Route('/trash', name: 'admin_page_trash', methods: ['GET'])]
+    public function trash(PageRepository $pages): Response
+    {
+        return $this->render('admin/page/trash.html.twig', ['pages' => $pages->createQueryBuilder('page')->andWhere('page.deletedAt IS NOT NULL')->orderBy('page.deletedAt', 'DESC')->getQuery()->getResult()]);
+    }
+
+    #[Route('/{id}/restore', name: 'admin_page_restore', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function restore(Page $page, Request $request, PageRepository $pages): Response
+    {
+        if ($page->isDeleted() && $this->isCsrfTokenValid('restore-page-'.$page->getId(), $request->request->getString('_token'))) {
+            $page->restoreFromTrash();
+            $pages->save($page);
+            $this->addFlash('success', $this->translator->translate('page.restored_from_trash'));
+        }
+        return $this->redirectToRoute('admin_page_trash');
+    }
+
+    #[Route('/{id}/destroy', name: 'admin_page_destroy', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function destroy(Page $page, Request $request, PageRepository $pages): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        if ($page->isDeleted() && $this->isCsrfTokenValid('destroy-page-'.$page->getId(), $request->request->getString('_token'))) {
+            $pages->remove($page);
+            $this->addFlash('success', $this->translator->translate('page.deleted_permanently'));
+        }
+        return $this->redirectToRoute('admin_page_trash');
     }
 
     #[Route('/{id}/duplicate', name: 'admin_page_duplicate', requirements: ['id' => '\\d+'], methods: ['POST'])]

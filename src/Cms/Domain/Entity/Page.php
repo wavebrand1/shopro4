@@ -111,6 +111,9 @@ class Page
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $updatedAt;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $deletedAt = null;
+
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
@@ -167,6 +170,7 @@ class Page
         $at ??= new DateTimeImmutable();
 
         return $this->published
+            && $this->deletedAt === null
             && ($this->publishAt === null || $this->publishAt <= $at)
             && ($this->unpublishAt === null || $this->unpublishAt > $at);
     }
@@ -232,11 +236,16 @@ class Page
         $copy->loginPage = $copy->activationPage = $copy->accountPage = $copy->registrationPage = false;
         $copy->memberships = new ArrayCollection($this->memberships->toArray());
         $copy->searchPage = $copy->sitemapPage = $copy->profilePage = $copy->termsPage = false;
+        $copy->deletedAt = null;
         $copy->createdAt = $copy->updatedAt = new DateTimeImmutable();
         return $copy;
     }
     public function getCreatedAt(): DateTimeImmutable { return $this->createdAt; }
     public function getUpdatedAt(): DateTimeImmutable { return $this->updatedAt; }
+    public function getDeletedAt(): ?DateTimeImmutable { return $this->deletedAt; }
+    public function isDeleted(): bool { return $this->deletedAt !== null; }
+    public function moveToTrash(): void { $this->deletedAt = new DateTimeImmutable(); $this->published = false; }
+    public function restoreFromTrash(): void { $this->deletedAt = null; }
 
     #[ORM\PreUpdate]
     public function updateTimestamp(): void
