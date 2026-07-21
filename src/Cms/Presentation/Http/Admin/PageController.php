@@ -197,6 +197,30 @@ final class PageController extends AbstractController
         return $this->render('admin/page/trash.html.twig', ['pages' => $pages->createQueryBuilder('page')->andWhere('page.deletedAt IS NOT NULL')->orderBy('page.deletedAt', 'DESC')->getQuery()->getResult()]);
     }
 
+    #[Route('/trash/bulk-restore', name: 'admin_page_trash_bulk_restore', methods: ['POST'])]
+    public function bulkRestore(Request $request, PageRepository $pages): Response
+    {
+        if (!$this->isCsrfTokenValid('bulk-restore-pages', $request->request->getString('_token'))) {
+            $this->addFlash('error', $this->translator->translate('page.bulk_invalid_token'));
+            return $this->redirectToRoute('admin_page_trash');
+        }
+        $ids = array_slice(array_values(array_unique(array_filter(array_map(static fn (mixed $id): int => max(0, (int) $id), $request->request->all('pages'))))), 0, 200);
+        if ($ids === []) {
+            $this->addFlash('error', $this->translator->translate('page.bulk_select_pages'));
+            return $this->redirectToRoute('admin_page_trash');
+        }
+        $restored = 0;
+        foreach ($pages->findBy(['id' => $ids]) as $page) {
+            if (!$page->isDeleted()) continue;
+            $page->restoreFromTrash();
+            $page->setPublished(false);
+            $pages->save($page);
+            ++$restored;
+        }
+        $this->addFlash('success', sprintf($this->translator->translate('page.bulk_restored'), $restored));
+        return $this->redirectToRoute('admin_page_trash');
+    }
+
     #[Route('/{id}/restore', name: 'admin_page_restore', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function restore(Page $page, Request $request, PageRepository $pages): Response
     {

@@ -989,6 +989,34 @@ final class AdminCmsTest extends WebTestCase
         self::assertNull(self::getContainer()->get(PageRepository::class)->find($pageId));
     }
 
+    public function testMultiplePagesCanBeRestoredFromTrashAsDrafts(): void
+    {
+        $admin = new AdminUser('bulk-restore@example.test', 'bulk-restore');
+        $first = new Page(); $first->setTitle('Pierwsza usunięta'); $first->setSlug('pierwsza-usunieta'); $first->setPublished(true); $first->moveToTrash();
+        $second = new Page(); $second->setTitle('Druga usunięta'); $second->setSlug('druga-usunieta'); $second->setPublished(true); $second->moveToTrash();
+        foreach ([$admin, $first, $second] as $entity) $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages/trash');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorCount(2, '[data-page-select]');
+        self::assertSelectorExists('button[form="trash-bulk-form"]');
+        $token = (string) $this->client->getCrawler()->filter('#trash-bulk-form input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/trash/bulk-restore', ['_token' => $token, 'pages' => [$first->getId(), $second->getId()]]);
+        self::assertResponseRedirects('/admin/pages/trash');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.flash--success', '2 podstron');
+
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        foreach ([$first->getId(), $second->getId()] as $id) {
+            $restored = $entityManager->find(Page::class, $id);
+            self::assertFalse($restored?->isDeleted());
+            self::assertFalse($restored?->isPublished());
+        }
+    }
+
     public function testAdministratorCanLogInWithUsername(): void
     {
         $user = new AdminUser('owner@example.test', 'administrator');
