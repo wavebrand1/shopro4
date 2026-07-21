@@ -897,6 +897,38 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
+    public function testBulkTrashSkipsSystemPagesAndPagesUsedByMenu(): void
+    {
+        $admin = new AdminUser('bulk-trash@example.test', 'bulk-trash');
+        $regular = new Page(); $regular->setTitle('Zwykła strona'); $regular->setSlug('zwykla-strona');
+        $linked = new Page(); $linked->setTitle('Strona w menu'); $linked->setSlug('strona-w-menu');
+        $system = new Page(); $system->setTitle('Strona systemowa'); $system->setSlug('strona-systemowa'); $system->setHomePage(true);
+        $menuItem = new MenuItem(); $menuItem->setName('Chroniony link'); $menuItem->setPage($linked);
+        foreach ([$admin, $regular, $linked, $system, $menuItem] as $entity) $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+        self::assertSame(1, self::getContainer()->get(MenuItemRepository::class)->countForPage($linked));
+        self::assertSame(1, self::getContainer()->get(MenuItemRepository::class)->usageByPageIds([(int) $linked->getId()])[$linked->getId()] ?? 0);
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages');
+        self::assertSelectorExists('option[value="trash"]');
+        $token = (string) $this->client->getCrawler()->filter('#page-bulk-form input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/bulk', [
+            '_token' => $token, 'bulk_action' => 'trash',
+            'pages' => [$regular->getId(), $linked->getId(), $system->getId()],
+        ]);
+        self::assertResponseRedirects('/admin/pages');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.flash--success', '1 podstron');
+        self::assertSelectorTextContains('.flash--error', '2 chronionych');
+
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        self::assertTrue($entityManager->find(Page::class, $regular->getId())?->isDeleted());
+        self::assertFalse($entityManager->find(Page::class, $linked->getId())?->isDeleted());
+        self::assertFalse($entityManager->find(Page::class, $system->getId())?->isDeleted());
+    }
+
     public function testDeletedPageCanBeRestoredFromTrashAndPermanentlyRemoved(): void
     {
         $admin = new AdminUser('trash-admin@example.test', 'trash-admin');

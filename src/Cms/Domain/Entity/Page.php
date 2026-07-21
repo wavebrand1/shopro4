@@ -232,7 +232,7 @@ class Page
     public function setProfilePage(bool $v): void { $this->profilePage = $v; }
     public function isTermsPage(): bool { return $this->termsPage; }
     public function setTermsPage(bool $v): void { $this->termsPage = $v; }
-    public function isSystemPage(): bool { return $this->loginPage || $this->activationPage || $this->accountPage || $this->registrationPage || $this->searchPage || $this->sitemapPage || $this->profilePage || $this->errorPage || $this->termsPage; }
+    public function isSystemPage(): bool { return $this->homePage || $this->loginPage || $this->activationPage || $this->accountPage || $this->registrationPage || $this->searchPage || $this->sitemapPage || $this->profilePage || $this->errorPage || $this->termsPage; }
     public function copyAs(string $slug): self
     {
         $copy = clone $this;

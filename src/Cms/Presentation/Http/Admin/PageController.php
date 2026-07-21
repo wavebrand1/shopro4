@@ -71,7 +71,7 @@ final class PageController extends AbstractController
     }
 
     #[Route('/bulk', name: 'admin_page_bulk', methods: ['POST'])]
-    public function bulk(Request $request, PageRepository $pages): Response
+    public function bulk(Request $request, PageRepository $pages, MenuItemRepository $menuItems): Response
     {
         $redirectParameters = array_filter(['q' => trim($request->request->getString('return_q')), 'status' => $request->request->getString('return_status')], static fn (string $value): bool => $value !== '');
         if (!$this->isCsrfTokenValid('bulk-pages', $request->request->getString('_token'))) {
@@ -79,7 +79,7 @@ final class PageController extends AbstractController
             return $this->redirectToRoute('admin_page_index', $redirectParameters);
         }
         $action = $request->request->getString('bulk_action');
-        if (!in_array($action, ['publish', 'draft'], true)) {
+        if (!in_array($action, ['publish', 'draft', 'trash'], true)) {
             $this->addFlash('error', $this->translator->translate('page.bulk_select_action'));
             return $this->redirectToRoute('admin_page_index', $redirectParameters);
         }
@@ -90,10 +90,19 @@ final class PageController extends AbstractController
         }
         $user = $this->getUser();
         $changed = 0;
+        $skipped = 0;
+        $menuUsage = $action === 'trash' ? $menuItems->usageByPageIds($ids) : [];
         $this->entityManager->getConnection()->beginTransaction();
         try {
             foreach ($pages->findBy(['id' => $ids]) as $page) {
                 if ($page->isDeleted()) continue;
+                if ($action === 'trash') {
+                    if ($page->isSystemPage() || ($menuUsage[$page->getId()] ?? 0) > 0) { ++$skipped; continue; }
+                    $page->moveToTrash();
+                    $pages->save($page);
+                    ++$changed;
+                    continue;
+                }
                 if ($action === 'publish') { $page->setPublished(true); $page->setPublishAt(null); $page->setUnpublishAt(null); }
                 else { $page->setPublished(false); }
                 $pages->save($page);
@@ -105,7 +114,9 @@ final class PageController extends AbstractController
             if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
             throw $exception;
         }
-        $this->addFlash('success', sprintf($this->translator->translate($action === 'publish' ? 'page.bulk_published' : 'page.bulk_drafted'), $changed));
+        $message = match ($action) { 'publish' => 'page.bulk_published', 'draft' => 'page.bulk_drafted', default => 'page.bulk_trashed' };
+        $this->addFlash('success', sprintf($this->translator->translate($message), $changed));
+        if ($skipped > 0) $this->addFlash('error', sprintf($this->translator->translate('page.bulk_trash_skipped'), $skipped));
         return $this->redirectToRoute('admin_page_index', $redirectParameters);
     }
 
