@@ -45,6 +45,8 @@ final class PageController extends AbstractController
         $search = trim($request->query->getString('q'));
         $status = $request->query->getString('status');
         if (!in_array($status, ['', 'draft', 'scheduled', 'published', 'expired'], true)) $status = '';
+        $access = $request->query->getString('access');
+        if (!in_array($access, ['', 'public', 'registered', 'membership', 'admin'], true)) $access = '';
         $sort = $request->query->getString('sort', 'updated');
         if (!in_array($sort, ['updated', 'title', 'created'], true)) $sort = 'updated';
         $direction = strtolower($request->query->getString('direction', 'desc'));
@@ -66,12 +68,19 @@ final class PageController extends AbstractController
             'expired' => $query->andWhere('p.published = true')->andWhere('p.unpublishAt IS NOT NULL')->andWhere('p.unpublishAt <= :adminNow')->setParameter('adminNow', $now),
             default => null,
         };
+        match ($access) {
+            'public' => $query->andWhere('p.access = :adminAccess')->andWhere('p.adminOnly = false')->setParameter('adminAccess', 'Public'),
+            'registered' => $query->andWhere('p.access = :adminAccess')->andWhere('p.adminOnly = false')->setParameter('adminAccess', 'Registered'),
+            'membership' => $query->andWhere('p.access = :adminAccess')->andWhere('p.adminOnly = false')->setParameter('adminAccess', 'Membership'),
+            'admin' => $query->andWhere('p.adminOnly = true'),
+            default => null,
+        };
         $total = (int) (clone $query)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
         $lastPage = max(1, (int) ceil($total / $limit));
         $page = min($page, $lastPage);
         $listedPages = $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult();
         $menuUsage = $menuItems->usageByPageIds(array_map(static fn (Page $listedPage): int => (int) $listedPage->getId(), $listedPages));
-        return $this->render('admin/page/index.html.twig', ['pages' => $listedPages, 'menu_usage' => $menuUsage, 'current_page' => $page, 'last_page' => $lastPage, 'total' => $total, 'search' => $search, 'status_filter' => $status, 'sort' => $sort, 'direction' => $direction, 'query_params' => array_filter(['q' => $search, 'status' => $status, 'sort' => $sort === 'updated' ? '' : $sort, 'direction' => $direction === 'desc' ? '' : $direction], static fn (string $value): bool => $value !== '')]);
+        return $this->render('admin/page/index.html.twig', ['pages' => $listedPages, 'menu_usage' => $menuUsage, 'current_page' => $page, 'last_page' => $lastPage, 'total' => $total, 'search' => $search, 'status_filter' => $status, 'access_filter' => $access, 'sort' => $sort, 'direction' => $direction, 'query_params' => array_filter(['q' => $search, 'status' => $status, 'access' => $access, 'sort' => $sort === 'updated' ? '' : $sort, 'direction' => $direction === 'desc' ? '' : $direction], static fn (string $value): bool => $value !== '')]);
     }
 
     #[Route('/new', name: 'admin_page_new', methods: ['GET', 'POST'])]
@@ -85,6 +94,8 @@ final class PageController extends AbstractController
     {
         $returnStatus = $request->request->getString('return_status');
         if (!in_array($returnStatus, ['', 'draft', 'scheduled', 'published', 'expired'], true)) $returnStatus = '';
+        $returnAccess = $request->request->getString('return_access');
+        if (!in_array($returnAccess, ['', 'public', 'registered', 'membership', 'admin'], true)) $returnAccess = '';
         $returnSort = $request->request->getString('return_sort', 'updated');
         if (!in_array($returnSort, ['updated', 'title', 'created'], true)) $returnSort = 'updated';
         $returnDirection = strtolower($request->request->getString('return_direction', 'desc'));
@@ -93,6 +104,7 @@ final class PageController extends AbstractController
         $redirectParameters = array_filter([
             'q' => trim($request->request->getString('return_q')),
             'status' => $returnStatus,
+            'access' => $returnAccess,
             'sort' => $returnSort === 'updated' ? '' : $returnSort,
             'direction' => $returnDirection === 'desc' ? '' : $returnDirection,
             'page' => $returnPage === 1 ? '' : (string) $returnPage,

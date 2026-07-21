@@ -1424,4 +1424,34 @@ final class AdminCmsTest extends WebTestCase
         ]);
         self::assertResponseRedirects('/admin/pages?page=3');
     }
+
+    public function testPageListCanBeFilteredByAccessLevel(): void
+    {
+        $admin = new AdminUser('access-filter@example.test', 'access-filter');
+        $admin->setPassword(self::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'very-secure-password'));
+        $public = new Page(); $public->setTitle('Publiczna'); $public->setSlug('publiczna');
+        $registered = new Page(); $registered->setTitle('Dla zalogowanych'); $registered->setSlug('dla-zalogowanych'); $registered->setAccess('Registered');
+        $membership = new Page(); $membership->setTitle('Dla członków'); $membership->setSlug('dla-czlonkow'); $membership->setAccess('Membership');
+        $administrator = new Page(); $administrator->setTitle('Administracyjna'); $administrator->setSlug('administracyjna'); $administrator->setAdminOnly(true);
+        foreach ([$admin, $public, $registered, $membership, $administrator] as $entity) $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages?access=registered');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('select[name="access"] option[value="registered"][selected]');
+        self::assertSelectorTextContains('.admin-table tbody', 'Dla zalogowanych');
+        self::assertSelectorTextNotContains('.admin-table tbody', 'Publiczna');
+        self::assertSelectorExists('#page-bulk-form input[name="return_access"][value="registered"]');
+
+        $this->client->request('GET', '/admin/pages?access=admin');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.admin-table tbody', 'Administracyjna');
+        self::assertSelectorTextNotContains('.admin-table tbody', 'Publiczna');
+
+        $this->client->request('GET', '/admin/pages?access=unknown');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('select[name="access"] option[value=""][selected]');
+        self::assertSelectorCount(4, '[data-page-select]');
+    }
 }
