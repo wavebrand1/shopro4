@@ -12,6 +12,7 @@ use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRevisionRepository;
 use App\Identity\Domain\Entity\AdminUser;
 use App\Language\Application\SystemTranslator;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -73,6 +74,11 @@ final class PageRevisionController extends AbstractController
         if (!$this->isCsrfTokenValid('restore-revision-'.$revisionId, (string) $request->request->get('_token'))) {
             return $this->redirectToRoute('admin_page_revision_index', ['id' => $page->getId()]);
         }
+        $slugOwner = $pages->findOneBy(['slug' => $revision->getSlug()]);
+        if ($slugOwner && $slugOwner->getId() !== $page->getId()) {
+            $this->addFlash('error', $this->translator->translate('revision.slug_conflict'));
+            return $this->redirectToRoute('admin_page_revision_index', ['id' => $page->getId()]);
+        }
         $oldSlug = $page->getSlug();
         $em->getConnection()->beginTransaction();
         try {
@@ -83,6 +89,10 @@ final class PageRevisionController extends AbstractController
             $manager->snapshot($page, $user instanceof AdminUser ? $user : null);
             $em->getConnection()->commit();
             $this->addFlash('success', $this->translator->translate('revision.restored'));
+        } catch (UniqueConstraintViolationException) {
+            if ($em->getConnection()->isTransactionActive()) $em->getConnection()->rollBack();
+            $this->addFlash('error', $this->translator->translate('revision.slug_conflict'));
+            return $this->redirectToRoute('admin_page_revision_index', ['id' => $page->getId()]);
         } catch (\Throwable $exception) {
             if ($em->getConnection()->isTransactionActive()) $em->getConnection()->rollBack();
             throw $exception;

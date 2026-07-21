@@ -96,6 +96,12 @@ Zmiana slugu tworzy przekierowanie ze starego adresu. `UrlRedirectManager` bloku
 pętle, skraca łańcuchy do końcowego celu i pozwala bezpiecznie cofnąć zmianę przez
 odtworzenie wcześniejszej rewizji.
 
+Odtworzenie jest blokowane, jeżeli historyczny slug zajmuje inna podstrona — także
+znajdująca się w koszu — i pokazuje czytelny komunikat zamiast błędu bazy. Role
+systemowe są przywracane przez `PageRepository::save()`, które atomowo odbiera daną
+rolę poprzedniej podstronie, dzięki czemu nadal istnieje najwyżej jedna strona główna,
+404, logowania lub inna strona techniczna danego rodzaju.
+
 ## Duplikowanie
 
 Duplikowanie tworzy zawsze nieopublikowany szkic bez harmonogramu, canonical i ról

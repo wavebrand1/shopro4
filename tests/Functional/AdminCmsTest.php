@@ -11,6 +11,7 @@ use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Domain\Entity\Page;
 use App\Cms\Domain\Entity\UrlRedirect;
 use App\Cms\Domain\Entity\PageRevision;
+use App\Cms\Application\PageRevisionManager;
 use App\Cms\Application\UrlRedirectManager;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
@@ -1365,6 +1366,49 @@ final class AdminCmsTest extends WebTestCase
         self::assertSame('Pierwszy opis', $restored?->getCaption());
         self::assertTrue($restored?->isPublished());
         self::assertCount(3, $this->entityManager->getRepository(PageRevision::class)->findBy(['page' => $restored]));
+    }
+
+    public function testRevisionRestoreBlocksOccupiedSlugAndKeepsSystemRoleUnique(): void
+    {
+        $admin = new AdminUser('revision-conflict@example.test', 'revision-conflict');
+        $source = new Page(); $source->setTitle('Pierwotna główna'); $source->setSlug('pierwotna-glowna'); $source->setHomePage(true);
+        $this->entityManager->persist($admin); $this->entityManager->persist($source); $this->entityManager->flush();
+        $revision = self::getContainer()->get(PageRevisionManager::class)->snapshot($source, $admin);
+
+        $source->setSlug('aktualna-glowna'); $source->setHomePage(false);
+        self::getContainer()->get(PageRepository::class)->save($source);
+        $occupant = new Page(); $occupant->setTitle('Nowa główna'); $occupant->setSlug('pierwotna-glowna'); $occupant->setHomePage(true);
+        self::getContainer()->get(PageRepository::class)->save($occupant);
+        $sourceId = $source->getId();
+        $occupantId = $occupant->getId();
+        $revisionId = $revision->getId();
+        $this->client->loginUser($admin, 'admin');
+
+        $history = $this->client->request('GET', '/admin/pages/'.$sourceId.'/revisions');
+        $restoreForm = $history->filter('form[action$="/'.$revisionId.'/restore"]')->form();
+        $this->client->submit($restoreForm);
+        self::assertResponseRedirects('/admin/pages/'.$sourceId.'/revisions');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.flash--error', 'adres URL jest już używany');
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        self::assertSame('aktualna-glowna', $entityManager->find(Page::class, $sourceId)?->getSlug());
+        self::assertTrue($entityManager->find(Page::class, $occupantId)?->isHomePage());
+
+        $occupant = $entityManager->find(Page::class, $occupantId);
+        $occupant?->setSlug('nowa-glowna');
+        if ($occupant) self::getContainer()->get(PageRepository::class)->save($occupant);
+        self::assertNull(self::getContainer()->get(PageRepository::class)->findOneBy(['slug' => 'pierwotna-glowna']));
+        self::assertSame('nowa-glowna', self::getContainer()->get(PageRepository::class)->find($occupantId)?->getSlug());
+        $history = $this->client->request('GET', '/admin/pages/'.$sourceId.'/revisions');
+        $this->client->submit($history->filter('form[action$="/'.$revisionId.'/restore"]')->form());
+        self::assertResponseRedirects('/admin/pages/'.$sourceId.'/edit');
+
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        self::assertSame('pierwotna-glowna', $entityManager->find(Page::class, $sourceId)?->getSlug());
+        self::assertTrue($entityManager->find(Page::class, $sourceId)?->isHomePage());
+        self::assertFalse($entityManager->find(Page::class, $occupantId)?->isHomePage());
     }
 
     public function testPageListCanBeSortedAndRejectsUnknownSortFields(): void
