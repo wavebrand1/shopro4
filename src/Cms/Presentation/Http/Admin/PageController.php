@@ -45,7 +45,15 @@ final class PageController extends AbstractController
         $search = trim($request->query->getString('q'));
         $status = $request->query->getString('status');
         if (!in_array($status, ['', 'draft', 'scheduled', 'published', 'expired'], true)) $status = '';
-        $query = $pages->createQueryBuilder('p')->andWhere('p.deletedAt IS NULL')->orderBy('p.updatedAt', 'DESC');
+        $sort = $request->query->getString('sort', 'updated');
+        if (!in_array($sort, ['updated', 'title', 'created'], true)) $sort = 'updated';
+        $direction = strtolower($request->query->getString('direction', 'desc'));
+        if (!in_array($direction, ['asc', 'desc'], true)) $direction = 'desc';
+        $sortFields = ['updated' => 'p.updatedAt', 'title' => 'p.title', 'created' => 'p.createdAt'];
+        $query = $pages->createQueryBuilder('p')
+            ->andWhere('p.deletedAt IS NULL')
+            ->orderBy($sortFields[$sort], strtoupper($direction))
+            ->addOrderBy('p.id', strtoupper($direction));
         if ($search !== '') {
             $query->andWhere('LOWER(p.title) LIKE :adminSearch OR LOWER(p.slug) LIKE :adminSearch')
                 ->setParameter('adminSearch', '%'.mb_strtolower($search).'%');
@@ -61,7 +69,7 @@ final class PageController extends AbstractController
         $total = (int) (clone $query)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
         $listedPages = $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult();
         $menuUsage = $menuItems->usageByPageIds(array_map(static fn (Page $listedPage): int => (int) $listedPage->getId(), $listedPages));
-        return $this->render('admin/page/index.html.twig', ['pages' => $listedPages, 'menu_usage' => $menuUsage, 'current_page' => $page, 'last_page' => max(1, (int) ceil($total / $limit)), 'total' => $total, 'search' => $search, 'status_filter' => $status, 'query_params' => array_filter(['q' => $search, 'status' => $status], static fn (string $value): bool => $value !== '')]);
+        return $this->render('admin/page/index.html.twig', ['pages' => $listedPages, 'menu_usage' => $menuUsage, 'current_page' => $page, 'last_page' => max(1, (int) ceil($total / $limit)), 'total' => $total, 'search' => $search, 'status_filter' => $status, 'sort' => $sort, 'direction' => $direction, 'query_params' => array_filter(['q' => $search, 'status' => $status, 'sort' => $sort === 'updated' ? '' : $sort, 'direction' => $direction === 'desc' ? '' : $direction], static fn (string $value): bool => $value !== '')]);
     }
 
     #[Route('/new', name: 'admin_page_new', methods: ['GET', 'POST'])]
@@ -73,7 +81,18 @@ final class PageController extends AbstractController
     #[Route('/bulk', name: 'admin_page_bulk', methods: ['POST'])]
     public function bulk(Request $request, PageRepository $pages, MenuItemRepository $menuItems): Response
     {
-        $redirectParameters = array_filter(['q' => trim($request->request->getString('return_q')), 'status' => $request->request->getString('return_status')], static fn (string $value): bool => $value !== '');
+        $returnStatus = $request->request->getString('return_status');
+        if (!in_array($returnStatus, ['', 'draft', 'scheduled', 'published', 'expired'], true)) $returnStatus = '';
+        $returnSort = $request->request->getString('return_sort', 'updated');
+        if (!in_array($returnSort, ['updated', 'title', 'created'], true)) $returnSort = 'updated';
+        $returnDirection = strtolower($request->request->getString('return_direction', 'desc'));
+        if (!in_array($returnDirection, ['asc', 'desc'], true)) $returnDirection = 'desc';
+        $redirectParameters = array_filter([
+            'q' => trim($request->request->getString('return_q')),
+            'status' => $returnStatus,
+            'sort' => $returnSort === 'updated' ? '' : $returnSort,
+            'direction' => $returnDirection === 'desc' ? '' : $returnDirection,
+        ], static fn (string $value): bool => $value !== '');
         if (!$this->isCsrfTokenValid('bulk-pages', $request->request->getString('_token'))) {
             $this->addFlash('error', $this->translator->translate('page.bulk_invalid_token'));
             return $this->redirectToRoute('admin_page_index', $redirectParameters);

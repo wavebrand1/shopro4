@@ -1332,4 +1332,30 @@ final class AdminCmsTest extends WebTestCase
         self::assertTrue($restored?->isPublished());
         self::assertCount(3, $this->entityManager->getRepository(PageRevision::class)->findBy(['page' => $restored]));
     }
+
+    public function testPageListCanBeSortedAndRejectsUnknownSortFields(): void
+    {
+        $admin = new AdminUser('sorting-admin@example.test', 'sorting-admin');
+        $admin->setPassword(self::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'very-secure-password'));
+        $zulu = new Page(); $zulu->setTitle('Zulu'); $zulu->setSlug('zulu');
+        $alfa = new Page(); $alfa->setTitle('Alfa'); $alfa->setSlug('alfa');
+        $this->entityManager->persist($admin);
+        $this->entityManager->persist($zulu);
+        $this->entityManager->persist($alfa);
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $crawler = $this->client->request('GET', '/admin/pages?sort=title&direction=asc');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('select[name="sort"] option[value="title"][selected]');
+        self::assertSelectorExists('select[name="direction"] option[value="asc"][selected]');
+        self::assertSame(['Alfa', 'Zulu'], $crawler->filter('.page-cell strong')->each(static fn ($node): string => $node->text()));
+        self::assertSelectorExists('#page-bulk-form input[name="return_sort"][value="title"]');
+        self::assertSelectorExists('#page-bulk-form input[name="return_direction"][value="asc"]');
+
+        $this->client->request('GET', '/admin/pages?sort=DROP_TABLE&direction=sideways');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('select[name="sort"] option[value="updated"][selected]');
+        self::assertSelectorExists('select[name="direction"] option[value="desc"][selected]');
+    }
 }
