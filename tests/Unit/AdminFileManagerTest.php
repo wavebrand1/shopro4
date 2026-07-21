@@ -5,6 +5,7 @@ namespace App\Tests\Unit;
 
 use App\Media\Application\AdminFileManager;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class AdminFileManagerTest extends TestCase
 {
@@ -52,7 +53,7 @@ final class AdminFileManagerTest extends TestCase
 
     public function testItHidesAndMaintainsResponsiveImageVariants(): void
     {
-        file_put_contents($this->project.'/public/uploads/photo.jpg', 'original');
+        file_put_contents($this->project.'/public/uploads/photo.jpg', base64_decode('/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwF//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAGPwJ//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPyF//9k=', true));
         file_put_contents($this->project.'/public/uploads/photo.320.webp', 'variant');
         file_put_contents($this->project.'/public/uploads/photo.640.avif', 'variant');
 
@@ -76,6 +77,25 @@ final class AdminFileManagerTest extends TestCase
         self::assertSame([], $this->manager->listing('gallery')['files']);
         $this->manager->delete('gallery');
         self::assertDirectoryDoesNotExist($this->project.'/public/uploads/gallery');
+    }
+
+    public function testItRejectsUploadedFileWhoseExtensionDoesNotMatchItsMimeType(): void
+    {
+        $path = $this->project.'/document-source.pdf';
+        file_put_contents($path, "%PDF-1.4\ncontent");
+        $file = new UploadedFile($path, 'fake-photo.jpg', null, null, true);
+
+        self::assertSame(0, $this->manager->upload('', [$file]));
+        self::assertSame([], $this->manager->listing('')['files']);
+    }
+
+    public function testItRejectsRenamingFileToExtensionIncompatibleWithItsMimeType(): void
+    {
+        file_put_contents($this->project.'/public/uploads/document.pdf', "%PDF-1.4\ncontent");
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('media.extension_mismatch');
+        $this->manager->rename('document.pdf', 'document.jpg');
     }
 
     private function removeTree(string $path): void

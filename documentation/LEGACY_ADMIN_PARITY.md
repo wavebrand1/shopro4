@@ -75,6 +75,9 @@ katalogów, utworzenie katalogu i pustego pliku, wielokrotny upload, dozwolone
 MIME, lista z typem/miniaturą/rozmiarem/datą, podgląd obrazu, zmiana nazwy oraz
 usuwanie. Każda operacja musi pozostać wewnątrz skonfigurowanego katalogu
 uploadów; Legacy już jawnie blokuje `../` i `..\\` w `admin/filemanager.php`.
+Nowa implementacja dodatkowo wiąże wykryty MIME z dozwolonym rozszerzeniem przy
+uploadzie i zmianie nazwy. Plik nie może więc zostać opublikowany jako inny typ
+wyłącznie przez zmianę jego rozszerzenia.
 
 ## Logi
 

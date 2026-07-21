@@ -13,6 +13,19 @@ final class AdminFileManager
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ];
+    private const MIME_EXTENSIONS = [
+        'image/jpeg' => ['jpg', 'jpeg'],
+        'image/png' => ['png'],
+        'image/webp' => ['webp'],
+        'image/avif' => ['avif'],
+        'image/gif' => ['gif'],
+        'application/pdf' => ['pdf'],
+        'text/plain' => ['', 'txt', 'csv'],
+        'text/csv' => ['csv'],
+        'application/zip' => ['zip'],
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => ['docx'],
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => ['xlsx'],
+    ];
     private const ALLOWED_EXTENSIONS = ['', 'jpg', 'jpeg', 'png', 'webp', 'avif', 'gif', 'pdf', 'txt', 'csv', 'zip', 'docx', 'xlsx'];
 
     public function __construct(private readonly string $projectDir, private readonly ?ResponsiveImageOptimizer $imageOptimizer = null) {}
@@ -63,7 +76,9 @@ final class AdminFileManager
         $directory = $this->resolve($this->normalize($path), true);
         $uploaded = 0;
         foreach ($files as $file) {
-            if (!$file->isValid() || !in_array($file->getMimeType(), self::ALLOWED_MIME_TYPES, true) || $file->getSize() > 20 * 1024 * 1024) continue;
+            $mimeType = (string) $file->getMimeType();
+            $extension = strtolower($file->getClientOriginalExtension());
+            if (!$file->isValid() || !in_array($mimeType, self::ALLOWED_MIME_TYPES, true) || !self::matchesMimeType($mimeType, $extension) || $file->getSize() > 20 * 1024 * 1024) continue;
             $name = $this->safeName($file->getClientOriginalName());
             if (file_exists($directory.'/'.$name)) $name = pathinfo($name, PATHINFO_FILENAME).'-'.bin2hex(random_bytes(4)).($file->getClientOriginalExtension() ? '.'.strtolower($file->getClientOriginalExtension()) : '');
             $stored = $file->move($directory, $name);
@@ -77,7 +92,12 @@ final class AdminFileManager
     public function rename(string $path, string $newName): void
     {
         $source = $this->resolve($this->normalize($path));
-        $target = dirname($source).'/'.$this->safeName($newName);
+        $safeName = $this->safeName($newName);
+        if (is_file($source)) {
+            $mimeType = (string) mime_content_type($source);
+            if (isset(self::MIME_EXTENSIONS[$mimeType]) && !self::matchesMimeType($mimeType, strtolower(pathinfo($safeName, PATHINFO_EXTENSION)))) throw new \InvalidArgumentException('media.extension_mismatch');
+        }
+        $target = dirname($source).'/'.$safeName;
         if (file_exists($target) || !rename($source, $target)) throw new \RuntimeException('media.rename_failed');
         if (is_file($target)) {
             ResponsiveImageOptimizer::removeVariants($source);
@@ -135,6 +155,11 @@ final class AdminFileManager
         if (!in_array(strtolower(pathinfo($name, PATHINFO_EXTENSION)), self::ALLOWED_EXTENSIONS, true)) throw new \InvalidArgumentException('media.invalid_name');
 
         return $name;
+    }
+
+    private static function matchesMimeType(string $mimeType, string $extension): bool
+    {
+        return in_array($extension, self::MIME_EXTENSIONS[$mimeType] ?? [], true);
     }
 
     private function removeTechnicalFiles(string $directory): void
