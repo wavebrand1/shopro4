@@ -312,6 +312,10 @@ final class PageController extends AbstractController
     public function destroy(Page $page, Request $request, PageRepository $pages, MenuItemRepository $menuItems): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        if ($page->isSystemPage()) {
+            $this->addFlash('error', $this->translator->translate('page.system_delete_forbidden'));
+            return $this->redirectToRoute('admin_page_trash');
+        }
         if (($usage = $menuItems->countForPage($page)) > 0) {
             $this->addFlash('error', sprintf($this->translator->translate('page.menu_usage_destroy_forbidden'), $usage));
             return $this->redirectToRoute('admin_page_trash');

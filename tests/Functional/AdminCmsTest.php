@@ -1411,6 +1411,46 @@ final class AdminCmsTest extends WebTestCase
         self::assertFalse($entityManager->find(Page::class, $occupantId)?->isHomePage());
     }
 
+    public function testDeletedPageCannotBeChangedThroughHistoryOrPermanentlyDestroySystemRole(): void
+    {
+        $admin = new AdminUser('trash-history@example.test', 'trash-history');
+        $page = new Page(); $page->setTitle('Zwykła podstrona'); $page->setSlug('zwykla-podstrona');
+        $systemPage = new Page(); $systemPage->setTitle('Strona błędu'); $systemPage->setSlug('strona-bledu'); $systemPage->setErrorPage(true);
+        $this->entityManager->persist($admin); $this->entityManager->persist($page); $this->entityManager->persist($systemPage); $this->entityManager->flush();
+        $revision = self::getContainer()->get(PageRevisionManager::class)->snapshot($page, $admin);
+        $pageId = $page->getId();
+        $systemPageId = $systemPage->getId();
+        $revisionId = $revision->getId();
+        $this->client->loginUser($admin, 'admin');
+
+        $history = $this->client->request('GET', '/admin/pages/'.$pageId.'/revisions');
+        $restoreForm = $history->filter('form[action$="/'.$revisionId.'/restore"]')->form();
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $trashedPage = $entityManager->find(Page::class, $pageId);
+        $trashedPage?->moveToTrash();
+        if ($trashedPage) self::getContainer()->get(PageRepository::class)->save($trashedPage);
+
+        $this->client->submit($restoreForm);
+        self::assertResponseRedirects('/admin/pages/trash');
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        self::assertTrue($entityManager->find(Page::class, $pageId)?->isDeleted());
+        $this->client->request('GET', '/admin/pages/'.$pageId.'/revisions/'.$revisionId);
+        self::assertResponseRedirects('/admin/pages/trash');
+
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $trashedSystemPage = $entityManager->find(Page::class, $systemPageId);
+        $trashedSystemPage?->moveToTrash();
+        if ($trashedSystemPage) self::getContainer()->get(PageRepository::class)->save($trashedSystemPage);
+        $trash = $this->client->request('GET', '/admin/pages/trash');
+        $destroyForm = $trash->filter('form[action="/admin/pages/'.$systemPageId.'/destroy"]')->form();
+        $this->client->submit($destroyForm);
+        self::assertResponseRedirects('/admin/pages/trash');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.flash--error', 'systemowej');
+        self::assertNotNull(self::getContainer()->get(PageRepository::class)->find($systemPageId));
+    }
+
     public function testPageListCanBeSortedAndRejectsUnknownSortFields(): void
     {
         $admin = new AdminUser('sorting-admin@example.test', 'sorting-admin');

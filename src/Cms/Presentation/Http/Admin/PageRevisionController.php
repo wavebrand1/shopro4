@@ -29,6 +29,7 @@ final class PageRevisionController extends AbstractController
     #[Route('', name: 'admin_page_revision_index', methods: ['GET'])]
     public function index(Page $page, PageRevisionRepository $repository, PageRevisionManager $manager): Response
     {
+        if ($page->isDeleted()) return $this->redirectToRoute('admin_page_trash');
         $revisions = $repository->forPage($page);
         $rows = [];
         foreach ($revisions as $index => $revision) {
@@ -41,6 +42,7 @@ final class PageRevisionController extends AbstractController
     #[Route('/{revisionId}', name: 'admin_page_revision_show', requirements: ['revisionId' => '\d+'], methods: ['GET'])]
     public function show(Page $page, int $revisionId, PageRevisionRepository $repository): Response
     {
+        if ($page->isDeleted()) return $this->redirectToRoute('admin_page_trash');
         $revision = $this->revisionForPage($page, $revisionId, $repository);
         $previous = $repository->findOneBy(['page' => $page, 'version' => $revision->getVersion() - 1]);
         $fields = [
@@ -70,6 +72,7 @@ final class PageRevisionController extends AbstractController
     #[Route('/{revisionId}/restore', name: 'admin_page_revision_restore', requirements: ['revisionId' => '\d+'], methods: ['POST'])]
     public function restore(Page $page, int $revisionId, Request $request, PageRevisionRepository $repository, PageRevisionManager $manager, PageRepository $pages, UrlRedirectManager $redirects, EntityManagerInterface $em): Response
     {
+        if ($page->isDeleted()) return $this->redirectToRoute('admin_page_trash');
         $revision = $this->revisionForPage($page, $revisionId, $repository);
         if (!$this->isCsrfTokenValid('restore-revision-'.$revisionId, (string) $request->request->get('_token'))) {
             return $this->redirectToRoute('admin_page_revision_index', ['id' => $page->getId()]);

@@ -102,6 +102,11 @@ systemowe są przywracane przez `PageRepository::save()`, które atomowo odbiera
 rolę poprzedniej podstronie, dzięki czemu nadal istnieje najwyżej jedna strona główna,
 404, logowania lub inna strona techniczna danego rodzaju.
 
+Historia strony znajdującej się w koszu jest tylko zachowanym elementem jej danych i
+nie może zostać użyta do zmiany rekordu poza standardowym przywróceniem z kosza.
+Trwałe usunięcie strony technicznej jest dodatkowo blokowane po stronie kontrolera,
+niezależnie od tego, w jaki sposób rekord trafił do kosza.
+
 ## Duplikowanie
 
 Duplikowanie tworzy zawsze nieopublikowany szkic bez harmonogramu, canonical i ról
