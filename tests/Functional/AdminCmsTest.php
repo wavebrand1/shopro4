@@ -415,6 +415,10 @@ final class AdminCmsTest extends WebTestCase
 
         $this->client->request('GET', '/admin/language/en?return=%2Fadmin%2Fpages');
         self::assertResponseRedirects('/admin/pages');
+        foreach (['https%3A%2F%2Fevil.example', '%2F%2Fevil.example', '%2Fadministrator', '%2Fadmin%5C%40evil.example'] as $unsafeReturn) {
+            $this->client->request('GET', '/admin/language/en?return='.$unsafeReturn);
+            self::assertResponseRedirects('/admin');
+        }
 
         $this->client->request('GET', '/admin/pages');
         self::assertResponseIsSuccessful();
@@ -883,6 +887,7 @@ final class AdminCmsTest extends WebTestCase
 
     public function testScheduledPublicationWindowControlsPublicAvailability(): void
     {
+        $english = new Language(); $english->setName('English'); $english->setCode('en'); $english->setActive(true);
         $page = new Page();
         $page->setTitle('Zaplanowana strona');
         $page->setSlug('zaplanowana-strona');
@@ -892,13 +897,15 @@ final class AdminCmsTest extends WebTestCase
         $landing->setTitle('Strona kontrolna'); $landing->setSlug('strona-kontrolna'); $landing->setPublished(true);
         $menuItem = new MenuItem();
         $menuItem->setName('Zaplanowany link'); $menuItem->setPage($page); $menuItem->setPlace(MenuItem::PLACE_HEADER);
-        $this->entityManager->persist($page); $this->entityManager->persist($landing); $this->entityManager->persist($menuItem);
+        $this->entityManager->persist($english); $this->entityManager->persist($page); $this->entityManager->persist($landing); $this->entityManager->persist($menuItem);
         $this->entityManager->flush();
 
         self::assertSame('scheduled', $page->getPublicationStatus());
         self::assertFalse($page->isPubliclyAvailable());
         $this->client->request('GET', '/zaplanowana-strona');
         self::assertResponseStatusCodeSame(404);
+        $this->client->request('GET', '/language/en?page='.$page->getId());
+        self::assertResponseRedirects('/');
         $this->client->request('GET', '/strona-kontrolna');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextNotContains('.site-nav', 'Zaplanowany link');

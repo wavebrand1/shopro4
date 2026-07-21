@@ -68,6 +68,12 @@ Adresy `hreflang` na podstronie, stronie głównej i w mapie witryny pochodzą z
 zapytania: uwzględniają wyłącznie opublikowane tłumaczenia aktywnych języków innych niż
 język bazowy. Wyłączenie języka usuwa więc jego adresy ze wszystkich sygnałów SEO.
 
+Przełącznik języka zachowuje bieżącą podstronę tylko wtedy, gdy jest ona aktualnie
+opublikowana i dostępna dla użytkownika. Nie ujawnia adresów szkiców, stron wygasłych,
+administracyjnych ani treści wymagających innego członkostwa. Parametr powrotu
+przełącznika języka PA akceptuje wyłącznie lokalne ścieżki `/admin` i `/admin/...`;
+adresy absolutne, `//`, backslashe i podobne warianty są odrzucane.
+
 Lista `/admin/pages` obsługuje:
 
 - wyszukiwanie po tytule i slugu;
