@@ -31,6 +31,11 @@ wymaga co najmniej jednej aktywnej grupy wspólnej dla konta i podstrony. Próba
 bez sesji zachowuje adres docelowy i prowadzi do `/login`; zalogowane konto bez
 wymaganej grupy otrzymuje odpowiedź 403.
 
+Flaga `adminOnly` ma pierwszeństwo przed rolą strony i poziomem dostępu. Treść takiej
+podstrony nie jest renderowana przez zwykły adres, wersję językową ani `/`, nawet gdy
+rekord ma jednocześnie rolę strony głównej. Nie trafia również do wyszukiwarki,
+sitemapy i obsługi historycznych adresów `/strona/slug`.
+
 Implementacja: `src/Cms/Domain/Entity/Page.php`,
 `src/Cms/Presentation/Form/PageType.php`,
 `src/Cms/Presentation/Http/Admin/PageController.php`,

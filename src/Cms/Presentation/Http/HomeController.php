@@ -19,7 +19,7 @@ final class HomeController extends AbstractController
     #[Route('/', name: 'app_home', methods: ['GET'])]
     public function __invoke(PageRepository $pages, Request $request, LocalizedPageUrlGenerator $localizedUrls, PageAccess $access): Response
     {
-        if (null !== $page = $pages->findPublishedHomePage()) {
+        if (null !== ($page = $pages->findPublishedHomePage()) && !$page->isAdminOnly()) {
             $user = $this->getUser();
             $siteUser = $user instanceof SiteUser ? $user : null;
             if (!$access->isAllowed($page, $siteUser)) {

@@ -35,7 +35,7 @@ final class LegacyUrlRedirectSubscriber
             $slug = null;
             if (preg_match('#^/strona/([a-z0-9-]+)$#', $path, $match)) $slug = $match[1];
             elseif (in_array($path, ['/content.php', '/index.php'], true)) $slug = trim((string) $request->query->get('url'), '/');
-            if ($slug && preg_match('/^[a-z0-9-]+$/', $slug) && ($page = $this->pages->findPublishedBySlug($slug))) {
+            if ($slug && preg_match('/^[a-z0-9-]+$/', $slug) && ($page = $this->pages->findPublishedBySlug($slug)) && !$page->isAdminOnly()) {
                 $target = $page->isHomePage() ? '/' : '/'.$page->getSlug();
                 $event->setResponse(new RedirectResponse($target, Response::HTTP_MOVED_PERMANENTLY));
             }

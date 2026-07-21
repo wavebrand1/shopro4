@@ -1477,4 +1477,26 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.admin-table tbody', 'Oferta 100%');
         self::assertSelectorTextNotContains('.admin-table tbody', 'Zwykła oferta');
     }
+
+    public function testAdministratorOnlyHomepageCannotLeakThroughPublicOrLegacyUrl(): void
+    {
+        $page = new Page();
+        $page->setTitle('Poufna strona główna');
+        $page->setSlug('poufna-strona-glowna');
+        $page->setContent('Sekretna treść administracyjna');
+        $page->setPublished(true);
+        $page->setHomePage(true);
+        $page->setAdminOnly(true);
+        $this->entityManager->persist($page);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/');
+        self::assertResponseIsSuccessful();
+        self::assertStringNotContainsString('Sekretna treść administracyjna', (string) $this->client->getResponse()->getContent());
+
+        $this->client->request('GET', '/strona/poufna-strona-glowna');
+        self::assertResponseStatusCodeSame(404);
+        self::assertFalse($this->client->getResponse()->isRedirect());
+        self::assertStringNotContainsString('Sekretna treść administracyjna', (string) $this->client->getResponse()->getContent());
+    }
 }
