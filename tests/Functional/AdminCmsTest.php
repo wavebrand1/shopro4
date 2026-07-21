@@ -500,6 +500,15 @@ final class AdminCmsTest extends WebTestCase
         self::assertStringContainsString('The slug may contain lowercase letters, numbers and hyphens.', (string) $validator->validate($invalidPage));
         self::assertStringContainsString('Enter a complete canonical URL beginning with https:// or http://.', (string) $validator->validate($invalidPage));
 
+        $reservedPage = new Page();
+        $reservedPage->setTitle('System collision');
+        $reservedPage->setSlug('login');
+        self::assertStringContainsString('This slug is reserved by a system feature.', (string) $validator->validate($reservedPage));
+
+        $reservedTranslation = new PageTranslation($reservedPage, new Language());
+        $reservedTranslation->setSlug('search');
+        self::assertStringContainsString('This slug is reserved by a system feature.', (string) $validator->validate($reservedTranslation));
+
         $invalidMenuItem = new MenuItem();
         $invalidMenuItem->setName('Missing page');
         $invalidMenuItem->setContentType(MenuItem::TYPE_PAGE);

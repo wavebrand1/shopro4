@@ -124,6 +124,11 @@ Przestrzeń panelu jest rozpoznawana po dokładnym prefiksie `/admin/` (oraz sam
 `/administrator-poradnik` pozostają dzięki temu zwykłymi podstronami i nie są
 przechwytywane przez firewall, obsługę błędów, konserwację ani audyt panelu.
 
+Dokładne slugi zajęte przez kontrolery systemowe (między innymi `admin`, `api`,
+`login`, `register`, `account`, `search`, `password`, `language`, `newsletter`
+i `health`) są odrzucane przed zapisem strony bazowej oraz tłumaczenia. Dłuższe
+slugi zaczynające się od tych słów, np. `administrator-poradnik`, są dozwolone.
+
 Odtworzenie jest blokowane, jeżeli historyczny slug zajmuje inna podstrona — także
 znajdująca się w koszu — i pokazuje czytelny komunikat zamiast błędu bazy. Role
 systemowe są przywracane przez `PageRepository::save()`, które atomowo odbiera daną

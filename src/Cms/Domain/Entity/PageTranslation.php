@@ -2,10 +2,12 @@
 declare(strict_types=1);
 namespace App\Cms\Domain\Entity;
 
+use App\Cms\Domain\PageSlug;
 use App\Language\Domain\Entity\Language;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity]
 #[ORM\Table(name:'cms_page_translation')]
@@ -29,6 +31,7 @@ class PageTranslation
  public function __construct(Page $page,Language $language){$this->page=$page;$this->language=$language;$this->title=$page->getTitle();$this->slug=$page->getSlug();$this->caption=$page->getCaption();$this->seoTitle=$page->getSeoTitle();$this->description=$page->getDescription();$this->content=$page->getContent();$this->builderData=$page->getBuilderData();$this->builderCss=$page->getBuilderCss();$this->canonical=$page->getCanonical();}
  public function getId():?int{return $this->id;} public function getPage():Page{return $this->page;} public function getLanguage():Language{return $this->language;}
  public function getTitle():string{return $this->title;}public function setTitle(string $v):void{$this->title=trim($v);} public function getSlug():string{return $this->slug;}public function setSlug(string $v):void{$this->slug=mb_strtolower(trim($v));}
+ #[Assert\Callback] public function validateSlugIsNotReserved(ExecutionContextInterface $context):void{if(PageSlug::isReserved($this->slug))$context->buildViolation('validation.page.slug_reserved')->atPath('slug')->addViolation();}
  public function getCaption():string{return $this->caption;}public function setCaption(?string $v):void{$this->caption=trim($v??'');} public function getSeoTitle():string{return $this->seoTitle;}public function setSeoTitle(?string $v):void{$this->seoTitle=trim($v??'');}
  public function getDescription():string{return $this->description;}public function setDescription(?string $v):void{$this->description=trim($v??'');} public function getContent():string{return $this->content;}public function setContent(?string $v):void{$this->content=$v??'';}
  public function getBuilderData():string{return $this->builderData;}public function setBuilderData(?string $v):void{$this->builderData=$v??'';} public function getBuilderCss():string{return $this->builderCss;}public function setBuilderCss(?string $v):void{$this->builderCss=$v??'';}

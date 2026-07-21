@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cms\Domain\Entity;
 
+use App\Cms\Domain\PageSlug;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\Membership;
 use DateTimeImmutable;
@@ -13,6 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
 #[ORM\Table(name: 'cms_page')]
@@ -141,6 +143,13 @@ class Page
     public function setTitle(string $title): void { $this->title = trim($title); }
     public function getSlug(): string { return $this->slug; }
     public function setSlug(string $slug): void { $this->slug = mb_strtolower(trim($slug)); }
+    #[Assert\Callback]
+    public function validateSlugIsNotReserved(ExecutionContextInterface $context): void
+    {
+        if (PageSlug::isReserved($this->slug)) {
+            $context->buildViolation('validation.page.slug_reserved')->atPath('slug')->addViolation();
+        }
+    }
     public function getContent(): string { return $this->content; }
     public function setContent(?string $content): void { $this->content = trim($content ?? ''); }
     public function getEditorMode(): string { return $this->editorMode; }
