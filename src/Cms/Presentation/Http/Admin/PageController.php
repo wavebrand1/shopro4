@@ -226,14 +226,15 @@ final class PageController extends AbstractController
     #[Route('/trash/bulk-restore', name: 'admin_page_trash_bulk_restore', methods: ['POST'])]
     public function bulkRestore(Request $request, PageRepository $pages): Response
     {
+        $redirectParameters = array_filter(['q' => trim($request->request->getString('return_q'))]);
         if (!$this->isCsrfTokenValid('bulk-restore-pages', $request->request->getString('_token'))) {
             $this->addFlash('error', $this->translator->translate('page.bulk_invalid_token'));
-            return $this->redirectToRoute('admin_page_trash');
+            return $this->redirectToRoute('admin_page_trash', $redirectParameters);
         }
         $ids = array_slice(array_values(array_unique(array_filter(array_map(static fn (mixed $id): int => max(0, (int) $id), $request->request->all('pages'))))), 0, 200);
         if ($ids === []) {
             $this->addFlash('error', $this->translator->translate('page.bulk_select_pages'));
-            return $this->redirectToRoute('admin_page_trash');
+            return $this->redirectToRoute('admin_page_trash', $redirectParameters);
         }
         $restored = 0;
         foreach ($pages->findBy(['id' => $ids]) as $page) {
@@ -244,7 +245,36 @@ final class PageController extends AbstractController
             ++$restored;
         }
         $this->addFlash('success', sprintf($this->translator->translate('page.bulk_restored'), $restored));
-        return $this->redirectToRoute('admin_page_trash');
+        return $this->redirectToRoute('admin_page_trash', $redirectParameters);
+    }
+
+    #[Route('/trash/bulk-destroy', name: 'admin_page_trash_bulk_destroy', methods: ['POST'])]
+    public function bulkDestroy(Request $request, PageRepository $pages, MenuItemRepository $menuItems): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $redirectParameters = array_filter(['q' => trim($request->request->getString('return_q'))]);
+        if (!$this->isCsrfTokenValid('bulk-destroy-pages', $request->request->getString('_destroy_token'))) {
+            $this->addFlash('error', $this->translator->translate('page.bulk_invalid_token'));
+            return $this->redirectToRoute('admin_page_trash', $redirectParameters);
+        }
+        $ids = array_slice(array_values(array_unique(array_filter(array_map(static fn (mixed $id): int => max(0, (int) $id), $request->request->all('pages'))))), 0, 200);
+        if ($ids === []) {
+            $this->addFlash('error', $this->translator->translate('page.bulk_select_pages'));
+            return $this->redirectToRoute('admin_page_trash', $redirectParameters);
+        }
+        $usage = $menuItems->usageByPageIds($ids);
+        $destroyed = 0;
+        $skipped = 0;
+        foreach ($pages->findBy(['id' => $ids]) as $page) {
+            if (!$page->isDeleted()) continue;
+            if ($page->isSystemPage() || ($usage[$page->getId()] ?? 0) > 0) { ++$skipped; continue; }
+            $this->entityManager->remove($page);
+            ++$destroyed;
+        }
+        $this->entityManager->flush();
+        $this->addFlash('success', sprintf($this->translator->translate('page.bulk_destroyed'), $destroyed));
+        if ($skipped > 0) $this->addFlash('error', sprintf($this->translator->translate('page.bulk_destroy_skipped'), $skipped));
+        return $this->redirectToRoute('admin_page_trash', $redirectParameters);
     }
 
     #[Route('/{id}/restore', name: 'admin_page_restore', requirements: ['id' => '\d+'], methods: ['POST'])]

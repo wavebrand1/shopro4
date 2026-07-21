@@ -1023,6 +1023,39 @@ final class AdminCmsTest extends WebTestCase
         }
     }
 
+    public function testAdministratorCanPermanentlyDeleteSelectedTrashPages(): void
+    {
+        $admin = new AdminUser('bulk-destroy@example.test', 'bulk-destroy');
+        $regular = new Page(); $regular->setTitle('Do trwałego usunięcia'); $regular->setSlug('do-trwalego-usuniecia'); $regular->moveToTrash();
+        $linked = new Page(); $linked->setTitle('Usunięta używana w menu'); $linked->setSlug('usunieta-uzywana-w-menu'); $linked->moveToTrash();
+        $system = new Page(); $system->setTitle('Usunięta systemowa'); $system->setSlug('usunieta-systemowa'); $system->setErrorPage(true); $system->moveToTrash();
+        $menuItem = new MenuItem(); $menuItem->setName('Link chroniący stronę'); $menuItem->setPage($linked);
+        foreach ([$admin, $regular, $linked, $system, $menuItem] as $entity) $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+        $regularId = $regular->getId(); $linkedId = $linked->getId(); $systemId = $system->getId();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages/trash?q=Usunięta');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('button[formaction="/admin/pages/trash/bulk-destroy"]');
+        $destroyToken = (string) $this->client->getCrawler()->filter('button[name="_destroy_token"]')->attr('value');
+        $this->client->request('POST', '/admin/pages/trash/bulk-destroy', [
+            '_destroy_token' => $destroyToken,
+            'return_q' => 'Usunięta',
+            'pages' => [$regularId, $linkedId, $systemId],
+        ]);
+        self::assertResponseRedirects('/admin/pages/trash?q=Usuni%C4%99ta');
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('.flash--success', '1 podstron');
+        self::assertSelectorTextContains('.flash--error', '2 chronionych');
+
+        $entityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->clear();
+        self::assertNull($entityManager->find(Page::class, $regularId));
+        self::assertNotNull($entityManager->find(Page::class, $linkedId));
+        self::assertNotNull($entityManager->find(Page::class, $systemId));
+    }
+
     public function testAdministratorCanLogInWithUsername(): void
     {
         $user = new AdminUser('owner@example.test', 'administrator');
