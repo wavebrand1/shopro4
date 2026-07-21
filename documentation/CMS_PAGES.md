@@ -51,6 +51,11 @@ podstawie aktualnego czasu bez osobnego zadania cron. Reguły wylicza
 `Page::getPublicationStatus()`, a publiczne zapytania ogranicza
 `PageRepository::applyPublicationWindow()`.
 
+Pozycje menu prowadzące do podstron podlegają temu samemu oknu publikacji. Szkic,
+strona oczekująca na publikację, wygasła lub znajdująca się w koszu nie jest pokazywana
+w menu frontu, nawet jeżeli sama pozycja menu pozostaje aktywna. Link pojawia się i
+znika na podstawie aktualnego czasu, bez zadania cron.
+
 Lista `/admin/pages` obsługuje:
 
 - wyszukiwanie po tytule i slugu;

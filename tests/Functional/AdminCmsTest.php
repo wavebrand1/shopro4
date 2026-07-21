@@ -874,13 +874,20 @@ final class AdminCmsTest extends WebTestCase
         $page->setSlug('zaplanowana-strona');
         $page->setPublished(true);
         $page->setPublishAt(new \DateTimeImmutable('+1 day'));
-        $this->entityManager->persist($page);
+        $landing = new Page();
+        $landing->setTitle('Strona kontrolna'); $landing->setSlug('strona-kontrolna'); $landing->setPublished(true);
+        $menuItem = new MenuItem();
+        $menuItem->setName('Zaplanowany link'); $menuItem->setPage($page); $menuItem->setPlace(MenuItem::PLACE_HEADER);
+        $this->entityManager->persist($page); $this->entityManager->persist($landing); $this->entityManager->persist($menuItem);
         $this->entityManager->flush();
 
         self::assertSame('scheduled', $page->getPublicationStatus());
         self::assertFalse($page->isPubliclyAvailable());
         $this->client->request('GET', '/zaplanowana-strona');
         self::assertResponseStatusCodeSame(404);
+        $this->client->request('GET', '/strona-kontrolna');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextNotContains('.site-nav', 'Zaplanowany link');
 
         $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
         self::assertNotNull($page);
@@ -889,6 +896,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSame('published', $page->getPublicationStatus());
         $this->client->request('GET', '/zaplanowana-strona');
         self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.site-nav', 'Zaplanowany link');
 
         $page = self::getContainer()->get(PageRepository::class)->find($page->getId());
         self::assertNotNull($page);
@@ -897,6 +905,9 @@ final class AdminCmsTest extends WebTestCase
         self::assertSame('expired', $page->getPublicationStatus());
         $this->client->request('GET', '/zaplanowana-strona');
         self::assertResponseStatusCodeSame(404);
+        $this->client->request('GET', '/strona-kontrolna');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextNotContains('.site-nav', 'Zaplanowany link');
     }
 
     public function testBulkTrashSkipsSystemPagesAndPagesUsedByMenu(): void

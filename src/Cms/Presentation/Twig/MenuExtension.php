@@ -60,6 +60,9 @@ final class MenuExtension extends AbstractExtension
             if ($id === null || in_array($id, $visited, true) || $item->getParent()?->getId() !== $parentId) {
                 continue;
             }
+            if ($item->getContentType() === MenuItem::TYPE_PAGE && !$item->getPage()?->isPubliclyAvailable()) {
+                continue;
+            }
 
             $translation=$this->translations[$id]??null;
             $branch[] = [
