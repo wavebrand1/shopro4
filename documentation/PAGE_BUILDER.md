@@ -88,6 +88,10 @@ danych zapisanych przez starsze wersje systemu.
 Oczyszczanie treści HTML jest wspólne dla strony bazowej i tłumaczeń oraz realizuje
 je serwis `PageBuilderSanitizer`. Każdy komponent `rich_text`, również zagnieżdżony
 w sekcji lub kolumnie, przechodzi przez skonfigurowany sanitizer Symfony.
+Komponent obrazu przyjmuje wyłącznie lokalny adres `/uploads/...` zwrócony przez
+menedżer plików. Pełne zewnętrzne URL-e, query string, fragmenty, niepoprawne
+kodowanie i próby przejścia do katalogu nadrzędnego są odrzucane przy zapisie oraz
+ponownie podczas renderowania.
 
 ## Sekcje i kolumny
 

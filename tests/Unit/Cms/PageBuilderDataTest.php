@@ -25,7 +25,7 @@ final class PageBuilderDataTest extends TestCase
     {
         yield 'empty project' => ['[]'];
         yield 'internal and nested links' => ['[{"data":{"primaryUrl":"/kontakt","items":[{"url":"#start"},{"url":"https://example.com"}]}}]'];
-        yield 'image source is not treated as a link' => ['[{"type":"image","data":{"src":"/uploads/photo.webp"}}]'];
+        yield 'local image source' => ['[{"type":"image","data":{"src":"/uploads/gallery/photo.webp"}}]'];
     }
 
     #[DataProvider('invalidData')]
@@ -45,5 +45,7 @@ final class PageBuilderDataTest extends TestCase
         yield 'scalar JSON' => ['1', 'validation.page_builder.invalid_json'];
         yield 'protocol relative URL' => ['[{"data":{"primaryUrl":"//evil.example"}}]', 'validation.page_builder.link_invalid'];
         yield 'nested executable URL' => ['[{"data":{"items":[{"url":"javascript:alert(1)"}]}}]', 'validation.page_builder.link_invalid'];
+        yield 'external image URL' => ['[{"type":"image","data":{"src":"https://evil.example/uploads/photo.webp"}}]', 'validation.page_builder.image_invalid'];
+        yield 'traversing image URL' => ['[{"type":"image","data":{"src":"/uploads/%2e%2e/.env"}}]', 'validation.page_builder.image_invalid'];
     }
 }

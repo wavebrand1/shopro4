@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cms\Domain;
 
+use App\Media\Domain\MediaPath;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 final class PageBuilderData
@@ -31,6 +32,10 @@ final class PageBuilderData
         if (self::containsUnsafeLink($data)) {
             $context->buildViolation('validation.page_builder.link_invalid')->addViolation();
         }
+
+        if (self::containsUnsafeImage($data)) {
+            $context->buildViolation('validation.page_builder.image_invalid')->addViolation();
+        }
     }
 
     private static function containsUnsafeLink(array $node): bool
@@ -41,6 +46,20 @@ final class PageBuilderData
             }
 
             if (is_array($value) && self::containsUnsafeLink($value)) return true;
+        }
+
+        return false;
+    }
+
+    private static function containsUnsafeImage(array $node): bool
+    {
+        if (($node['type'] ?? null) === 'image') {
+            $src = $node['data']['src'] ?? '';
+            if ($src !== '' && (!is_string($src) || !MediaPath::isSafePublicUploadUrl($src))) return true;
+        }
+
+        foreach ($node as $value) {
+            if (is_array($value) && self::containsUnsafeImage($value)) return true;
         }
 
         return false;

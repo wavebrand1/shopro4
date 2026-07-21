@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Media\Presentation\Twig;
 
+use App\Media\Domain\MediaPath;
 use App\Settings\Application\SettingsProvider;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Extension\AbstractExtension;
@@ -16,8 +17,8 @@ final class ResponsiveImageExtension extends AbstractExtension
     public function getFunctions(): array { return [new TwigFunction('shopro_picture', $this->picture(...), ['is_safe' => ['html']])]; }
     public function picture(string $src, string $alt = '', ?int $width = null, ?int $height = null, bool $eager = false, string $sizes = '100vw'): Markup
     {
-        $urlPath = parse_url($src, PHP_URL_PATH);
-        if (!is_string($urlPath) || !str_starts_with($urlPath, '/uploads/')) return new Markup('', 'UTF-8');
+        if (!MediaPath::isSafePublicUploadUrl($src)) return new Markup('', 'UTF-8');
+        $urlPath = $src;
         $decodedPath = rawurldecode($urlPath);
         if (str_contains($decodedPath, "\0")) return new Markup('', 'UTF-8');
         $source = realpath($this->projectDir.'/public'.$decodedPath);

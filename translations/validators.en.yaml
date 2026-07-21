@@ -8,6 +8,7 @@ validation.page.publication_window: 'The publication end date must be later than
 validation.page.canonical_url: 'Enter a complete canonical URL beginning with https:// or http://.'
 validation.page_builder.invalid_json: 'The Page Builder data is corrupted. Refresh the form and try again.'
 validation.page_builder.link_invalid: 'The Page Builder contains an unsafe link. Use an internal path, anchor, HTTPS/HTTP URL, email address, or phone number.'
+validation.page_builder.image_invalid: 'The Page Builder image must come from the local file manager.'
 validation.menu.page_required: 'Select a page for this menu item.'
 validation.menu.link_required: 'Enter the external link URL.'
 validation.menu.link_invalid: 'Enter a safe HTTPS/HTTP URL, internal path, anchor, email address, or phone number.'
