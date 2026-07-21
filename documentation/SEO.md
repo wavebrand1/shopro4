@@ -14,7 +14,9 @@ Data `lastmod` pochodzi z daty ostatniej zmiany strony.
 
 `/robots.txt` zezwala na indeksowanie witryny, blokuje panel `/admin` i wskazuje
 mapę XML. Po włączeniu trybu konserwacji automatycznie blokuje całą witrynę.
-Obie odpowiedzi są buforowane publicznie przez 15 minut.
+Obie odpowiedzi mają politykę `no-store, must-revalidate`. Dzięki temu zmiana trybu
+konserwacji, publikacji albo jej harmonogramu jest widoczna dla robotów od następnego
+żądania i nie pozostaje przez kilkanaście minut w cache przeglądarki, proxy lub CDN.
 
 Każda zwykła odpowiedź strony zawiera również Open Graph i Twitter Card, dzięki
 czemu link ma spójny tytuł oraz opis po udostępnieniu. Dane JSON-LD opisują stronę,

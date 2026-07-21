@@ -28,8 +28,7 @@ final class SeoController extends AbstractController
 
         $response = $this->render('cms/seo/sitemap.xml.twig', ['entries' => $entries]);
         $response->headers->set('Content-Type', 'application/xml; charset=UTF-8');
-        $response->setPublic();
-        $response->setMaxAge(900);
+        $this->preventStaleSeoResponse($response);
 
         return $response;
     }
@@ -47,10 +46,19 @@ final class SeoController extends AbstractController
         $lines[] = 'Sitemap: '.$this->generateUrl('cms_sitemap', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $response = new Response(implode("\n", $lines)."\n", Response::HTTP_OK, ['Content-Type' => 'text/plain; charset=UTF-8']);
-        $response->setPublic();
-        $response->setMaxAge(900);
+        $this->preventStaleSeoResponse($response);
 
         return $response;
+    }
+
+    private function preventStaleSeoResponse(Response $response): void
+    {
+        // Publication windows and maintenance mode can change independently of
+        // a deployment. A shared cache must therefore never keep an obsolete
+        // sitemap or robots policy after such a boundary has been crossed.
+        $response->setPrivate();
+        $response->headers->addCacheControlDirective('no-store');
+        $response->headers->addCacheControlDirective('must-revalidate');
     }
 
     private function pageUrl(Page $page): string

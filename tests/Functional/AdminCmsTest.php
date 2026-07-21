@@ -236,12 +236,18 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/sitemap.xml');
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'application/xml; charset=UTF-8');
+        $sitemapCacheControl = (string) $this->client->getResponse()->headers->get('Cache-Control');
+        self::assertStringContainsString('no-store', $sitemapCacheControl);
+        self::assertStringContainsString('must-revalidate', $sitemapCacheControl);
         self::assertStringContainsString('<loc>http://localhost/</loc>', (string) $this->client->getResponse()->getContent());
         self::assertStringNotContainsString('/admin', (string) $this->client->getResponse()->getContent());
 
         $this->client->request('GET', '/robots.txt');
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'text/plain; charset=UTF-8');
+        $robotsCacheControl = (string) $this->client->getResponse()->headers->get('Cache-Control');
+        self::assertStringContainsString('no-store', $robotsCacheControl);
+        self::assertStringContainsString('must-revalidate', $robotsCacheControl);
         self::assertStringContainsString("Disallow: /admin", (string) $this->client->getResponse()->getContent());
         self::assertStringContainsString('Sitemap: http://localhost/sitemap.xml', (string) $this->client->getResponse()->getContent());
 
