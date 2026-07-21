@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cms\Domain\Entity;
 
+use App\Cms\Domain\MenuLink;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -100,6 +101,9 @@ class MenuItem
 
         if ($this->contentType === self::TYPE_WEB && $this->link === null) {
             $context->buildViolation('validation.menu.link_required')->atPath('link')->addViolation();
+        }
+        if ($this->contentType === self::TYPE_WEB && $this->link !== null && !MenuLink::isSafe($this->link)) {
+            $context->buildViolation('validation.menu.link_invalid')->atPath('link')->addViolation();
         }
     }
 }

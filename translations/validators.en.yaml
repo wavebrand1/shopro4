@@ -7,3 +7,4 @@ validation.page.publication_window: 'The publication end date must be later than
 validation.page.canonical_url: 'Enter a complete canonical URL beginning with https:// or http://.'
 validation.menu.page_required: 'Select a page for this menu item.'
 validation.menu.link_required: 'Enter the external link URL.'
+validation.menu.link_invalid: 'Enter a safe HTTPS/HTTP URL, internal path, anchor, email address, or phone number.'

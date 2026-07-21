@@ -7,3 +7,4 @@ validation.page.publication_window: 'Data zakończenia publikacji musi być pó�
 validation.page.canonical_url: 'Podaj pełny adres canonical rozpoczynający się od https:// lub http://.'
 validation.menu.page_required: 'Wybierz podstronę dla tej pozycji menu.'
 validation.menu.link_required: 'Podaj adres linku zewnętrznego.'
+validation.menu.link_invalid: 'Podaj bezpieczny adres HTTPS/HTTP, ścieżkę wewnętrzną, kotwicę, adres e-mail lub telefon.'

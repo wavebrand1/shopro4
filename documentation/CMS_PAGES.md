@@ -56,6 +56,11 @@ strona oczekująca na publikację, wygasła lub znajdująca się w koszu nie jes
 w menu frontu, nawet jeżeli sama pozycja menu pozostaje aktywna. Link pojawia się i
 znika na podstawie aktualnego czasu, bez zadania cron.
 
+Własne linki menu i ich tłumaczenia są walidowane przed zapisem. Dozwolone są adresy
+HTTP/HTTPS, ścieżki wewnętrzne zaczynające się pojedynczym `/`, kotwice oraz poprawne
+odnośniki `mailto:` i `tel:`. Protokoły wykonywalne (np. `javascript:`), adresy `//`,
+backslashe, spacje i znaki sterujące są blokowane przed trafieniem do `href`.
+
 `sitemap.xml` korzysta z tego samego okna publikacji i zawiera wyłącznie publiczne
 podstrony. Strona obsługująca błąd 404 oraz techniczna strona wyszukiwarki są
 wykluczone z mapy również wtedy, gdy mają opublikowaną treść lub tłumaczenia.

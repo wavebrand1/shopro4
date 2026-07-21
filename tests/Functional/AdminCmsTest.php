@@ -495,6 +495,18 @@ final class AdminCmsTest extends WebTestCase
         $invalidMenuItem->setContentType(MenuItem::TYPE_PAGE);
         self::assertStringContainsString('Select a page for this menu item.', (string) $validator->validate($invalidMenuItem));
 
+        $unsafeMenuItem = new MenuItem();
+        $unsafeMenuItem->setName('Unsafe link'); $unsafeMenuItem->setContentType(MenuItem::TYPE_WEB); $unsafeMenuItem->setLink('javascript:alert(1)');
+        self::assertStringContainsString('Enter a safe HTTPS/HTTP URL, internal path, anchor, email address, or phone number.', (string) $validator->validate($unsafeMenuItem));
+        foreach (['https://example.com/path', '/contact?from=menu', '#contact', 'mailto:hello@example.com', 'tel:+48123456789'] as $safeLink) {
+            $unsafeMenuItem->setLink($safeLink);
+            self::assertCount(0, $validator->validate($unsafeMenuItem));
+        }
+
+        $unsafeTranslation = new MenuItemTranslation($headerItem, $english);
+        $unsafeTranslation->setLink('//evil.example/path');
+        self::assertStringContainsString('Enter a safe HTTPS/HTTP URL, internal path, anchor, email address, or phone number.', (string) $validator->validate($unsafeTranslation));
+
         $this->client->request('GET', '/admin/configuration/languages');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'Language management');
