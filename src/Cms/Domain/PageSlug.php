@@ -31,4 +31,12 @@ final class PageSlug
     {
         return in_array(mb_strtolower(trim($slug)), self::RESERVED, true);
     }
+
+    public static function isReservedPath(string $path): bool
+    {
+        $decodedPath = rawurldecode($path);
+        $firstSegment = explode('/', trim($decodedPath, '/'), 2)[0] ?? '';
+
+        return self::isReserved($firstSegment);
+    }
 }

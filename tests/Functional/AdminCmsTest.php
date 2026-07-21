@@ -1332,6 +1332,13 @@ final class AdminCmsTest extends WebTestCase
         $unsafe = new UrlRedirect(); $unsafe->setSourcePath('/unsafe'); $unsafe->setTargetPath('/\\evil.example/path');
         $errors = self::getContainer()->get(ValidatorInterface::class)->validate($unsafe);
         self::assertGreaterThan(0, $errors->count());
+
+        $reserved = new UrlRedirect(); $reserved->setSourcePath('/admin/legacy'); $reserved->setTargetPath('/oferta');
+        self::assertStringContainsString('This address belongs to a system feature', (string) self::getContainer()->get(ValidatorInterface::class)->validate($reserved));
+        $encodedReserved = new UrlRedirect(); $encodedReserved->setSourcePath('/admin%2Flegacy'); $encodedReserved->setTargetPath('/oferta');
+        self::assertStringContainsString('This address belongs to a system feature', (string) self::getContainer()->get(ValidatorInterface::class)->validate($encodedReserved));
+        $allowedPrefix = new UrlRedirect(); $allowedPrefix->setSourcePath('/administrator'); $allowedPrefix->setTargetPath('/oferta');
+        self::assertCount(0, self::getContainer()->get(ValidatorInterface::class)->validate($allowedPrefix));
     }
 
     public function testPublicPageWhoseSlugStartsWithAdminIsNotCapturedByPanelSecurity(): void

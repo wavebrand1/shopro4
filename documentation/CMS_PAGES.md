@@ -129,6 +129,11 @@ Dokładne slugi zajęte przez kontrolery systemowe (między innymi `admin`, `api
 i `health`) są odrzucane przed zapisem strony bazowej oraz tłumaczenia. Dłuższe
 slugi zaczynające się od tych słów, np. `administrator-poradnik`, są dozwolone.
 
+Ta sama lista chroni ręczne przekierowania. System odrzuca jako źródło całą
+przestrzeń zarezerwowanego prefiksu (np. `/admin/legacy` oraz jego zapis kodowany),
+ponieważ żądanie nie dotarłoby do mechanizmu przekierowań. Podobny, ale odrębny
+adres `/administrator` pozostaje dozwolony.
+
 Odtworzenie jest blokowane, jeżeli historyczny slug zajmuje inna podstrona — także
 znajdująca się w koszu — i pokazuje czytelny komunikat zamiast błędu bazy. Role
 systemowe są przywracane przez `PageRepository::save()`, które atomowo odbiera daną
