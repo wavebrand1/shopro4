@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cms\Presentation\Twig;
 
+use App\Cms\Domain\MenuLink;
 use App\Cms\Domain\Entity\MenuItem;
 use App\Cms\Domain\Entity\MenuItemTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
@@ -31,7 +32,10 @@ final class MenuExtension extends AbstractExtension
 
     public function getFunctions(): array
     {
-        return [new TwigFunction('shopro_menu', $this->menu(...))];
+        return [
+            new TwigFunction('shopro_menu', $this->menu(...)),
+            new TwigFunction('shopro_safe_link', MenuLink::isSafe(...)),
+        ];
     }
 
     /** @return list<array{id: int, name: string, caption: ?string, url: ?string, target: string, children: array}> */

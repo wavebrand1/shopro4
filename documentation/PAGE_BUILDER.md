@@ -78,7 +78,10 @@ Nowy typ wymaga:
 5. testu renderowania.
 
 Nie należy zapisywać w JSON haseł, sekretów ani wykonywalnego JavaScriptu.
-Adresy linków komponentu są renderowane tylko dla dozwolonych protokołów.
+Adresy linków komponentu korzystają z tej samej centralnej walidacji `MenuLink`
+co menu witryny. Dopuszczone są bezpieczne ścieżki wewnętrzne, kotwice, HTTP/HTTPS,
+`mailto:` i `tel:`; blokowane są między innymi protokoły wykonywalne, adresy `//`,
+backslashe, białe znaki oraz znaki kontrolne.
 
 ## Sekcje i kolumny
 

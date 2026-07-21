@@ -188,6 +188,10 @@ final class AdminCmsTest extends WebTestCase
                 'heading' => 'Strona z komponentów',
                 'highlight' => 'działa poprawnie',
                 'text' => 'Kontrolowana treść strony.',
+                'primaryLabel' => 'Niebezpieczny link',
+                'primaryUrl' => '//evil.example/path',
+                'secondaryLabel' => 'Bezpieczny link',
+                'secondaryUrl' => '#bezpieczny-cel',
             ],
         ], [
             'id' => 'image-section-test',
@@ -213,6 +217,8 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/o-nas');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.site-hero h1', 'działa poprawnie');
+        self::assertSelectorNotExists('.site-hero__actions a[href="//evil.example/path"]');
+        self::assertSelectorExists('.site-hero__actions a[href="#bezpieczny-cel"]');
         self::assertSelectorTextContains('.builder-image figcaption', 'Podpis obrazu testowego');
         self::assertSelectorExists('.builder-image img[src="/uploads/test%20image.svg"][alt="Alternatywny opis"]');
         self::assertSelectorExists('.builder-image source[srcset="/uploads/test%20image.320.webp 320w"][sizes="(max-width: 760px) calc(100vw - 30px), (max-width: 1220px) 30vw, 354px"]');

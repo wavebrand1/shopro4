@@ -7,8 +7,8 @@
             <p>{{ block.text|default('') }}</p>
             <div class="site-hero__actions">
                 {% set primaryUrl = block.primaryUrl|default('#') %}{% set secondaryUrl = block.secondaryUrl|default('#') %}
-                {% if block.primaryLabel|default('') and (primaryUrl starts with '/' or primaryUrl starts with '#' or primaryUrl starts with 'https://' or primaryUrl starts with 'http://' or primaryUrl starts with 'mailto:' or primaryUrl starts with 'tel:') %}<a class="site-button" href="{{ primaryUrl }}">{{ block.primaryLabel }} <span>→</span></a>{% endif %}
-                {% if block.secondaryLabel|default('') and (secondaryUrl starts with '/' or secondaryUrl starts with '#' or secondaryUrl starts with 'https://' or secondaryUrl starts with 'http://' or secondaryUrl starts with 'mailto:' or secondaryUrl starts with 'tel:') %}<a class="site-button site-button--ghost" href="{{ secondaryUrl }}"><i class="site-play">▶</i> {{ block.secondaryLabel }}</a>{% endif %}
+                {% if block.primaryLabel|default('') and shopro_safe_link(primaryUrl) %}<a class="site-button" href="{{ primaryUrl }}">{{ block.primaryLabel }} <span>→</span></a>{% endif %}
+                {% if block.secondaryLabel|default('') and shopro_safe_link(secondaryUrl) %}<a class="site-button site-button--ghost" href="{{ secondaryUrl }}"><i class="site-play">▶</i> {{ block.secondaryLabel }}</a>{% endif %}
             </div>
             <div class="site-trust"><div class="site-avatars"><span>W</span><span>O</span><span>S</span><span>+</span></div><p><strong>{{ block.trustTitle|default('') }}</strong><br>{{ block.trustText|default('') }}</p></div>
         </div>

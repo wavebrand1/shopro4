@@ -6,7 +6,7 @@
             {% for card in block.items|default([]) %}
                 {% set color = card.color|default('blue') in ['blue', 'green', 'orange', 'purple'] ? card.color : 'blue' %}
                 <article><span class="feature-icon feature-icon--{{ color }}">{{ card.icon|default('document') == 'command' ? '⌘' : (card.icon|default('document') == 'target' ? '◎' : (card.icon|default('document') == 'star' ? '☆' : '▤')) }}</span><h3>{{ card.title|default('') }}</h3><p>{{ card.text|default('') }}</p>
-                {% set url = card.url|default('') %}{% if card.buttonLabel|default('') and (url starts with '/' or url starts with '#' or url starts with 'https://' or url starts with 'http://' or url starts with 'mailto:' or url starts with 'tel:') %}<a href="{{ url }}">{{ card.buttonLabel }} →</a>{% endif %}</article>
+                {% set url = card.url|default('') %}{% if card.buttonLabel|default('') and shopro_safe_link(url) %}<a href="{{ url }}">{{ card.buttonLabel }} →</a>{% endif %}</article>
             {% endfor %}
         </div>
     </div>
