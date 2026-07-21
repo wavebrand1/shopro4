@@ -39,9 +39,24 @@ final class PageController extends AbstractController
     public function index(Request $request, PageRepository $pages, SettingsProvider $settings): Response
     {
         $page = max(1, $request->query->getInt('page', 1)); $limit = max(1, min(200, (int) $settings->get('per_page', 20)));
+        $search = trim($request->query->getString('q'));
+        $status = $request->query->getString('status');
+        if (!in_array($status, ['', 'draft', 'scheduled', 'published', 'expired'], true)) $status = '';
         $query = $pages->createQueryBuilder('p')->orderBy('p.updatedAt', 'DESC');
+        if ($search !== '') {
+            $query->andWhere('LOWER(p.title) LIKE :adminSearch OR LOWER(p.slug) LIKE :adminSearch')
+                ->setParameter('adminSearch', '%'.mb_strtolower($search).'%');
+        }
+        $now = new \DateTimeImmutable();
+        match ($status) {
+            'draft' => $query->andWhere('p.published = false'),
+            'scheduled' => $query->andWhere('p.published = true')->andWhere('p.publishAt > :adminNow')->setParameter('adminNow', $now),
+            'published' => $query->andWhere('p.published = true')->andWhere('(p.publishAt IS NULL OR p.publishAt <= :adminNow)')->andWhere('(p.unpublishAt IS NULL OR p.unpublishAt > :adminNow)')->setParameter('adminNow', $now),
+            'expired' => $query->andWhere('p.published = true')->andWhere('p.unpublishAt IS NOT NULL')->andWhere('p.unpublishAt <= :adminNow')->setParameter('adminNow', $now),
+            default => null,
+        };
         $total = (int) (clone $query)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
-        return $this->render('admin/page/index.html.twig', ['pages' => $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult(), 'current_page' => $page, 'last_page' => max(1, (int) ceil($total / $limit)), 'total' => $total]);
+        return $this->render('admin/page/index.html.twig', ['pages' => $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit)->getQuery()->getResult(), 'current_page' => $page, 'last_page' => max(1, (int) ceil($total / $limit)), 'total' => $total, 'search' => $search, 'status_filter' => $status, 'query_params' => array_filter(['q' => $search, 'status' => $status], static fn (string $value): bool => $value !== '')]);
     }
 
     #[Route('/new', name: 'admin_page_new', methods: ['GET', 'POST'])]

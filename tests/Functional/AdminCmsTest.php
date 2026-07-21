@@ -102,6 +102,16 @@ final class AdminCmsTest extends WebTestCase
         $page = self::getContainer()->get(PageRepository::class)->findPublishedBySlug('o-nas');
         self::assertNotNull($page);
 
+        $this->client->request('GET', '/admin/pages?q=O%20nas&status=published');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.admin-list-filters input[name="q"][value="O nas"]');
+        self::assertSelectorExists('.admin-list-filters option[value="published"][selected]');
+        self::assertSelectorTextContains('.admin-table tbody', 'O nas');
+
+        $this->client->request('GET', '/admin/pages?q=nieistniejaca');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.admin-table tbody', 'Nie znaleziono podstron spełniających kryteria');
+
         $editPage = $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('textarea[name="page[caption]"]');
