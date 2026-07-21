@@ -1045,6 +1045,18 @@ final class AdminCmsTest extends WebTestCase
         self::assertSame('/aktualny-adres', $redirects->findOneBy(['sourcePath' => '/stary-adres'])?->getTargetPath());
         self::assertSame('/aktualny-adres', $redirects->findOneBy(['sourcePath' => '/nowy-adres'])?->getTargetPath());
 
+        // A previously used slug can become the page URL again. Its old
+        // redirect must no longer intercept the real page or create a loop.
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        self::assertResponseIsSuccessful();
+        $form = $this->client->getCrawler()->filter('form[name="page"]')->form();
+        $this->client->submit($form, ['page[slug]' => 'stary-adres']);
+        self::assertResponseRedirects('/admin/pages');
+        $this->entityManager->clear();
+        self::assertSame('stary-adres', $this->entityManager->find(Page::class, $page->getId())?->getSlug());
+        self::assertFalse($this->entityManager->getRepository(UrlRedirect::class)->findOneBy(['sourcePath' => '/stary-adres'])?->isActive());
+        self::assertSame('/stary-adres', $this->entityManager->getRepository(UrlRedirect::class)->findOneBy(['sourcePath' => '/aktualny-adres'])?->getTargetPath());
+
         $manager = self::getContainer()->get(UrlRedirectManager::class);
         $chainEnd = new UrlRedirect(); $chainEnd->setSourcePath('/chain-middle'); $chainEnd->setTargetPath('/chain-end');
         $this->entityManager->persist($chainEnd); $this->entityManager->flush();

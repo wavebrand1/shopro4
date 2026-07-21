@@ -35,8 +35,22 @@ final class UrlRedirectManager
         $newPath = $homePage ? '/' : '/'.trim($newSlug, '/');
         if ($oldPath === '/' || $oldPath === $newPath) return;
 
+        // A slug can be reused (for example after restoring an older page
+        // revision). In that case an automatically created redirect may still
+        // own the new public path. The real page must take precedence, so the
+        // obsolete redirect is disabled before the remaining chains are
+        // flattened. Otherwise A -> B followed by B -> A forms a loop and the
+        // whole page update is rolled back.
+        $redirectAtNewPath = $this->repository->findOneBy(['sourcePath' => $newPath]);
+        if ($redirectAtNewPath instanceof UrlRedirect) {
+            $redirectAtNewPath->setActive(false);
+            // prepare() resolves chains with a database query, therefore the
+            // disabled state has to be visible before that query is executed.
+            $this->repository->saveAll([$redirectAtNewPath]);
+        }
+
         foreach ($this->repository->findAll() as $existing) {
-            if ($existing->getSourcePath() === $oldPath) continue;
+            if (!$existing->isActive() || $existing->getSourcePath() === $oldPath) continue;
             $path = parse_url($existing->getTargetPath(), PHP_URL_PATH);
             if ($path === $oldPath) $existing->setTargetPath($newPath);
         }
