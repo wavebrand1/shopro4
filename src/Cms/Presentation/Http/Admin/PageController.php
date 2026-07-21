@@ -6,6 +6,8 @@ namespace App\Cms\Presentation\Http\Admin;
 
 use App\Cms\Domain\Entity\Page;
 use App\Cms\Application\UrlRedirectManager;
+use App\Cms\Application\PageRevisionManager;
+use App\Identity\Domain\Entity\AdminUser;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Cms\Presentation\Form\PageType;
 use App\Settings\Application\SettingsProvider;
@@ -30,6 +32,7 @@ final class PageController extends AbstractController
         private readonly SystemTranslator $translator,
         private readonly UrlRedirectManager $redirectManager,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PageRevisionManager $revisionManager,
     ) {}
 
     #[Route('', name: 'admin_page_index', methods: ['GET'])]
@@ -149,6 +152,8 @@ final class PageController extends AbstractController
                 $this->entityManager->getConnection()->beginTransaction();
                 $pages->save($page);
                 if ($previousSlug !== null && $previousSlug !== $page->getSlug()) $this->redirectManager->registerSlugChange($previousSlug, $page->getSlug(), $page->isHomePage());
+                $user = $this->getUser();
+                $this->revisionManager->snapshot($page, $user instanceof AdminUser ? $user : null);
                 $this->entityManager->getConnection()->commit();
                 $this->addFlash('success', $this->translator->translate($message));
 

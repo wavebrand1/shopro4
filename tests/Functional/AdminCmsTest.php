@@ -10,6 +10,7 @@ use App\Cms\Domain\Entity\MenuItemTranslation;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Domain\Entity\Page;
 use App\Cms\Domain\Entity\UrlRedirect;
+use App\Cms\Domain\Entity\PageRevision;
 use App\Cms\Application\UrlRedirectManager;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
@@ -1054,5 +1055,39 @@ final class AdminCmsTest extends WebTestCase
         $loop = new UrlRedirect(); $loop->setSourcePath('/chain-end'); $loop->setTargetPath('/chain-start');
         $this->expectException(\LogicException::class);
         $manager->prepare($loop);
+    }
+
+    public function testPageHistoryCapturesChangesAndRestoresCompleteRevision(): void
+    {
+        $admin = new AdminUser('history-admin@example.test', 'history-admin');
+        $admin->setPassword(self::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'very-secure-password'));
+        $page = new Page(); $page->setTitle('Wersja startowa'); $page->setSlug('historia'); $page->setPublished(true);
+        $this->entityManager->persist($admin); $this->entityManager->persist($page); $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        $this->client->submitForm('Zapisz i kontynuuj edycję', ['page[title]' => 'Wersja pierwsza', 'page[caption]' => 'Pierwszy opis']);
+        self::assertResponseRedirects('/admin/pages/'.$page->getId().'/edit');
+        $first = $this->entityManager->getRepository(PageRevision::class)->findOneBy(['page' => $page, 'version' => 1]);
+        self::assertNotNull($first);
+        self::assertSame('history-admin', $first->getCreatedBy());
+
+        $this->client->request('GET', '/admin/pages/'.$page->getId().'/edit');
+        $this->client->submitForm('Zapisz i kontynuuj edycję', ['page[title]' => 'Wersja druga', 'page[caption]' => 'Drugi opis', 'page[published]' => false]);
+        self::assertResponseRedirects('/admin/pages/'.$page->getId().'/edit');
+        $history = $this->client->request('GET', '/admin/pages/'.$page->getId().'/revisions');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('table', 'Wersja druga');
+        self::assertSelectorTextContains('.revision-tags', 'Treść i układ');
+        $restoreForm = $history->filter('form[action$="/'.$first->getId().'/restore"]')->form();
+        $this->client->submit($restoreForm);
+        self::assertResponseRedirects('/admin/pages/'.$page->getId().'/edit');
+
+        $this->entityManager->clear();
+        $restored = $this->entityManager->find(Page::class, $page->getId());
+        self::assertSame('Wersja pierwsza', $restored?->getTitle());
+        self::assertSame('Pierwszy opis', $restored?->getCaption());
+        self::assertTrue($restored?->isPublished());
+        self::assertCount(3, $this->entityManager->getRepository(PageRevision::class)->findBy(['page' => $restored]));
     }
 }

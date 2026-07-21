@@ -4,7 +4,7 @@
 {% block body %}
 <div class="modern-page-heading">
     <div><p class="modern-kicker">{{ shopro_trans('admin.content_management') }}</p><h1>{{ shopro_trans(page.id ? 'page.edit' : 'page.new') }}</h1><p>{{ shopro_trans('page.form_lead') }}</p></div>
-    <a class="modern-button" href="{{ path('admin_page_index') }}">← {{ shopro_trans('page.back_list') }}</a>
+    <div class="modern-heading-actions">{% if page.id %}<a class="modern-button" href="{{ path('admin_page_revision_index',{id:page.id}) }}">{{ shopro_trans('revision.history') }}</a>{% endif %}<a class="modern-button" href="{{ path('admin_page_index') }}">← {{ shopro_trans('page.back_list') }}</a></div>
 </div>
 {{ form_start(form, {attr: {class: 'admin-form admin-form--page'}}) }}
 <section class="modern-card modern-form-card">

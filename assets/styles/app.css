@@ -60,6 +60,7 @@ body {
 .maintenance-page h1 { margin:18px 0 10px; font-size:clamp(2rem,6vw,4rem); }
 .admin-pagination { display:flex; align-items:center; justify-content:flex-end; gap:14px; padding:18px 22px; border-top:1px solid #e8edf4; color:#71809a; font-size:.82rem; font-weight:700; }
 .admin-pagination a { padding:8px 12px; border:1px solid #dce3ee; border-radius:8px; color:#416fdf; text-decoration:none; }
+.modern-heading-actions{display:flex;align-items:center;gap:10px}.revision-tags{display:flex;flex-wrap:wrap;gap:5px}.revision-tags span{padding:4px 7px;border-radius:6px;background:#edf3ff;color:#4c70d8;font-size:.68rem;font-weight:750}.table-muted{display:block;margin-top:4px;color:#8390a4;font-size:.7rem}
 .api-token-reveal { display:flex; align-items:center; gap:12px; padding:14px; border:1px solid #bfd0ff; border-radius:10px; background:#f1f5ff; }
 .api-token-reveal code { overflow-wrap:anywhere; }
 
