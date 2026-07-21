@@ -78,6 +78,9 @@ uploadów; Legacy już jawnie blokuje `../` i `..\\` w `admin/filemanager.php`.
 Nowa implementacja dodatkowo wiąże wykryty MIME z dozwolonym rozszerzeniem przy
 uploadzie i zmianie nazwy. Plik nie może więc zostać opublikowany jako inny typ
 wyłącznie przez zmianę jego rozszerzenia.
+Wieloplikowy upload zwraca osobno liczbę zapisanych i odrzuconych plików. Panel
+pokazuje też przyczynę odrzucenia, a błąd jednego elementu nie wycofuje poprawnych
+plików z tej samej paczki.
 
 ## Logi
 

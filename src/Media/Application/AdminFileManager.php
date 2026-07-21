@@ -71,22 +71,38 @@ final class AdminFileManager
     }
 
     /** @param list<UploadedFile> $files */
-    public function upload(string $path, array $files): int
+    public function upload(string $path, array $files): FileUploadResult
     {
         $directory = $this->resolve($this->normalize($path), true);
         $uploaded = 0;
+        $rejections = [];
         foreach ($files as $file) {
             $mimeType = (string) $file->getMimeType();
             $extension = strtolower($file->getClientOriginalExtension());
-            if (!$file->isValid() || !in_array($mimeType, self::ALLOWED_MIME_TYPES, true) || !self::matchesMimeType($mimeType, $extension) || $file->getSize() > 20 * 1024 * 1024) continue;
-            $name = $this->safeName($file->getClientOriginalName());
+            $reason = match (true) {
+                !$file->isValid() => 'invalid',
+                $file->getSize() > 20 * 1024 * 1024 => 'size',
+                !in_array($mimeType, self::ALLOWED_MIME_TYPES, true) => 'type',
+                !self::matchesMimeType($mimeType, $extension) => 'mismatch',
+                default => null,
+            };
+            if ($reason !== null) {
+                $rejections[$reason] = ($rejections[$reason] ?? 0) + 1;
+                continue;
+            }
+            try {
+                $name = $this->safeName($file->getClientOriginalName());
+            } catch (\InvalidArgumentException) {
+                $rejections['name'] = ($rejections['name'] ?? 0) + 1;
+                continue;
+            }
             if (file_exists($directory.'/'.$name)) $name = pathinfo($name, PATHINFO_FILENAME).'-'.bin2hex(random_bytes(4)).($file->getClientOriginalExtension() ? '.'.strtolower($file->getClientOriginalExtension()) : '');
             $stored = $file->move($directory, $name);
             if ($this->imageOptimizer && str_starts_with((string) $stored->getMimeType(), 'image/')) $this->imageOptimizer->optimize($stored->getPathname());
             ++$uploaded;
         }
 
-        return $uploaded;
+        return new FileUploadResult($uploaded, $rejections);
     }
 
     public function rename(string $path, string $newName): void

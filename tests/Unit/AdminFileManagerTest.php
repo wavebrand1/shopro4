@@ -85,8 +85,27 @@ final class AdminFileManagerTest extends TestCase
         file_put_contents($path, "%PDF-1.4\ncontent");
         $file = new UploadedFile($path, 'fake-photo.jpg', null, null, true);
 
-        self::assertSame(0, $this->manager->upload('', [$file]));
+        $result = $this->manager->upload('', [$file]);
+        self::assertSame(0, $result->uploaded);
+        self::assertSame(1, $result->rejected());
+        self::assertSame(['mismatch' => 1], $result->rejections);
         self::assertSame([], $this->manager->listing('')['files']);
+    }
+
+    public function testItUploadsValidFilesAndReportsRejectedFilesFromTheSameBatch(): void
+    {
+        $validPath = $this->project.'/valid.pdf';
+        $invalidPath = $this->project.'/invalid.pdf';
+        file_put_contents($validPath, "%PDF-1.4\nvalid");
+        file_put_contents($invalidPath, "%PDF-1.4\ninvalid");
+        $valid = new UploadedFile($validPath, 'document.pdf', null, null, true);
+        $invalid = new UploadedFile($invalidPath, 'document.jpg', null, null, true);
+
+        $result = $this->manager->upload('', [$valid, $invalid]);
+
+        self::assertSame(1, $result->uploaded);
+        self::assertSame(['mismatch' => 1], $result->rejections);
+        self::assertSame(['document.pdf'], array_column($this->manager->listing('')['files'], 'name'));
     }
 
     public function testItRejectsRenamingFileToExtensionIncompatibleWithItsMimeType(): void
