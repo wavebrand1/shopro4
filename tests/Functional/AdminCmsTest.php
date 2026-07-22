@@ -1804,4 +1804,23 @@ final class AdminCmsTest extends WebTestCase
         self::assertTrue($copy->isAdminOnly());
         self::assertSame(1, $copy->getLockVersion());
     }
+
+    public function testDashboardAndNavigationHideDisabledModule(): void
+    {
+        $admin = new AdminUser('module-dashboard@example.test', 'module-dashboard');
+        $newsletter = new InstalledModule('newsletter', '4.0.0');
+        $newsletter->disable();
+        $campaign = new NewsletterCampaign();
+        $campaign->setSubject('Ukryta kampania');
+        $campaign->setContent('<p>Test</p>');
+        foreach ([$admin, $newsletter, $campaign] as $entity) $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('a[href="/admin/configuration/newsletter"]');
+        self::assertSelectorTextNotContains('.modern-dashboard-modules', 'Newsletter');
+    }
 }

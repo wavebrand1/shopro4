@@ -41,6 +41,12 @@ Poza modułami pozostają celowo: logowanie administratora, rejestr modułów,
 health-check i audyt. Zapewnia to ścieżkę diagnostyki oraz odzyskania systemu bez
 udostępniania wyłączonych funkcji biznesowych.
 
+Pulpit i nawigacja PA także respektują runtime. Kontroler pulpitu nie odpytuje
+repozytoriów użytkowników, języków, newslettera ani szablonów e-mail, gdy ich moduł
+jest nieaktywny. Odpowiadające karty są wtedy pomijane. Boczne menu ukrywa grupy i
+linki poszczególnych modułów, dzięki czemu interfejs nie prowadzi do tras kończących
+się kontrolowanym 404. Dane i tabele nadal pozostają nietknięte.
+
 ## Rejestr dostarczany przez kod
 
 Każdy obszar funkcjonalny implementuje `ModuleDefinition`. Definicja ma stabilny

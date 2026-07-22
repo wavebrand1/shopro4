@@ -32,18 +32,20 @@
     <div class="modern-card__heading"><div><span class="modern-card__eyebrow">{{ shopro_trans('dashboard.modules') }}</span><h2>{{ shopro_trans('dashboard.modules_heading') }}</h2><p>{{ shopro_trans('dashboard.modules_lead') }}</p></div></div>
     <div class="modern-modules-grid">
         {% set modules = [
-            {route:'admin_menu_index',label:'nav.menu',help:'dashboard.menu_help',value:menu_count,meta:'dashboard.configured',icon:'☰'},
-            {route:'admin_file_manager_index',label:'nav.file_manager',help:'dashboard.files_help',value:null,meta:null,icon:'▣'}
+            {route:'admin_menu_index',label:'nav.menu',help:'dashboard.menu_help',value:menu_count,meta:'dashboard.configured',icon:'☰'}
         ] %}
+        {% if enabled_modules.media %}{% set modules = modules|merge([{route:'admin_file_manager_index',label:'nav.file_manager',help:'dashboard.files_help',value:null,meta:null,icon:'▣'}]) %}{% endif %}
         {% if is_granted('ROLE_ADMIN') %}
-            {% set modules = modules|merge([
+            {% if enabled_modules.identity %}{% set modules = modules|merge([
                 {route:'admin_site_user_index',label:'nav.site_users',help:'dashboard.site_users_help',value:site_user_count,meta:'dashboard.configured',icon:'♙'},
-                {route:'admin_user_index',label:'nav.panel_users',help:'dashboard.users_help',value:user_count,meta:'dashboard.configured',icon:'♙'},
-                {route:'admin_language_index',label:'nav.languages',help:'dashboard.languages_help',value:language_count,meta:'dashboard.active_languages',icon:'◎'},
-                {route:'admin_newsletter_index',label:'nav.newsletter',help:'dashboard.newsletter_help',value:campaign_count,meta:'dashboard.campaigns',icon:'✉'},
+                {route:'admin_user_index',label:'nav.panel_users',help:'dashboard.users_help',value:user_count,meta:'dashboard.configured',icon:'♙'}
+            ]) %}{% endif %}
+            {% if enabled_modules.language %}{% set modules = modules|merge([{route:'admin_language_index',label:'nav.languages',help:'dashboard.languages_help',value:language_count,meta:'dashboard.active_languages',icon:'◎'}]) %}{% endif %}
+            {% if enabled_modules.newsletter %}{% set modules = modules|merge([{route:'admin_newsletter_index',label:'nav.newsletter',help:'dashboard.newsletter_help',value:campaign_count,meta:'dashboard.campaigns',icon:'✉'}]) %}{% endif %}
+            {% if enabled_modules.settings %}{% set modules = modules|merge([
                 {route:'admin_email_template_index',label:'nav.email_templates',help:'dashboard.email_help',value:email_template_count,meta:'dashboard.configured',icon:'▤'},
                 {route:'admin_system_settings_edit',label:'nav.configuration',help:'dashboard.settings_help',value:null,meta:null,icon:'⚙'}
-            ]) %}
+            ]) %}{% endif %}
         {% endif %}
         {% for module in modules %}<a class="modern-module-card" href="{{ path(module.route) }}"><span class="modern-module-card__icon">{{ module.icon }}</span><div><h3>{{ shopro_trans(module.label) }}</h3><p>{{ shopro_trans(module.help) }}</p><small>{% if module.value is not null %}<b>{{ module.value }}</b> {{ shopro_trans(module.meta) }} · {% endif %}{{ shopro_trans('dashboard.manage') }} →</small></div></a>{% endfor %}
     </div>

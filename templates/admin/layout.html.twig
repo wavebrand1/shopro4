@@ -20,6 +20,7 @@
                 <button class="modern-sidebar__close" type="button" data-sidebar-close aria-label="{{ shopro_trans('admin.close_menu') }}">&times;</button>
             </div>
             <nav class="modern-nav" aria-label="{{ shopro_trans('admin.panel_menu') }}">
+                {% if shopro_module_enabled('cms') %}
                 <p class="modern-nav__label">{{ shopro_trans('admin.main') }}</p>
                 <a class="{{ route == 'admin_dashboard' ? 'is-active' : '' }}" href="{{ path('admin_dashboard') }}">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6v-9h-6v9Zm0-16v5h6V4h-6Z"/></svg></span>
@@ -34,7 +35,10 @@
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
                     {{ shopro_trans('nav.menu') }}
                 </a>
-                {% if is_granted('ROLE_ADMIN') %}<p class="modern-nav__label">{{ shopro_trans('admin.users_system') }}</p>
+                {% endif %}
+                {% if is_granted('ROLE_ADMIN') %}
+                {% if shopro_module_enabled('identity') %}
+                <p class="modern-nav__label">{{ shopro_trans('admin.users_system') }}</p>
                 {% set users_group_active = route starts with 'admin_site_user_' or route starts with 'admin_user_' or route starts with 'admin_membership_' %}
                 <details class="modern-nav-group{{ users_group_active ? ' is-active' : '' }}"{{ users_group_active ? ' open' : '' }}>
                     <summary><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20c0-4 2.5-7 6-7s6 3 6 7M14 14c4-1 7 1.5 7 6"/></svg></span>{{ shopro_trans('nav.users') }}<span class="modern-nav-group__chevron">⌄</span></summary>
@@ -50,24 +54,27 @@
                 <a class="{{ route starts with 'admin_membership_' ? 'is-active' : '' }}" href="{{ path('admin_membership_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm4 4h8M8 13h5"/></svg></span>{{ shopro_trans('nav.memberships') }}</a>
                     </div>
                 </details>
+                {% endif %}
                 {% set configuration_group_active = route starts with 'admin_system_settings_' or route starts with 'admin_newsletter_' or route starts with 'admin_email_template_' or route starts with 'admin_language_' or route starts with 'admin_file_manager_' or route starts with 'admin_url_redirect_' %}
+                {% if shopro_module_enabled('settings') or shopro_module_enabled('newsletter') or shopro_module_enabled('language') or shopro_module_enabled('media') or shopro_module_enabled('cms') %}
                 <details class="modern-nav-group{{ configuration_group_active ? ' is-active' : '' }}"{{ configuration_group_active ? ' open' : '' }}>
                     <summary><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 15a2 2 0 0 0 .4 2l-2.4 2.4a2 2 0 0 0-2-.4M9 19a2 2 0 0 0-2 .4L4.6 17A2 2 0 0 0 5 15M5 9a2 2 0 0 0-.4-2L7 4.6A2 2 0 0 0 9 5M15 5a2 2 0 0 0 2-.4L19.4 7A2 2 0 0 0 19 9"/></svg></span>{{ shopro_trans('nav.configuration') }}<span class="modern-nav-group__chevron">⌄</span></summary>
                     <div class="modern-nav-group__items">
-                <a class="{{ route starts with 'admin_system_settings_' ? 'is-active' : '' }}" href="{{ path('admin_system_settings_edit') }}">
+                {% if shopro_module_enabled('settings') %}<a class="{{ route starts with 'admin_system_settings_' ? 'is-active' : '' }}" href="{{ path('admin_system_settings_edit') }}">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 15a2 2 0 0 0 .4 2l-2.4 2.4a2 2 0 0 0-2-.4 2 2 0 0 0-1 1.7V21h-4v-.3A2 2 0 0 0 9 19a2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.7-1H3v-4h.3A2 2 0 0 0 5 9a2 2 0 0 0-.4-2L7 4.6A2 2 0 0 0 9 5a2 2 0 0 0 1-1.7V3h4v.3A2 2 0 0 0 15 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.7 1h.3v4h-.3A2 2 0 0 0 19 15Z"/></svg></span>
                     {{ shopro_trans('nav.system_configuration') }}
-                </a>
+                </a>{% endif %}
                 {% if shopro_module_enabled('newsletter') %}<a class="{{ route starts with 'admin_newsletter_' ? 'is-active' : '' }}" href="{{ path('admin_newsletter_index') }}">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5Zm1 1 8 7 8-7"/></svg></span>
                     {{ shopro_trans('nav.newsletter') }}
                 </a>{% endif %}
-                <a class="{{ route starts with 'admin_email_template_' ? 'is-active' : '' }}" href="{{ path('admin_email_template_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5Zm1 1 8 7 8-7"/></svg></span>{{ shopro_trans('nav.email_templates') }}</a>
-                <a class="{{ route starts with 'admin_language_' ? 'is-active' : '' }}" href="{{ path('admin_language_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18"/></svg></span>{{ shopro_trans('nav.languages') }}</a>
-                <a class="{{ route starts with 'admin_file_manager_' ? 'is-active' : '' }}" href="{{ path('admin_file_manager_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg></span>{{ shopro_trans('nav.file_manager') }}</a>
-                <a class="{{ route starts with 'admin_url_redirect_' ? 'is-active' : '' }}" href="{{ path('admin_url_redirect_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M7 7h10l-3-3m3 3-3 3M17 17H7l3 3m-3-3 3-3"/></svg></span>{{ shopro_trans('nav.redirects') }}</a>
+                {% if shopro_module_enabled('settings') %}<a class="{{ route starts with 'admin_email_template_' ? 'is-active' : '' }}" href="{{ path('admin_email_template_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5Zm1 1 8 7 8-7"/></svg></span>{{ shopro_trans('nav.email_templates') }}</a>{% endif %}
+                {% if shopro_module_enabled('language') %}<a class="{{ route starts with 'admin_language_' ? 'is-active' : '' }}" href="{{ path('admin_language_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18"/></svg></span>{{ shopro_trans('nav.languages') }}</a>{% endif %}
+                {% if shopro_module_enabled('media') %}<a class="{{ route starts with 'admin_file_manager_' ? 'is-active' : '' }}" href="{{ path('admin_file_manager_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg></span>{{ shopro_trans('nav.file_manager') }}</a>{% endif %}
+                {% if shopro_module_enabled('cms') %}<a class="{{ route starts with 'admin_url_redirect_' ? 'is-active' : '' }}" href="{{ path('admin_url_redirect_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M7 7h10l-3-3m3 3-3 3M17 17H7l3 3m-3-3 3-3"/></svg></span>{{ shopro_trans('nav.redirects') }}</a>{% endif %}
                     </div>
                 </details>
+                {% endif %}
                 {% set system_group_active = route starts with 'admin_audit_log_' or route starts with 'admin_module_' %}
                 <details class="modern-nav-group{{ system_group_active ? ' is-active' : '' }}"{{ system_group_active ? ' open' : '' }}>
                     <summary><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5V4Zm4 4h6M9 12h6M9 16h4"/></svg></span>{{ shopro_trans('nav.system') }}<span class="modern-nav-group__chevron">⌄</span></summary>
@@ -77,13 +84,15 @@
                     </div>
                 </details>
                 {% endif %}
-                {% if is_granted('ROLE_EDITOR') and not is_granted('ROLE_ADMIN') %}<a class="{{ route starts with 'admin_file_manager_' ? 'is-active' : '' }}" href="{{ path('admin_file_manager_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg></span>{{ shopro_trans('nav.file_manager') }}</a>{% endif %}
+                {% if is_granted('ROLE_EDITOR') and not is_granted('ROLE_ADMIN') and shopro_module_enabled('media') %}<a class="{{ route starts with 'admin_file_manager_' ? 'is-active' : '' }}" href="{{ path('admin_file_manager_index') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3V6Z"/></svg></span>{{ shopro_trans('nav.file_manager') }}</a>{% endif %}
+                {% if shopro_module_enabled('cms') %}
                 <p class="modern-nav__label">{{ shopro_trans('admin.website') }}</p>
                 <a href="{{ path('app_home') }}" target="_blank">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
                     {{ shopro_trans('nav.open_site') }}
                     <span class="modern-nav__external">↗</span>
                 </a>
+                {% endif %}
             </nav>
             <div class="modern-sidebar__help">
                 <div class="modern-sidebar__help-icon">?</div>
@@ -102,10 +111,10 @@
                     <span>{{ shopro_trans('admin.panel') }}</span>
                 </div>
                 <div class="modern-topbar__actions">
-                    {% include 'admin/_language_switcher.html.twig' %}
-                    <a class="modern-icon-button" href="{{ path('app_home') }}" target="_blank" aria-label="{{ shopro_trans('admin.open_website') }}">
+                    {% if shopro_module_enabled('language') %}{% include 'admin/_language_switcher.html.twig' %}{% endif %}
+                    {% if shopro_module_enabled('cms') %}<a class="modern-icon-button" href="{{ path('app_home') }}" target="_blank" aria-label="{{ shopro_trans('admin.open_website') }}">
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
-                    </a>
+                    </a>{% endif %}
                     <div class="modern-user">
                         <span class="modern-user__avatar">{{ app.user.userIdentifier|first|upper }}</span>
                         <span class="modern-user__data"><strong>{{ shopro_trans(is_granted('ROLE_ADMIN') ? 'admin.administrator' : 'admin.editor') }}</strong><small>{{ app.user.userIdentifier }}</small></span>
