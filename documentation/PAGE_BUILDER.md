@@ -95,6 +95,9 @@ ponownie podczas renderowania.
 Renderer sprawdza również MIME rzeczywistego pliku, a nie tylko jego rozszerzenie.
 Do znacznika `<img>` dopuszczane są JPEG, PNG, WebP, AVIF, GIF i SVG; dokument lub
 archiwum nazwane jak obraz nie zostanie publicznie wyrenderowane.
+Okno wyboru obrazu pokazuje wyłącznie pliki graficzne, mimo że pełny menedżer
+plików nadal obsługuje również dokumenty. Liczniki oraz łączny rozmiar w pickerze
+odnoszą się tylko do widocznych obrazów.
 
 ## Sekcje i kolumny
 

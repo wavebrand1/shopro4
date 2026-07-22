@@ -34,6 +34,8 @@ final class AdminFileManagerTest extends TestCase
         self::assertSame(0, $listing['directory_count']);
         self::assertSame(1, $listing['file_count']);
         self::assertSame(0, $listing['total_size']);
+        self::assertSame(0, $listing['image_count']);
+        self::assertSame(0, $listing['image_size']);
 
         $this->manager->rename('documents/readme.txt', 'manual.txt');
         self::assertSame('manual.txt', $this->manager->listing('documents')['files'][0]['name']);
@@ -110,6 +112,7 @@ final class AdminFileManagerTest extends TestCase
         self::assertSame(['mismatch' => 1], $result->rejections);
         self::assertSame(['document.pdf'], array_column($this->manager->listing('')['files'], 'name'));
         self::assertSame((int) filesize($this->project.'/public/uploads/document.pdf'), $this->manager->listing('')['total_size']);
+        self::assertSame(0, $this->manager->listing('')['image_count']);
     }
 
     public function testItRejectsRenamingFileToExtensionIncompatibleWithItsMimeType(): void

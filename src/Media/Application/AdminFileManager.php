@@ -30,7 +30,7 @@ final class AdminFileManager
 
     public function __construct(private readonly string $projectDir, private readonly ?ResponsiveImageOptimizer $imageOptimizer = null) {}
 
-    /** @return array{path:string,parent:?string,directories:list<array<string,mixed>>,files:list<array<string,mixed>>,directory_count:int,file_count:int,total_size:int} */
+    /** @return array{path:string,parent:?string,directories:list<array<string,mixed>>,files:list<array<string,mixed>>,directory_count:int,file_count:int,total_size:int,image_count:int,image_size:int} */
     public function listing(string $relativePath): array
     {
         $path = $this->normalize($relativePath);
@@ -54,6 +54,7 @@ final class AdminFileManager
         }
         usort($directories, static fn (array $a, array $b): int => strnatcasecmp($a['name'], $b['name']));
         usort($files, static fn (array $a, array $b): int => strnatcasecmp($a['name'], $b['name']));
+        $images = array_values(array_filter($files, static fn (array $file): bool => (bool) $file['image']));
 
         return [
             'path' => $path,
@@ -63,6 +64,8 @@ final class AdminFileManager
             'directory_count' => count($directories),
             'file_count' => count($files),
             'total_size' => array_sum(array_column($files, 'size')),
+            'image_count' => count($images),
+            'image_size' => array_sum(array_column($images, 'size')),
         ];
     }
 
