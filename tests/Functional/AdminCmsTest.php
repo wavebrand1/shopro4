@@ -571,6 +571,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.modern-page-heading h1', 'System modules');
         self::assertSelectorCount(6, 'section.modern-table-card:first-of-type .admin-table tbody tr');
         self::assertSelectorTextContains('.admin-table', 'CMS and Page Builder');
+        self::assertSelectorTextContains('.admin-table', 'settings ^4.0');
         self::assertSelectorCount(6, '.status--published');
         self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'Orphaned records');
         self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'legacy-extension');

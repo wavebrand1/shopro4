@@ -17,4 +17,6 @@ interface ModuleDefinition
     public function required(): bool;
     /** @return list<string> */
     public function dependencies(): array;
+    /** @return array<string, string> Map of dependency code to Composer version constraint. */
+    public function dependencyVersions(): array;
 }

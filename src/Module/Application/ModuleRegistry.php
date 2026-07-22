@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Application;
 
+use Composer\Semver\Semver;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 final class ModuleRegistry
@@ -33,6 +34,22 @@ final class ModuleRegistry
             foreach ($module->dependencies() as $dependency) {
                 if (!isset($this->modules[$dependency])) throw new \LogicException(sprintf('Shopro module "%s" requires missing module "%s".', $code, $dependency));
                 if ($dependency === $code) throw new \LogicException('Shopro module cannot depend on itself: '.$code);
+            }
+            $constraints = $module->dependencyVersions();
+            $dependencies = $module->dependencies();
+            if (array_diff(array_keys($constraints), $dependencies) !== [] || array_diff($dependencies, array_keys($constraints)) !== []) {
+                throw new \LogicException(sprintf('Shopro module "%s" must define one version constraint for every dependency.', $code));
+            }
+            foreach ($constraints as $dependency => $constraint) {
+                if (!is_string($constraint) || trim($constraint) === '') throw new \LogicException(sprintf('Invalid version constraint for Shopro module "%s" dependency "%s".', $code, $dependency));
+                try {
+                    $compatible = Semver::satisfies($this->modules[$dependency]->version(), $constraint);
+                } catch (\UnexpectedValueException $exception) {
+                    throw new \LogicException(sprintf('Invalid version constraint "%s" for Shopro module "%s" dependency "%s".', $constraint, $code, $dependency), previous: $exception);
+                }
+                if (!$compatible) {
+                    throw new \LogicException(sprintf('Shopro module "%s" requires "%s" version "%s", installed definition provides "%s".', $code, $dependency, $constraint, $this->modules[$dependency]->version()));
+                }
             }
         }
 

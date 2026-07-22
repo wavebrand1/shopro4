@@ -8,4 +8,5 @@ final class SettingsModule implements ModuleDefinition
     public function description(): string { return 'module.settings_help'; } public function version(): string { return '4.0.0'; }
     public function category(): string { return 'system'; } public function required(): bool { return true; }
     public function dependencies(): array { return []; }
+    public function dependencyVersions(): array { return []; }
 }

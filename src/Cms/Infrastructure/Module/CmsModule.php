@@ -8,4 +8,5 @@ final class CmsModule implements ModuleDefinition
     public function description(): string { return 'module.cms_help'; } public function version(): string { return '4.0.0'; }
     public function category(): string { return 'content'; } public function required(): bool { return true; }
     public function dependencies(): array { return ['identity', 'media', 'settings']; }
+    public function dependencyVersions(): array { return ['identity' => '^4.0', 'media' => '^4.0', 'settings' => '^4.0']; }
 }

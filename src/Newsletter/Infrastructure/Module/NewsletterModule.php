@@ -8,4 +8,5 @@ final class NewsletterModule implements ModuleDefinition
     public function description(): string { return 'module.newsletter_help'; } public function version(): string { return '4.0.0'; }
     public function category(): string { return 'communication'; } public function required(): bool { return true; }
     public function dependencies(): array { return ['identity', 'settings']; }
+    public function dependencyVersions(): array { return ['identity' => '^4.0', 'settings' => '^4.0']; }
 }

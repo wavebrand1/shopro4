@@ -8,4 +8,5 @@ final class MediaModule implements ModuleDefinition
     public function description(): string { return 'module.media_help'; } public function version(): string { return '4.0.0'; }
     public function category(): string { return 'content'; } public function required(): bool { return true; }
     public function dependencies(): array { return ['settings']; }
+    public function dependencyVersions(): array { return ['settings' => '^4.0']; }
 }

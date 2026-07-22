@@ -8,4 +8,5 @@ final class LanguageModule implements ModuleDefinition
     public function description(): string { return 'module.language_help'; } public function version(): string { return '4.0.0'; }
     public function category(): string { return 'content'; } public function required(): bool { return true; }
     public function dependencies(): array { return ['cms']; }
+    public function dependencyVersions(): array { return ['cms' => '^4.0']; }
 }
