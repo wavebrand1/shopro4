@@ -29,4 +29,6 @@ class InstalledModule
     public function getInstalledAt(): \DateTimeImmutable { return $this->installedAt; }
     public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
     public function synchronize(string $version): void { $this->version = $version; $this->updatedAt = new \DateTimeImmutable(); }
+    public function enable(): void { $this->enabled = true; $this->updatedAt = new \DateTimeImmutable(); }
+    public function disable(): void { $this->enabled = false; $this->updatedAt = new \DateTimeImmutable(); }
 }

@@ -31,6 +31,12 @@ informacji ani danych klienta.
 Administrator widzi stan pod adresem `/admin/modules`. Editor nie ma dostępu do
 rejestru instalacji.
 
+`ModuleLifecyclePolicy` stanowi obowiązkową bramkę przyszłych operacji włączania
+i wyłączania. Blokuje wyłączenie modułu systemowego, zależności używanej przez
+aktywny moduł oraz modułu wykonującego pracę w tle. Ponowne włączenie wymaga
+aktywnych wszystkich zależności. Samo przełączenie stanu aktualizuje znacznik
+czasu, ale nie usuwa tabel ani danych modułu.
+
 ## Kontrakt dla przyszłych modułów opcjonalnych
 
 Moduł opcjonalny powinien otrzymać własny katalog domenowy w `src`, definicję
