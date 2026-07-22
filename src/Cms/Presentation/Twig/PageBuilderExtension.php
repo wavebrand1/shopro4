@@ -11,5 +11,11 @@ use Twig\TwigFunction;
 final class PageBuilderExtension extends AbstractExtension
 {
     public function __construct(private readonly PageBuilderComponentRegistry $components) {}
-    public function getFunctions(): array { return [new TwigFunction('shopro_builder_components', $this->components->enabled(...))]; }
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('shopro_builder_components', $this->components->enabled(...)),
+            new TwigFunction('shopro_builder_component_enabled', $this->components->isRenderableEnabled(...)),
+        ];
+    }
 }

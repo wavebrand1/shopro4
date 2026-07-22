@@ -13,6 +13,7 @@ final readonly class PageBuilderComponentDefinition
         public string $help,
         public string $icon,
         public bool $preset = false,
+        public bool $library = true,
     ) {
         if (!preg_match('/^[a-z][a-z0-9_]{1,63}$/', $type)) throw new \InvalidArgumentException('Invalid Page Builder component type: '.$type);
         if (!preg_match('/^[a-z][a-z0-9_-]{1,79}$/', $moduleCode)) throw new \InvalidArgumentException('Invalid Page Builder component module: '.$moduleCode);

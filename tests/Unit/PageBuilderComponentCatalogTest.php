@@ -20,6 +20,8 @@ final class PageBuilderComponentCatalogTest extends TestCase
         self::assertTrue($components[0]->preset);
         self::assertContains('rich_text', $types);
         self::assertContains('image', $types);
+        self::assertContains('layout_section', $types);
+        self::assertFalse($components[array_search('layout_section', $types, true)]->library);
         foreach ($components as $component) self::assertSame('cms', $component->moduleCode);
     }
 

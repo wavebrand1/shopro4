@@ -9,6 +9,6 @@
     audience: 'cms/block/audience.html.twig',
     cta: 'cms/block/cta.html.twig'
 } %}
-{% if templates[component.type] is defined %}
+{% if templates[component.type] is defined and shopro_builder_component_enabled(component.type) %}
     {% include templates[component.type] with {block: component.data, image_sizes: image_sizes|default('100vw')} only %}
 {% endif %}

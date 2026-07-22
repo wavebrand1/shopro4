@@ -30,7 +30,14 @@ final class PageBuilderComponentRegistry
     /** @return list<PageBuilderComponentDefinition> */
     public function enabled(): array
     {
-        return array_values(array_filter($this->components, fn (PageBuilderComponentDefinition $component): bool => $this->runtime->isEnabled($component->moduleCode)));
+        return array_values(array_filter($this->components, fn (PageBuilderComponentDefinition $component): bool => $component->library && $this->runtime->isEnabled($component->moduleCode)));
+    }
+
+    public function isRenderableEnabled(string $type): bool
+    {
+        $component = $this->components[$type] ?? null;
+
+        return $component !== null && !$component->preset && $this->runtime->isEnabled($component->moduleCode);
     }
 
     /** @return array<string, PageBuilderComponentDefinition> */

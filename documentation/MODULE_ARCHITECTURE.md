@@ -7,7 +7,9 @@ komponenty należące do danego modułu. Centralny rejestr sprawdza unikalność
 typów oraz obecność właściciela w `ModuleRegistry`. Biblioteka edytora strony
 bazowej i tłumaczenia korzysta z jednej listy filtrowanej przez `ModuleRuntime`.
 Nieaktywność modułu ukrywa możliwość dodawania nowych instancji, ale nie kasuje
-wcześniej zapisanych bloków ani ich konfiguracji.
+wcześniej zapisanych bloków ani ich konfiguracji. Wspólny renderer bloków również
+sprawdza właściciela przed wykonaniem komponentu; dotyczy to bloków głównych,
+zagnieżdżonych kolumn, podglądu i strony błędu.
 
 ## Rejestr dostarczany przez kod
 

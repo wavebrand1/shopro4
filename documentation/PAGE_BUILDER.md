@@ -10,7 +10,11 @@ Rejestr odrzuca zduplikowane typy i nieznane moduły.
 
 W edytorze widoczne są tylko komponenty aktywnych modułów. Wyłączenie modułu nie
 modyfikuje jednak JSON-u istniejących stron i nie usuwa danych. Po ponownym
-włączeniu komponent wraca do biblioteki. Provider jest opisem integracji; nowy typ
+włączeniu komponent wraca do biblioteki i publicznego renderera. W czasie
+nieaktywności `_render.html.twig` pomija jego wykonanie również w zagnieżdżonych
+sekcjach, podglądzie i skonfigurowanej stronie 404. Techniczne typy układu mogą być
+zarejestrowane jako niewidoczne pozycje katalogu, a presety nie są renderowane jak
+zwykłe bloki. Provider jest opisem integracji; nowy typ
 nadal wymaga formularza JavaScript, sanitizacji, renderera Twig i testów.
 
 Edytor stron nie zapisuje swobodnego HTML ani CSS. Programista przygotowuje komponent,
