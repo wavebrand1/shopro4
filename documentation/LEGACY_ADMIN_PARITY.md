@@ -103,6 +103,9 @@ Lista rozróżnia zdarzenia operatorów i użytkowników witryny. Można ją fil
 po typie, ważności i poprawnym zakresie dat oraz przeszukiwać po zdarzeniu,
 komunikacie, użytkowniku albo adresie IP. Nieprawidłowa data jest ignorowana,
 zamiast powodować błąd panelu.
+Każdy wpis ma stronę szczegółów. Pokazuje ona tylko jawnie dozwolone dane
+techniczne (`route`, `method`, `operation`, `path`, `item`); inne pola, w tym
+potencjalne hasła, tokeny i zawartość formularzy, nie są renderowane.
 
 ## Zasady implementacji Symfony
 

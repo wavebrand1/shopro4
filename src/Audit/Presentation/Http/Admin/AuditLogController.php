@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Audit\Presentation\Http\Admin;
 
 use App\Audit\Application\AuditLogFilters;
+use App\Audit\Application\AuditLogDataPresenter;
+use App\Audit\Domain\Entity\AuditLog;
 use App\Audit\Infrastructure\Persistence\Doctrine\AuditLogRepository;
 use App\Language\Application\SystemTranslator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,5 +45,14 @@ final class AuditLogController extends AbstractController
         $this->addFlash('success', $this->translator->translate('logs.cleared'));
 
         return $this->redirectToRoute('admin_audit_log_index');
+    }
+
+    #[Route('/{id}', name: 'show', requirements: ['id' => '\\d+'], methods: ['GET'])]
+    public function show(AuditLog $log): Response
+    {
+        return $this->render('admin/audit_log/show.html.twig', [
+            'log' => $log,
+            'details' => AuditLogDataPresenter::present($log->getData()),
+        ]);
     }
 }

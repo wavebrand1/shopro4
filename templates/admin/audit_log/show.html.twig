@@ -1,0 +1,17 @@
+{% extends 'admin/layout.html.twig' %}
+{% block title %}{{ shopro_trans('logs.details') }} — Shopro 4.0{% endblock %}
+{% block body %}
+<div class="modern-page-heading"><div><p class="modern-kicker">{{ shopro_trans('admin.users_system') }}</p><h1>{{ shopro_trans('logs.details') }}</h1><p>{{ shopro_trans('logs.details_lead') }}</p></div><a class="modern-button" href="{{ path('admin_audit_log_index') }}">← {{ shopro_trans('logs.back') }}</a></div>
+<section class="modern-card">
+    <dl class="audit-details">
+        <div><dt>{{ shopro_trans('logs.time') }}</dt><dd>{{ shopro_date(log.createdAt) }} {{ shopro_date(log.createdAt, 'time') }}</dd></div>
+        <div><dt>{{ shopro_trans('logs.type') }}</dt><dd><span class="status-pill">{{ shopro_trans('logs.type_' ~ log.type) }}</span></dd></div>
+        <div><dt>{{ shopro_trans('logs.event') }}</dt><dd><code>{{ log.action }}</code></dd></div>
+        <div><dt>{{ shopro_trans('logs.user') }}</dt><dd>{{ log.username ?: '—' }}</dd></div>
+        <div><dt>IP</dt><dd><code>{{ log.ipAddress ?: '—' }}</code></dd></div>
+        <div><dt>{{ shopro_trans('logs.importance') }}</dt><dd>{{ shopro_trans(log.important ? 'logs.important' : 'logs.regular') }}</dd></div>
+        <div class="audit-details__wide"><dt>{{ shopro_trans('logs.message') }}</dt><dd>{{ log.message }}</dd></div>
+        {% for key,value in details %}<div><dt>{{ shopro_trans('logs.data_' ~ key) }}</dt><dd><code>{{ value }}</code></dd></div>{% endfor %}
+    </dl>
+</section>
+{% endblock %}

@@ -808,6 +808,19 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/admin/logs?q=login&type=site_user&important=1');
         self::assertResponseIsSuccessful();
 
+        $detailLog = new AuditLog('admin', 'test.detail', 'Technical event details.', 'admin', '127.0.0.1', [
+            'route' => 'admin_test', 'method' => 'POST', 'operation' => 'save',
+            'password' => 'must-not-be-rendered', 'token' => 'also-hidden',
+        ]);
+        $this->entityManager->persist($detailLog);
+        $this->entityManager->flush();
+        $this->client->request('GET', '/admin/logs/'.$detailLog->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.modern-page-heading h1', 'Details');
+        self::assertSelectorTextContains('.audit-details', 'admin_test');
+        self::assertSelectorTextNotContains('.audit-details', 'must-not-be-rendered');
+        self::assertSelectorTextNotContains('.audit-details', 'also-hidden');
+
         $this->client->request('GET', '/admin/configuration/system');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'System configuration');
