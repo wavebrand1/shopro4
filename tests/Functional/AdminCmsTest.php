@@ -27,6 +27,7 @@ use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Infrastructure\Module\NewsletterActivityProbe;
 use App\Module\Domain\Entity\InstalledModule;
+use App\Module\Application\ModuleAvailability;
 use App\Language\Domain\Entity\Language;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
 use App\Settings\Domain\Entity\SystemSettings;
@@ -1822,5 +1823,25 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('a[href="/admin/configuration/newsletter"]');
         self::assertSelectorTextNotContains('.modern-dashboard-modules', 'Newsletter');
+    }
+
+    public function testModuleRuntimeFailsClosedWhenDependencyWasDisabledOutsideLifecycleManager(): void
+    {
+        $cms = new InstalledModule('cms', '4.0.0');
+        $cms->disable();
+        $language = new InstalledModule('language', '4.0.0');
+        $this->entityManager->persist($cms);
+        $this->entityManager->persist($language);
+        $this->entityManager->flush();
+
+        $runtime = self::getContainer()->get(ModuleAvailability::class);
+        try {
+            self::assertFalse($runtime->isEnabled('cms'));
+            self::assertFalse($runtime->isEnabled('language'));
+            self::assertFalse($runtime->isEnabled('unknown-module'));
+        } finally {
+            $cms->enable();
+            $this->entityManager->flush();
+        }
     }
 }

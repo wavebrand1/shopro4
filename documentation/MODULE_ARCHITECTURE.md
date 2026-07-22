@@ -111,6 +111,12 @@ się migracjami. Wyłączenie modułu może ukryć trasy i zadania, ale nie moż
 jego tabel ani danych. Deinstalacja danych będzie osobną, potwierdzaną operacją,
 nigdy skutkiem zwykłego wyłączenia lub braku klasy w kodzie.
 
+Runtime sprawdza nie tylko stan żądanego modułu, ale rekurencyjnie także wszystkie
+jego zależności. Moduł z aktywnym rekordem, którego zależność została wyłączona z
+pominięciem `ModuleLifecycleManager` (np. ręczną zmianą w bazie), jest traktowany
+jak nieaktywny. Jest to zachowanie fail-closed: kod biznesowy nie startuje, a rekordy
+i dane obu modułów pozostają zachowane do naprawienia konfiguracji.
+
 Przed udostępnieniem przełączników dla modułów opcjonalnych trzeba dodać:
 
 1. blokadę wyłączenia podczas działania kolejek i zadań cyklicznych,
