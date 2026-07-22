@@ -26,6 +26,13 @@ pominiętej komendy. Ochroną są objęte obecnie synchronizacja języków, opty
 obrazów oraz administracyjne komendy kont. `app:modules:sync` i kopia bazy są
 celowo niezależne od modułów, aby zachować narzędzia wdrożeniowe i ratunkowe.
 
+Listenery uruchamiane automatycznie nie mogą omijać tych bramek. Subskrybenci
+konserwacji, kontekstu języka, przekierowań CMS, publicznej strony 404 i historii
+logowania sprawdzają `ModuleAvailability` przed pierwszym zapytaniem lub skutkiem
+ubocznym. Wyłączenie właściciela oznacza więc brak działania listenera. Audyt
+administracyjny i nagłówki bezpieczeństwa pozostają niezależnym fundamentem i są
+wykonywane bez względu na aktywność modułów.
+
 ## Rejestr dostarczany przez kod
 
 Każdy obszar funkcjonalny implementuje `ModuleDefinition`. Definicja ma stabilny

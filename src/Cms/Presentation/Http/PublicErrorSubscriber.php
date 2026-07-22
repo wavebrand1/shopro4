@@ -7,6 +7,7 @@ namespace App\Cms\Presentation\Http;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Language\Domain\Entity\Language;
+use App\Module\Application\ModuleAvailability;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,12 +22,13 @@ final class PublicErrorSubscriber
         private readonly Environment $twig,
         private readonly PageRepository $pages,
         private readonly EntityManagerInterface $entityManager,
+        private readonly ModuleAvailability $modules,
     ) {
     }
 
     public function __invoke(ExceptionEvent $event): void
     {
-        if (!$event->isMainRequest()) return;
+        if (!$event->isMainRequest() || !$this->modules->isEnabled('cms')) return;
         $exception = $event->getThrowable();
         if (!$exception instanceof HttpExceptionInterface || $exception->getStatusCode() !== Response::HTTP_NOT_FOUND) return;
 

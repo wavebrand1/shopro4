@@ -10,6 +10,7 @@ use App\Identity\Domain\Entity\AdminUser;
 use App\Identity\Domain\Entity\SiteUser;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Identity\Infrastructure\Persistence\Doctrine\SiteUserRepository;
+use App\Module\Application\ModuleAvailability;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
@@ -20,12 +21,13 @@ final class LoginActivitySubscriber
         private readonly AdminUserRepository $users,
         private readonly SiteUserRepository $siteUsers,
         private readonly AuditLogRepository $logs,
+        private readonly ModuleAvailability $modules,
     ) {}
 
     #[AsEventListener(event: LoginSuccessEvent::class, dispatcher: 'security.event_dispatcher.admin')]
     public function onLoginSuccess(LoginSuccessEvent $event): void
     {
-        if ($event->getFirewallName() !== 'admin' || !$event->getUser() instanceof AdminUser) return;
+        if (!$this->modules->isEnabled('identity') || $event->getFirewallName() !== 'admin' || !$event->getUser() instanceof AdminUser) return;
 
         $user = $event->getUser();
         $user->recordLogin();
@@ -42,7 +44,7 @@ final class LoginActivitySubscriber
     #[AsEventListener(event: LoginSuccessEvent::class, dispatcher: 'security.event_dispatcher.frontend')]
     public function onSiteLoginSuccess(LoginSuccessEvent $event): void
     {
-        if ($event->getFirewallName() !== 'frontend' || !$event->getUser() instanceof SiteUser) return;
+        if (!$this->modules->isEnabled('identity') || $event->getFirewallName() !== 'frontend' || !$event->getUser() instanceof SiteUser) return;
         $user = $event->getUser();
         $user->recordLogin();
         $this->siteUsers->save($user);
@@ -52,7 +54,7 @@ final class LoginActivitySubscriber
     #[AsEventListener(event: LoginFailureEvent::class, dispatcher: 'security.event_dispatcher.admin')]
     public function onLoginFailure(LoginFailureEvent $event): void
     {
-        if ($event->getFirewallName() !== 'admin') return;
+        if (!$this->modules->isEnabled('identity') || $event->getFirewallName() !== 'admin') return;
 
         $identifier = trim((string) $event->getRequest()->request->get('_username'));
         $this->writeLog(new AuditLog(
@@ -69,7 +71,7 @@ final class LoginActivitySubscriber
     #[AsEventListener(event: LoginFailureEvent::class, dispatcher: 'security.event_dispatcher.frontend')]
     public function onSiteLoginFailure(LoginFailureEvent $event): void
     {
-        if ($event->getFirewallName() !== 'frontend') return;
+        if (!$this->modules->isEnabled('identity') || $event->getFirewallName() !== 'frontend') return;
         $identifier = trim((string) $event->getRequest()->request->get('_username'));
         $this->writeLog(new AuditLog('site_user', 'login_failure', 'Nieudana próba logowania użytkownika witryny.', $identifier !== '' ? mb_substr($identifier, 0, 180) : null, $event->getRequest()->getClientIp(), [], true));
     }

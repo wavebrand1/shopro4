@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Settings\Presentation\Http;
 
+use App\Module\Application\ModuleAvailability;
 use App\Settings\Application\SettingsProvider;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,11 +14,11 @@ use Twig\Environment;
 #[AsEventListener(event: 'kernel.request', priority: 20)]
 final class MaintenanceSubscriber
 {
-    public function __construct(private readonly SettingsProvider $settings, private readonly Environment $twig) {}
+    public function __construct(private readonly SettingsProvider $settings, private readonly Environment $twig, private readonly ModuleAvailability $modules) {}
 
     public function __invoke(RequestEvent $event): void
     {
-        if (!$event->isMainRequest() || !$this->settings->get('maintenance', false)) return;
+        if (!$event->isMainRequest() || !$this->modules->isEnabled('settings') || !$this->settings->get('maintenance', false)) return;
         $request = $event->getRequest();
         $path = $request->getPathInfo();
         if (self::isPathSpace($path, '/admin') || self::isPathSpace($path, '/_') || $path === '/newsletter/unsubscribe') return;

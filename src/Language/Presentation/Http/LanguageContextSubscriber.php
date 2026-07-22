@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace App\Language\Presentation\Http;
 
 use App\Language\Domain\Entity\Language;
+use App\Module\Application\ModuleAvailability;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -10,9 +11,9 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 #[AsEventListener(event:'kernel.request', priority:18)]
 final class LanguageContextSubscriber
 {
- public function __construct(private readonly EntityManagerInterface $em){}
+ public function __construct(private readonly EntityManagerInterface $em,private readonly ModuleAvailability $modules){}
  public function __invoke(RequestEvent $event):void{
-  if(!$event->isMainRequest())return;$request=$event->getRequest();
+  if(!$event->isMainRequest()||!$this->modules->isEnabled('language'))return;$request=$event->getRequest();
   try{
    $code=mb_strtolower((string)($request->attributes->get('_locale')?:$request->query->get('lang')?:($request->hasSession()?$request->getSession()->get('shopro_language'):'')));
    $language=$code!==''?$this->em->getRepository(Language::class)->findOneBy(['code'=>$code,'active'=>true]):null;

@@ -6,6 +6,7 @@ namespace App\Cms\Presentation\Http;
 
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\UrlRedirectRepository;
+use App\Module\Application\ModuleAvailability;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 #[AsEventListener(event: 'kernel.exception', priority: 64)]
 final class LegacyUrlRedirectSubscriber
 {
-    public function __construct(private readonly UrlRedirectRepository $redirects, private readonly PageRepository $pages) {}
+    public function __construct(private readonly UrlRedirectRepository $redirects, private readonly PageRepository $pages, private readonly ModuleAvailability $modules) {}
     public function __invoke(ExceptionEvent $event): void
     {
-        if (!$event->isMainRequest() || !$event->getThrowable() instanceof NotFoundHttpException) return;
+        if (!$event->isMainRequest() || !$this->modules->isEnabled('cms') || !$event->getThrowable() instanceof NotFoundHttpException) return;
         $request = $event->getRequest();
         if (!in_array($request->getMethod(), ['GET', 'HEAD'], true)) return;
         $path = $request->getPathInfo();
