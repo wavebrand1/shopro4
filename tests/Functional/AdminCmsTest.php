@@ -587,6 +587,22 @@ final class AdminCmsTest extends WebTestCase
         $probeDelivery->markFailed('Probe completed');
         $this->entityManager->flush();
         self::assertSame([], self::getContainer()->get(NewsletterActivityProbe::class)->blockingReasons());
+
+        $newsletterState = $this->entityManager->find(InstalledModule::class, 'newsletter');
+        self::assertNotNull($newsletterState);
+        $newsletterState->disable();
+        $this->entityManager->flush();
+        $this->client->request('GET', '/admin/newsletter');
+        self::assertResponseStatusCodeSame(404);
+        $this->client->request('GET', '/newsletter/unsubscribe/invalid-token');
+        self::assertResponseStatusCodeSame(404);
+        $this->client->request('GET', '/admin');
+        self::assertSelectorNotExists('.modern-nav a[href="/admin/newsletter"]');
+        $newsletterState->enable();
+        $this->entityManager->flush();
+        $this->client->request('GET', '/admin');
+        self::assertSelectorExists('.modern-nav a[href="/admin/newsletter"]');
+        $this->client->request('GET', '/admin/modules');
         self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'legacy-extension');
 
         $this->client->request('GET', '/admin/memberships/new');

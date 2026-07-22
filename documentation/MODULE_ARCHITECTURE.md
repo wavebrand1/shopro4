@@ -40,6 +40,12 @@ Wszystkie zmiany stanu wykonuje `ModuleLifecycleManager`. Rozszerzalne czujniki
 `ModuleActivityProbe` zgłaszają pracę w tle; pierwszy czujnik sprawdza oczekujące
 dostarczenia newslettera. Operacje PA używają POST, CSRF i trafiają do audytu,
 a wyłączenie jest oznaczane jako zdarzenie ważne.
+Kontrolery modułu oznacza się atrybutem `#[RequiresModule('kod')]`. Subskrybent
+runtime zwraca 404 dla wyłączonego modułu, dzięki czemu jego endpointów nie można
+wywołać ręcznie. Twig udostępnia `shopro_module_enabled()`, używane do ukrywania
+odnośników PA i przyszłych komponentów Page Buildera. Brak wpisu instalacji jest
+bezpieczny podczas pierwszego wdrożenia: moduł systemowy pozostaje dostępny,
+natomiast opcjonalny pozostaje wyłączony do synchronizacji.
 
 ## Kontrakt dla przyszłych modułów opcjonalnych
 

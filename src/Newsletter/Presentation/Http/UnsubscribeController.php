@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Newsletter\Presentation\Http;
 
+use App\Module\Presentation\Http\RequiresModule;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[RequiresModule('newsletter')]
 final class UnsubscribeController extends AbstractController
 {
     #[Route('/newsletter/unsubscribe/{token}', name: 'newsletter_unsubscribe_token', requirements: ['token' => '[A-Za-z0-9_-]+'], methods: ['GET', 'POST'])]

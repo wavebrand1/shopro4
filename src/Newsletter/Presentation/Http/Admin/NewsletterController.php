@@ -11,6 +11,7 @@ use App\Newsletter\Application\Message\SendNewsletterDelivery;
 use App\Newsletter\Application\RecipientCsvImporter;
 use App\Newsletter\Application\CampaignTestMailer;
 use App\Mail\Application\EmailLayoutRenderer;
+use App\Module\Presentation\Http\RequiresModule;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Presentation\Form\NewsletterCampaignType;
@@ -25,6 +26,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/newsletter')]
 #[IsGranted('ROLE_ADMIN')]
+#[RequiresModule('newsletter')]
 final class NewsletterController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator) {}
