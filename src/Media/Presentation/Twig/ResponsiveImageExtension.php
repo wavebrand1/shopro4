@@ -6,6 +6,7 @@ namespace App\Media\Presentation\Twig;
 
 use App\Media\Domain\MediaPath;
 use App\Settings\Application\SettingsProvider;
+use App\Module\Application\ModuleAvailability;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Twig\Extension\AbstractExtension;
 use Twig\Markup;
@@ -13,10 +14,11 @@ use Twig\TwigFunction;
 
 final class ResponsiveImageExtension extends AbstractExtension
 {
-    public function __construct(#[Autowire('%kernel.project_dir%')] private readonly string $projectDir, private readonly SettingsProvider $settings) {}
+    public function __construct(#[Autowire('%kernel.project_dir%')] private readonly string $projectDir, private readonly SettingsProvider $settings, private readonly ModuleAvailability $modules) {}
     public function getFunctions(): array { return [new TwigFunction('shopro_picture', $this->picture(...), ['is_safe' => ['html']])]; }
     public function picture(string $src, string $alt = '', ?int $width = null, ?int $height = null, bool $eager = false, string $sizes = '100vw'): Markup
     {
+        if (!$this->modules->isEnabled('media')) return new Markup('', 'UTF-8');
         if (!MediaPath::isSafePublicUploadUrl($src)) return new Markup('', 'UTF-8');
         $urlPath = $src;
         $decodedPath = rawurldecode($urlPath);
@@ -26,7 +28,8 @@ final class ResponsiveImageExtension extends AbstractExtension
         $normalizedSource = $source ? str_replace('\\', '/', $source) : '';
         $normalizedUploads = $uploads ? rtrim(str_replace('\\', '/', $uploads), '/') : '';
         if (!$source || !$uploads || !MediaPath::isSupportedImageFile($source) || !str_starts_with($normalizedSource, $normalizedUploads.'/')) return new Markup('', 'UTF-8');
-        $widths = array_filter(array_map('intval', explode(',', (string) $this->settings->get('image_widths'))));
+        $settingsEnabled = $this->modules->isEnabled('settings');
+        $widths = array_filter(array_map('intval', explode(',', (string) ($settingsEnabled ? $this->settings->get('image_widths') : SettingsProvider::defaults()['image_widths']))));
         $baseUrl = preg_replace('/\.[^.]+$/', '', $urlPath); $baseFile = preg_replace('/\.[^.]+$/', '', $source);
         $sources = '';
         foreach (['avif' => 'image/avif', 'webp' => 'image/webp'] as $format => $mime) {
@@ -39,7 +42,7 @@ final class ResponsiveImageExtension extends AbstractExtension
             if ($imageSize) { $width = $imageSize[0]; $height = $imageSize[1]; }
         }
         $dimensions = ($width && $height) ? ' width="'.$width.'" height="'.$height.'"' : '';
-        $lazy = (bool) $this->settings->get('image_lazy_loading', true);
+        $lazy = (bool) ($settingsEnabled ? $this->settings->get('image_lazy_loading', true) : SettingsProvider::defaults()['image_lazy_loading']);
         $loading = $eager ? ' loading="eager" fetchpriority="high" decoding="async"' : ($lazy ? ' loading="lazy" decoding="async"' : ' decoding="async"');
         return new Markup('<picture>'.$sources.'<img src="'.htmlspecialchars($src, ENT_QUOTES).'" alt="'.htmlspecialchars($alt, ENT_QUOTES).'"'.$dimensions.$loading.'></picture>', 'UTF-8');
     }

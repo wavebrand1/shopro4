@@ -47,6 +47,14 @@ jest nieaktywny. Odpowiadające karty są wtedy pomijane. Boczne menu ukrywa gru
 linki poszczególnych modułów, dzięki czemu interfejs nie prowadzi do tras kończących
 się kontrolowanym 404. Dane i tabele nadal pozostają nietknięte.
 
+Globalne funkcje Twig również stanowią granicę modułu. `shopro_menu()` zwraca pustą
+nawigację bez odpytywania CMS, funkcje językowe nie pobierają encji języków, a
+`shopro_setting()` korzysta ze statycznych wartości domyślnych, jeżeli właściciel
+jest nieaktywny. Tłumaczenia interfejsu fundamentu pozostają dostępne z katalogu
+wbudowanego w kod. Renderer obrazów nie czyta plików ani konfiguracji po wyłączeniu
+modułu Media. Dzięki temu szablony logów, rejestru modułów i innych ekranów
+ratunkowych mogą być renderowane bez pośredniego uruchamiania usług biznesowych.
+
 ## Rejestr dostarczany przez kod
 
 Każdy obszar funkcjonalny implementuje `ModuleDefinition`. Definicja ma stabilny

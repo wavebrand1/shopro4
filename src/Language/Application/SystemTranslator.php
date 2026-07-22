@@ -7,6 +7,7 @@ namespace App\Language\Application;
 use App\Language\Domain\Entity\Language;
 use App\Language\Domain\Entity\Translation;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Module\Application\ModuleAvailability;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 final class SystemTranslator
@@ -17,11 +18,16 @@ final class SystemTranslator
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly RequestStack $requestStack,
+        private readonly ModuleAvailability $modules,
     ) {
     }
 
     public function translate(string $key): string
     {
+        if (!$this->modules->isEnabled('language')) {
+            return $this->catalogueTranslation($key, $this->locale());
+        }
+
         $language = $this->currentLanguage() ?? $this->defaultLanguage();
         $code = $language?->getCode() ?? 'pl';
         $cacheKey = $code.':'.$key;
@@ -37,9 +43,7 @@ final class SystemTranslator
         } catch (\Throwable) {
         }
 
-        $phrase = SystemTranslationCatalog::phrases()[$key] ?? null;
-
-        return $this->cache[$cacheKey] = $phrase[$code] ?? $phrase['pl'] ?? $key;
+        return $this->cache[$cacheKey] = $this->catalogueTranslation($key, $code);
     }
 
     public function locale(): string
@@ -59,5 +63,13 @@ final class SystemTranslator
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    private function catalogueTranslation(string $key, string $locale): string
+    {
+        $code = strtolower(substr(str_replace('_', '-', $locale), 0, 2));
+        $phrase = SystemTranslationCatalog::phrases()[$key] ?? null;
+
+        return $phrase[$code] ?? $phrase['pl'] ?? $key;
     }
 }

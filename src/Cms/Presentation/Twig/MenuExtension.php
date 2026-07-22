@@ -10,6 +10,7 @@ use App\Cms\Domain\Entity\MenuItemTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
 use App\Language\Application\LocalizedPageUrlGenerator;
 use App\Language\Domain\Entity\Language;
+use App\Module\Application\ModuleAvailability;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,6 +28,7 @@ final class MenuExtension extends AbstractExtension
         private readonly RequestStack $requests,
         private readonly LocalizedPageUrlGenerator $localizedUrls,
         private readonly EntityManagerInterface $em,
+        private readonly ModuleAvailability $modules,
     ) {
     }
 
@@ -41,6 +43,10 @@ final class MenuExtension extends AbstractExtension
     /** @return list<array{id: int, name: string, caption: ?string, url: ?string, target: string, children: array}> */
     public function menu(int $place): array
     {
+        if (!$this->modules->isEnabled('cms')) {
+            return [];
+        }
+
         $items = $this->items->findActiveByPlace($place);
         $this->translations=[];
         $language=$this->requests->getCurrentRequest()?->attributes->get('_shopro_language');
