@@ -11,7 +11,7 @@ use App\Newsletter\Application\Message\SendNewsletterDelivery;
 use App\Newsletter\Application\RecipientCsvImporter;
 use App\Newsletter\Application\CampaignTestMailer;
 use App\Mail\Application\EmailLayoutRenderer;
-use App\Module\Presentation\Http\RequiresModule;
+use App\Module\Application\RequiresModule;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Presentation\Form\NewsletterCampaignType;

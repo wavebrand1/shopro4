@@ -6,6 +6,7 @@ namespace App\Identity\Application\Command;
 
 use App\Identity\Domain\Entity\AdminUser;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
+use App\Module\Application\RequiresModule;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,6 +16,7 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(name: 'app:reset-user-password', description: 'Ustawia nowe hasło użytkownika wskazanego loginem lub adresem e-mail.')]
+#[RequiresModule('identity')]
 final class ResetUserPasswordCommand extends Command
 {
     public function __construct(

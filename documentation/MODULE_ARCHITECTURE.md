@@ -19,6 +19,13 @@ wiadomość do ponowienia. Newsletter deklaruje ten kontrakt dla każdego dostar
 Normalny panel nadal nie pozwala wyłączyć modułu z oczekującymi zadaniami; middleware
 jest drugą warstwą ochrony przed wykonaniem kodu po zmianie stanu poza tym procesem.
 
+Polecenia konsolowe modułów są oznaczane tym samym atrybutem `RequiresModule` co
+kontrolery HTTP. Subskrybent `console.command` zatrzymuje polecenie przed metodą
+`execute()`, wypisuje kod nieaktywnego modułu i zwraca standardowy kod Symfony dla
+pominiętej komendy. Ochroną są objęte obecnie synchronizacja języków, optymalizacja
+obrazów oraz administracyjne komendy kont. `app:modules:sync` i kopia bazy są
+celowo niezależne od modułów, aby zachować narzędzia wdrożeniowe i ratunkowe.
+
 ## Rejestr dostarczany przez kod
 
 Każdy obszar funkcjonalny implementuje `ModuleDefinition`. Definicja ma stabilny

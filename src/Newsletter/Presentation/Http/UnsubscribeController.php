@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Newsletter\Presentation\Http;
 
-use App\Module\Presentation\Http\RequiresModule;
+use App\Module\Application\RequiresModule;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

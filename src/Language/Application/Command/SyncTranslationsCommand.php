@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 namespace App\Language\Application\Command;
+use App\Module\Application\RequiresModule;
 use App\Language\Application\SystemTranslationCatalog;use App\Language\Domain\Entity\Language;use App\Language\Domain\Entity\Translation;use Doctrine\ORM\EntityManagerInterface;use Symfony\Component\Console\Attribute\AsCommand;use Symfony\Component\Console\Command\Command;use Symfony\Component\Console\Input\InputInterface;use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name:'app:translations:sync',description:'Uzupełnia brakujące języki i systemowe frazy tłumaczeń.')]
+#[RequiresModule('language')]
 final class SyncTranslationsCommand extends Command
 {
  public function __construct(private readonly EntityManagerInterface $em){parent::__construct();}

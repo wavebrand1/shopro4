@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Module\Presentation\Http;
 
-use App\Module\Application\ModuleRuntime;
+use App\Module\Application\ModuleAvailability;
+use App\Module\Application\RequiresModule;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -12,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 #[AsEventListener(event: 'kernel.controller')]
 final readonly class ModuleRuntimeSubscriber
 {
-    public function __construct(private ModuleRuntime $runtime) {}
+    public function __construct(private ModuleAvailability $runtime) {}
 
     public function __invoke(ControllerEvent $event): void
     {

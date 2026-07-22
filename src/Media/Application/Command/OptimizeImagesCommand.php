@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Media\Application\Command;
 
 use App\Media\Application\ResponsiveImageOptimizer;
+use App\Module\Application\RequiresModule;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,6 +15,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 #[AsCommand(name: 'app:images:optimize', description: 'Generuje responsywne warianty AVIF/WebP obrazów z public/uploads.')]
+#[RequiresModule('media')]
 final class OptimizeImagesCommand extends Command
 {
     public function __construct(private readonly ResponsiveImageOptimizer $optimizer, private readonly KernelInterface $kernel) { parent::__construct(); }
