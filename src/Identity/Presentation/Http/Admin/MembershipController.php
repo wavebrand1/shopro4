@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/memberships')]
+#[\App\Module\Application\RequiresModule('identity')]
 final class MembershipController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator) {}

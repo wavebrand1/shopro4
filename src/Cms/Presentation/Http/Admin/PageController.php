@@ -26,6 +26,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/pages')]
 #[IsGranted('ROLE_EDITOR')]
+#[\App\Module\Application\RequiresModule('cms')]
 final class PageController extends AbstractController
 {
     public function __construct(

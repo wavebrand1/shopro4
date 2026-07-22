@@ -18,6 +18,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+#[\App\Module\Application\RequiresModule('identity')]
 final class PasswordResetController extends AbstractController
 {
     #[Route('/admin/password/forgot', name: 'admin_password_forgot', methods: ['GET', 'POST'])]

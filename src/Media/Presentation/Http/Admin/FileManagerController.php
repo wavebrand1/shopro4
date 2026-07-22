@@ -14,6 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/configuration/files', name: 'admin_file_manager_')]
 #[IsGranted('ROLE_EDITOR')]
+#[\App\Module\Application\RequiresModule('media')]
 final class FileManagerController extends AbstractController
 {
     public function __construct(private readonly AdminFileManager $files, private readonly SystemTranslator $translator) {}

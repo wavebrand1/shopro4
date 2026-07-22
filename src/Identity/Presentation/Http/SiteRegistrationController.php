@@ -19,6 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 
+#[\App\Module\Application\RequiresModule('identity')]
 final class SiteRegistrationController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator, private readonly RateLimiterFactory $activationResendLimiter) {}

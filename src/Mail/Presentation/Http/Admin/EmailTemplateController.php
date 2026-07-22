@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/configuration/email-templates')]
+#[\App\Module\Application\RequiresModule('settings')]
 final class EmailTemplateController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator) {}

@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+#[\App\Module\Application\RequiresModule('identity')]
 final class SiteLoginController extends AbstractController
 {
     #[Route('/login', name: 'site_login', methods: ['GET', 'POST'])]

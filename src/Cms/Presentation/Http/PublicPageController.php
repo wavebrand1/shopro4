@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[\App\Module\Application\RequiresModule('cms')]
 final class PublicPageController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator)

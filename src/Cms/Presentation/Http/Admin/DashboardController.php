@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_EDITOR')]
+#[\App\Module\Application\RequiresModule('cms')]
 final class DashboardController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard', methods: ['GET'])]

@@ -4,6 +4,7 @@ namespace App\Cms\Presentation\Http\Admin;
 use App\Cms\Application\PageBuilderSanitizer;use App\Cms\Domain\Entity\Page;use App\Cms\Domain\Entity\PageTranslation;use App\Cms\Presentation\Form\PageTranslationType;use App\Language\Domain\Entity\Language;use App\Language\Application\SystemTranslator;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\HttpFoundation\Request;use Symfony\Component\HttpFoundation\Response;use Symfony\Component\Routing\Attribute\Route;use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/admin/pages/{id}/translations')]
 #[IsGranted('ROLE_EDITOR')]
+#[\App\Module\Application\RequiresModule('cms')]
 final class PageTranslationController extends AbstractController
 {
  public function __construct(private readonly PageBuilderSanitizer $builderSanitizer,private readonly ?SystemTranslator $translator=null){}

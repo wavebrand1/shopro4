@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[\App\Module\Application\RequiresModule('cms')]
 final class SearchController extends AbstractController
 {
     #[Route('/search', name: 'cms_search', methods: ['GET'], priority: 90)]

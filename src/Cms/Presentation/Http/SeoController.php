@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+#[\App\Module\Application\RequiresModule('cms')]
 final class SeoController extends AbstractController
 {
     #[Route('/sitemap.xml', name: 'cms_sitemap', methods: ['GET'], priority: 100)]

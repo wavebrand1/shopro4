@@ -15,6 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/configuration/languages')]
 #[IsGranted('ROLE_ADMIN')]
+#[\App\Module\Application\RequiresModule('language')]
 final class LanguageController extends AbstractController
 {
  public function __construct(private readonly SystemTranslator $translator){}

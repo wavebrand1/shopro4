@@ -20,6 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/site-users')]
 #[IsGranted('ROLE_ADMIN')]
+#[\App\Module\Application\RequiresModule('identity')]
 final class SiteUserController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator) {}

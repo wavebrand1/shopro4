@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[\App\Module\Application\RequiresModule('identity')]
 final class MeController extends AbstractController
 {
     #[Route('/api/v1/me', name: 'api_v1_me', methods: ['GET'])]

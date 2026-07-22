@@ -18,6 +18,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/account')]
+#[\App\Module\Application\RequiresModule('identity')]
 final class SiteAccountController extends AbstractController
 {
     #[Route('', name: 'site_account', methods: ['GET'])]

@@ -18,6 +18,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/configuration/system', name: 'admin_system_settings_')]
 #[IsGranted('ROLE_ADMIN')]
+#[\App\Module\Application\RequiresModule('settings')]
 final class SystemSettingsController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator) {}

@@ -33,6 +33,14 @@ ubocznym. Wyłączenie właściciela oznacza więc brak działania listenera. Au
 administracyjny i nagłówki bezpieczeństwa pozostają niezależnym fundamentem i są
 wykonywane bez względu na aktywność modułów.
 
+Warstwa HTTP ma jawne pokrycie właścicielami. Wszystkie kontrolery CMS, kont
+witryny i panelu, języków, mediów, konfiguracji oraz szablonów e-mail używają
+klasowego `RequiresModule`. Bramka działa przed wywołaniem akcji, więc ręczne
+wejście pod znany URL kończy się odpowiedzią 404 bez uruchomienia kontrolera.
+Poza modułami pozostają celowo: logowanie administratora, rejestr modułów,
+health-check i audyt. Zapewnia to ścieżkę diagnostyki oraz odzyskania systemu bez
+udostępniania wyłączonych funkcji biznesowych.
+
 ## Rejestr dostarczany przez kod
 
 Każdy obszar funkcjonalny implementuje `ModuleDefinition`. Definicja ma stabilny

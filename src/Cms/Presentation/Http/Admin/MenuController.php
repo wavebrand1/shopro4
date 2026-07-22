@@ -17,6 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/menu')]
 #[IsGranted('ROLE_EDITOR')]
+#[\App\Module\Application\RequiresModule('cms')]
 final class MenuController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator)
