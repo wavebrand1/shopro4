@@ -6,6 +6,7 @@ final class SystemTranslationCatalog
 {
  /** @return array<string,array{pl:string,en:string}> */
  public static function phrases():array{return [
+  'module.runtime_blocked'=>['pl'=>'Wymaga synchronizacji','en'=>'Synchronization required'],'module.runtime_blocked_help'=>['pl'=>'Moduł lub jego zależność ma niezgodną wersję albo jest wyłączona.','en'=>'The module or one of its dependencies has an incompatible version or is disabled.'],
   'auth.remember_me'=>['pl'=>'Zapamiętaj mnie przez 30 dni','en'=>'Remember me for 30 days'],
   'site_registration.activation_invalid_title'=>['pl'=>'Link aktywacyjny wygasł','en'=>'Activation link expired'],
   'site_registration.resend_title'=>['pl'=>'Wyślij ponownie aktywację','en'=>'Resend activation link'],'site_registration.resend_help'=>['pl'=>'Podaj login lub adres e-mail. Jeśli nieaktywne konto istnieje, wyślemy nowy link aktywacyjny.','en'=>'Enter your username or email. If an inactive account exists, we will send a new activation link.'],'site_registration.resend_submit'=>['pl'=>'Wyślij link aktywacyjny','en'=>'Send activation link'],'site_registration.resend_sent'=>['pl'=>'Jeśli nieaktywne konto istnieje, nowy link aktywacyjny został wysłany.','en'=>'If an inactive account exists, a new activation link has been sent.'],'site_registration.resend_link'=>['pl'=>'Nie dotarł link aktywacyjny?','en'=>'Didn’t receive the activation link?'],

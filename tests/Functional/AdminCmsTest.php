@@ -1844,4 +1844,27 @@ final class AdminCmsTest extends WebTestCase
             $this->entityManager->flush();
         }
     }
+
+    public function testModuleRuntimeAndRegistryExposeUnsynchronizedVersion(): void
+    {
+        $admin = new AdminUser('module-version@example.test', 'module-version');
+        $cms = new InstalledModule('cms', '3.9.0');
+        $language = new InstalledModule('language', '4.0.0');
+        foreach ([$admin, $cms, $language] as $entity) $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        $runtime = self::getContainer()->get(ModuleAvailability::class);
+        try {
+            self::assertFalse($runtime->isEnabled('cms'));
+            self::assertFalse($runtime->isEnabled('language'));
+
+            $this->client->loginUser($admin, 'admin');
+            $this->client->request('GET', '/admin/modules');
+            self::assertResponseIsSuccessful();
+            self::assertSelectorTextContains('.admin-table', 'Synchronization required');
+        } finally {
+            $cms->synchronize('4.0.0');
+            $this->entityManager->flush();
+        }
+    }
 }

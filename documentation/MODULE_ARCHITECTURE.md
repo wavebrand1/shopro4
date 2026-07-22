@@ -117,6 +117,11 @@ pominięciem `ModuleLifecycleManager` (np. ręczną zmianą w bazie), jest trakt
 jak nieaktywny. Jest to zachowanie fail-closed: kod biznesowy nie startuje, a rekordy
 i dane obu modułów pozostają zachowane do naprawienia konfiguracji.
 
+Ta sama bramka porównuje wersję rekordu instalacji z wersją kodu oraz sprawdza
+ograniczenia SemVer wszystkich zależności. Częściowe wdrożenie albo pominięcie
+`app:modules:sync` nie uruchomi więc modułu na niezgodnym schemacie lub API. Rejestr
+PA pokazuje wtedy status „Wymaga synchronizacji”, zamiast mylącego „Włączony”.
+
 Przed udostępnieniem przełączników dla modułów opcjonalnych trzeba dodać:
 
 1. blokadę wyłączenia podczas działania kolejek i zadań cyklicznych,

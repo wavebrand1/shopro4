@@ -7,6 +7,7 @@ namespace App\Module\Presentation\Http\Admin;
 use App\Module\Application\ModuleRegistry;
 use App\Module\Application\ModuleLifecycleException;
 use App\Module\Application\ModuleLifecycleManager;
+use App\Module\Application\ModuleAvailability;
 use App\Module\Infrastructure\Persistence\Doctrine\InstalledModuleRepository;
 use App\Language\Application\SystemTranslator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,12 +21,12 @@ final class ModuleController extends AbstractController
     public function __construct(private readonly SystemTranslator $translator) {}
 
     #[Route('', name: 'admin_module_index', methods: ['GET'])]
-    public function index(ModuleRegistry $registry, InstalledModuleRepository $repository): Response
+    public function index(ModuleRegistry $registry, InstalledModuleRepository $repository, ModuleAvailability $runtime): Response
     {
         $states = $repository->indexed();
         $modules = [];
         foreach ($registry->all() as $definition) {
-            $modules[] = ['definition' => $definition, 'state' => $states[$definition->code()] ?? null];
+            $modules[] = ['definition' => $definition, 'state' => $states[$definition->code()] ?? null, 'runtimeEnabled' => $runtime->isEnabled($definition->code())];
         }
         return $this->render('admin/module/index.html.twig', [
             'modules' => $modules,
