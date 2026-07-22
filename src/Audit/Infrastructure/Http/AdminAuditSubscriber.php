@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Audit\Infrastructure\Http;
 
+use App\Audit\Application\AdminAuditOperation;
 use App\Audit\Domain\Entity\AuditLog;
 use App\Audit\Infrastructure\Persistence\Doctrine\AuditLogRepository;
 use App\Settings\Application\SettingsProvider;
@@ -27,17 +28,25 @@ final class AdminAuditSubscriber
         try {
             if (!$this->settings->get('logging', true)) return;
             $route = (string) $request->attributes->get('_route', 'admin_action');
+            $operation = AdminAuditOperation::normalize($request->request->get('action'));
             $user = $this->tokens->getToken()?->getUser();
             $username = $user instanceof UserInterface ? $user->getUserIdentifier() : null;
-            $important = str_contains($route, 'delete') || str_contains($route, 'clear') || str_contains($route, 'revoke');
+            $data = ['route' => $route, 'method' => $request->getMethod()];
+            if ($operation !== null) $data['operation'] = $operation;
+            if ($route === 'admin_file_manager_index') {
+                foreach (['path', 'item'] as $key) {
+                    $value = trim((string) $request->request->get($key, ''));
+                    if ($value !== '') $data[$key] = mb_substr($value, 0, 255);
+                }
+            }
             $this->logs->save(new AuditLog(
                 'admin',
-                $route,
-                sprintf('%s %s', $request->getMethod(), $request->getPathInfo()),
+                AdminAuditOperation::action($route, $operation),
+                sprintf('%s %s%s', $request->getMethod(), $request->getPathInfo(), $operation !== null ? ' ['.$operation.']' : ''),
                 $username,
                 $request->getClientIp(),
-                ['route' => $route],
-                $important,
+                $data,
+                AdminAuditOperation::isImportant($route, $operation),
             ));
         } catch (\Throwable) {
             // Audyt nie może przerwać operacji administracyjnej, np. w trakcie wdrażania migracji.

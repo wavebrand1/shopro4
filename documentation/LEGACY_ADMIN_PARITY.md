@@ -95,6 +95,10 @@ paginacja i czyszczenie całości. Rekord przechowuje czas, użytkownika, IP, ty
 `system/admin/user`, dane/ikonę, komunikat i ważność. Operacje administracyjne
 nowej wersji muszą dopisywać audyt, a treść przy wyświetlaniu pozostaje
 sanityzowana.
+Audyt rozróżnia operacje wykonywane przez wspólne kontrolery, np. `upload`,
+`mkdir`, `rename` i `delete` menedżera plików. Dla plików zapisuje wyłącznie
+ścieżkę operacji, nigdy zawartość uploadu. Usuwanie, czyszczenie, cofanie
+uprawnień i przywracanie rewizji są oznaczane jako zdarzenia ważne.
 
 ## Zasady implementacji Symfony
 
