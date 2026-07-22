@@ -36,6 +36,10 @@ i wyłączania. Blokuje wyłączenie modułu systemowego, zależności używanej
 aktywny moduł oraz modułu wykonującego pracę w tle. Ponowne włączenie wymaga
 aktywnych wszystkich zależności. Samo przełączenie stanu aktualizuje znacznik
 czasu, ale nie usuwa tabel ani danych modułu.
+Wszystkie zmiany stanu wykonuje `ModuleLifecycleManager`. Rozszerzalne czujniki
+`ModuleActivityProbe` zgłaszają pracę w tle; pierwszy czujnik sprawdza oczekujące
+dostarczenia newslettera. Operacje PA używają POST, CSRF i trafiają do audytu,
+a wyłączenie jest oznaczane jako zdarzenie ważne.
 
 ## Kontrakt dla przyszłych modułów opcjonalnych
 

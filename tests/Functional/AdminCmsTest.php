@@ -23,6 +23,8 @@ use App\Identity\Application\SitePasswordResetManager;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
+use App\Newsletter\Domain\Entity\NewsletterDelivery;
+use App\Newsletter\Infrastructure\Module\NewsletterActivityProbe;
 use App\Module\Domain\Entity\InstalledModule;
 use App\Language\Domain\Entity\Language;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
@@ -574,6 +576,17 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.admin-table', 'settings ^4.0');
         self::assertSelectorCount(6, '.status--published');
         self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'Orphaned records');
+
+        $probeCampaign = new NewsletterCampaign();
+        $probeCampaign->setSubject('Activity probe');
+        $probeDelivery = new NewsletterDelivery($probeCampaign, 'probe@example.com');
+        $this->entityManager->persist($probeCampaign);
+        $this->entityManager->persist($probeDelivery);
+        $this->entityManager->flush();
+        self::assertSame(['module.lifecycle.newsletter_queue'], self::getContainer()->get(NewsletterActivityProbe::class)->blockingReasons());
+        $probeDelivery->markFailed('Probe completed');
+        $this->entityManager->flush();
+        self::assertSame([], self::getContainer()->get(NewsletterActivityProbe::class)->blockingReasons());
         self::assertSelectorTextContains('.modern-table-card + .modern-table-card', 'legacy-extension');
 
         $this->client->request('GET', '/admin/memberships/new');
