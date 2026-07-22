@@ -98,6 +98,9 @@ archiwum nazwane jak obraz nie zostanie publicznie wyrenderowane.
 Okno wyboru obrazu pokazuje wyłącznie pliki graficzne, mimo że pełny menedżer
 plików nadal obsługuje również dokumenty. Liczniki oraz łączny rozmiar w pickerze
 odnoszą się tylko do widocznych obrazów.
+Ograniczenie pickera jest wymuszane również po stronie serwera, dlatego nie można
+go ominąć zmodyfikowanym formularzem HTTP. Pełny menedżer plików zachowuje
+niezależną obsługę dozwolonych dokumentów.
 
 ## Sekcje i kolumny
 

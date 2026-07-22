@@ -115,6 +115,19 @@ final class AdminFileManagerTest extends TestCase
         self::assertSame(0, $this->manager->listing('')['image_count']);
     }
 
+    public function testImagePickerModeRejectsDocumentUploadOnTheServer(): void
+    {
+        $path = $this->project.'/picker-document.pdf';
+        file_put_contents($path, "%PDF-1.4\ncontent");
+        $document = new UploadedFile($path, 'document.pdf', null, null, true);
+
+        $result = $this->manager->upload('', [$document], true);
+
+        self::assertSame(0, $result->uploaded);
+        self::assertSame(['type' => 1], $result->rejections);
+        self::assertSame([], $this->manager->listing('')['files']);
+    }
+
     public function testItRejectsRenamingFileToExtensionIncompatibleWithItsMimeType(): void
     {
         file_put_contents($this->project.'/public/uploads/document.pdf', "%PDF-1.4\ncontent");

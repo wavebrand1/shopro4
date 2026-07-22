@@ -32,7 +32,7 @@ final class FileManagerController extends AbstractController
                 elseif ($action === 'rename') $this->files->rename((string) $request->request->get('item'), (string) $request->request->get('name'));
                 elseif ($action === 'delete') $this->files->delete((string) $request->request->get('item'));
                 elseif ($action === 'upload') {
-                    $result = $this->files->upload($path, array_values(array_filter($request->files->all('files'), static fn ($file): bool => $file instanceof UploadedFile)));
+                    $result = $this->files->upload($path, array_values(array_filter($request->files->all('files'), static fn ($file): bool => $file instanceof UploadedFile)), $picker);
                     if ($result->uploaded > 0) $this->addFlash('success', sprintf($this->translator->translate('media.uploaded'), $result->uploaded));
                     if ($result->rejected() > 0) {
                         $this->addFlash('error', sprintf($this->translator->translate('media.rejected'), $result->rejected()));

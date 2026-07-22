@@ -82,7 +82,7 @@ final class AdminFileManager
     }
 
     /** @param list<UploadedFile> $files */
-    public function upload(string $path, array $files): FileUploadResult
+    public function upload(string $path, array $files, bool $imagesOnly = false): FileUploadResult
     {
         $directory = $this->resolve($this->normalize($path), true);
         $uploaded = 0;
@@ -94,6 +94,7 @@ final class AdminFileManager
                 !$file->isValid() => 'invalid',
                 $file->getSize() > 20 * 1024 * 1024 => 'size',
                 !in_array($mimeType, self::ALLOWED_MIME_TYPES, true) => 'type',
+                $imagesOnly && !str_starts_with($mimeType, 'image/') => 'type',
                 !self::matchesMimeType($mimeType, $extension) => 'mismatch',
                 default => null,
             };
