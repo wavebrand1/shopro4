@@ -29,18 +29,12 @@
                 <p class="component-builder__label">{{ shopro_trans('builder.section_layout') }}</p>
                 <button class="component-library-item" type="button" data-add-section><span class="component-library-item__icon">§</span><span><strong>{{ shopro_trans('builder.add_section') }}</strong><small>{{ shopro_trans('builder.add_section_help') }}</small></span></button>
                 <p class="component-builder__label">{{ shopro_trans('builder.available_components') }}</p>
-                <button class="component-library-item component-library-item--preset" type="button" data-add-preset="homepage"><span class="component-library-item__icon">⌂</span><span><strong>{{ shopro_trans('builder.full_homepage') }}</strong><small>{{ shopro_trans('builder.full_homepage_help') }}</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="feature_cards">
-                    <span class="component-library-item__icon">▦</span>
-                    <span><strong>{{ shopro_trans('builder.feature_cards') }}</strong><small>{{ shopro_trans('builder.feature_cards_help') }}</small></span>
-                </button>
-                <button class="component-library-item" type="button" data-add-component="hero"><span class="component-library-item__icon">H</span><span><strong>Hero</strong><small>{{ shopro_trans('builder.hero_help') }}</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="logo_bar"><span class="component-library-item__icon">L</span><span><strong>{{ shopro_trans('builder.logo_bar') }}</strong><small>{{ shopro_trans('builder.logo_bar_help') }}</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="process"><span class="component-library-item__icon">1</span><span><strong>{{ shopro_trans('builder.process') }}</strong><small>{{ shopro_trans('builder.process_help') }}</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="audience"><span class="component-library-item__icon">A</span><span><strong>{{ shopro_trans('builder.audience') }}</strong><small>{{ shopro_trans('builder.audience_help') }}</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="cta"><span class="component-library-item__icon">→</span><span><strong>{{ shopro_trans('builder.cta') }}</strong><small>{{ shopro_trans('builder.cta_help') }}</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="rich_text"><span class="component-library-item__icon">T</span><span><strong>{{ shopro_trans('builder.rich_text') }}</strong><small>{{ shopro_trans('builder.rich_text_help') }}</small></span></button>
-                <button class="component-library-item" type="button" data-add-component="image"><span class="component-library-item__icon">▧</span><span><strong>{{ shopro_trans('builder.image') }}</strong><small>{{ shopro_trans('builder.image_help') }}</small></span></button>
+                {% for component in shopro_builder_components() %}
+                    <button class="component-library-item{{ component.preset ? ' component-library-item--preset' : '' }}" type="button" {% if component.preset %}data-add-preset="{{ component.type }}"{% else %}data-add-component="{{ component.type }}"{% endif %}>
+                        <span class="component-library-item__icon">{{ component.icon }}</span>
+                        <span><strong>{{ component.label starts with 'builder.' ? shopro_trans(component.label) : component.label }}</strong><small>{{ shopro_trans(component.help) }}</small></span>
+                    </button>
+                {% endfor %}
             </aside>
             <div class="component-builder__workspace">
                 <div class="component-builder__toolbar"><div><strong>{{ shopro_trans('builder.page_layout') }}</strong><small>{{ shopro_trans('builder.render_help') }}</small></div></div>

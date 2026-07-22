@@ -1,5 +1,14 @@
 # Architektura modułów Shopro 4.0
 
+## Rozszerzenia Page Buildera
+
+Provider oznaczony tagiem `shopro.page_builder_component_provider` deklaruje
+komponenty należące do danego modułu. Centralny rejestr sprawdza unikalność ich
+typów oraz obecność właściciela w `ModuleRegistry`. Biblioteka edytora strony
+bazowej i tłumaczenia korzysta z jednej listy filtrowanej przez `ModuleRuntime`.
+Nieaktywność modułu ukrywa możliwość dodawania nowych instancji, ale nie kasuje
+wcześniej zapisanych bloków ani ich konfiguracji.
+
 ## Rejestr dostarczany przez kod
 
 Każdy obszar funkcjonalny implementuje `ModuleDefinition`. Definicja ma stabilny

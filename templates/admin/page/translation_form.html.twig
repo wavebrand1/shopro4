@@ -20,8 +20,8 @@
         <div class="component-builder" data-component-builder data-project-field="page_translation_builderData">
             <aside class="component-builder__library">
                 <button class="component-library-item" type="button" data-add-section><strong>{{ shopro_trans('builder.add_section') }}</strong></button>
-                {% for type,key in {rich_text:'builder.rich_text',image:'builder.image',hero:'Hero',feature_cards:'builder.feature_cards',logo_bar:'builder.logo_bar',process:'builder.process',audience:'builder.audience',cta:'CTA'} %}
-                    <button class="component-library-item" type="button" data-add-component="{{ type }}"><strong>{{ key starts with 'builder.' ? shopro_trans(key) : key }}</strong></button>
+                {% for component in shopro_builder_components()|filter(component => not component.preset) %}
+                    <button class="component-library-item" type="button" data-add-component="{{ component.type }}"><strong>{{ component.label starts with 'builder.' ? shopro_trans(component.label) : component.label }}</strong></button>
                 {% endfor %}
             </aside>
             <div class="component-builder__workspace"><div class="component-builder__empty" data-builder-empty><strong>{{ shopro_trans('builder.empty') }}</strong></div><div class="component-builder__list" data-builder-list></div></div>

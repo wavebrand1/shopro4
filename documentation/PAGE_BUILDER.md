@@ -1,5 +1,18 @@
 # Shopro Component Builder
 
+## Modułowy katalog komponentów
+
+Biblioteka formularza jest budowana przez `PageBuilderComponentRegistry`, zamiast
+być powielana w szablonach strony bazowej i tłumaczenia. Każdy moduł może dostarczyć
+pozycje przez `PageBuilderComponentProvider`: stabilny typ, kod modułu właściciela,
+klucze etykiety i pomocy, ikonę oraz informację, czy pozycja jest presetem.
+Rejestr odrzuca zduplikowane typy i nieznane moduły.
+
+W edytorze widoczne są tylko komponenty aktywnych modułów. Wyłączenie modułu nie
+modyfikuje jednak JSON-u istniejących stron i nie usuwa danych. Po ponownym
+włączeniu komponent wraca do biblioteki. Provider jest opisem integracji; nowy typ
+nadal wymaga formularza JavaScript, sanitizacji, renderera Twig i testów.
+
 Edytor stron nie zapisuje swobodnego HTML ani CSS. Programista przygotowuje komponent,
 jego formularz administracyjny i szablon Twig, a redaktor tworzy instancje komponentu,
 zmienia tylko dozwolone pola oraz ustala ich kolejność.
