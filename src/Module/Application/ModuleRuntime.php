@@ -6,7 +6,7 @@ namespace App\Module\Application;
 
 use App\Module\Infrastructure\Persistence\Doctrine\InstalledModuleRepository;
 
-final readonly class ModuleRuntime
+final readonly class ModuleRuntime implements ModuleAvailability
 {
     public function __construct(private ModuleRegistry $registry, private InstalledModuleRepository $repository) {}
 

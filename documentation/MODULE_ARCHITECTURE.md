@@ -11,6 +11,14 @@ wcześniej zapisanych bloków ani ich konfiguracji. Wspólny renderer bloków r�
 sprawdza właściciela przed wykonaniem komponentu; dotyczy to bloków głównych,
 zagnieżdżonych kolumn, podglądu i strony błędu.
 
+Procesy asynchroniczne korzystają z analogicznej bramki. Wiadomość należąca do
+modułu implementuje `ModuleAwareMessage`, a `ModuleRuntimeMiddleware` sprawdza jej
+właściciela zarówno podczas wysłania na magistralę, jak i obsługi przez workera.
+Jeżeli moduł jest nieaktywny, handler nie zostaje uruchomiony, a Messenger zachowuje
+wiadomość do ponowienia. Newsletter deklaruje ten kontrakt dla każdego dostarczenia.
+Normalny panel nadal nie pozwala wyłączyć modułu z oczekującymi zadaniami; middleware
+jest drugą warstwą ochrony przed wykonaniem kodu po zmianie stanu poza tym procesem.
+
 ## Rejestr dostarczany przez kod
 
 Każdy obszar funkcjonalny implementuje `ModuleDefinition`. Definicja ma stabilny
