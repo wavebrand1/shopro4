@@ -99,6 +99,10 @@ Audyt rozróżnia operacje wykonywane przez wspólne kontrolery, np. `upload`,
 `mkdir`, `rename` i `delete` menedżera plików. Dla plików zapisuje wyłącznie
 ścieżkę operacji, nigdy zawartość uploadu. Usuwanie, czyszczenie, cofanie
 uprawnień i przywracanie rewizji są oznaczane jako zdarzenia ważne.
+Lista rozróżnia zdarzenia operatorów i użytkowników witryny. Można ją filtrować
+po typie, ważności i poprawnym zakresie dat oraz przeszukiwać po zdarzeniu,
+komunikacie, użytkowniku albo adresie IP. Nieprawidłowa data jest ignorowana,
+zamiast powodować błąd panelu.
 
 ## Zasady implementacji Symfony
 

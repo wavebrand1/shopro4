@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Audit\Presentation\Http\Admin;
 
+use App\Audit\Application\AuditLogFilters;
 use App\Audit\Infrastructure\Persistence\Doctrine\AuditLogRepository;
 use App\Language\Application\SystemTranslator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,12 +24,14 @@ final class AuditLogController extends AbstractController
         $page = max(1, $request->query->getInt('page', 1));
         $limit = $request->query->getInt('limit', 25);
         if (!in_array($limit, [10, 25, 50, 100], true)) $limit = 25;
-        $result = $logs->filtered($request->query->getString('from') ?: null, $request->query->getString('to') ?: null, $request->query->getString('type') ?: null, $page, $limit);
+        $filters = AuditLogFilters::fromArray($request->query->all());
+        $result = $logs->filtered($filters, $page, $limit);
 
         return $this->render('admin/audit_log/index.html.twig', [
             'logs' => $result['items'], 'total' => $result['total'], 'page' => $page, 'limit' => $limit,
             'pages' => max(1, (int) ceil($result['total'] / $limit)),
-            'filters' => ['from' => $request->query->getString('from'), 'to' => $request->query->getString('to'), 'type' => $request->query->getString('type')],
+            'filters' => $filters->toQuery(),
+            'types' => AuditLogFilters::TYPES,
         ]);
     }
 

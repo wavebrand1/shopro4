@@ -797,7 +797,16 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'System logs');
         self::assertSelectorTextContains('.audit-filters', 'Date from');
+        self::assertSelectorExists('input[name="q"]');
+        self::assertSelectorExists('select[name="type"] option[value="site_user"]');
+        self::assertSelectorExists('select[name="important"] option[value="1"]');
         self::assertSelectorExists('.admin-table tbody tr');
+
+        $this->client->request('GET', '/admin/logs?from=2026-02-31&to=invalid&type=unknown&important=maybe');
+        self::assertResponseIsSuccessful();
+
+        $this->client->request('GET', '/admin/logs?q=login&type=site_user&important=1');
+        self::assertResponseIsSuccessful();
 
         $this->client->request('GET', '/admin/configuration/system');
         self::assertResponseIsSuccessful();
