@@ -57,4 +57,13 @@ final class QueueHealthReportTest extends TestCase
         self::assertFalse($report->storageAvailable);
         self::assertTrue($report->blocksReadiness());
     }
+
+    public function testMissingHeartbeatDoesNotWarnWhenQueueIsEmpty(): void
+    {
+        $report = QueueHealthReport::evaluate(0, 0, true, null, $this->now);
+
+        self::assertSame('healthy', $report->state);
+        self::assertSame('missing', $report->workerState);
+        self::assertFalse($report->blocksReadiness());
+    }
 }

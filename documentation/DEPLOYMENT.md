@@ -82,7 +82,7 @@ assetów i nie podawało przeglądarce poprzednich adresów CSS.
 - `/health/ready` sprawdza bazę, spójność rejestru modułów i kolejkę; zwraca
   HTTP 503, gdy magazyn kolejki jest niedostępny albo wiadomości oczekują,
   a worker nie ma aktualnego heartbeat. Sam brak heartbeat przy pustej kolejce
-  jest ostrzeżeniem i nie blokuje ruchu.
+  nie uruchamia alarmu i nie blokuje ruchu.
 - Cała domena developerska jest chroniona uwierzytelnianiem HTTP w Plesku.
 - Sekrety oraz `.env.local` pozostają poza repozytorium.
 

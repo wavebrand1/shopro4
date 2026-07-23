@@ -447,7 +447,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('.modern-module-card[href="/admin/site-users"]');
         self::assertSelectorTextContains('.modern-dashboard-modules', 'Manage the entire system');
         self::assertSelectorExists('.admin-language-picker a[href^="/admin/language/en"]');
-        self::assertSelectorExists('.dashboard-queue-alert[href="/admin/newsletter"]');
+        self::assertSelectorNotExists('.dashboard-queue-alert');
 
         $this->client->request('GET', '/admin/language/en?return=%2Fadmin%2Fpages');
         self::assertResponseRedirects('/admin/pages');

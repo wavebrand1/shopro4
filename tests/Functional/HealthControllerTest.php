@@ -52,7 +52,7 @@ final class HealthControllerTest extends WebTestCase
         $client->request('GET', '/health/ready');
         self::assertResponseIsSuccessful();
         self::assertJsonStringEqualsJsonString(
-            '{"application":"shopro4","status":"ready","modules":{"status":"ok","invalid":[],"orphaned":0},"queue":{"status":"warning","worker":"missing","pending":0,"failed":0}}',
+            '{"application":"shopro4","status":"ready","modules":{"status":"ok","invalid":[],"orphaned":0},"queue":{"status":"healthy","worker":"missing","pending":0,"failed":0}}',
             (string) $client->getResponse()->getContent(),
         );
 

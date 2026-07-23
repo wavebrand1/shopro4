@@ -56,7 +56,7 @@ final readonly class QueueHealthReport
         $state = 'healthy';
         if (!$storageAvailable || ($pending > 0 && \in_array($workerState, ['missing', 'stale', 'error'], true))) {
             $state = 'error';
-        } elseif ($failed > 0 || \in_array($workerState, ['missing', 'stale', 'error'], true)) {
+        } elseif ($failed > 0) {
             $state = 'warning';
         }
 
