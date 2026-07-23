@@ -79,8 +79,10 @@ assetów i nie podawało przeglądarce poprzednich adresów CSS.
 - Plesk pokazuje ostatni pobrany commit i wynik wdrożenia.
 - Niepowodzenie któregokolwiek polecenia przerywa skrypt z kodem błędu.
 - `/health` sprawdza, czy proces aplikacji odpowiada, bez zależności od bazy.
-- `/health/ready` sprawdza bazę i spójność rejestru modułów; zwraca HTTP 503,
-  jeśli aplikacja nie powinna jeszcze otrzymywać ruchu.
+- `/health/ready` sprawdza bazę, spójność rejestru modułów i kolejkę; zwraca
+  HTTP 503, gdy magazyn kolejki jest niedostępny albo wiadomości oczekują,
+  a worker nie ma aktualnego heartbeat. Sam brak heartbeat przy pustej kolejce
+  jest ostrzeżeniem i nie blokuje ruchu.
 - Cała domena developerska jest chroniona uwierzytelnianiem HTTP w Plesku.
 - Sekrety oraz `.env.local` pozostają poza repozytorium.
 

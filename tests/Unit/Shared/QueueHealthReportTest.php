@@ -24,6 +24,7 @@ final class QueueHealthReportTest extends TestCase
 
         self::assertSame('healthy', $report->state);
         self::assertSame('success', $report->workerState);
+        self::assertFalse($report->blocksReadiness());
     }
 
     public function testPendingMessagesAndStaleWorkerAreAnError(): void
@@ -34,6 +35,7 @@ final class QueueHealthReportTest extends TestCase
 
         self::assertSame('error', $report->state);
         self::assertSame('stale', $report->workerState);
+        self::assertTrue($report->blocksReadiness());
     }
 
     public function testFailedMessagesProduceWarningWhileWorkerIsHealthy(): void
@@ -44,6 +46,7 @@ final class QueueHealthReportTest extends TestCase
 
         self::assertSame('warning', $report->state);
         self::assertSame(3, $report->failed);
+        self::assertFalse($report->blocksReadiness());
     }
 
     public function testUnavailableStorageIsAlwaysAnError(): void
@@ -52,5 +55,6 @@ final class QueueHealthReportTest extends TestCase
 
         self::assertSame('error', $report->state);
         self::assertFalse($report->storageAvailable);
+        self::assertTrue($report->blocksReadiness());
     }
 }

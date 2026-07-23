@@ -17,6 +17,12 @@ final readonly class QueueHealthReport
     ) {
     }
 
+    public function blocksReadiness(): bool
+    {
+        return !$this->storageAvailable
+            || ($this->pending > 0 && \in_array($this->workerState, ['missing', 'stale', 'error'], true));
+    }
+
     public static function evaluate(
         int $pending,
         int $failed,

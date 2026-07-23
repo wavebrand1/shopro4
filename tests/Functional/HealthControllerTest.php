@@ -34,6 +34,9 @@ final class HealthControllerTest extends WebTestCase
         $schema = new SchemaTool($entityManager);
         $schema->dropSchema($metadata);
         $schema->createSchema($metadata);
+        $connection = $entityManager->getConnection();
+        $connection->executeStatement('DROP TABLE IF EXISTS messenger_messages');
+        $connection->executeStatement('CREATE TABLE messenger_messages (queue_name VARCHAR(190) NOT NULL)');
 
         $definitions = [];
         foreach (self::getContainer()->get(ModuleRegistry::class)->all() as $definition) {
@@ -49,9 +52,17 @@ final class HealthControllerTest extends WebTestCase
         $client->request('GET', '/health/ready');
         self::assertResponseIsSuccessful();
         self::assertJsonStringEqualsJsonString(
-            '{"application":"shopro4","status":"ready","modules":{"status":"ok","invalid":[],"orphaned":0}}',
+            '{"application":"shopro4","status":"ready","modules":{"status":"ok","invalid":[],"orphaned":0},"queue":{"status":"warning","worker":"missing","pending":0,"failed":0}}',
             (string) $client->getResponse()->getContent(),
         );
+
+        $connection->executeStatement("INSERT INTO messenger_messages (queue_name) VALUES ('async')");
+        $client->request('GET', '/health/ready');
+        self::assertResponseStatusCodeSame(503);
+        $queuePayload = json_decode((string) $client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        self::assertSame('error', $queuePayload['queue']['status']);
+        self::assertSame(1, $queuePayload['queue']['pending']);
+        $connection->executeStatement("DELETE FROM messenger_messages WHERE queue_name = 'async'");
 
         $cms = $entityManager->find(InstalledModule::class, 'cms');
         self::assertNotNull($cms);
