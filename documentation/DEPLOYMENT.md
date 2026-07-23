@@ -61,6 +61,11 @@ cd /var/www/vhosts/shopro4.orangestudio.pl/httpdocs && APP_ENV=dev APP_DEBUG=1 /
 Nie należy uruchamiać kilku nakładających się zadań. Messenger ponawia
 przejściowe błędy trzy razy, a niedostarczone zadania przenosi do kolejki
 `failed`. Stan każdej wiadomości jest równolegle widoczny w historii newslettera.
+Handler blokuje rekord dostarczenia w transakcji przed rozpoczęciem wysyłki.
+Równoległy worker albo zduplikowana wiadomość kolejki zobaczy po zwolnieniu
+blokady aktualny status i nie wyśle ponownie dostarczenia już oznaczonego jako
+wysłane. Błąd SMTP jest zapisywany przed przekazaniem zadania do mechanizmu
+automatycznych ponowień.
 
 Skrypt `bin/run-queue-worker` zabezpiecza wykonanie blokadą `flock` i po każdym
 uruchomieniu zapisuje atomowo heartbeat do `var/queue-worker-heartbeat.json`.

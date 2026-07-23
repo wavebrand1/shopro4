@@ -23,6 +23,8 @@ use App\Identity\Application\PasswordResetManager;
 use App\Identity\Application\SitePasswordResetManager;
 use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
 use App\Newsletter\Application\UnsubscribeToken;
+use App\Newsletter\Application\Message\SendNewsletterDelivery;
+use App\Newsletter\Application\MessageHandler\SendNewsletterDeliveryHandler;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Infrastructure\Module\NewsletterActivityProbe;
@@ -2063,6 +2065,26 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('body', 'details-sent@example.test');
         self::assertSelectorTextContains('.component-fields', '3');
         self::assertSelectorTextContains('.modern-table-card .modern-card__heading', 'Wysłane: 1, oczekujące: 1, błędne: 1');
+    }
+
+    public function testNewsletterHandlerTreatsCompletedDeliveryAsIdempotent(): void
+    {
+        $campaign = new NewsletterCampaign();
+        $campaign->setSubject('Idempotent delivery');
+        $campaign->setContent('<p>Already sent</p>');
+        $delivery = new NewsletterDelivery($campaign, 'already-sent@example.test');
+        $delivery->markSent();
+        $this->entityManager->persist($campaign);
+        $this->entityManager->persist($delivery);
+        $this->entityManager->flush();
+
+        self::getContainer()->get(SendNewsletterDeliveryHandler::class)(
+            new SendNewsletterDelivery((int) $delivery->getId()),
+        );
+
+        self::assertSame('sent', $delivery->getStatus());
+        self::assertNotNull($delivery->getSentAt());
+        self::assertFalse($this->entityManager->getConnection()->isTransactionActive());
     }
 
     public function testNewOptionalModuleStateStartsDisabled(): void

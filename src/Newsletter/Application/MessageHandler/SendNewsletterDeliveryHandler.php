@@ -12,6 +12,7 @@ use App\Newsletter\Application\SafeDeliveryError;
 use App\Newsletter\Application\UnsubscribeToken;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Settings\Application\SettingsProvider;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -23,48 +24,64 @@ final class SendNewsletterDeliveryHandler
     public function __construct(private readonly EntityManagerInterface $em, private readonly DynamicMailerFactory $mailers, private readonly SettingsProvider $settings, private readonly UnsubscribeToken $tokens, private readonly EmailLayoutRenderer $layout, private readonly FailedNewsletterMessageCleaner $failedMessages, private readonly SafeDeliveryError $safeError, private readonly LoggerInterface $logger) {}
     public function __invoke(SendNewsletterDelivery $message): void
     {
-        $delivery = $this->em->find(NewsletterDelivery::class, $message->deliveryId);
-        if (!$delivery || $delivery->getStatus() === 'sent') return;
+        $connection = $this->em->getConnection();
+        $connection->beginTransaction();
         try {
-            $token = $this->tokens->create($delivery->getRecipient());
-            $unsubscribeUrl = rtrim((string) $this->settings->get('site_url'), '/').'/newsletter/unsubscribe/'.rawurlencode($token);
-            $content = $delivery->getCampaign()->getContent().'<hr><p style="font-size:12px;color:#667085">Nie chcesz otrzymywać wiadomości? <a href="'.htmlspecialchars($unsubscribeUrl, ENT_QUOTES).'">Wypisz się</a>.</p>';
-            $content = $this->layout->render($content, $delivery->getCampaign()->getSubject());
-            $plainContent = $this->createPlainText($delivery->getCampaign()->getContent(), $unsubscribeUrl);
-            $fromAddress = trim((string) ($this->settings->get('mail_from_address') ?: $this->settings->get('site_email')));
-            if ($fromAddress === '') {
-                throw new \RuntimeException('Skonfiguruj adres nadawcy wiadomości e-mail.');
+            $delivery = $this->em->find(NewsletterDelivery::class, $message->deliveryId, LockMode::PESSIMISTIC_WRITE);
+            if (!$delivery || $delivery->getStatus() === 'sent') {
+                $connection->commit();
+
+                return;
             }
-            $email = (new Email())
-                ->from(sprintf('%s <%s>', $this->settings->get('mail_from_name', 'Shopro'), $fromAddress))
-                ->to($delivery->getRecipient())
-                ->subject($delivery->getCampaign()->getSubject())
-                ->text($plainContent)
-                ->html($content);
-            $email->getHeaders()->addTextHeader('List-Unsubscribe', '<'.$unsubscribeUrl.'>');
-            $email->getHeaders()->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
-            if ($replyTo = $this->settings->get('mail_reply_to')) $email->replyTo($replyTo);
-            $this->mailers->create()->send($email);
+            try {
+                $token = $this->tokens->create($delivery->getRecipient());
+                $unsubscribeUrl = rtrim((string) $this->settings->get('site_url'), '/').'/newsletter/unsubscribe/'.rawurlencode($token);
+                $content = $delivery->getCampaign()->getContent().'<hr><p style="font-size:12px;color:#667085">Nie chcesz otrzymywać wiadomości? <a href="'.htmlspecialchars($unsubscribeUrl, ENT_QUOTES).'">Wypisz się</a>.</p>';
+                $content = $this->layout->render($content, $delivery->getCampaign()->getSubject());
+                $plainContent = $this->createPlainText($delivery->getCampaign()->getContent(), $unsubscribeUrl);
+                $fromAddress = trim((string) ($this->settings->get('mail_from_address') ?: $this->settings->get('site_email')));
+                if ($fromAddress === '') {
+                    throw new \RuntimeException('Skonfiguruj adres nadawcy wiadomości e-mail.');
+                }
+                $email = (new Email())
+                    ->from(sprintf('%s <%s>', $this->settings->get('mail_from_name', 'Shopro'), $fromAddress))
+                    ->to($delivery->getRecipient())
+                    ->subject($delivery->getCampaign()->getSubject())
+                    ->text($plainContent)
+                    ->html($content);
+                $email->getHeaders()->addTextHeader('List-Unsubscribe', '<'.$unsubscribeUrl.'>');
+                $email->getHeaders()->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
+                if ($replyTo = $this->settings->get('mail_reply_to')) $email->replyTo($replyTo);
+                $this->mailers->create()->send($email);
+            } catch (\Throwable $exception) {
+                $this->logger->error('Newsletter delivery failed.', [
+                    'campaign_id' => $delivery->getCampaign()->getId(),
+                    'delivery_id' => $delivery->getId(),
+                    'exception' => $exception,
+                ]);
+                $delivery->markFailed($this->safeError->sanitize($exception->getMessage()));
+                $delivery->getCampaign()->markFailed();
+                $this->em->flush();
+                $connection->commit();
+
+                throw $exception;
+            }
             $delivery->markSent();
             $this->em->flush();
-            try {
-                $this->failedMessages->removeForDelivery($message->deliveryId);
-            } catch (\Throwable) {
-                // Cleanup must never turn a delivered email back into a failed delivery.
-            }
             $this->updateCampaignStatus($delivery);
-        } catch (\Throwable $exception) {
-            $this->logger->error('Newsletter delivery failed.', [
-                'campaign_id' => $delivery->getCampaign()->getId(),
-                'delivery_id' => $delivery->getId(),
-                'exception' => $exception,
-            ]);
-            $delivery->markFailed($this->safeError->sanitize($exception->getMessage()));
-            $delivery->getCampaign()->markFailed();
             $this->em->flush();
+            $connection->commit();
+        } catch (\Throwable $exception) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
             throw $exception;
         }
-        $this->em->flush();
+        try {
+            $this->failedMessages->removeForDelivery($message->deliveryId);
+        } catch (\Throwable) {
+            // Cleanup must never turn a delivered email back into a failed delivery.
+        }
     }
 
     private function updateCampaignStatus(NewsletterDelivery $delivery): void
