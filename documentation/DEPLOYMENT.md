@@ -69,6 +69,10 @@ oraz liczbę wiadomości w kolejkach `async` i `failed`. Heartbeat starszy niż
 trzy minuty jest uznawany za nieaktualny. Oczekujące wiadomości wraz z
 nieaktywnym workerem oznaczają błąd wymagający sprawdzenia zadania cyklicznego
 i pliku `var/log/messenger-cron.log`.
+Po obsłużeniu ponownej wysyłki system usuwa odpowiadający jej stary wpis z
+transportu `failed`. Wdrożenie dodatkowo uruchamia
+`app:newsletter:reconcile-failed`, które usuwa wpisy dotyczące dostarczeń już
+oznaczonych jako wysłane, bez naruszania nadal nierozwiązanych błędów.
 
 Cache jest czyszczony po kompilacji, aby Symfony odczytało najnowszy manifest
 assetów i nie podawało przeglądarce poprzednich adresów CSS.

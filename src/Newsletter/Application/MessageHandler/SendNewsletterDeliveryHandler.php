@@ -6,6 +6,7 @@ namespace App\Newsletter\Application\MessageHandler;
 
 use App\Mail\Application\EmailLayoutRenderer;
 use App\Newsletter\Application\DynamicMailerFactory;
+use App\Newsletter\Application\FailedNewsletterMessageCleaner;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
 use App\Newsletter\Application\UnsubscribeToken;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
@@ -17,7 +18,7 @@ use Symfony\Component\Mime\Email;
 #[AsMessageHandler]
 final class SendNewsletterDeliveryHandler
 {
-    public function __construct(private readonly EntityManagerInterface $em, private readonly DynamicMailerFactory $mailers, private readonly SettingsProvider $settings, private readonly UnsubscribeToken $tokens, private readonly EmailLayoutRenderer $layout) {}
+    public function __construct(private readonly EntityManagerInterface $em, private readonly DynamicMailerFactory $mailers, private readonly SettingsProvider $settings, private readonly UnsubscribeToken $tokens, private readonly EmailLayoutRenderer $layout, private readonly FailedNewsletterMessageCleaner $failedMessages) {}
     public function __invoke(SendNewsletterDelivery $message): void
     {
         $delivery = $this->em->find(NewsletterDelivery::class, $message->deliveryId);
@@ -44,6 +45,11 @@ final class SendNewsletterDeliveryHandler
             $this->mailers->create()->send($email);
             $delivery->markSent();
             $this->em->flush();
+            try {
+                $this->failedMessages->removeForDelivery($message->deliveryId);
+            } catch (\Throwable) {
+                // Cleanup must never turn a delivered email back into a failed delivery.
+            }
             $this->updateCampaignStatus($delivery);
         } catch (\Throwable $exception) {
             $delivery->markFailed($exception->getMessage());
