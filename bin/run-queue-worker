@@ -2,6 +2,36 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+LOG_FILE="$ROOT/var/log/messenger-cron.log"
+LOG_MAX_BYTES="${SHOPRO_QUEUE_LOG_MAX_BYTES:-5242880}"
+LOG_ARCHIVES="${SHOPRO_QUEUE_LOG_ARCHIVES:-5}"
+case "$LOG_MAX_BYTES" in ''|*[!0-9]*) LOG_MAX_BYTES=5242880 ;; esac
+case "$LOG_ARCHIVES" in ''|*[!0-9]*) LOG_ARCHIVES=5 ;; esac
+[ "$LOG_MAX_BYTES" -gt 0 ] || LOG_MAX_BYTES=5242880
+[ "$LOG_ARCHIVES" -gt 0 ] || LOG_ARCHIVES=5
+
+rotate_log() {
+    local size
+    local index
+    mkdir -p "$(dirname "$LOG_FILE")"
+    [ -f "$LOG_FILE" ] || return 0
+    size="$(wc -c < "$LOG_FILE" | tr -d '[:space:]')"
+    [ "$size" -ge "$LOG_MAX_BYTES" ] || return 0
+    index="$LOG_ARCHIVES"
+    while [ "$index" -gt 1 ]; do
+        if [ -f "$LOG_FILE.$((index - 1))" ]; then
+            mv -f "$LOG_FILE.$((index - 1))" "$LOG_FILE.$index"
+        fi
+        index=$((index - 1))
+    done
+    mv -f "$LOG_FILE" "$LOG_FILE.1"
+}
+
+if [ "${1:-}" = "--cron" ]; then
+    rotate_log
+    exec /bin/bash "$0" >> "$LOG_FILE" 2>&1
+fi
+
 PHP_BIN=""
 for candidate in /opt/plesk/php/8.3/bin/php /opt/plesk/php/8.2/bin/php /usr/bin/php; do
     if [ -x "$candidate" ]; then PHP_BIN="$candidate"; break; fi

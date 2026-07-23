@@ -10,7 +10,7 @@ done
 
 MODE="${1:-install-and-drain}"
 MARKER="# SHOPRO_QUEUE_WORKER"
-WORKER="cd $ROOT && /bin/bash $ROOT/bin/run-queue-worker >> $ROOT/var/log/messenger-cron.log 2>&1"
+WORKER="cd $ROOT && /bin/bash $ROOT/bin/run-queue-worker --cron"
 
 install_cron() {
     if ! command -v crontab >/dev/null 2>&1; then

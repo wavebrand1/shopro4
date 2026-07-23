@@ -64,6 +64,11 @@ przejściowe błędy trzy razy, a niedostarczone zadania przenosi do kolejki
 
 Skrypt `bin/run-queue-worker` zabezpiecza wykonanie blokadą `flock` i po każdym
 uruchomieniu zapisuje atomowo heartbeat do `var/queue-worker-heartbeat.json`.
+Wywołanie z crona używa trybu `--cron`, który zapisuje wynik do
+`var/log/messenger-cron.log` i obraca plik po przekroczeniu 5 MiB. Zachowywanych
+jest pięć ostatnich archiwów (`.1`–`.5`). Limity można zmienić przez
+`SHOPRO_QUEUE_LOG_MAX_BYTES` i `SHOPRO_QUEUE_LOG_ARCHIVES`; wartości niepoprawne
+lub równe zero są zastępowane bezpiecznymi wartościami domyślnymi.
 Ekran newslettera w panelu administracyjnym pokazuje ostatnią aktywność workera
 oraz liczbę wiadomości w kolejkach `async` i `failed`. Heartbeat starszy niż
 trzy minuty jest uznawany za nieaktualny. Oczekujące wiadomości wraz z
