@@ -65,9 +65,13 @@ brakujące zależności, niezgodne wymagania SemVer i cykle zależności podczas
 budowania kontenera. `dependencyVersions()` musi wskazać ograniczenie w składni
 Composer dla każdej pozycji zwracanej przez `dependencies()`, np. `^4.0`.
 
-Aktualny fundament rejestruje wyłącznie działające obszary: CMS, użytkowników,
-języki, media, newsletter i konfigurację. Są to moduły systemowe. Nie można ich
-wyłączyć z panelu, ponieważ inne działające funkcje mają do nich zależności.
+Aktualny fundament rejestruje działające obszary: CMS, użytkowników, języki, media,
+newsletter i konfigurację. CMS, Identity, Language, Media oraz Settings są modułami
+systemowymi i nie można ich wyłączyć z panelu. Newsletter jest pierwszym modułem
+opcjonalnym. Istniejąca instalacja zachowuje swój dotychczasowy stan podczas
+synchronizacji, natomiast nowa instalacja tworzy go jako wyłączony. Administrator
+może go świadomie włączyć w rejestrze modułów; wtedy wymagane są aktywne Identity
+oraz Settings.
 
 ## Stan instalacji
 
@@ -139,9 +143,8 @@ ograniczenia SemVer wszystkich zależności. Częściowe wdrożenie albo pomini�
 `app:modules:sync` nie uruchomi więc modułu na niezgodnym schemacie lub API. Rejestr
 PA pokazuje wtedy status „Wymaga synchronizacji”, zamiast mylącego „Włączony”.
 
-Przed udostępnieniem przełączników dla modułów opcjonalnych trzeba dodać:
-
-1. blokadę wyłączenia podczas działania kolejek i zadań cyklicznych,
-2. kontrolę tras, menu PA, komponentów Page Buildera i konsumentów zdarzeń,
-3. historię operacji w audycie administratora,
-4. procedurę ponownego włączenia bez utraty konfiguracji.
+Newsletter realizuje pełny kontrakt modułu opcjonalnego: blokadę wyłączenia podczas
+pracy kolejki, ochronę tras, nawigacji, pulpitu, poleceń i wiadomości asynchronicznych,
+audyt operacji oraz ponowne włączenie bez usuwania konfiguracji, kampanii i historii
+dostarczeń. Stan można zmieniać wyłącznie z rejestru modułów przez formularz POST
+chroniony CSRF.

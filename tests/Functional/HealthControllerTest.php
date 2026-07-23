@@ -42,7 +42,9 @@ final class HealthControllerTest extends WebTestCase
                 'enabledByDefault' => $definition->required(),
             ];
         }
-        self::getContainer()->get(InstalledModuleRepository::class)->synchronizeAll($definitions);
+        $states = self::getContainer()->get(InstalledModuleRepository::class)->synchronizeAll($definitions);
+        self::assertArrayHasKey('newsletter', $states);
+        self::assertFalse($states['newsletter']->isEnabled());
 
         $client->request('GET', '/health/ready');
         self::assertResponseIsSuccessful();

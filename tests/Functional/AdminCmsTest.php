@@ -28,6 +28,7 @@ use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Infrastructure\Module\NewsletterActivityProbe;
 use App\Module\Domain\Entity\InstalledModule;
 use App\Module\Application\ModuleAvailability;
+use App\Module\Application\ModuleRegistry;
 use App\Module\Infrastructure\Persistence\Doctrine\InstalledModuleRepository;
 use App\Language\Domain\Entity\Language;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
@@ -55,6 +56,18 @@ final class AdminCmsTest extends WebTestCase
         $schemaTool = new SchemaTool($this->entityManager);
         $schemaTool->dropSchema($metadata);
         $schemaTool->createSchema($metadata);
+
+        // The broad CMS functional suite exercises the complete application.
+        // Optional modules are therefore explicitly enabled in this fixture,
+        // while production synchronization keeps their real installation state.
+        $definitions = [];
+        foreach (self::getContainer()->get(ModuleRegistry::class)->all() as $definition) {
+            $definitions[$definition->code()] = [
+                'version' => $definition->version(),
+                'enabledByDefault' => true,
+            ];
+        }
+        self::getContainer()->get(InstalledModuleRepository::class)->synchronizeAll($definitions);
     }
 
     public function testAdministratorCanLogInAndPublishPage(): void
@@ -1815,12 +1828,13 @@ final class AdminCmsTest extends WebTestCase
     public function testDashboardAndNavigationHideDisabledModule(): void
     {
         $admin = new AdminUser('module-dashboard@example.test', 'module-dashboard');
-        $newsletter = new InstalledModule('newsletter', '4.0.0');
+        $newsletter = $this->entityManager->find(InstalledModule::class, 'newsletter');
+        self::assertNotNull($newsletter);
         $newsletter->disable();
         $campaign = new NewsletterCampaign();
         $campaign->setSubject('Ukryta kampania');
         $campaign->setContent('<p>Test</p>');
-        foreach ([$admin, $newsletter, $campaign] as $entity) $this->entityManager->persist($entity);
+        foreach ([$admin, $campaign] as $entity) $this->entityManager->persist($entity);
         $this->entityManager->flush();
         $this->client->loginUser($admin, 'admin');
 
@@ -1833,11 +1847,11 @@ final class AdminCmsTest extends WebTestCase
 
     public function testModuleRuntimeFailsClosedWhenDependencyWasDisabledOutsideLifecycleManager(): void
     {
-        $cms = new InstalledModule('cms', '4.0.0');
+        $cms = $this->entityManager->find(InstalledModule::class, 'cms');
+        $language = $this->entityManager->find(InstalledModule::class, 'language');
+        self::assertNotNull($cms);
+        self::assertNotNull($language);
         $cms->disable();
-        $language = new InstalledModule('language', '4.0.0');
-        $this->entityManager->persist($cms);
-        $this->entityManager->persist($language);
         $this->entityManager->flush();
 
         $runtime = self::getContainer()->get(ModuleAvailability::class);
@@ -1854,9 +1868,10 @@ final class AdminCmsTest extends WebTestCase
     public function testModuleRuntimeAndRegistryExposeUnsynchronizedVersion(): void
     {
         $admin = new AdminUser('module-version@example.test', 'module-version');
-        $cms = new InstalledModule('cms', '3.9.0');
-        $language = new InstalledModule('language', '4.0.0');
-        foreach ([$admin, $cms, $language] as $entity) $this->entityManager->persist($entity);
+        $cms = $this->entityManager->find(InstalledModule::class, 'cms');
+        self::assertNotNull($cms);
+        $cms->synchronize('3.9.0');
+        $this->entityManager->persist($admin);
         $this->entityManager->flush();
 
         $runtime = self::getContainer()->get(ModuleAvailability::class);
@@ -1876,6 +1891,35 @@ final class AdminCmsTest extends WebTestCase
             $cms->synchronize('4.0.0');
             $this->entityManager->flush();
         }
+    }
+
+    public function testAdministratorCanDisableAndEnableOptionalNewsletterModule(): void
+    {
+        $admin = new AdminUser('module-lifecycle@example.test', 'module-lifecycle');
+        $this->entityManager->persist($admin);
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/modules');
+        self::assertResponseIsSuccessful();
+        $disableForm = $this->client->getCrawler()->filter('form[action="/admin/modules/newsletter/disable"]');
+        self::assertCount(1, $disableForm);
+        $disableToken = (string) $disableForm->filter('input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/admin/modules/newsletter/disable', ['_token' => $disableToken]);
+        self::assertResponseRedirects('/admin/modules');
+        self::assertFalse(self::getContainer()->get(ModuleAvailability::class)->isEnabled('newsletter'));
+
+        $this->client->request('GET', '/admin/newsletter');
+        self::assertResponseStatusCodeSame(404);
+
+        $this->client->request('GET', '/admin/modules');
+        $enableForm = $this->client->getCrawler()->filter('form[action="/admin/modules/newsletter/enable"]');
+        self::assertCount(1, $enableForm);
+        $enableToken = (string) $enableForm->filter('input[name="_token"]')->attr('value');
+        $this->client->request('POST', '/admin/modules/newsletter/enable', ['_token' => $enableToken]);
+        self::assertResponseRedirects('/admin/modules');
+        self::assertTrue(self::getContainer()->get(ModuleAvailability::class)->isEnabled('newsletter'));
     }
 
     public function testNewOptionalModuleStateStartsDisabled(): void
