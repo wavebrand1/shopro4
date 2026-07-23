@@ -85,6 +85,28 @@ final class ModuleLifecyclePolicyTest extends TestCase
         self::assertSame('module.lifecycle.unsynchronized_dependency', $decision->reason);
     }
 
+    public function testEntireDependencyChainMustBeAvailableBeforeModuleCanBeEnabled(): void
+    {
+        $policy = new ModuleLifecyclePolicy(new ModuleRegistry([
+            $this->definition('foundation'),
+            $this->definition('bridge', false, ['foundation']),
+            $this->definition('feature', false, ['bridge']),
+        ]));
+        $foundation = new InstalledModule('foundation', '1.0.0');
+        $bridge = new InstalledModule('bridge', '1.0.0');
+        $feature = new InstalledModule('feature', '1.0.0');
+        $foundation->disable();
+        $feature->disable();
+        $installed = ['foundation' => $foundation, 'bridge' => $bridge, 'feature' => $feature];
+
+        $decision = $policy->canEnable('feature', $installed);
+
+        self::assertFalse($decision->allowed);
+        self::assertSame('module.lifecycle.inactive_dependency', $decision->reason);
+        $foundation->enable();
+        self::assertTrue($policy->canEnable('feature', $installed)->allowed);
+    }
+
     /** @param list<string> $dependencies */
     private function definition(string $code, bool $required = false, array $dependencies = []): ModuleDefinition
     {

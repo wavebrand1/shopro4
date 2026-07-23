@@ -51,8 +51,46 @@ final readonly class ModuleLifecyclePolicy
             ) {
                 return ModuleLifecycleDecision::deny('module.lifecycle.unsynchronized_dependency');
             }
+            $nestedIssue = $this->dependencyChainIssue($dependency, $installed, []);
+            if ($nestedIssue !== null) return ModuleLifecycleDecision::deny($nestedIssue);
         }
 
         return ModuleLifecycleDecision::allow();
+    }
+
+    /**
+     * A raw "enabled" flag is not enough: a dependency may itself be unusable
+     * because someone changed a deeper state directly in the database.
+     *
+     * @param array<string, InstalledModule> $installed
+     * @param list<string> $checking
+     */
+    private function dependencyChainIssue(string $code, array $installed, array $checking): ?string
+    {
+        if (in_array($code, $checking, true)) return 'module.lifecycle.inactive_dependency';
+
+        $definition = $this->registry->get($code);
+        $state = $installed[$code] ?? null;
+        if ($definition === null || !$state?->isEnabled()) return 'module.lifecycle.inactive_dependency';
+        if ($state->getVersion() !== $definition->version()) return 'module.lifecycle.unsynchronized_dependency';
+
+        $checking[] = $code;
+        foreach ($definition->dependencies() as $dependency) {
+            $dependencyDefinition = $this->registry->get($dependency);
+            $dependencyState = $installed[$dependency] ?? null;
+            if ($dependencyDefinition === null || !$dependencyState?->isEnabled()) {
+                return 'module.lifecycle.inactive_dependency';
+            }
+            if (
+                $dependencyState->getVersion() !== $dependencyDefinition->version()
+                || !Semver::satisfies($dependencyState->getVersion(), $definition->dependencyVersions()[$dependency])
+            ) {
+                return 'module.lifecycle.unsynchronized_dependency';
+            }
+            $issue = $this->dependencyChainIssue($dependency, $installed, $checking);
+            if ($issue !== null) return $issue;
+        }
+
+        return null;
     }
 }
