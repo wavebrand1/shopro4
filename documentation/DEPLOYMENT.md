@@ -79,6 +79,10 @@ Nadal nierozwiązane wpisy są wyświetlane poniżej stanu kolejki wraz z typem
 wiadomości, przyczyną oraz liczbą prób. Administrator może pojedynczy wpis
 ponowić albo świadomie usunąć. Obie operacje wymagają tokenu CSRF, a usunięcie
 jest dodatkowo potwierdzane w interfejsie.
+Komunikaty błędów widoczne w bazie i PA są skracane oraz pozbawiane haseł,
+tokenów, kluczy i danych uwierzytelniających z adresów transportu. Pełny wyjątek
+jest zapisywany przez logger aplikacji razem z identyfikatorem kampanii i
+dostarczenia, aby umożliwić diagnostykę bez ujawniania sekretów operatorowi PA.
 Uzgodnienie, ponowienie i usunięcie wiadomości są zapisywane jako ważne
 zdarzenia w Logach wraz z operatorem, wynikiem i identyfikatorem technicznym.
 Listy kampanii oraz ostatnich dostarczeń są stronicowane niezależnie. Obie

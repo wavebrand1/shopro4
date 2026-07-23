@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Newsletter;
 
 use App\Newsletter\Application\FailedNewsletterMessageCleaner;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
+use App\Newsletter\Application\SafeDeliveryError;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
@@ -26,6 +27,7 @@ final class FailedNewsletterMessageCleanerTest extends TestCase
         $cleaner = new FailedNewsletterMessageCleaner(
             $this->createStub(EntityManagerInterface::class),
             $receiver,
+            new SafeDeliveryError(),
         );
 
         self::assertSame(1, $cleaner->removeForDelivery(12));
@@ -42,6 +44,7 @@ final class FailedNewsletterMessageCleanerTest extends TestCase
         $cleaner = new FailedNewsletterMessageCleaner(
             $this->createStub(EntityManagerInterface::class),
             new InMemoryFailedReceiver([$envelope]),
+            new SafeDeliveryError(),
         );
 
         self::assertSame([[
@@ -60,7 +63,7 @@ final class FailedNewsletterMessageCleanerTest extends TestCase
         $receiver = new InMemoryFailedReceiver([$envelope]);
         $bus = $this->createMock(MessageBusInterface::class);
         $bus->expects(self::once())->method('dispatch')->with($message)->willReturn(new Envelope($message));
-        $cleaner = new FailedNewsletterMessageCleaner($this->createStub(EntityManagerInterface::class), $receiver);
+        $cleaner = new FailedNewsletterMessageCleaner($this->createStub(EntityManagerInterface::class), $receiver, new SafeDeliveryError());
 
         self::assertTrue($cleaner->retry('77', $bus));
         self::assertSame([$envelope], $receiver->rejected);

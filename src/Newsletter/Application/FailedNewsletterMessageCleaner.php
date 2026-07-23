@@ -20,6 +20,7 @@ final readonly class FailedNewsletterMessageCleaner
         private EntityManagerInterface $entityManager,
         #[Autowire(service: 'messenger.transport.failed')]
         private ListableReceiverInterface $failedTransport,
+        private SafeDeliveryError $safeError,
     ) {
     }
 
@@ -52,7 +53,7 @@ final readonly class FailedNewsletterMessageCleaner
             $entries[] = [
                 'id' => (string) $id,
                 'type' => (new \ReflectionClass($message))->getShortName(),
-                'error' => $error?->getExceptionMessage() ?? '',
+                'error' => $error === null ? '' : $this->safeError->sanitize($error->getExceptionMessage()),
                 'failedAt' => $redelivery?->getRedeliveredAt(),
                 'retries' => $redelivery?->getRetryCount() ?? 0,
             ];

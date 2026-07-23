@@ -8,17 +8,19 @@ use App\Mail\Application\EmailLayoutRenderer;
 use App\Newsletter\Application\DynamicMailerFactory;
 use App\Newsletter\Application\FailedNewsletterMessageCleaner;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
+use App\Newsletter\Application\SafeDeliveryError;
 use App\Newsletter\Application\UnsubscribeToken;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Settings\Application\SettingsProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Mime\Email;
 
 #[AsMessageHandler]
 final class SendNewsletterDeliveryHandler
 {
-    public function __construct(private readonly EntityManagerInterface $em, private readonly DynamicMailerFactory $mailers, private readonly SettingsProvider $settings, private readonly UnsubscribeToken $tokens, private readonly EmailLayoutRenderer $layout, private readonly FailedNewsletterMessageCleaner $failedMessages) {}
+    public function __construct(private readonly EntityManagerInterface $em, private readonly DynamicMailerFactory $mailers, private readonly SettingsProvider $settings, private readonly UnsubscribeToken $tokens, private readonly EmailLayoutRenderer $layout, private readonly FailedNewsletterMessageCleaner $failedMessages, private readonly SafeDeliveryError $safeError, private readonly LoggerInterface $logger) {}
     public function __invoke(SendNewsletterDelivery $message): void
     {
         $delivery = $this->em->find(NewsletterDelivery::class, $message->deliveryId);
@@ -52,7 +54,12 @@ final class SendNewsletterDeliveryHandler
             }
             $this->updateCampaignStatus($delivery);
         } catch (\Throwable $exception) {
-            $delivery->markFailed($exception->getMessage());
+            $this->logger->error('Newsletter delivery failed.', [
+                'campaign_id' => $delivery->getCampaign()->getId(),
+                'delivery_id' => $delivery->getId(),
+                'exception' => $exception,
+            ]);
+            $delivery->markFailed($this->safeError->sanitize($exception->getMessage()));
             $delivery->getCampaign()->markFailed();
             $this->em->flush();
             throw $exception;
