@@ -75,6 +75,10 @@ transportu `failed`. Wdrożenie dodatkowo uruchamia
 oznaczonych jako wysłane, bez naruszania nadal nierozwiązanych błędów.
 Tę samą operację administrator może uruchomić przyciskiem `Uzgodnij kolejkę`
 na ekranie Newslettera; akcja jest zabezpieczona tokenem CSRF.
+Nadal nierozwiązane wpisy są wyświetlane poniżej stanu kolejki wraz z typem
+wiadomości, przyczyną oraz liczbą prób. Administrator może pojedynczy wpis
+ponowić albo świadomie usunąć. Obie operacje wymagają tokenu CSRF, a usunięcie
+jest dodatkowo potwierdzane w interfejsie.
 
 Cache jest czyszczony po kompilacji, aby Symfony odczytało najnowszy manifest
 assetów i nie podawało przeglądarce poprzednich adresów CSS.

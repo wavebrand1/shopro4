@@ -9,6 +9,10 @@ use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Transport\Receiver\ListableReceiverInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\ErrorDetailsStamp;
+use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
+use Symfony\Component\Messenger\Stamp\TransportMessageIdStamp;
 
 final readonly class FailedNewsletterMessageCleaner
 {
@@ -31,6 +35,53 @@ final readonly class FailedNewsletterMessageCleaner
 
             return $delivery === null || $delivery->getStatus() === 'sent';
         });
+    }
+
+    /** @return list<array{id: string, type: string, error: string, failedAt: ?\DateTimeInterface, retries: int}> */
+    public function entries(int $limit = 50): array
+    {
+        $entries = [];
+        foreach ($this->failedTransport->all($limit) as $envelope) {
+            $id = $envelope->last(TransportMessageIdStamp::class)?->getId();
+            if ($id === null) {
+                continue;
+            }
+            $message = $envelope->getMessage();
+            $error = $envelope->last(ErrorDetailsStamp::class);
+            $redelivery = $envelope->last(RedeliveryStamp::class);
+            $entries[] = [
+                'id' => (string) $id,
+                'type' => (new \ReflectionClass($message))->getShortName(),
+                'error' => $error?->getExceptionMessage() ?? '',
+                'failedAt' => $redelivery?->getRedeliveredAt(),
+                'retries' => $redelivery?->getRetryCount() ?? 0,
+            ];
+        }
+
+        return $entries;
+    }
+
+    public function retry(string $id, MessageBusInterface $bus): bool
+    {
+        $envelope = $this->failedTransport->find($id);
+        if ($envelope === null) {
+            return false;
+        }
+        $bus->dispatch($envelope->getMessage());
+        $this->failedTransport->reject($envelope);
+
+        return true;
+    }
+
+    public function removeById(string $id): bool
+    {
+        $envelope = $this->failedTransport->find($id);
+        if ($envelope === null) {
+            return false;
+        }
+        $this->failedTransport->reject($envelope);
+
+        return true;
     }
 
     /** @param callable(SendNewsletterDelivery): bool $shouldRemove */

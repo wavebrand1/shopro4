@@ -34,7 +34,7 @@ final class NewsletterController extends AbstractController
     public function __construct(private readonly SystemTranslator $translator) {}
 
     #[Route('', name: 'admin_newsletter_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $em, QueueHealthInspector $queueHealth): Response
+    public function index(EntityManagerInterface $em, QueueHealthInspector $queueHealth, FailedNewsletterMessageCleaner $failedMessages): Response
     {
         $campaigns = $em->getRepository(NewsletterCampaign::class)->findBy([], ['id' => 'DESC']);
         $counts = [];
@@ -42,11 +42,18 @@ final class NewsletterController extends AbstractController
             $counts[$campaign->getId()] = $em->getRepository(NewsletterDelivery::class)->count(['campaign' => $campaign]);
         }
 
+        try {
+            $failedEntries = $failedMessages->entries();
+        } catch (\Throwable) {
+            $failedEntries = [];
+        }
+
         return $this->render('admin/newsletter/index.html.twig', [
             'campaigns' => $campaigns,
             'delivery_counts' => $counts,
             'deliveries' => $em->getRepository(NewsletterDelivery::class)->findBy([], ['id' => 'DESC'], 100),
             'queue_health' => $queueHealth->inspect(),
+            'failed_messages' => $failedEntries,
         ]);
     }
 
@@ -64,6 +71,40 @@ final class NewsletterController extends AbstractController
             $this->addFlash('success', sprintf($this->translator->translate('newsletter.queue_reconciled'), $removed));
         } catch (\Throwable) {
             $this->addFlash('error', $this->translator->translate('newsletter.queue_reconcile_failed'));
+        }
+
+        return $this->redirectToRoute('admin_newsletter_index');
+    }
+
+    #[Route('/queue/failed/{id}/retry', name: 'admin_newsletter_queue_failed_retry', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function retryFailedMessage(string $id, Request $request, FailedNewsletterMessageCleaner $cleaner, MessageBusInterface $bus): Response
+    {
+        if (!$this->isCsrfTokenValid('newsletter-failed-retry-'.$id, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', $this->translator->translate('newsletter.queue_reconcile_invalid'));
+        } else {
+            try {
+                $retried = $cleaner->retry($id, $bus);
+                $this->addFlash($retried ? 'success' : 'error', $this->translator->translate($retried ? 'newsletter.failed_retried' : 'newsletter.failed_missing'));
+            } catch (\Throwable) {
+                $this->addFlash('error', $this->translator->translate('newsletter.failed_retry_error'));
+            }
+        }
+
+        return $this->redirectToRoute('admin_newsletter_index');
+    }
+
+    #[Route('/queue/failed/{id}/remove', name: 'admin_newsletter_queue_failed_remove', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function removeFailedMessage(string $id, Request $request, FailedNewsletterMessageCleaner $cleaner): Response
+    {
+        if (!$this->isCsrfTokenValid('newsletter-failed-remove-'.$id, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', $this->translator->translate('newsletter.queue_reconcile_invalid'));
+        } else {
+            try {
+                $removed = $cleaner->removeById($id);
+                $this->addFlash($removed ? 'success' : 'error', $this->translator->translate($removed ? 'newsletter.failed_removed' : 'newsletter.failed_missing'));
+            } catch (\Throwable) {
+                $this->addFlash('error', $this->translator->translate('newsletter.failed_remove_error'));
+            }
         }
 
         return $this->redirectToRoute('admin_newsletter_index');
