@@ -16,6 +16,7 @@ use App\Module\Application\RequiresModule;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Presentation\Form\NewsletterCampaignType;
+use App\Settings\Application\SettingsProvider;
 use App\Shared\Infrastructure\Messenger\QueueHealthInspector;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,13 +35,26 @@ final class NewsletterController extends AbstractController
     public function __construct(private readonly SystemTranslator $translator) {}
 
     #[Route('', name: 'admin_newsletter_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $em, QueueHealthInspector $queueHealth, FailedNewsletterMessageCleaner $failedMessages): Response
+    public function index(Request $request, EntityManagerInterface $em, SettingsProvider $settings, QueueHealthInspector $queueHealth, FailedNewsletterMessageCleaner $failedMessages): Response
     {
-        $campaigns = $em->getRepository(NewsletterCampaign::class)->findBy([], ['id' => 'DESC']);
+        $limit = max(1, min(200, (int) $settings->get('per_page', 20)));
+        $campaignTotal = $em->getRepository(NewsletterCampaign::class)->count([]);
+        $campaignLastPage = max(1, (int) ceil($campaignTotal / $limit));
+        $campaignPage = min($campaignLastPage, max(1, $request->query->getInt('campaign_page', 1)));
+        $campaigns = $em->getRepository(NewsletterCampaign::class)->findBy(
+            [],
+            ['id' => 'DESC'],
+            $limit,
+            ($campaignPage - 1) * $limit,
+        );
         $counts = [];
         foreach ($campaigns as $campaign) {
             $counts[$campaign->getId()] = $em->getRepository(NewsletterDelivery::class)->count(['campaign' => $campaign]);
         }
+
+        $deliveryTotal = $em->getRepository(NewsletterDelivery::class)->count([]);
+        $deliveryLastPage = max(1, (int) ceil($deliveryTotal / $limit));
+        $deliveryPage = min($deliveryLastPage, max(1, $request->query->getInt('delivery_page', 1)));
 
         try {
             $failedEntries = $failedMessages->entries();
@@ -51,7 +65,16 @@ final class NewsletterController extends AbstractController
         return $this->render('admin/newsletter/index.html.twig', [
             'campaigns' => $campaigns,
             'delivery_counts' => $counts,
-            'deliveries' => $em->getRepository(NewsletterDelivery::class)->findBy([], ['id' => 'DESC'], 100),
+            'campaign_current_page' => $campaignPage,
+            'campaign_last_page' => $campaignLastPage,
+            'deliveries' => $em->getRepository(NewsletterDelivery::class)->findBy(
+                [],
+                ['id' => 'DESC'],
+                $limit,
+                ($deliveryPage - 1) * $limit,
+            ),
+            'delivery_current_page' => $deliveryPage,
+            'delivery_last_page' => $deliveryLastPage,
             'queue_health' => $queueHealth->inspect(),
             'failed_messages' => $failedEntries,
         ]);

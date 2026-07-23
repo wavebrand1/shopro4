@@ -81,6 +81,10 @@ ponowić albo świadomie usunąć. Obie operacje wymagają tokenu CSRF, a usuni�
 jest dodatkowo potwierdzane w interfejsie.
 Uzgodnienie, ponowienie i usunięcie wiadomości są zapisywane jako ważne
 zdarzenia w Logach wraz z operatorem, wynikiem i identyfikatorem technicznym.
+Listy kampanii oraz ostatnich dostarczeń są stronicowane niezależnie. Obie
+korzystają z globalnej wartości **Paginacja** z konfiguracji systemu, dzięki czemu
+historia wysyłki nie powoduje pobierania wszystkich rekordów przy każdym wejściu
+na ekran Newslettera.
 
 Cache jest czyszczony po kompilacji, aby Symfony odczytało najnowszy manifest
 assetów i nie podawało przeglądarce poprzednich adresów CSS.

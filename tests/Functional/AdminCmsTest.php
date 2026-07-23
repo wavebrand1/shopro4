@@ -1997,6 +1997,40 @@ final class AdminCmsTest extends WebTestCase
         self::assertTrue(self::getContainer()->get(ModuleAvailability::class)->isEnabled('cms'));
     }
 
+    public function testNewsletterIndexPaginatesCampaignsAndDeliveryHistoryIndependently(): void
+    {
+        $admin = new AdminUser('newsletter-pagination@example.test', 'newsletter-pagination');
+        $admin->setPassword(self::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'very-secure-password'));
+        $settings = new SystemSettings();
+        $settings->setConfiguration(['per_page' => 2]);
+        $this->entityManager->persist($admin);
+        $this->entityManager->persist($settings);
+
+        for ($number = 1; $number <= 3; ++$number) {
+            $campaign = new NewsletterCampaign();
+            $campaign->setSubject('Kampania paginacji '.$number);
+            $campaign->setContent('<p>Treść</p>');
+            $this->entityManager->persist($campaign);
+            $this->entityManager->persist(new NewsletterDelivery($campaign, 'pagination-'.$number.'@example.test'));
+        }
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/newsletter');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('body', 'Kampania paginacji 3');
+        self::assertSelectorTextNotContains('body', 'Kampania paginacji 1');
+        self::assertSelectorTextContains('body', 'pagination-3@example.test');
+        self::assertSelectorTextNotContains('body', 'pagination-1@example.test');
+        self::assertSelectorCount(2, '.admin-pagination');
+
+        $this->client->request('GET', '/admin/newsletter?campaign_page=2&delivery_page=2');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('body', 'Kampania paginacji 1');
+        self::assertSelectorTextContains('body', 'pagination-1@example.test');
+        self::assertSelectorTextContains('.admin-pagination', 'Strona 2 z 2');
+    }
+
     public function testNewOptionalModuleStateStartsDisabled(): void
     {
         $states = self::getContainer()->get(InstalledModuleRepository::class)->synchronizeAll([
