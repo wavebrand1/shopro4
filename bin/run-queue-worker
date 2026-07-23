@@ -10,19 +10,46 @@ done
 
 cd "$ROOT" || exit 1
 COMMAND=(/usr/bin/env APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console messenger:consume async --time-limit=50 --limit=100 --memory-limit=128M --no-interaction)
+HEARTBEAT="$ROOT/var/queue-worker-heartbeat.json"
+
+write_heartbeat() {
+    local status="$1"
+    local exit_code="$2"
+    local checked_at
+    local temporary
+    checked_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    temporary="${HEARTBEAT}.$$"
+    printf '{"status":"%s","checked_at":"%s","exit_code":%d}\n' "$status" "$checked_at" "$exit_code" > "$temporary"
+    mv "$temporary" "$HEARTBEAT"
+}
+
+run_worker() {
+    local status
+    write_heartbeat "running" 0
+    "${COMMAND[@]}"
+    status=$?
+    if [ "$status" -eq 0 ]; then
+        write_heartbeat "success" 0
+    else
+        write_heartbeat "error" "$status"
+    fi
+    return "$status"
+}
 
 FLOCK_BIN="$(command -v flock 2>/dev/null || true)"
-if [ -z "$FLOCK_BIN" ]; then
-    "${COMMAND[@]}"
-    exit $?
+if [ -n "$FLOCK_BIN" ]; then
+    exec 9>"$ROOT/var/messenger-worker.lock"
+    "$FLOCK_BIN" -E 75 -n 9
+    LOCK_STATUS=$?
+    if [ "$LOCK_STATUS" -eq 75 ]; then
+        echo "[Shopro queue] Worker jest już uruchomiony — pomijam to wywołanie."
+        exit 0
+    fi
+    if [ "$LOCK_STATUS" -ne 0 ]; then
+        write_heartbeat "error" "$LOCK_STATUS"
+        exit "$LOCK_STATUS"
+    fi
 fi
 
-# Exit code 75 means that another worker owns the lock. This is expected and
-# must be reported to Plesk as success, while every real worker error remains visible.
-"$FLOCK_BIN" -E 75 -n "$ROOT/var/messenger-worker.lock" "${COMMAND[@]}"
-STATUS=$?
-if [ "$STATUS" -eq 75 ]; then
-    echo "[Shopro queue] Worker jest już uruchomiony — pomijam to wywołanie."
-    exit 0
-fi
-exit "$STATUS"
+run_worker
+exit $?

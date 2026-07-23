@@ -15,6 +15,7 @@ use App\Module\Application\RequiresModule;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Presentation\Form\NewsletterCampaignType;
+use App\Shared\Infrastructure\Messenger\QueueHealthInspector;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +33,7 @@ final class NewsletterController extends AbstractController
     public function __construct(private readonly SystemTranslator $translator) {}
 
     #[Route('', name: 'admin_newsletter_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em, QueueHealthInspector $queueHealth): Response
     {
         $campaigns = $em->getRepository(NewsletterCampaign::class)->findBy([], ['id' => 'DESC']);
         $counts = [];
@@ -44,6 +45,7 @@ final class NewsletterController extends AbstractController
             'campaigns' => $campaigns,
             'delivery_counts' => $counts,
             'deliveries' => $em->getRepository(NewsletterDelivery::class)->findBy([], ['id' => 'DESC'], 100),
+            'queue_health' => $queueHealth->inspect(),
         ]);
     }
 

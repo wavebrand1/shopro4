@@ -62,6 +62,14 @@ Nie należy uruchamiać kilku nakładających się zadań. Messenger ponawia
 przejściowe błędy trzy razy, a niedostarczone zadania przenosi do kolejki
 `failed`. Stan każdej wiadomości jest równolegle widoczny w historii newslettera.
 
+Skrypt `bin/run-queue-worker` zabezpiecza wykonanie blokadą `flock` i po każdym
+uruchomieniu zapisuje atomowo heartbeat do `var/queue-worker-heartbeat.json`.
+Ekran newslettera w panelu administracyjnym pokazuje ostatnią aktywność workera
+oraz liczbę wiadomości w kolejkach `async` i `failed`. Heartbeat starszy niż
+trzy minuty jest uznawany za nieaktualny. Oczekujące wiadomości wraz z
+nieaktywnym workerem oznaczają błąd wymagający sprawdzenia zadania cyklicznego
+i pliku `var/log/messenger-cron.log`.
+
 Cache jest czyszczony po kompilacji, aby Symfony odczytało najnowszy manifest
 assetów i nie podawało przeglądarce poprzednich adresów CSS.
 
