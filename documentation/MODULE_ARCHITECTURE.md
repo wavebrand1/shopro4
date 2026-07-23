@@ -124,8 +124,11 @@ modułu.
 Wszystkie zmiany stanu wykonuje `ModuleLifecycleManager`. Rozszerzalne czujniki
 `ModuleActivityProbe` zgłaszają pracę w tle; pierwszy czujnik sprawdza oczekujące
 dostarczenia newslettera. Operacje PA używają POST, CSRF i trafiają do audytu,
-a wyłączenie jest oznaczane jako zdarzenie ważne. Odczyt rejestru, decyzja polityki
-i zapis nowego stanu odbywają się w jednej transakcji. MariaDB/PostgreSQL blokują
+zarówno włączenie, jak i wyłączenie jest oznaczane jako zdarzenie ważne. Wpis
+zawiera kod modułu, żądany stan, wynik `applied`/`denied` i — wyłącznie przy
+odmowie — bezpieczny techniczny kod przyczyny. Nie zapisuje danych formularza ani
+sekretów. Odczyt rejestru, decyzja polityki i zapis nowego stanu odbywają się w
+jednej transakcji. MariaDB/PostgreSQL blokują
 na ten czas rekordy `installed_module`, więc równoległe kliknięcie albo
 `app:modules:sync` nie może nadpisać decyzji policzonej na nieaktualnych danych.
 Odmowa polityki kończy transakcję bez zmiany encji, a dopiero potem jest zwracana

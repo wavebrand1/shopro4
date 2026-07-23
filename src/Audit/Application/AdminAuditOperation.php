@@ -21,6 +21,7 @@ final class AdminAuditOperation
 
     public static function isImportant(string $route, ?string $operation): bool
     {
+        if (in_array($route, ['admin_module_enable', 'admin_module_disable'], true)) return true;
         if ($operation !== null && in_array($operation, ['delete', 'clear', 'revoke', 'restore', 'reset', 'disable'], true)) return true;
 
         return str_contains($route, 'delete') || str_contains($route, 'clear') || str_contains($route, 'revoke') || str_contains($route, 'restore') || str_contains($route, 'disable');

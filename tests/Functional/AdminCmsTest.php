@@ -1916,6 +1916,18 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseRedirects('/admin/modules');
         self::assertTrue(self::getContainer()->get(ModuleAvailability::class)->isEnabled('newsletter'));
         self::assertTrue(self::getContainer()->get(EntityManagerInterface::class)->isOpen());
+        $deniedAudit = self::getContainer()->get(EntityManagerInterface::class)->getRepository(AuditLog::class)
+            ->findOneBy(['action' => 'admin_module_disable'], ['id' => 'DESC']);
+        self::assertNotNull($deniedAudit);
+        self::assertSame([
+            'route' => 'admin_module_disable',
+            'method' => 'POST',
+            'module' => 'newsletter',
+            'outcome' => 'denied',
+            'requested_state' => 'disabled',
+            'reason' => 'module.lifecycle.active_work',
+        ], $deniedAudit->getData());
+        self::assertTrue($deniedAudit->isImportant());
         $this->client->followRedirect();
         self::assertSelectorExists('.flash--error');
 
@@ -1930,6 +1942,10 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('POST', '/admin/modules/newsletter/disable', ['_token' => $disableToken]);
         self::assertResponseRedirects('/admin/modules');
         self::assertFalse(self::getContainer()->get(ModuleAvailability::class)->isEnabled('newsletter'));
+        $appliedAudit = self::getContainer()->get(EntityManagerInterface::class)->getRepository(AuditLog::class)
+            ->findOneBy(['action' => 'admin_module_disable'], ['id' => 'DESC']);
+        self::assertNotNull($appliedAudit);
+        self::assertSame('applied', $appliedAudit->getData()['outcome'] ?? null);
 
         $this->client->request('GET', '/admin/newsletter');
         self::assertResponseStatusCodeSame(404);

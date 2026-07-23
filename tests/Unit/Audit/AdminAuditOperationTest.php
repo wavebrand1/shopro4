@@ -31,6 +31,7 @@ final class AdminAuditOperationTest extends TestCase
         self::assertTrue(AdminAuditOperation::isImportant('admin_file_manager_index', 'delete'));
         self::assertTrue(AdminAuditOperation::isImportant('admin_page_revision_restore', null));
         self::assertTrue(AdminAuditOperation::isImportant('admin_module_disable', null));
+        self::assertTrue(AdminAuditOperation::isImportant('admin_module_enable', null));
         self::assertFalse(AdminAuditOperation::isImportant('admin_file_manager_index', 'upload'));
         self::assertSame('admin_file_manager_index.rename', AdminAuditOperation::action('admin_file_manager_index', 'rename'));
         self::assertSame(120, mb_strlen(AdminAuditOperation::action(str_repeat('x', 140), null)));

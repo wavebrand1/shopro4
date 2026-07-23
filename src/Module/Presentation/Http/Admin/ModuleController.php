@@ -49,10 +49,13 @@ final class ModuleController extends AbstractController
     private function changeState(string $code, bool $enable, Request $request, ModuleLifecycleManager $manager): Response
     {
         if (!$this->isCsrfTokenValid('module-state-'.$code, (string) $request->request->get('_token'))) throw $this->createAccessDeniedException();
+        $request->attributes->set('_shopro_module_outcome', 'applied');
         try {
             $enable ? $manager->enable($code) : $manager->disable($code);
             $this->addFlash('success', $this->translator->translate($enable ? 'module.enabled_success' : 'module.disabled_success'));
         } catch (ModuleLifecycleException $exception) {
+            $request->attributes->set('_shopro_module_outcome', 'denied');
+            $request->attributes->set('_shopro_module_reason', $exception->reason);
             $this->addFlash('error', $this->translator->translate($exception->reason));
         }
 

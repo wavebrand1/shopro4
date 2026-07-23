@@ -33,6 +33,15 @@ final class AdminAuditSubscriber
             $username = $user instanceof UserInterface ? $user->getUserIdentifier() : null;
             $data = ['route' => $route, 'method' => $request->getMethod()];
             if ($operation !== null) $data['operation'] = $operation;
+            if (in_array($route, ['admin_module_enable', 'admin_module_disable'], true)) {
+                $code = (string) $request->attributes->get('code', '');
+                $outcome = (string) $request->attributes->get('_shopro_module_outcome', 'unknown');
+                $reason = (string) $request->attributes->get('_shopro_module_reason', '');
+                if (preg_match('/^[a-z][a-z0-9_-]{1,79}$/D', $code) === 1) $data['module'] = $code;
+                if (in_array($outcome, ['applied', 'denied'], true)) $data['outcome'] = $outcome;
+                $data['requested_state'] = $route === 'admin_module_enable' ? 'enabled' : 'disabled';
+                if ($outcome === 'denied' && preg_match('/^module\.lifecycle\.[a-z_]+$/D', $reason) === 1) $data['reason'] = $reason;
+            }
             if ($route === 'admin_file_manager_index') {
                 foreach (['path', 'item'] as $key) {
                     $value = trim((string) $request->request->get($key, ''));
