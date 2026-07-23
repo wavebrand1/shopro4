@@ -79,6 +79,8 @@ Nadal nierozwiązane wpisy są wyświetlane poniżej stanu kolejki wraz z typem
 wiadomości, przyczyną oraz liczbą prób. Administrator może pojedynczy wpis
 ponowić albo świadomie usunąć. Obie operacje wymagają tokenu CSRF, a usunięcie
 jest dodatkowo potwierdzane w interfejsie.
+Uzgodnienie, ponowienie i usunięcie wiadomości są zapisywane jako ważne
+zdarzenia w Logach wraz z operatorem, wynikiem i identyfikatorem technicznym.
 
 Cache jest czyszczony po kompilacji, aby Symfony odczytało najnowszy manifest
 assetów i nie podawało przeglądarce poprzednich adresów CSS.

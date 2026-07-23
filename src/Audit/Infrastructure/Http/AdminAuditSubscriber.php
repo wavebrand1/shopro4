@@ -48,6 +48,14 @@ final class AdminAuditSubscriber
                     if ($value !== '') $data[$key] = mb_substr($value, 0, 255);
                 }
             }
+            if (str_starts_with($route, 'admin_newsletter_queue_')) {
+                $messageId = (string) $request->attributes->get('id', '');
+                $outcome = (string) $request->attributes->get('_shopro_queue_outcome', 'unknown');
+                $removedCount = $request->attributes->get('_shopro_queue_removed_count');
+                if (preg_match('/^\d+$/D', $messageId) === 1) $data['message_id'] = $messageId;
+                if (in_array($outcome, ['applied', 'not_found', 'failed', 'invalid_csrf'], true)) $data['outcome'] = $outcome;
+                if (is_int($removedCount) && $removedCount >= 0) $data['removed_count'] = $removedCount;
+            }
             $this->logs->save(new AuditLog(
                 'admin',
                 AdminAuditOperation::action($route, $operation),

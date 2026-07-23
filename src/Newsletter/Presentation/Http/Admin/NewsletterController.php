@@ -61,6 +61,7 @@ final class NewsletterController extends AbstractController
     public function reconcileQueue(Request $request, FailedNewsletterMessageCleaner $cleaner): Response
     {
         if (!$this->isCsrfTokenValid('newsletter-queue-reconcile', (string) $request->request->get('_token'))) {
+            $request->attributes->set('_shopro_queue_outcome', 'invalid_csrf');
             $this->addFlash('error', $this->translator->translate('newsletter.queue_reconcile_invalid'));
 
             return $this->redirectToRoute('admin_newsletter_index');
@@ -68,8 +69,11 @@ final class NewsletterController extends AbstractController
 
         try {
             $removed = $cleaner->removeResolved();
+            $request->attributes->set('_shopro_queue_outcome', 'applied');
+            $request->attributes->set('_shopro_queue_removed_count', $removed);
             $this->addFlash('success', sprintf($this->translator->translate('newsletter.queue_reconciled'), $removed));
         } catch (\Throwable) {
+            $request->attributes->set('_shopro_queue_outcome', 'failed');
             $this->addFlash('error', $this->translator->translate('newsletter.queue_reconcile_failed'));
         }
 
@@ -80,12 +84,15 @@ final class NewsletterController extends AbstractController
     public function retryFailedMessage(string $id, Request $request, FailedNewsletterMessageCleaner $cleaner, MessageBusInterface $bus): Response
     {
         if (!$this->isCsrfTokenValid('newsletter-failed-retry-'.$id, (string) $request->request->get('_token'))) {
+            $request->attributes->set('_shopro_queue_outcome', 'invalid_csrf');
             $this->addFlash('error', $this->translator->translate('newsletter.queue_reconcile_invalid'));
         } else {
             try {
                 $retried = $cleaner->retry($id, $bus);
+                $request->attributes->set('_shopro_queue_outcome', $retried ? 'applied' : 'not_found');
                 $this->addFlash($retried ? 'success' : 'error', $this->translator->translate($retried ? 'newsletter.failed_retried' : 'newsletter.failed_missing'));
             } catch (\Throwable) {
+                $request->attributes->set('_shopro_queue_outcome', 'failed');
                 $this->addFlash('error', $this->translator->translate('newsletter.failed_retry_error'));
             }
         }
@@ -97,12 +104,15 @@ final class NewsletterController extends AbstractController
     public function removeFailedMessage(string $id, Request $request, FailedNewsletterMessageCleaner $cleaner): Response
     {
         if (!$this->isCsrfTokenValid('newsletter-failed-remove-'.$id, (string) $request->request->get('_token'))) {
+            $request->attributes->set('_shopro_queue_outcome', 'invalid_csrf');
             $this->addFlash('error', $this->translator->translate('newsletter.queue_reconcile_invalid'));
         } else {
             try {
                 $removed = $cleaner->removeById($id);
+                $request->attributes->set('_shopro_queue_outcome', $removed ? 'applied' : 'not_found');
                 $this->addFlash($removed ? 'success' : 'error', $this->translator->translate($removed ? 'newsletter.failed_removed' : 'newsletter.failed_missing'));
             } catch (\Throwable) {
+                $request->attributes->set('_shopro_queue_outcome', 'failed');
                 $this->addFlash('error', $this->translator->translate('newsletter.failed_remove_error'));
             }
         }

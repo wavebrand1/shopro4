@@ -47,4 +47,18 @@ final class AuditLogDataPresenterTest extends TestCase
         self::assertArrayNotHasKey('method', $presented);
         self::assertArrayNotHasKey('operation', $presented);
     }
+
+    public function testPresentsSafeQueueOperationMetadata(): void
+    {
+        self::assertSame([
+            'outcome' => 'applied',
+            'message_id' => '77',
+            'removed_count' => '1',
+        ], AuditLogDataPresenter::present([
+            'outcome' => 'applied',
+            'message_id' => '77',
+            'removed_count' => 1,
+            'exception' => 'must-not-be-rendered',
+        ]));
+    }
 }

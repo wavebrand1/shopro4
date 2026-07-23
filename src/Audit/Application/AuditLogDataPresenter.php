@@ -16,6 +16,8 @@ final class AuditLogDataPresenter
         'requested_state',
         'outcome',
         'reason',
+        'message_id',
+        'removed_count',
     ];
 
     /** @param array<string, mixed> $data
