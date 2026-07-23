@@ -127,7 +127,9 @@ dostarczenia newslettera. Operacje PA używają POST, CSRF i trafiają do audytu
 zarówno włączenie, jak i wyłączenie jest oznaczane jako zdarzenie ważne. Wpis
 zawiera kod modułu, żądany stan, wynik `applied`/`denied` i — wyłącznie przy
 odmowie — bezpieczny techniczny kod przyczyny. Nie zapisuje danych formularza ani
-sekretów. Odczyt rejestru, decyzja polityki i zapis nowego stanu odbywają się w
+sekretów. Szczegóły są objęte jawną listą bezpiecznych pól i widoczne na ekranie
+szczegółów logu z etykietami PL/EN; pola takie jak hasło, token lub treść żądania
+pozostają odfiltrowane. Odczyt rejestru, decyzja polityki i zapis nowego stanu odbywają się w
 jednej transakcji. MariaDB/PostgreSQL blokują
 na ten czas rekordy `installed_module`, więc równoległe kliknięcie albo
 `app:modules:sync` nie może nadpisać decyzji policzonej na nieaktualnych danych.

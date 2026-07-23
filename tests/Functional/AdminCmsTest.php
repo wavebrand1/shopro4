@@ -866,6 +866,8 @@ final class AdminCmsTest extends WebTestCase
 
         $detailLog = new AuditLog('admin', 'test.detail', 'Technical event details.', 'admin', '127.0.0.1', [
             'route' => 'admin_test', 'method' => 'POST', 'operation' => 'save',
+            'module' => 'newsletter', 'requested_state' => 'disabled',
+            'outcome' => 'denied', 'reason' => 'module.lifecycle.active_work',
             'password' => 'must-not-be-rendered', 'token' => 'also-hidden',
         ]);
         $this->entityManager->persist($detailLog);
@@ -874,6 +876,8 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.modern-page-heading h1', 'Details');
         self::assertSelectorTextContains('.audit-details', 'admin_test');
+        self::assertSelectorTextContains('.audit-details', 'newsletter');
+        self::assertSelectorTextContains('.audit-details', 'module.lifecycle.active_work');
         self::assertSelectorTextNotContains('.audit-details', 'must-not-be-rendered');
         self::assertSelectorTextNotContains('.audit-details', 'also-hidden');
 

@@ -6,7 +6,17 @@ namespace App\Audit\Application;
 
 final class AuditLogDataPresenter
 {
-    private const ALLOWED_KEYS = ['route', 'method', 'operation', 'path', 'item'];
+    private const ALLOWED_KEYS = [
+        'route',
+        'method',
+        'operation',
+        'path',
+        'item',
+        'module',
+        'requested_state',
+        'outcome',
+        'reason',
+    ];
 
     /** @param array<string, mixed> $data
      *  @return array<string, string>

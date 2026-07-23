@@ -17,6 +17,10 @@ final class AuditLogDataPresenterTest extends TestCase
             'operation' => 'save',
             'path' => '/images',
             'item' => 'photo.webp',
+            'module' => 'newsletter',
+            'requested_state' => 'disabled',
+            'outcome' => 'denied',
+            'reason' => 'module.lifecycle.active_work',
             'password' => 'secret',
             'token' => 'unsafe',
             'content' => ['large' => 'payload'],
@@ -28,6 +32,10 @@ final class AuditLogDataPresenterTest extends TestCase
             'operation' => 'save',
             'path' => '/images',
             'item' => 'photo.webp',
+            'module' => 'newsletter',
+            'requested_state' => 'disabled',
+            'outcome' => 'denied',
+            'reason' => 'module.lifecycle.active_work',
         ], $presented);
     }
 
