@@ -86,6 +86,8 @@ korzystają z globalnej wartości **Paginacja** z konfiguracji systemu, dzięki 
 historia wysyłki nie powoduje pobierania wszystkich rekordów przy każdym wejściu
 na ekran Newslettera. Historia na ekranie szczegółów kampanii jest stronicowana
 tak samo, natomiast liczniki odbiorców oraz statusów zawsze obejmują całą kampanię.
+Liczby dostarczeń dla widocznych kampanii są pobierane jednym zapytaniem zbiorczym,
+a nie osobnym zapytaniem dla każdego wiersza.
 
 Cache jest czyszczony po kompilacji, aby Symfony odczytało najnowszy manifest
 assetów i nie podawało przeglądarce poprzednich adresów CSS.

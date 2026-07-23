@@ -48,8 +48,22 @@ final class NewsletterController extends AbstractController
             ($campaignPage - 1) * $limit,
         );
         $counts = [];
-        foreach ($campaigns as $campaign) {
-            $counts[$campaign->getId()] = $em->getRepository(NewsletterDelivery::class)->count(['campaign' => $campaign]);
+        $campaignIds = array_map(
+            static fn (NewsletterCampaign $campaign): int => (int) $campaign->getId(),
+            $campaigns,
+        );
+        if ($campaignIds !== []) {
+            $countRows = $em->createQueryBuilder()
+                ->select('IDENTITY(delivery.campaign) AS campaignId, COUNT(delivery.id) AS total')
+                ->from(NewsletterDelivery::class, 'delivery')
+                ->where('delivery.campaign IN (:campaignIds)')
+                ->setParameter('campaignIds', $campaignIds)
+                ->groupBy('delivery.campaign')
+                ->getQuery()
+                ->getArrayResult();
+            foreach ($countRows as $row) {
+                $counts[(int) $row['campaignId']] = (int) $row['total'];
+            }
         }
 
         $deliveryTotal = $em->getRepository(NewsletterDelivery::class)->count([]);
