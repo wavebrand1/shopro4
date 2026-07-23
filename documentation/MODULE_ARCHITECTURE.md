@@ -110,8 +110,12 @@ rejestru instalacji.
 `ModuleLifecyclePolicy` stanowi obowiązkową bramkę przyszłych operacji włączania
 i wyłączania. Blokuje wyłączenie modułu systemowego, zależności używanej przez
 aktywny moduł oraz modułu wykonującego pracę w tle. Ponowne włączenie wymaga
-aktywnych wszystkich zależności. Samo przełączenie stanu aktualizuje znacznik
-czasu, ale nie usuwa tabel ani danych modułu.
+aktywnych wszystkich zależności, zgodności wersji własnego rekordu z kodem oraz
+zgodnych i zsynchronizowanych wersji zależności. Panel nie może więc pokazać
+pozornego sukcesu, po którym runtime nadal blokowałby moduł. Naprawa wersji odbywa
+się przez kontrolowane wdrożenie i `app:modules:sync`, nigdy przez samo kliknięcie.
+Samo przełączenie stanu aktualizuje znacznik czasu, ale nie usuwa tabel ani danych
+modułu.
 Wszystkie zmiany stanu wykonuje `ModuleLifecycleManager`. Rozszerzalne czujniki
 `ModuleActivityProbe` zgłaszają pracę w tle; pierwszy czujnik sprawdza oczekujące
 dostarczenia newslettera. Operacje PA używają POST, CSRF i trafiają do audytu,

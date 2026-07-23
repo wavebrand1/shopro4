@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Module\Application;
 
 use App\Module\Domain\Entity\InstalledModule;
+use Composer\Semver\Semver;
 
 final readonly class ModuleLifecyclePolicy
 {
@@ -35,9 +36,21 @@ final readonly class ModuleLifecyclePolicy
         $definition = $this->registry->get($code);
         if ($definition === null || !isset($installed[$code])) return ModuleLifecycleDecision::deny('module.lifecycle.not_installed');
         if ($installed[$code]->isEnabled()) return ModuleLifecycleDecision::allow();
+        if ($installed[$code]->getVersion() !== $definition->version()) {
+            return ModuleLifecycleDecision::deny('module.lifecycle.unsynchronized');
+        }
 
         foreach ($definition->dependencies() as $dependency) {
-            if (!(($installed[$dependency] ?? null)?->isEnabled())) return ModuleLifecycleDecision::deny('module.lifecycle.inactive_dependency');
+            $dependencyState = $installed[$dependency] ?? null;
+            $dependencyDefinition = $this->registry->get($dependency);
+            if (!$dependencyState?->isEnabled()) return ModuleLifecycleDecision::deny('module.lifecycle.inactive_dependency');
+            if (
+                $dependencyDefinition === null
+                || $dependencyState->getVersion() !== $dependencyDefinition->version()
+                || !Semver::satisfies($dependencyState->getVersion(), $definition->dependencyVersions()[$dependency])
+            ) {
+                return ModuleLifecycleDecision::deny('module.lifecycle.unsynchronized_dependency');
+            }
         }
 
         return ModuleLifecycleDecision::allow();

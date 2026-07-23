@@ -58,6 +58,33 @@ final class ModuleLifecyclePolicyTest extends TestCase
         self::assertTrue($policy->canEnable('feature', $installed)->allowed);
     }
 
+    public function testModuleMustBeSynchronizedBeforeItCanBeEnabled(): void
+    {
+        $policy = new ModuleLifecyclePolicy(new ModuleRegistry([$this->definition('feature')]));
+        $feature = new InstalledModule('feature', '0.9.0');
+        $feature->disable();
+
+        $decision = $policy->canEnable('feature', ['feature' => $feature]);
+
+        self::assertFalse($decision->allowed);
+        self::assertSame('module.lifecycle.unsynchronized', $decision->reason);
+    }
+
+    public function testDependencyMustBeSynchronizedBeforeModuleCanBeEnabled(): void
+    {
+        $policy = new ModuleLifecyclePolicy(new ModuleRegistry([
+            $this->definition('foundation'), $this->definition('feature', false, ['foundation']),
+        ]));
+        $foundation = new InstalledModule('foundation', '0.9.0');
+        $feature = new InstalledModule('feature', '1.0.0');
+        $feature->disable();
+
+        $decision = $policy->canEnable('feature', ['foundation' => $foundation, 'feature' => $feature]);
+
+        self::assertFalse($decision->allowed);
+        self::assertSame('module.lifecycle.unsynchronized_dependency', $decision->reason);
+    }
+
     /** @param list<string> $dependencies */
     private function definition(string $code, bool $required = false, array $dependencies = []): ModuleDefinition
     {
