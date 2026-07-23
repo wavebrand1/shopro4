@@ -105,7 +105,10 @@ modułów, ale bez szczegółów połączenia z bazą. `/health` pozostaje nieza
 lekkim sprawdzeniem życia procesu.
 
 Administrator widzi stan pod adresem `/admin/modules`. Editor nie ma dostępu do
-rejestru instalacji.
+rejestru instalacji. Moduł systemowy nie udostępnia akcji wyłączenia. Jeżeli jednak
+jego stan został awaryjnie zmieniony poza cyklem życia Shopro, rejestr pokazuje
+jednoznaczny status „Wyłączony” i akcję naprawczą „Włącz”. Akcja nadal przechodzi
+pełną kontrolę wersji oraz całego łańcucha zależności.
 
 `ModuleLifecyclePolicy` stanowi obowiązkową bramkę przyszłych operacji włączania
 i wyłączania. Blokuje wyłączenie modułu systemowego, zależności używanej przez

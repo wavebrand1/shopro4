@@ -1943,6 +1943,30 @@ final class AdminCmsTest extends WebTestCase
         self::assertTrue(self::getContainer()->get(ModuleAvailability::class)->isEnabled('newsletter'));
     }
 
+    public function testAdministratorCanRecoverRequiredModuleDisabledOutsideLifecycleManager(): void
+    {
+        $admin = new AdminUser('module-recovery@example.test', 'module-recovery');
+        $cms = $this->entityManager->find(InstalledModule::class, 'cms');
+        self::assertNotNull($cms);
+        $cms->disable();
+        $this->entityManager->persist($admin);
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/modules');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('form[action="/admin/modules/cms/disable"]');
+        $enableForm = $this->client->getCrawler()->filter('form[action="/admin/modules/cms/enable"]');
+        self::assertCount(1, $enableForm);
+        self::assertMatchesRegularExpression('/Wyłączony|Disabled/', $enableForm->ancestors()->filter('tr')->text());
+        $token = (string) $enableForm->filter('input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/admin/modules/cms/enable', ['_token' => $token]);
+
+        self::assertResponseRedirects('/admin/modules');
+        self::assertTrue(self::getContainer()->get(ModuleAvailability::class)->isEnabled('cms'));
+    }
+
     public function testNewOptionalModuleStateStartsDisabled(): void
     {
         $states = self::getContainer()->get(InstalledModuleRepository::class)->synchronizeAll([
