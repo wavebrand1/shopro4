@@ -574,6 +574,8 @@ final class AdminCmsTest extends WebTestCase
         self::getContainer()->get(EntityManagerInterface::class)->flush();
         $moduleSync = new CommandTester((new Application(self::$kernel))->find('app:modules:sync'));
         self::assertSame(0, $moduleSync->execute([]));
+        self::assertSame(7, $this->entityManager->getRepository(InstalledModule::class)->count([]));
+        self::assertSame('2.0.0', $this->entityManager->find(InstalledModule::class, 'legacy-extension')?->getVersion());
 
         $this->client->request('GET', '/admin/modules');
         self::assertResponseIsSuccessful();

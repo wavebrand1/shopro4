@@ -83,6 +83,11 @@ Polecenie dopisuje nowe definicje i aktualizuje ich wersje. Nie usuwa rekordów,
 których nie ma w bieżącym katalogu, dzięki czemu samo wycofanie kodu nie kasuje
 informacji ani danych klienta.
 
+Synchronizacja całego rejestru odbywa się w jednej transakcji Doctrine i kończy
+jednym zatwierdzeniem. Błąd dowolnego wpisu wycofuje wszystkie zmiany, a komunikaty
+o zsynchronizowanych wersjach są wypisywane dopiero po powodzeniu transakcji. Nie
+może więc powstać pozornie poprawny, częściowo zaktualizowany rejestr modułów.
+
 Administrator widzi stan pod adresem `/admin/modules`. Editor nie ma dostępu do
 rejestru instalacji.
 

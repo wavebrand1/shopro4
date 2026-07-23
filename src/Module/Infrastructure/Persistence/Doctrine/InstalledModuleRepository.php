@@ -6,6 +6,7 @@ namespace App\Module\Infrastructure\Persistence\Doctrine;
 
 use App\Module\Domain\Entity\InstalledModule;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 final class InstalledModuleRepository extends ServiceEntityRepository
@@ -19,4 +20,25 @@ final class InstalledModuleRepository extends ServiceEntityRepository
         return $result;
     }
     public function save(InstalledModule $module): void { $this->getEntityManager()->persist($module); $this->getEntityManager()->flush(); }
+
+    /**
+     * @param array<string, string> $versions Map of module code to the version provided by code.
+     * @return array<string, InstalledModule>
+     */
+    public function synchronizeAll(array $versions): array
+    {
+        return $this->getEntityManager()->wrapInTransaction(function (EntityManagerInterface $entityManager) use ($versions): array {
+            $installed = $this->indexed();
+            $synchronized = [];
+
+            foreach ($versions as $code => $version) {
+                $module = $installed[$code] ?? new InstalledModule($code, $version);
+                $module->synchronize($version);
+                $entityManager->persist($module);
+                $synchronized[$code] = $module;
+            }
+
+            return $synchronized;
+        });
+    }
 }
