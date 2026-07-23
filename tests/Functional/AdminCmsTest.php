@@ -1311,6 +1311,11 @@ final class AdminCmsTest extends WebTestCase
 
         $this->client->request('GET', '/admin/modules');
         self::assertResponseStatusCodeSame(403);
+        $this->client->request('POST', '/admin/modules/newsletter/disable', ['_token' => 'forged']);
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request('POST', '/admin/modules/newsletter/enable', ['_token' => 'forged']);
+        self::assertResponseStatusCodeSame(403);
+        self::assertTrue(self::getContainer()->get(ModuleAvailability::class)->isEnabled('newsletter'));
 
         $this->client->request('GET', '/admin/memberships');
         self::assertResponseStatusCodeSame(403);

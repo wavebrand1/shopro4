@@ -105,7 +105,10 @@ modułów, ale bez szczegółów połączenia z bazą. `/health` pozostaje nieza
 lekkim sprawdzeniem życia procesu.
 
 Administrator widzi stan pod adresem `/admin/modules`. Editor nie ma dostępu do
-rejestru instalacji. Moduł systemowy nie udostępnia akcji wyłączenia. Jeżeli jednak
+rejestru instalacji. Ochrona jest podwójna: reguła firewalla oraz klasowy
+`IsGranted('ROLE_ADMIN')` obejmują zarówno listę, jak i endpointy POST. Ręczne
+wywołanie znanego URL przez Editora kończy się 403 przed sprawdzeniem CSRF i nie
+zmienia stanu. Moduł systemowy nie udostępnia akcji wyłączenia. Jeżeli jednak
 jego stan został awaryjnie zmieniony poza cyklem życia Shopro, rejestr pokazuje
 jednoznaczny status „Wyłączony” i akcję naprawczą „Włącz”. Akcja nadal przechodzi
 pełną kontrolę wersji oraz całego łańcucha zależności.
