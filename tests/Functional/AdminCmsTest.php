@@ -447,6 +447,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorExists('.modern-module-card[href="/admin/site-users"]');
         self::assertSelectorTextContains('.modern-dashboard-modules', 'Manage the entire system');
         self::assertSelectorExists('.admin-language-picker a[href^="/admin/language/en"]');
+        self::assertSelectorExists('.dashboard-queue-alert[href="/admin/newsletter"]');
 
         $this->client->request('GET', '/admin/language/en?return=%2Fadmin%2Fpages');
         self::assertResponseRedirects('/admin/pages');
@@ -1852,6 +1853,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorNotExists('a[href="/admin/configuration/newsletter"]');
         self::assertSelectorTextNotContains('.modern-dashboard-modules', 'Newsletter');
+        self::assertSelectorNotExists('.dashboard-queue-alert');
     }
 
     public function testModuleRuntimeFailsClosedWhenDependencyWasDisabledOutsideLifecycleManager(): void

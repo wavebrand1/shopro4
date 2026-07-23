@@ -4,6 +4,14 @@
     <div><p class="modern-kicker">SHOPRO CMS</p><h1>{{ shopro_trans('dashboard.greeting') }} 👋</h1><p>{{ shopro_trans('dashboard.lead') }}</p></div>
     <a class="modern-button modern-button--primary" href="{{ path('admin_page_new') }}"><span>+</span> {{ shopro_trans('dashboard.new_page') }}</a>
 </div>
+{% if queue_health and queue_health.state != 'healthy' %}
+<a class="dashboard-queue-alert dashboard-queue-alert--{{ queue_health.state }}" href="{{ path('admin_newsletter_index') }}">
+    <span class="dashboard-queue-alert__icon">!</span>
+    <span><strong>{{ shopro_trans('dashboard.queue_attention') }}</strong><small>{{ shopro_trans('dashboard.queue_attention_help') }}</small></span>
+    <span class="dashboard-queue-alert__counts">{{ queue_health.pending }} {{ shopro_trans('dashboard.queue_pending_short') }} · {{ queue_health.failed }} {{ shopro_trans('dashboard.queue_failed_short') }}</span>
+    <span aria-hidden="true">→</span>
+</a>
+{% endif %}
 <div class="modern-stats-grid">
     <article class="modern-stat modern-stat--blue">
         <div class="modern-stat__top"><span class="modern-stat__icon"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6V2Zm8 2v5h4"/></svg></span><span class="modern-trend">CMS</span></div>

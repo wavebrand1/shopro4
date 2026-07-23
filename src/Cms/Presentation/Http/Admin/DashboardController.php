@@ -12,6 +12,7 @@ use App\Language\Domain\Entity\Language;
 use App\Mail\Domain\Entity\EmailTemplate;
 use App\Module\Application\ModuleAvailability;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
+use App\Shared\Infrastructure\Messenger\QueueHealthInspector;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class DashboardController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard', methods: ['GET'])]
-    public function __invoke(PageRepository $pages, EntityManagerInterface $entityManager, ModuleAvailability $modules): Response
+    public function __invoke(
+        PageRepository $pages,
+        EntityManagerInterface $entityManager,
+        ModuleAvailability $modules,
+        QueueHealthInspector $queueHealth,
+    ): Response
     {
         $enabled = [];
         foreach (['cms', 'identity', 'language', 'media', 'newsletter', 'settings'] as $code) $enabled[$code] = $modules->isEnabled($code);
@@ -38,6 +44,7 @@ final class DashboardController extends AbstractController
             'campaign_count' => $enabled['newsletter'] ? $entityManager->getRepository(NewsletterCampaign::class)->count([]) : null,
             'email_template_count' => $enabled['settings'] ? $entityManager->getRepository(EmailTemplate::class)->count([]) : null,
             'enabled_modules' => $enabled,
+            'queue_health' => $enabled['newsletter'] && $this->isGranted('ROLE_ADMIN') ? $queueHealth->inspect() : null,
         ]);
     }
 }
