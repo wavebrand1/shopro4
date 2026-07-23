@@ -17,12 +17,15 @@ final class SyncModulesCommand extends Command
     public function __construct(private readonly ModuleRegistry $registry, private readonly InstalledModuleRepository $repository) { parent::__construct(); }
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $versions = [];
+        $definitions = [];
         foreach ($this->registry->all() as $definition) {
-            $versions[$definition->code()] = $definition->version();
+            $definitions[$definition->code()] = [
+                'version' => $definition->version(),
+                'enabledByDefault' => $definition->required(),
+            ];
         }
 
-        $synchronized = $this->repository->synchronizeAll($versions);
+        $synchronized = $this->repository->synchronizeAll($definitions);
         foreach ($synchronized as $module) {
             $output->writeln(sprintf('<info>%s</info> %s', $module->getCode(), $module->getVersion()));
         }

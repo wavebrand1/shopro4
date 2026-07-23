@@ -28,6 +28,7 @@ use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Infrastructure\Module\NewsletterActivityProbe;
 use App\Module\Domain\Entity\InstalledModule;
 use App\Module\Application\ModuleAvailability;
+use App\Module\Infrastructure\Persistence\Doctrine\InstalledModuleRepository;
 use App\Language\Domain\Entity\Language;
 use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
 use App\Settings\Domain\Entity\SystemSettings;
@@ -576,6 +577,9 @@ final class AdminCmsTest extends WebTestCase
         self::assertSame(0, $moduleSync->execute([]));
         self::assertSame(7, $this->entityManager->getRepository(InstalledModule::class)->count([]));
         self::assertSame('2.0.0', $this->entityManager->find(InstalledModule::class, 'legacy-extension')?->getVersion());
+        $moduleVerify = new CommandTester((new Application(self::$kernel))->find('app:modules:verify'));
+        self::assertSame(0, $moduleVerify->execute([]));
+        self::assertStringContainsString('Module registry is consistent.', $moduleVerify->getDisplay());
 
         $this->client->request('GET', '/admin/modules');
         self::assertResponseIsSuccessful();
@@ -1860,6 +1864,10 @@ final class AdminCmsTest extends WebTestCase
             self::assertFalse($runtime->isEnabled('cms'));
             self::assertFalse($runtime->isEnabled('language'));
 
+            $verify = new CommandTester((new Application(self::$kernel))->find('app:modules:verify'));
+            self::assertSame(1, $verify->execute([]));
+            self::assertStringContainsString('cms: synchronized version 3.9.0, code provides 4.0.0', $verify->getDisplay());
+
             $this->client->loginUser($admin, 'admin');
             $this->client->request('GET', '/admin/modules');
             self::assertResponseIsSuccessful();
@@ -1868,5 +1876,18 @@ final class AdminCmsTest extends WebTestCase
             $cms->synchronize('4.0.0');
             $this->entityManager->flush();
         }
+    }
+
+    public function testNewOptionalModuleStateStartsDisabled(): void
+    {
+        $states = self::getContainer()->get(InstalledModuleRepository::class)->synchronizeAll([
+            'optional-example' => ['version' => '1.0.0', 'enabledByDefault' => false],
+        ]);
+
+        self::assertArrayHasKey('optional-example', $states);
+        self::assertFalse($states['optional-example']->isEnabled());
+
+        $this->entityManager->remove($states['optional-example']);
+        $this->entityManager->flush();
     }
 }

@@ -68,6 +68,9 @@ APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console app:translations:sync
 echo "[Shopro] Synchronizing module registry"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console app:modules:sync
 
+echo "[Shopro] Verifying module registry"
+APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console app:modules:verify
+
 echo "[Shopro] Installing bundle assets"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console assets:install public
 

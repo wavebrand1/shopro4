@@ -22,18 +22,19 @@ final class InstalledModuleRepository extends ServiceEntityRepository
     public function save(InstalledModule $module): void { $this->getEntityManager()->persist($module); $this->getEntityManager()->flush(); }
 
     /**
-     * @param array<string, string> $versions Map of module code to the version provided by code.
+     * @param array<string, array{version: string, enabledByDefault: bool}> $definitions
      * @return array<string, InstalledModule>
      */
-    public function synchronizeAll(array $versions): array
+    public function synchronizeAll(array $definitions): array
     {
-        return $this->getEntityManager()->wrapInTransaction(function (EntityManagerInterface $entityManager) use ($versions): array {
+        return $this->getEntityManager()->wrapInTransaction(function (EntityManagerInterface $entityManager) use ($definitions): array {
             $installed = $this->indexed();
             $synchronized = [];
 
-            foreach ($versions as $code => $version) {
-                $module = $installed[$code] ?? new InstalledModule($code, $version);
-                $module->synchronize($version);
+            foreach ($definitions as $code => $definition) {
+                $module = $installed[$code] ?? new InstalledModule($code, $definition['version']);
+                if (!isset($installed[$code]) && !$definition['enabledByDefault']) $module->disable();
+                $module->synchronize($definition['version']);
                 $entityManager->persist($module);
                 $synchronized[$code] = $module;
             }

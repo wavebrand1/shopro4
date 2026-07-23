@@ -26,10 +26,23 @@ bash bin/deploy-dev
 Skrypt wykonuje kolejno:
 
 1. instalację zależności Composer,
-2. migracje bazy danych,
-3. instalację zasobów pakietów Symfony,
-4. kompilację CSS i JavaScript przez AssetMapper,
-5. czyszczenie cache Symfony.
+2. kopię bezpieczeństwa, jeżeli oczekują nowe migracje,
+3. migracje i walidację mapowania bazy danych,
+4. synchronizację tłumaczeń oraz modułów,
+5. kontrolę spójności wersji, stanów i zależności modułów,
+6. instalację i kompilację zasobów przez AssetMapper,
+7. optymalizację responsywnych obrazów i czyszczenie cache,
+8. instalację crona kolejki oraz próbę obsłużenia oczekujących wiadomości.
+
+Kontrolę modułów można uruchomić również ręcznie:
+
+```bash
+APP_ENV=dev APP_DEBUG=1 php bin/console app:modules:verify
+```
+
+Kod wyjścia `1` oznacza brak synchronizacji, wyłączony moduł wymagany albo
+niedostępną zależność. Osierocony rekord nie blokuje wdrożenia, ponieważ jego dane
+muszą pozostać dostępne do diagnostyki i ewentualnego przywrócenia kodu modułu.
 
 Skrypt generuje również responsywne warianty AVIF/WebP plików znajdujących się
 w `public/uploads`. Nowe integracje przesyłania obrazów powinny po zapisie pliku

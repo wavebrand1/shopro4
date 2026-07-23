@@ -87,6 +87,14 @@ Synchronizacja całego rejestru odbywa się w jednej transakcji Doctrine i końc
 jednym zatwierdzeniem. Błąd dowolnego wpisu wycofuje wszystkie zmiany, a komunikaty
 o zsynchronizowanych wersjach są wypisywane dopiero po powodzeniu transakcji. Nie
 może więc powstać pozornie poprawny, częściowo zaktualizowany rejestr modułów.
+Nowy moduł opcjonalny otrzymuje przy pierwszej synchronizacji stan wyłączony i musi
+zostać świadomie uruchomiony w PA; kolejne synchronizacje zachowują wybrany stan.
+
+Po synchronizacji `bin/deploy-dev` uruchamia `app:modules:verify`. Komenda sprawdza
+obecność rekordów, zgodność wersji, aktywność modułów wymaganych oraz dostępność
+łańcuchów zależności. Osierocone rekordy raportuje jako informację i zachowuje.
+Niespójność zwraca kod błędu, dlatego wdrożenie Pleska nie zostanie oznaczone jako
+udane, dopóki rejestr nie odpowiada faktycznie uruchamianemu kodowi.
 
 Administrator widzi stan pod adresem `/admin/modules`. Editor nie ma dostępu do
 rejestru instalacji.
