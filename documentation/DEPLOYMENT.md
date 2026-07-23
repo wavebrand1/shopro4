@@ -73,6 +73,8 @@ Po obsłużeniu ponownej wysyłki system usuwa odpowiadający jej stary wpis z
 transportu `failed`. Wdrożenie dodatkowo uruchamia
 `app:newsletter:reconcile-failed`, które usuwa wpisy dotyczące dostarczeń już
 oznaczonych jako wysłane, bez naruszania nadal nierozwiązanych błędów.
+Tę samą operację administrator może uruchomić przyciskiem `Uzgodnij kolejkę`
+na ekranie Newslettera; akcja jest zabezpieczona tokenem CSRF.
 
 Cache jest czyszczony po kompilacji, aby Symfony odczytało najnowszy manifest
 assetów i nie podawało przeglądarce poprzednich adresów CSS.

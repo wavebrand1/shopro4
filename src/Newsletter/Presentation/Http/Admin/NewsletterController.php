@@ -10,6 +10,7 @@ use App\Mail\Infrastructure\Persistence\Doctrine\EmailTemplateRepository;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
 use App\Newsletter\Application\RecipientCsvImporter;
 use App\Newsletter\Application\CampaignTestMailer;
+use App\Newsletter\Application\FailedNewsletterMessageCleaner;
 use App\Mail\Application\EmailLayoutRenderer;
 use App\Module\Application\RequiresModule;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
@@ -47,6 +48,25 @@ final class NewsletterController extends AbstractController
             'deliveries' => $em->getRepository(NewsletterDelivery::class)->findBy([], ['id' => 'DESC'], 100),
             'queue_health' => $queueHealth->inspect(),
         ]);
+    }
+
+    #[Route('/queue/reconcile', name: 'admin_newsletter_queue_reconcile', methods: ['POST'])]
+    public function reconcileQueue(Request $request, FailedNewsletterMessageCleaner $cleaner): Response
+    {
+        if (!$this->isCsrfTokenValid('newsletter-queue-reconcile', (string) $request->request->get('_token'))) {
+            $this->addFlash('error', $this->translator->translate('newsletter.queue_reconcile_invalid'));
+
+            return $this->redirectToRoute('admin_newsletter_index');
+        }
+
+        try {
+            $removed = $cleaner->removeResolved();
+            $this->addFlash('success', sprintf($this->translator->translate('newsletter.queue_reconciled'), $removed));
+        } catch (\Throwable) {
+            $this->addFlash('error', $this->translator->translate('newsletter.queue_reconcile_failed'));
+        }
+
+        return $this->redirectToRoute('admin_newsletter_index');
     }
 
     #[Route('/new', name: 'admin_newsletter_new', methods: ['GET', 'POST'])]
