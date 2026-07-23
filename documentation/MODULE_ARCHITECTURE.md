@@ -121,7 +121,13 @@ modułu.
 Wszystkie zmiany stanu wykonuje `ModuleLifecycleManager`. Rozszerzalne czujniki
 `ModuleActivityProbe` zgłaszają pracę w tle; pierwszy czujnik sprawdza oczekujące
 dostarczenia newslettera. Operacje PA używają POST, CSRF i trafiają do audytu,
-a wyłączenie jest oznaczane jako zdarzenie ważne.
+a wyłączenie jest oznaczane jako zdarzenie ważne. Odczyt rejestru, decyzja polityki
+i zapis nowego stanu odbywają się w jednej transakcji. MariaDB/PostgreSQL blokują
+na ten czas rekordy `installed_module`, więc równoległe kliknięcie albo
+`app:modules:sync` nie może nadpisać decyzji policzonej na nieaktualnych danych.
+Odmowa polityki kończy transakcję bez zmiany encji, a dopiero potem jest zwracana
+kontrolerowi jako błąd biznesowy. EntityManager pozostaje dzięki temu dostępny dla
+listenerów audytu i pozostałych operacji kończących żądanie.
 Kontrolery modułu oznacza się atrybutem `#[RequiresModule('kod')]`. Subskrybent
 runtime zwraca 404 dla wyłączonego modułu, dzięki czemu jego endpointów nie można
 wywołać ręcznie. Twig udostępnia `shopro_module_enabled()`, używane do ukrywania

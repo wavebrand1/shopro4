@@ -27,19 +27,23 @@ final readonly class ModuleLifecycleManager
 
     public function disable(string $code): void
     {
-        $installed = $this->repository->indexed();
-        $decision = $this->policy->canDisable($code, $installed, ($this->probes[$code] ?? null)?->blockingReasons() ?? []);
-        if (!$decision->allowed) throw new ModuleLifecycleException($decision->reason ?? 'module.lifecycle.denied');
-        $installed[$code]->disable();
-        $this->repository->save($installed[$code]);
+        $denialReason = $this->repository->withLockedRegistry(function (array $installed) use ($code): ?string {
+            $decision = $this->policy->canDisable($code, $installed, ($this->probes[$code] ?? null)?->blockingReasons() ?? []);
+            if (!$decision->allowed) return $decision->reason ?? 'module.lifecycle.denied';
+            $installed[$code]->disable();
+            return null;
+        });
+        if ($denialReason !== null) throw new ModuleLifecycleException($denialReason);
     }
 
     public function enable(string $code): void
     {
-        $installed = $this->repository->indexed();
-        $decision = $this->policy->canEnable($code, $installed);
-        if (!$decision->allowed) throw new ModuleLifecycleException($decision->reason ?? 'module.lifecycle.denied');
-        $installed[$code]->enable();
-        $this->repository->save($installed[$code]);
+        $denialReason = $this->repository->withLockedRegistry(function (array $installed) use ($code): ?string {
+            $decision = $this->policy->canEnable($code, $installed);
+            if (!$decision->allowed) return $decision->reason ?? 'module.lifecycle.denied';
+            $installed[$code]->enable();
+            return null;
+        });
+        if ($denialReason !== null) throw new ModuleLifecycleException($denialReason);
     }
 }

@@ -1896,8 +1896,14 @@ final class AdminCmsTest extends WebTestCase
     public function testAdministratorCanDisableAndEnableOptionalNewsletterModule(): void
     {
         $admin = new AdminUser('module-lifecycle@example.test', 'module-lifecycle');
-        $this->entityManager->persist($admin);
+        $campaign = new NewsletterCampaign();
+        $campaign->setSubject('Module lifecycle');
+        $campaign->setContent('<p>Pending work</p>');
+        $delivery = new NewsletterDelivery($campaign, 'pending@example.test');
+        foreach ([$admin, $campaign, $delivery] as $entity) $this->entityManager->persist($entity);
         $this->entityManager->flush();
+        $deliveryId = $delivery->getId();
+        self::assertNotNull($deliveryId);
         $this->client->loginUser($admin, 'admin');
 
         $this->client->request('GET', '/admin/modules');
@@ -1906,6 +1912,21 @@ final class AdminCmsTest extends WebTestCase
         self::assertCount(1, $disableForm);
         $disableToken = (string) $disableForm->filter('input[name="_token"]')->attr('value');
 
+        $this->client->request('POST', '/admin/modules/newsletter/disable', ['_token' => $disableToken]);
+        self::assertResponseRedirects('/admin/modules');
+        self::assertTrue(self::getContainer()->get(ModuleAvailability::class)->isEnabled('newsletter'));
+        self::assertTrue(self::getContainer()->get(EntityManagerInterface::class)->isOpen());
+        $this->client->followRedirect();
+        self::assertSelectorExists('.flash--error');
+
+        $currentEntityManager = self::getContainer()->get(EntityManagerInterface::class);
+        $currentDelivery = $currentEntityManager->find(NewsletterDelivery::class, $deliveryId);
+        self::assertNotNull($currentDelivery);
+        $currentDelivery->markFailed('Background work completed');
+        $currentEntityManager->flush();
+
+        $disableForm = $this->client->getCrawler()->filter('form[action="/admin/modules/newsletter/disable"]');
+        $disableToken = (string) $disableForm->filter('input[name="_token"]')->attr('value');
         $this->client->request('POST', '/admin/modules/newsletter/disable', ['_token' => $disableToken]);
         self::assertResponseRedirects('/admin/modules');
         self::assertFalse(self::getContainer()->get(ModuleAvailability::class)->isEnabled('newsletter'));
