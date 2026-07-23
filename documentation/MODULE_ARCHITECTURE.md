@@ -95,6 +95,10 @@ obecność rekordów, zgodność wersji, aktywność modułów wymaganych oraz d
 łańcuchów zależności. Osierocone rekordy raportuje jako informację i zachowuje.
 Niespójność zwraca kod błędu, dlatego wdrożenie Pleska nie zostanie oznaczone jako
 udane, dopóki rejestr nie odpowiada faktycznie uruchamianemu kodowi.
+Te same reguły realizuje `ModuleIntegrityChecker`, używany również przez endpoint
+gotowości `/health/ready`. Monitoring otrzymuje HTTP 503 i listę kodów niespójnych
+modułów, ale bez szczegółów połączenia z bazą. `/health` pozostaje niezależnym,
+lekkim sprawdzeniem życia procesu.
 
 Administrator widzi stan pod adresem `/admin/modules`. Editor nie ma dostępu do
 rejestru instalacji.

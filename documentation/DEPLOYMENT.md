@@ -70,6 +70,9 @@ assetów i nie podawało przeglądarce poprzednich adresów CSS.
 - GitHub Actions wykonuje walidację Composera, kontenera i testy.
 - Plesk pokazuje ostatni pobrany commit i wynik wdrożenia.
 - Niepowodzenie któregokolwiek polecenia przerywa skrypt z kodem błędu.
+- `/health` sprawdza, czy proces aplikacji odpowiada, bez zależności od bazy.
+- `/health/ready` sprawdza bazę i spójność rejestru modułów; zwraca HTTP 503,
+  jeśli aplikacja nie powinna jeszcze otrzymywać ruchu.
 - Cała domena developerska jest chroniona uwierzytelnianiem HTTP w Plesku.
 - Sekrety oraz `.env.local` pozostają poza repozytorium.
 
