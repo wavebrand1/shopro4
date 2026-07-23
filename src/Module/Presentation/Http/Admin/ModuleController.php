@@ -23,12 +23,18 @@ final class ModuleController extends AbstractController
     public function __construct(private readonly SystemTranslator $translator) {}
 
     #[Route('', name: 'admin_module_index', methods: ['GET'])]
-    public function index(ModuleRegistry $registry, InstalledModuleRepository $repository, ModuleAvailability $runtime): Response
+    public function index(ModuleRegistry $registry, InstalledModuleRepository $repository, ModuleAvailability $runtime, ModuleLifecycleManager $manager): Response
     {
         $states = $repository->indexed();
         $modules = [];
         foreach ($registry->all() as $definition) {
-            $modules[] = ['definition' => $definition, 'state' => $states[$definition->code()] ?? null, 'runtimeEnabled' => $runtime->isEnabled($definition->code())];
+            $state = $states[$definition->code()] ?? null;
+            $modules[] = [
+                'definition' => $definition,
+                'state' => $state,
+                'runtimeEnabled' => $runtime->isEnabled($definition->code()),
+                'transition' => $state === null ? null : $manager->decision($definition->code(), !$state->isEnabled(), $states),
+            ];
         }
         return $this->render('admin/module/index.html.twig', [
             'modules' => $modules,

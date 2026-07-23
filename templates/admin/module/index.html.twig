@@ -28,8 +28,11 @@
                 {% if module.state and (not module.state.enabled or not module.definition.required) %}
                     <form method="post" action="{{ path(module.state.enabled ? 'admin_module_disable' : 'admin_module_enable',{code:module.definition.code}) }}">
                         <input type="hidden" name="_token" value="{{ csrf_token('module-state-'~module.definition.code) }}">
-                        <button class="table-action">{{ shopro_trans(module.state.enabled ? 'module.disable' : 'module.enable') }}</button>
+                        <button class="table-action"{{ module.transition and not module.transition.allowed ? ' disabled' }}>{{ shopro_trans(module.state.enabled ? 'module.disable' : 'module.enable') }}</button>
                     </form>
+                    {% if module.transition and not module.transition.allowed %}
+                        <small class="table-help">{{ shopro_trans(module.transition.reason) }}</small>
+                    {% endif %}
                 {% endif %}
             </td>
         </tr>

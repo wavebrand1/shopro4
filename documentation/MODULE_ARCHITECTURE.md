@@ -139,6 +139,13 @@ na ten czas rekordy `installed_module`, więc równoległe kliknięcie albo
 Odmowa polityki kończy transakcję bez zmiany encji, a dopiero potem jest zwracana
 kontrolerowi jako błąd biznesowy. EntityManager pozostaje dzięki temu dostępny dla
 listenerów audytu i pozostałych operacji kończących żądanie.
+
+Rejestr PA wykonuje również niewiążący podgląd tej samej decyzji. Jeżeli aktywna
+kolejka, wersja albo zależność blokuje zmianę, przycisk jest nieaktywny, a obok
+pojawia się przetłumaczona przyczyna. Jest to pomoc dla operatora, nie mechanizm
+bezpieczeństwa: po ręcznym wysłaniu żądania manager ponawia kontrolę już pod
+blokadą transakcyjną, ponieważ stan mógł zmienić się od wyrenderowania strony.
+
 Kontrolery modułu oznacza się atrybutem `#[RequiresModule('kod')]`. Subskrybent
 runtime zwraca 404 dla wyłączonego modułu, dzięki czemu jego endpointów nie można
 wywołać ręcznie. Twig udostępnia `shopro_module_enabled()`, używane do ukrywania

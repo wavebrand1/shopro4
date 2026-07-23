@@ -1919,6 +1919,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         $disableForm = $this->client->getCrawler()->filter('form[action="/admin/modules/newsletter/disable"]');
         self::assertCount(1, $disableForm);
+        self::assertCount(1, $disableForm->filter('button[disabled]'));
         $disableToken = (string) $disableForm->filter('input[name="_token"]')->attr('value');
 
         $this->client->request('POST', '/admin/modules/newsletter/disable', ['_token' => $disableToken]);
@@ -1946,7 +1947,9 @@ final class AdminCmsTest extends WebTestCase
         $currentDelivery->markFailed('Background work completed');
         $currentEntityManager->flush();
 
+        $this->client->request('GET', '/admin/modules');
         $disableForm = $this->client->getCrawler()->filter('form[action="/admin/modules/newsletter/disable"]');
+        self::assertCount(0, $disableForm->filter('button[disabled]'));
         $disableToken = (string) $disableForm->filter('input[name="_token"]')->attr('value');
         $this->client->request('POST', '/admin/modules/newsletter/disable', ['_token' => $disableToken]);
         self::assertResponseRedirects('/admin/modules');
