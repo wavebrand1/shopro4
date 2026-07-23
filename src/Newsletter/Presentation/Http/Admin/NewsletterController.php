@@ -162,15 +162,39 @@ final class NewsletterController extends AbstractController
     }
 
     #[Route('/{id}', name: 'admin_newsletter_show', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(NewsletterCampaign $campaign, EntityManagerInterface $em): Response
+    public function show(NewsletterCampaign $campaign, Request $request, EntityManagerInterface $em, SettingsProvider $settings): Response
     {
-        $deliveries = $em->getRepository(NewsletterDelivery::class)->findBy(['campaign' => $campaign], ['id' => 'DESC']);
         $counts = ['queued' => 0, 'sent' => 0, 'failed' => 0];
-        foreach ($deliveries as $delivery) {
-            $counts[$delivery->getStatus()] = ($counts[$delivery->getStatus()] ?? 0) + 1;
+        $countRows = $em->createQueryBuilder()
+            ->select('delivery.status AS status, COUNT(delivery.id) AS total')
+            ->from(NewsletterDelivery::class, 'delivery')
+            ->where('delivery.campaign = :campaign')
+            ->setParameter('campaign', $campaign)
+            ->groupBy('delivery.status')
+            ->getQuery()
+            ->getArrayResult();
+        foreach ($countRows as $row) {
+            $counts[(string) $row['status']] = (int) $row['total'];
         }
+        $deliveryTotal = array_sum($counts);
+        $limit = max(1, min(200, (int) $settings->get('per_page', 20)));
+        $lastPage = max(1, (int) ceil($deliveryTotal / $limit));
+        $page = min($lastPage, max(1, $request->query->getInt('page', 1)));
+        $deliveries = $em->getRepository(NewsletterDelivery::class)->findBy(
+            ['campaign' => $campaign],
+            ['id' => 'DESC'],
+            $limit,
+            ($page - 1) * $limit,
+        );
 
-        return $this->render('admin/newsletter/show.html.twig', compact('campaign', 'deliveries', 'counts'));
+        return $this->render('admin/newsletter/show.html.twig', [
+            'campaign' => $campaign,
+            'deliveries' => $deliveries,
+            'delivery_total' => $deliveryTotal,
+            'counts' => $counts,
+            'current_page' => $page,
+            'last_page' => $lastPage,
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'admin_newsletter_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]

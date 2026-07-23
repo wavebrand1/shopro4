@@ -2031,6 +2031,40 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.admin-pagination', 'Strona 2 z 2');
     }
 
+    public function testNewsletterCampaignDetailsPaginateDeliveriesWithoutChangingTotals(): void
+    {
+        $admin = new AdminUser('newsletter-details-pagination@example.test', 'newsletter-details-pagination');
+        $settings = new SystemSettings();
+        $settings->setConfiguration(['per_page' => 2]);
+        $campaign = new NewsletterCampaign();
+        $campaign->setSubject('Szczegóły dużej kampanii');
+        $campaign->setContent('<p>Treść</p>');
+        $sent = new NewsletterDelivery($campaign, 'details-sent@example.test');
+        $sent->markSent();
+        $failed = new NewsletterDelivery($campaign, 'details-failed@example.test');
+        $failed->markFailed('Testowy błąd');
+        $queued = new NewsletterDelivery($campaign, 'details-queued@example.test');
+        foreach ([$admin, $settings, $campaign, $sent, $failed, $queued] as $entity) {
+            $this->entityManager->persist($entity);
+        }
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/newsletter/'.$campaign->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.component-fields', '3');
+        self::assertSelectorTextContains('.modern-table-card .modern-card__heading', 'Wysłane: 1, oczekujące: 1, błędne: 1');
+        self::assertSelectorTextContains('body', 'details-queued@example.test');
+        self::assertSelectorTextNotContains('body', 'details-sent@example.test');
+        self::assertSelectorExists('.admin-pagination');
+
+        $this->client->request('GET', '/admin/newsletter/'.$campaign->getId().'?page=2');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('body', 'details-sent@example.test');
+        self::assertSelectorTextContains('.component-fields', '3');
+        self::assertSelectorTextContains('.modern-table-card .modern-card__heading', 'Wysłane: 1, oczekujące: 1, błędne: 1');
+    }
+
     public function testNewOptionalModuleStateStartsDisabled(): void
     {
         $states = self::getContainer()->get(InstalledModuleRepository::class)->synchronizeAll([
