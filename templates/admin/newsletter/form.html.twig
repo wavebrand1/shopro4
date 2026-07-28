@@ -1,6 +1,6 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}{{ shopro_trans(campaign.id ? 'newsletter.edit_campaign' : 'newsletter.new_campaign') }} — Shopro 4.0{% endblock %}
-{% block javascripts %}{{ importmap(['app','rich-editor','newsletter-template']) }}<script type="module" src="{{ asset('newsletter-recipients.js') }}"></script>{% endblock %}
+{% block javascripts %}{{ importmap(['app','rich-editor','newsletter-template']) }}{% endblock %}
 {% block body %}
 <div class="modern-page-heading"><div><p class="modern-kicker">NEWSLETTER</p><h1>{{ shopro_trans(campaign.id ? 'newsletter.edit_campaign' : 'newsletter.new_campaign') }}</h1><p>{{ shopro_trans('newsletter.form_lead') }}</p></div><a class="modern-button" href="{{ campaign.id ? path('admin_newsletter_show',{id:campaign.id}) : path('admin_newsletter_index') }}">← {{ shopro_trans('common.back') }}</a></div>
 {{ form_start(form,{attr:{class:'admin-form'}}) }}

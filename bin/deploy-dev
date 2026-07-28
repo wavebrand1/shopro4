@@ -87,7 +87,7 @@ fi
 echo "[Shopro] Compiling AssetMapper assets"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console asset-map:compile
 
-if ! grep -q '"rich-editor"' public/assets/importmap.json || ! grep -q '"newsletter-recipients.js"' public/assets/manifest.json; then
+if ! grep -q '"rich-editor"' public/assets/importmap.json || ! grep -q '"admin-form-components.js"' public/assets/manifest.json; then
     echo "[Shopro] Required newsletter form assets are missing from the compiled import map" >&2
     exit 1
 fi

@@ -2068,9 +2068,7 @@ final class AdminCmsTest extends WebTestCase
         $this->client->request('GET', '/admin/newsletter/new');
         self::assertResponseIsSuccessful();
         self::assertStringContainsString("import 'rich-editor'", (string) $this->client->getResponse()->getContent());
-        self::assertStringNotContainsString("import 'newsletter-recipients'", (string) $this->client->getResponse()->getContent());
-        self::assertSelectorExists('script[type="module"][src*="newsletter-recipients"]');
-        self::assertSelectorExists('select[data-newsletter-user-picker][multiple]');
+        self::assertSelectorExists('select[data-searchable-select][multiple]');
         self::assertSelectorNotExists('#newsletter_campaign_selectedSiteUserIds input[type="checkbox"]');
     }
 

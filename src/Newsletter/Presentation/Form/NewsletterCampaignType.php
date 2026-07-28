@@ -50,11 +50,12 @@ final class NewsletterCampaignType extends AbstractType
                 'required' => false,
                 'help' => $t('newsletter.selected_users_help'),
                 'attr' => [
-                    'data-newsletter-user-picker' => true,
+                    'data-searchable-select' => true,
                     'data-search-url' => '/admin/newsletter/users/search',
                     'data-search-placeholder' => $t('newsletter.user_search_placeholder'),
                     'data-search-empty' => $t('newsletter.user_search_empty'),
                     'data-search-more' => $t('newsletter.user_search_more'),
+                    'data-remove-label' => $t('common.remove'),
                 ],
             ])
             ->add('customEmails', TextareaType::class, ['label' => $t('newsletter.custom_emails'), 'required' => false, 'help' => $t('newsletter.custom_emails_help'), 'attr' => ['rows' => 5], 'constraints' => [new All([new Email()])]])
