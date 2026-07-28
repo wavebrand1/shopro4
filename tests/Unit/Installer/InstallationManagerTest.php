@@ -82,4 +82,16 @@ final class InstallationManagerTest extends TestCase
 
         self::assertTrue((new InstallationManager($this->directory))->isInstalled());
     }
+
+    public function testItSelectsAConsolePhpBinaryInsteadOfPhpFpm(): void
+    {
+        $manager = new InstallationManager($this->directory);
+        $method = new \ReflectionMethod($manager, 'cliPhpBinary');
+
+        $binary = $method->invoke($manager);
+
+        self::assertIsString($binary);
+        self::assertFileExists($binary);
+        self::assertStringNotContainsString('php-fpm', strtolower($binary));
+    }
 }

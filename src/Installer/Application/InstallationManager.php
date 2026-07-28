@@ -230,7 +230,7 @@ final class InstallationManager
         $result = [];
         foreach ($commands as $arguments) {
             $process = new Process(
-                [PHP_BINARY, 'bin/console', ...$arguments],
+                [$this->cliPhpBinary(), 'bin/console', ...$arguments],
                 $this->projectDir,
                 ['APP_ENV' => 'prod', 'APP_DEBUG' => '0'],
             );
@@ -243,6 +243,30 @@ final class InstallationManager
         }
 
         return $result;
+    }
+
+    private function cliPhpBinary(): string
+    {
+        $configured = $_SERVER['SHOPRO_PHP_BIN'] ?? $_ENV['SHOPRO_PHP_BIN'] ?? getenv('SHOPRO_PHP_BIN');
+        $candidates = [];
+        if (is_string($configured) && trim($configured) !== '') $candidates[] = trim($configured);
+
+        $binaryName = strtolower(pathinfo(PHP_BINARY, PATHINFO_BASENAME));
+        if (in_array($binaryName, ['php', 'php.exe'], true)) $candidates[] = PHP_BINARY;
+
+        // Plesk handles web requests with .../sbin/php-fpm, while console
+        // commands must use the matching .../bin/php executable.
+        $candidates[] = dirname(dirname(PHP_BINARY)).'/bin/php';
+        $candidates[] = sprintf('/opt/plesk/php/%d.%d/bin/php', PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
+        $candidates[] = rtrim(PHP_BINDIR, '/\\').DIRECTORY_SEPARATOR.(PHP_OS_FAMILY === 'Windows' ? 'php.exe' : 'php');
+
+        foreach (array_unique($candidates) as $candidate) {
+            if (is_file($candidate) && is_executable($candidate)) return $candidate;
+        }
+
+        throw new \RuntimeException(
+            'Nie znaleziono interpretera PHP CLI. Ustaw zmienną SHOPRO_PHP_BIN, np. /opt/plesk/php/8.3/bin/php.',
+        );
     }
 
     private function ensureWritableDirectory(string $path): bool
