@@ -77,8 +77,20 @@ APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console assets:install public
 echo "[Shopro] Installing importmap vendor assets"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console importmap:install
 
+# AssetMapper does not replace changed compiled assets reliably in debug mode.
+# This directory contains generated files only; source assets live in /assets.
+echo "[Shopro] Removing previously compiled AssetMapper files"
+if [ -d public/assets ]; then
+    find public/assets -mindepth 1 -depth -delete
+fi
+
 echo "[Shopro] Compiling AssetMapper assets"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console asset-map:compile
+
+if ! grep -q '"rich-editor"' public/assets/importmap.json || ! grep -q '"newsletter-recipients"' public/assets/importmap.json; then
+    echo "[Shopro] Required newsletter form assets are missing from the compiled import map" >&2
+    exit 1
+fi
 
 echo "[Shopro] Generating responsive image variants"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console app:images:optimize

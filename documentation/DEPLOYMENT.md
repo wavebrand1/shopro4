@@ -108,6 +108,10 @@ a nie osobnym zapytaniem dla każdego wiersza.
 
 Cache jest czyszczony po kompilacji, aby Symfony odczytało najnowszy manifest
 assetów i nie podawało przeglądarce poprzednich adresów CSS.
+Przed `asset-map:compile` skrypt usuwa wyłącznie wygenerowaną zawartość
+`public/assets` (źródła pozostają w `assets`) i po kompilacji sprawdza obecność
+zasobów edytora treści oraz wyszukiwarki odbiorców newslettera. Zapobiega to
+pozostawaniu starego CSS/JS podczas wdrożeń środowiska `dev`.
 
 ## Kontrola
 
