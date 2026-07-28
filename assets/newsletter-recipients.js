@@ -7,11 +7,12 @@ const initializeNewsletterRecipientPicker = () => {
         const picker = document.createElement('div');
         picker.className = 'async-user-picker';
         picker.innerHTML = `
-            <div class="async-user-picker__selected" data-selected></div>
-            <div class="async-user-picker__search">
+            <div class="async-user-picker__control">
+                <div class="async-user-picker__selected" data-selected></div>
                 <input type="search" autocomplete="off" role="combobox" aria-expanded="false">
-                <div class="async-user-picker__results" data-results hidden></div>
-            </div>`;
+                <span class="async-user-picker__arrow" aria-hidden="true"></span>
+            </div>
+            <div class="async-user-picker__results" data-results hidden></div>`;
         select.after(picker);
 
         const selected = picker.querySelector('[data-selected]');
