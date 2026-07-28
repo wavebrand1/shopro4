@@ -85,7 +85,7 @@ final class SystemPageInstaller
         'sitemapPage' => [
             'title' => 'Mapa witryny', 'slug' => 'mapa-witryny',
             'heading' => 'Mapa witryny', 'lead' => 'Lista najważniejszych stron dostępnych w witrynie.',
-            'title_en' => 'Sitemap', 'slug_en' => 'site-map',
+            'title_en' => 'Sitemap', 'slug_en' => 'sitemap',
             'heading_en' => 'Sitemap', 'lead_en' => 'A list of the most important pages available on this website.',
             'setter' => 'setSitemapPage',
         ],

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Cms\Presentation\Http;
 
 use App\Cms\Application\PageAccess;
+use App\Cms\Application\SystemPageRouteResolver;
 use App\Cms\Domain\Entity\Page;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
@@ -21,7 +22,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[\App\Module\Application\RequiresModule('cms')]
 final class PublicPageController extends AbstractController
 {
-    public function __construct(private readonly SystemTranslator $translator)
+    public function __construct(
+        private readonly SystemTranslator $translator,
+        private readonly SystemPageRouteResolver $systemPageRoutes,
+    )
     {
     }
 
@@ -39,6 +43,9 @@ final class PublicPageController extends AbstractController
         $page = $translation->getPage();
         if (!$page->isPubliclyAvailable()) throw $this->createNotFoundException($this->translator->translate('page.public_unpublished'));
         if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
+        if ($target = $this->systemPageRoutes->resolve($page, $language)) {
+            return $this->redirectToRoute($target['route'], $target['parameters']);
+        }
         if ($denied = $this->guard($page, $request, $access)) return $denied;
 
         return $this->render('cms/page/show.html.twig', ['page' => $translation, 'source_page' => $page, 'alternates' => $pages->findPublishedActiveTranslations($page)]);
@@ -54,8 +61,11 @@ final class PublicPageController extends AbstractController
         if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) {
             throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
         }
+        $language = $request->attributes->get('_shopro_language');
+        if ($target = $this->systemPageRoutes->resolve($page, $language instanceof Language ? $language : null)) {
+            return $this->redirectToRoute($target['route'], $target['parameters']);
+        }
         if ($denied = $this->guard($page, $request, $access)) return $denied;
-        $language=$request->attributes->get('_shopro_language');
         if($language instanceof Language&&!$language->isDefaultLanguage()){
             $localizedUrl=$localizedUrls->page($page,$language);
             $baseUrl=$this->generateUrl('cms_page_show',['slug'=>$page->getSlug()]);
