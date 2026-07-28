@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+trap 'status=$?; echo "[Shopro preflight] Failed at line $LINENO (exit $status)" >&2; exit $status' ERR
+
+cd "$(dirname "$0")/.."
+
+PREFLIGHT_ENV="${SHOPRO_DEPLOY_ENV:-dev}"
+PREFLIGHT_DEBUG="${SHOPRO_DEPLOY_DEBUG:-}"
+if [ -z "$PREFLIGHT_DEBUG" ]; then
+    if [ "$PREFLIGHT_ENV" = "prod" ]; then PREFLIGHT_DEBUG=0; else PREFLIGHT_DEBUG=1; fi
+fi
+
+PHP_BIN=""
+for candidate in /opt/plesk/php/8.3/bin/php /opt/plesk/php/8.2/bin/php /usr/bin/php; do
+    if [ -x "$candidate" ]; then PHP_BIN="$candidate"; break; fi
+done
+[ -n "$PHP_BIN" ] || { echo "[Shopro preflight] PHP binary was not found." >&2; exit 1; }
+
+echo "[Shopro preflight] Creating a fresh database and uploads backup"
+APP_ENV="$PREFLIGHT_ENV" APP_DEBUG="$PREFLIGHT_DEBUG" bash bin/create-backup
+
+echo "[Shopro preflight] Running strict runtime checks"
+APP_ENV="$PREFLIGHT_ENV" APP_DEBUG="$PREFLIGHT_DEBUG" SHOPRO_STRICT_CONFIG=1 bash bin/release-check --runtime
+
+echo "[Shopro preflight] Checking newsletter queue"
+APP_ENV="$PREFLIGHT_ENV" APP_DEBUG="$PREFLIGHT_DEBUG" "$PHP_BIN" bin/console app:queue:verify
+
+echo "[Shopro preflight] Release candidate is ready for the manual smoke test"

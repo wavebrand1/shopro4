@@ -68,7 +68,7 @@ if [ "$MODE" = "--ci" ]; then
     console lint:container
 
     echo "[Shopro release] Validating deployment scripts"
-    bash -n bin/deploy-dev bin/deploy-prod bin/create-backup bin/release-check bin/run-queue-worker bin/setup-queue-worker
+    bash -n bin/deploy-dev bin/deploy-prod bin/create-backup bin/release-check bin/release-preflight bin/run-queue-worker bin/setup-queue-worker
 
     if command -v node >/dev/null 2>&1; then
         echo "[Shopro release] Validating application JavaScript"
@@ -94,7 +94,7 @@ echo "[Shopro release] Checking module registry"
 console app:modules:verify
 
 echo "[Shopro release] Checking release data and configuration"
-if [ "${SHOPRO_PUBLIC_RELEASE:-0}" = "1" ]; then
+if [ "${SHOPRO_PUBLIC_RELEASE:-0}" = "1" ] || [ "${SHOPRO_STRICT_CONFIG:-0}" = "1" ]; then
     console app:release:verify --strict
 else
     console app:release:verify

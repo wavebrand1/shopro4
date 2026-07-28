@@ -9,7 +9,9 @@ use App\Module\Domain\Entity\InstalledModule;
 use App\Module\Infrastructure\Persistence\Doctrine\InstalledModuleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Tester\CommandTester;
 
 final class HealthControllerTest extends WebTestCase
 {
@@ -56,12 +58,19 @@ final class HealthControllerTest extends WebTestCase
             (string) $client->getResponse()->getContent(),
         );
 
+        $queueCommand = new CommandTester((new Application(self::$kernel))->find('app:queue:verify'));
+        self::assertSame(0, $queueCommand->execute([]));
+        self::assertStringContainsString('The message queue is ready', $queueCommand->getDisplay());
+
         $connection->executeStatement("INSERT INTO messenger_messages (queue_name) VALUES ('async')");
         $client->request('GET', '/health/ready');
         self::assertResponseStatusCodeSame(503);
         $queuePayload = json_decode((string) $client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
         self::assertSame('error', $queuePayload['queue']['status']);
         self::assertSame(1, $queuePayload['queue']['pending']);
+        $queueCommand = new CommandTester((new Application(self::$kernel))->find('app:queue:verify'));
+        self::assertSame(1, $queueCommand->execute([]));
+        self::assertStringContainsString('blocks release readiness', $queueCommand->getDisplay());
         $connection->executeStatement("DELETE FROM messenger_messages WHERE queue_name = 'async'");
 
         $cms = $entityManager->find(InstalledModule::class, 'cms');

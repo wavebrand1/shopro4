@@ -80,6 +80,17 @@ SHOPRO_PUBLIC_RELEASE=1 APP_ENV=prod APP_DEBUG=0 bash bin/release-check --runtim
 
 ## Test ręczny po wdrożeniu
 
+Przed testem ręcznym uruchom na serwerze jedno polecenie:
+
+```bash
+cd ~/httpdocs
+bash bin/release-preflight
+```
+
+Skrypt tworzy świeżą kopię bazy i katalogu `public/uploads`, wykonuje ścisłą
+kontrolę konfiguracji i danych oraz sprawdza magazyn wiadomości i aktywność
+workera. Nie zmienia `APP_ENV`, nie publikuje strony i nie usuwa ochrony Pleska.
+
 Sprawdź kolejno:
 
 1. `/health` odpowiada kodem 200, a `/health/ready` nie zgłasza blokady.
