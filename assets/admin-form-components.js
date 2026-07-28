@@ -1,4 +1,8 @@
-const SEARCHABLE_SELECT_SELECTOR = '.admin-body select[multiple], select[data-searchable-select], select[data-newsletter-user-picker]';
+const SEARCHABLE_SELECT_SELECTOR = [
+    '.admin-body select:not([data-native-select]):not(.picker__select--month):not(.picker__select--year):not(.flatpickr-monthDropdown-months)',
+    'select[data-searchable-select]',
+    'select[data-newsletter-user-picker]',
+].join(', ');
 
 const initializeSearchableSelect = (select) => {
     if (select.dataset.componentReady === 'true') return;
@@ -8,12 +12,18 @@ const initializeSearchableSelect = (select) => {
     select.hidden = true;
     select.style.setProperty('display', 'none', 'important');
     select.classList.add('ui-native-control--enhanced');
+    if (select.required) {
+        select.required = false;
+        select.dataset.wasRequired = 'true';
+    }
     if (select.nextElementSibling?.classList.contains('async-user-picker')) select.nextElementSibling.remove();
 
     const multiple = select.multiple;
     const displayCount = Math.max(1, Number.parseInt(select.dataset.displayCount || '2', 10) || 2);
     const component = document.createElement('div');
     component.className = 'ui-searchable-select';
+    component.classList.toggle('ui-searchable-select--multiple', multiple);
+    component.classList.toggle('ui-searchable-select--single', !multiple);
     component.innerHTML = `
         <button class="ui-searchable-select__control" type="button" aria-haspopup="listbox" aria-expanded="false">
             <span class="ui-searchable-select__summary" data-summary></span>
@@ -45,6 +55,8 @@ const initializeSearchableSelect = (select) => {
     input.placeholder = select.dataset.searchPlaceholder || 'Szukaj';
     input.setAttribute('aria-label', input.placeholder);
     control.setAttribute('aria-controls', dropdown.id);
+    if (select.dataset.wasRequired === 'true') control.setAttribute('aria-required', 'true');
+    control.disabled = select.disabled;
     options.setAttribute('aria-multiselectable', multiple ? 'true' : 'false');
 
     const close = () => {
@@ -72,7 +84,7 @@ const initializeSearchableSelect = (select) => {
         }
         selectedOptions.slice(0, displayCount).forEach((option) => {
             const value = document.createElement('span');
-            value.className = 'ui-searchable-select__value';
+            value.className = multiple ? 'ui-searchable-select__value' : 'ui-searchable-select__single-value';
             value.textContent = option.text;
             summary.append(value);
         });
@@ -146,11 +158,25 @@ const initializeSearchableSelect = (select) => {
     const staticResults = () => [...select.options]
         .filter((option) => option.value !== '' && !option.selected)
         .filter((option) => option.text.toLocaleLowerCase().includes(currentQuery.toLocaleLowerCase()))
-        .map((option) => ({ id: option.value, text: option.text }));
+        .map((option) => ({
+            id: option.value,
+            text: option.text,
+            group: option.parentElement instanceof HTMLOptGroupElement ? option.parentElement.label : '',
+        }));
 
     const renderResults = (results, append = false, more = false) => {
         if (!append) options.replaceChildren();
-        results.filter((item) => !optionByValue(item.id)?.selected).forEach((item) => options.append(createOption(item)));
+        let lastGroup = null;
+        results.filter((item) => !optionByValue(item.id)?.selected).forEach((item) => {
+            if (item.group && item.group !== lastGroup) {
+                const heading = document.createElement('p');
+                heading.className = 'ui-searchable-select__group';
+                heading.textContent = item.group;
+                options.append(heading);
+                lastGroup = item.group;
+            }
+            options.append(createOption(item));
+        });
         if (more) {
             const moreButton = document.createElement('button');
             moreButton.type = 'button';
@@ -232,4 +258,12 @@ export const initializeAdminFormComponents = () => {
 };
 
 document.addEventListener('turbo:load', initializeAdminFormComponents);
+document.addEventListener('DOMContentLoaded', initializeAdminFormComponents);
 initializeAdminFormComponents();
+
+const observer = new MutationObserver((mutations) => {
+    if (mutations.some((mutation) => [...mutation.addedNodes].some((node) => node.nodeType === Node.ELEMENT_NODE))) {
+        initializeAdminFormComponents();
+    }
+});
+if (document.documentElement) observer.observe(document.documentElement, { childList: true, subtree: true });

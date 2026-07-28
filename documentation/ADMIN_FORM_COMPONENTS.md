@@ -13,8 +13,10 @@ Shopro, ale dopasowaną do szablonu Shopro 4. W zamkniętym polu pokazuje maksym
 wybrane wartości i licznik pozostałych. Dropdown zawiera wyszukiwarkę, listę zaznaczonych
 elementów z możliwością ich usunięcia oraz listę dostępnych pozycji.
 
-Obsługuje wybór pojedynczy i wielokrotny. Może filtrować opcje istniejące w HTML albo
-korzystać z wyszukiwania asynchronicznego, dzięki czemu nie pobiera całej kolekcji.
+W panelu administracyjnym komponent jest automatycznie stosowany do wszystkich selectów
+(również dodanych dynamicznie). Atrybut `data-native-select` pozwala świadomie pozostawić
+kontrolkę natywną. Obsługuje wybór pojedynczy i wielokrotny. Może filtrować opcje istniejące
+w HTML albo korzystać z wyszukiwania asynchronicznego, dzięki czemu nie pobiera całej kolekcji.
 
 Select korzystający z endpointu wymaga atrybutów:
 
