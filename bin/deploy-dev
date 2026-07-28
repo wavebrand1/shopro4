@@ -91,6 +91,10 @@ if ! grep -q '"rich-editor"' public/assets/importmap.json || ! grep -q '"admin-f
     echo "[Shopro] Required newsletter form assets are missing from the compiled import map" >&2
     exit 1
 fi
+if ! grep -R -q 'ui-searchable-select__dropdown' public/assets/styles; then
+    echo "[Shopro] The compiled stylesheet does not contain the shared SearchableSelect component" >&2
+    exit 1
+fi
 
 echo "[Shopro] Generating responsive image variants"
 APP_ENV=dev APP_DEBUG=1 "$PHP_BIN" bin/console app:images:optimize
