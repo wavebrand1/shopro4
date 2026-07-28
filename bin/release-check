@@ -68,7 +68,7 @@ if [ "$MODE" = "--ci" ]; then
     console lint:container
 
     echo "[Shopro release] Validating deployment scripts"
-    bash -n bin/deploy-dev bin/create-backup bin/release-check bin/run-queue-worker bin/setup-queue-worker
+    bash -n bin/deploy-dev bin/deploy-prod bin/create-backup bin/release-check bin/run-queue-worker bin/setup-queue-worker
 
     if command -v node >/dev/null 2>&1; then
         echo "[Shopro release] Validating application JavaScript"

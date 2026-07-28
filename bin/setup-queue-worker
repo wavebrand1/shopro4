@@ -10,7 +10,12 @@ done
 
 MODE="${1:-install-and-drain}"
 MARKER="# SHOPRO_QUEUE_WORKER"
-WORKER="cd $ROOT && /bin/bash $ROOT/bin/run-queue-worker --cron"
+WORKER_ENV="${SHOPRO_DEPLOY_ENV:-dev}"
+WORKER_DEBUG="${SHOPRO_DEPLOY_DEBUG:-}"
+if [ -z "$WORKER_DEBUG" ]; then
+    if [ "$WORKER_ENV" = "prod" ]; then WORKER_DEBUG=0; else WORKER_DEBUG=1; fi
+fi
+WORKER="cd $ROOT && /usr/bin/env SHOPRO_DEPLOY_ENV=$WORKER_ENV SHOPRO_DEPLOY_DEBUG=$WORKER_DEBUG /bin/bash $ROOT/bin/run-queue-worker --cron"
 
 install_cron() {
     if ! command -v crontab >/dev/null 2>&1; then
@@ -28,7 +33,7 @@ install_cron() {
 
 drain_queue() {
     echo "[Shopro queue] Przetwarzanie oczekujących wiadomości..."
-    /bin/bash "$ROOT/bin/run-queue-worker"
+    SHOPRO_DEPLOY_ENV="$WORKER_ENV" SHOPRO_DEPLOY_DEBUG="$WORKER_DEBUG" /bin/bash "$ROOT/bin/run-queue-worker"
 }
 
 case "$MODE" in

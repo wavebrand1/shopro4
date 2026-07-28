@@ -38,6 +38,23 @@ Weryfikowane są migracje, mapowanie Doctrine, rejestr modułów, skompilowane
 zasoby oraz prawa zapisu do katalogów roboczych. Błąd przerywa wdrożenie i musi
 zostać naprawiony przed uznaniem wersji za gotową.
 
+Plesk na środowisku developerskim nadal używa:
+
+```bash
+bash bin/deploy-dev
+```
+
+Po podjęciu decyzji o publicznym wydaniu akcję wdrożeniową w Plesku należy
+zmienić na:
+
+```bash
+bash bin/deploy-prod
+```
+
+Wariant produkcyjny instaluje zależności bez pakietów developerskich, buduje
+zoptymalizowany autoloader i uruchamia zarówno aplikację, jak i kolejkę w
+`APP_ENV=prod` z wyłączonym debugowaniem.
+
 ## Konfiguracja serwera
 
 Przed publicznym udostępnieniem:

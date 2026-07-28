@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+cd "$(dirname "$0")/.."
+
+export SHOPRO_DEPLOY_ENV=prod
+export SHOPRO_DEPLOY_DEBUG=0
+export SHOPRO_PUBLIC_RELEASE=1
+
+exec /bin/bash bin/deploy-dev
