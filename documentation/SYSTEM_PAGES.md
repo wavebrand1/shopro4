@@ -20,10 +20,22 @@ Nie nadpisuje istniejących stron ani treści przygotowanych przez administrator
 i tworzy wyłącznie brakujące przypisania. Jeśli domyślny slug jest zajęty, system
 wybiera kolejny wolny adres zamiast zmieniać istniejącą stronę.
 
-Nowe strony otrzymują opublikowaną, bezpieczną treść startową w języku bazowym.
+Nowe strony otrzymują opublikowaną, bezpieczną i responsywną treść startową w języku
+bazowym. Formularze logowania, rejestracji, aktywacji, konta i profilu oraz
+wyszukiwarka i mapa witryny korzystają z gotowego komponentu roli strony, dlatego
+nie dublują nagłówków ani opisów funkcji. Strona 404 ma kompletny komunikat i
+powrót na stronę główną, a regulamin zawiera uporządkowany szkielet dokumentu z
+wyraźnym przypomnieniem o konieczności uzupełnienia danych firmy i weryfikacji
+prawnej przed publikacją.
+
+Synchronizator rozpoznaje także niezmienione treści fabryczne utworzone przez
+wcześniejszą wersję instalatora i podmienia je na aktualny układ. Porównanie jest
+ścisłe: gdy administrator zmienił projekt choćby o jeden komponent, jego treść
+pozostaje nietknięta.
+
 Dla aktywnych języków dodatkowych tworzone są wpisy tłumaczeń; katalog angielski
-zawiera gotowe angielskie tytuły, treści i slugi. Treści można później zmieniać
-w zwykłym edytorze podstron.
+zawiera gotowe angielskie tytuły, treści, wezwania do działania i slugi. Treści
+można później zmieniać w zwykłym edytorze podstron.
 
 `bin/deploy-dev` uruchamia synchronizację po migracjach, synchronizacji tłumaczeń
 i rejestru modułów, a przed końcową kontrolą gotowości. `bin/deploy-prod`
