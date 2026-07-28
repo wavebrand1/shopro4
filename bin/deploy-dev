@@ -101,7 +101,10 @@ if ! grep -q '"rich-editor"' public/assets/importmap.json || ! grep -q '"admin-f
     echo "[Shopro] Required newsletter form assets are missing from the compiled import map" >&2
     exit 1
 fi
-if ! grep -q '"styles/admin-select.css"' public/assets/manifest.json || ! grep -R -q 'ui-searchable-select__dropdown' public/assets/styles; then
+SELECT_STYLE_FILES=(public/assets/styles/admin-select-*.css)
+if ! grep -q '"styles/admin-select.css"' public/assets/manifest.json \
+    || [ ! -f "${SELECT_STYLE_FILES[0]}" ] \
+    || ! grep -q 'ui-searchable-select__dropdown' "${SELECT_STYLE_FILES[@]}"; then
     echo "[Shopro] The compiled stylesheet does not contain the shared SearchableSelect component" >&2
     exit 1
 fi
