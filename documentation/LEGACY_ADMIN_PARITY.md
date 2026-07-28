@@ -129,7 +129,7 @@ Kasowanie grupy nadal jest zablokowane, aby nie tworzyć osieroconych uprawnień
 `setup/sql/structure.sql:93`, `lib/class_membership.php:31`,
 `lib/class_membership.php:57`, `admin/memberships.php`.
 
-Rejestracja kont witryny pod `/register` respektuje ustawienia konfiguracji:
+Rejestracja kont witryny pod `/rejestracja` respektuje ustawienia konfiguracji:
 włączenie rejestracji, limit użytkowników oraz ręczną lub automatyczną aktywację.
 Przy wymaganej weryfikacji system wysyła responsywny szablon
 `user_activate_account`. W bazie przechowywany jest wyłącznie skrót SHA-256

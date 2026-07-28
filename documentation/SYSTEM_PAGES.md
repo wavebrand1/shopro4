@@ -37,7 +37,9 @@ Publiczne wejście na podstronę przypisaną do roli uruchamia właściwy proces
 - logowanie prowadzi do bezpiecznego formularza `/login`;
 - aktywacja prowadzi do formularza ponownej wysyłki linku aktywacyjnego;
 - konto i profil prowadzą do chronionych funkcji użytkownika;
-- rejestracja prowadzi do formularza uwzględniającego konfigurację systemu;
+- rejestracja działa bezpośrednio pod końcowym adresem `/rejestracja`
+  i uwzględnia konfigurację systemu; historyczny `/register` jedynie przekierowuje
+  na polski adres;
 - wyszukiwanie prowadzi do wyszukiwarki i zachowuje aktywny język;
 - mapa witryny prowadzi do responsywnej mapy HTML; `/sitemap.xml` pozostaje
   techniczną mapą dla robotów;

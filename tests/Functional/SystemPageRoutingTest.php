@@ -52,7 +52,6 @@ final class SystemPageRoutingTest extends WebTestCase
             '/logowanie' => '/login',
             '/aktywacja-konta' => '/activation/resend',
             '/moje-konto' => '/account',
-            '/rejestracja' => '/register',
             '/wyszukiwanie' => '/search',
             '/mapa-witryny' => '/site-map',
             '/profil-uzytkownika' => '/account/profile',
@@ -60,6 +59,12 @@ final class SystemPageRoutingTest extends WebTestCase
             $client->request('GET', $source);
             self::assertResponseRedirects($target, message: $source);
         }
+
+        $client->request('GET', '/rejestracja');
+        self::assertResponseStatusCodeSame(404);
+
+        $client->request('GET', '/register');
+        self::assertResponseRedirects('/rejestracja', 308);
 
         $client->request('GET', '/strona-glowna');
         self::assertResponseIsSuccessful();

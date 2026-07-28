@@ -23,7 +23,7 @@ use Symfony\Component\RateLimiter\RateLimiterFactory;
 final class SiteRegistrationController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator, private readonly RateLimiterFactory $activationResendLimiter) {}
-    #[Route('/register', name: 'site_register', methods: ['GET', 'POST'])]
+    #[Route('/rejestracja', name: 'site_register', methods: ['GET', 'POST'])]
     public function register(Request $request, SettingsProvider $settings, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer): Response
     {
         if (!(bool) $settings->get('registration_allowed', false)) {
@@ -63,6 +63,12 @@ final class SiteRegistrationController extends AbstractController
             return $this->redirectToRoute('site_login');
         }
         return $this->render('cms/security/register.html.twig', ['form' => $form]);
+    }
+
+    #[Route('/register', name: 'site_register_legacy', methods: ['GET', 'POST'])]
+    public function legacyRegister(): Response
+    {
+        return $this->redirectToRoute('site_register', status: Response::HTTP_PERMANENTLY_REDIRECT);
     }
 
     #[Route('/activate/{token}', name: 'site_activate', requirements: ['token' => '[a-f0-9]{64}'], methods: ['GET'])]

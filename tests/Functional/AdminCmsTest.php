@@ -736,7 +736,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertNotNull($passwordChangedUser);
         self::assertTrue($hasher->isPasswordValid($passwordChangedUser, 'customer-changed-password'));
 
-        $this->client->request('GET', '/register');
+        $this->client->request('GET', '/rejestracja');
         self::assertResponseStatusCodeSame(404);
 
         $registrationSettings = self::getContainer()->get(SystemSettingsRepository::class)->get();
@@ -747,7 +747,7 @@ final class AdminCmsTest extends WebTestCase
         $registrationSettings->setConfiguration($registrationConfiguration);
         self::getContainer()->get(SystemSettingsRepository::class)->save($registrationSettings);
 
-        $this->client->request('GET', '/register');
+        $this->client->request('GET', '/rejestracja');
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('form[name="site_registration"]');
         $registrationForm = $this->client->getCrawler()->filter('form[name="site_registration"]')->form();
