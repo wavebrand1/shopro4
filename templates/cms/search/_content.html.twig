@@ -3,7 +3,7 @@
         <span class="site-kicker">{{ shopro_trans('search.kicker') }}</span>
         <h1>{{ shopro_trans('search.title') }}</h1>
         <p>{{ shopro_trans('search.lead') }}</p>
-        <form method="get" action="{{ language ? path('cms_search_localized',{_locale:language.code}) : path('cms_search') }}" class="site-search-form" role="search">
+        <form method="get" action="{{ shopro_system_page_url('search') }}" class="site-search-form" role="search">
             <label class="sr-only" for="site-search-query">{{ shopro_trans('search.label') }}</label>
             <input id="site-search-query" name="q" value="{{ query }}" minlength="2" maxlength="120" placeholder="{{ shopro_trans('search.placeholder') }}" autofocus>
             <button class="site-button" type="submit">{{ shopro_trans('common.search') }}</button>

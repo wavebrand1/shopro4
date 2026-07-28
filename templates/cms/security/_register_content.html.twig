@@ -9,5 +9,5 @@
         {{ form_row(form.termsAccepted) }}
         <button class="modern-button modern-button--primary modern-button--wide">{{ shopro_trans('site_registration.submit') }}</button>
     {{ form_end(form) }}
-    <a class="modern-login-footer" href="{{ path('site_login') }}">{{ shopro_trans('site_registration.have_account') }}</a>
+    <a class="modern-login-footer" href="{{ shopro_system_page_url('login') }}">{{ shopro_trans('site_registration.have_account') }}</a>
 </div>

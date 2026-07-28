@@ -11,8 +11,8 @@
         <button class="modern-button modern-button--primary modern-button--wide" type="submit">{{ shopro_trans('auth.sign_in') }}</button>
     </form>
     <a class="modern-login-footer" href="{{ path('site_password_forgot') }}">{{ shopro_trans('auth.forgot_password_link') }}</a>
-    <a class="modern-login-footer" href="{{ path('site_activation_resend') }}">{{ shopro_trans('site_registration.resend_link') }}</a>
+    <a class="modern-login-footer" href="{{ shopro_system_page_url('activation') }}">{{ shopro_trans('site_registration.resend_link') }}</a>
     {% if shopro_setting('registration_allowed', false) %}
-        <a class="modern-login-footer" href="{{ path('site_register') }}">{{ shopro_trans('site_registration.create_account') }}</a>
+        <a class="modern-login-footer" href="{{ shopro_system_page_url('registration') }}">{{ shopro_trans('site_registration.create_account') }}</a>
     {% endif %}
 </div>

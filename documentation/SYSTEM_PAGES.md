@@ -31,7 +31,10 @@ korzysta z tego samego procesu wdrożenia.
 
 ## Powiązanie z funkcjami
 
-Publiczne wejście na podstronę przypisaną do roli uruchamia właściwy proces:
+Publiczne wejście na podstronę przypisaną do roli uruchamia właściwy proces.
+Slug zapisany na stronie bazowej lub w jej tłumaczeniu jest adresem nadrzędnym:
+zmiana slugu w panelu od razu zmienia adres funkcji, linki generowane przez szablon
+oraz akcję formularza. Nie wymaga zmiany routingu ani kodu kontrolera.
 
 - strona główna jest wyświetlana pod `/` oraz pod swoim edytowalnym slugiem;
 - logowanie prowadzi do bezpiecznego formularza `/login`;
@@ -68,6 +71,8 @@ wraca do projektu strony bazowej. Dotychczasowe samodzielne widoki pozostają
 fallbackiem, gdy rola lub komponent nie zostały jeszcze poprawnie skonfigurowane.
 
 Adresy tłumaczeń, np. `/en/sign-in`, uruchamiają tę samą funkcję w aktualnie
-wybranym języku. Techniczne adresy procesów pozostają stabilne, dzięki czemu
-formularze logowania, zabezpieczenia CSRF i firewall Symfony nie zależą od slugu
-ustawionego przez administratora.
+wybranym języku. Techniczne adresy procesów pozostają wewnętrznym kontraktem
+Symfony, dzięki czemu formularze logowania, zabezpieczenia CSRF i firewall nie
+zależą od slugu ustawionego przez administratora. Publiczne wejście na taki dawny
+adres otrzymuje trwałe przekierowanie do aktualnego slugu CMS z zachowaniem języka
+i parametrów zapytania.

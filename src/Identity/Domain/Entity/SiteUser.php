@@ -56,9 +56,9 @@ class SiteUser implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getId(): ?int { return $this->id; }
     public function getEmail(): string { return $this->email; }
-    public function setEmail(string $email): void { $this->email = mb_strtolower(trim($email)); }
+    public function setEmail(?string $email): void { $this->email = mb_strtolower(trim($email ?? '')); }
     public function getUsername(): string { return $this->username; }
-    public function setUsername(string $username): void { $this->username = mb_strtolower(trim($username)); }
+    public function setUsername(?string $username): void { $this->username = mb_strtolower(trim($username ?? '')); }
     public function getUserIdentifier(): string { return $this->username; }
     public function getPassword(): string { return $this->password; }
     public function setPassword(string $password): void { $this->password = $password; }

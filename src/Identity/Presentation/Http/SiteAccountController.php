@@ -23,9 +23,10 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SiteAccountController extends AbstractController
 {
     #[Route('', name: 'site_account', methods: ['GET'])]
-    public function index(SystemPageRenderer $systemPages): Response
+    public function index(Request $request, SystemPageRenderer $systemPages): Response
     {
-        $user = $this->siteUser();
+        $user = $this->getUser();
+        if (!$user instanceof SiteUser) return $this->requireLogin($request);
         $memberships = array_values(array_filter($user->getMemberships()->toArray(), static fn ($membership): bool => $membership->isActive()));
         $context = ['site_user' => $user, 'memberships' => $memberships];
         return $systemPages->render(
@@ -38,7 +39,9 @@ final class SiteAccountController extends AbstractController
     #[Route('/profile', name: 'site_account_profile', methods: ['GET', 'POST'])]
     public function profile(Request $request, SiteUserRepository $users, AuditLogRepository $logs, SystemTranslator $translator, SystemPageRenderer $systemPages): Response
     {
-        $user = $this->siteUser(); $form = $this->createForm(SiteProfileType::class, $user); $form->handleRequest($request);
+        $user = $this->getUser();
+        if (!$user instanceof SiteUser) return $this->requireLogin($request);
+        $form = $this->createForm(SiteProfileType::class, $user); $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $users->save($user);
             $logs->save(new AuditLog('user', 'site_profile_updated', 'Użytkownik witryny zaktualizował dane konta.', $user->getUsername(), $request->getClientIp(), [], true));
@@ -76,5 +79,11 @@ final class SiteAccountController extends AbstractController
         $user = $this->getUser();
         if (!$user instanceof SiteUser) throw $this->createAccessDeniedException();
         return $user;
+    }
+
+    private function requireLogin(Request $request): Response
+    {
+        $request->getSession()->set('_security.frontend.target_path', $request->getUri());
+        return $this->redirectToRoute('site_login');
     }
 }
