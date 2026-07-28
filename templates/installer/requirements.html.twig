@@ -1,0 +1,19 @@
+{% extends 'installer/layout.html.twig' %}
+{% block body %}
+    <p class="install-kicker">KROK 1 Z 4</p>
+    <h1>Sprawdzenie serwera</h1>
+    <p class="install-lead">Instalator sprawdził wersję PHP, rozszerzenia i katalogi wymagane do bezpiecznego uruchomienia Shopro.</p>
+    <div class="install-checks">
+        {% for check in checks %}
+            <div class="install-check {{ not check.ok ? (check.required ? 'is-error' : 'is-warning') : '' }}">
+                <i>{{ check.ok ? '✓' : (check.required ? '×' : '!') }}</i>
+                <div><strong>{{ check.label }}</strong><small>{{ check.required ? 'Wymagane' : 'Zalecane' }}</small></div>
+                <small>{{ check.details }}</small>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="install-actions">
+        <span></span>
+        <a class="install-button" href="{{ path('installer_database') }}" aria-disabled="{{ can_continue ? 'false' : 'true' }}">Skonfiguruj bazę danych →</a>
+    </div>
+{% endblock %}

@@ -117,3 +117,6 @@ Sprawdź kolejno:
 
 Szczegóły techniczne wdrożenia znajdują się w
 [DEPLOYMENT.md](DEPLOYMENT.md).
+
+Instalacja na nowym serwerze z gotowej paczki ZIP i kreatora `/install` jest
+opisana w [INSTALLATION.md](INSTALLATION.md).

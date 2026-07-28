@@ -40,6 +40,10 @@ services:
             $pool: '@cache.rate_limiter'
             $kernelSecret: '%kernel.secret%'
 
+    App\Installer\Application\InstallationManager:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     App\Identity\Presentation\Http\SiteRegistrationController:
         arguments:
             $activationResendLimiter: '@limiter.activation_resend'

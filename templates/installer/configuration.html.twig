@@ -1,0 +1,36 @@
+{% extends 'installer/layout.html.twig' %}
+{% block body %}
+    <p class="install-kicker">KROK 3 Z 4</p>
+    <h1>Konfiguracja Shopro</h1>
+    <p class="install-lead">Instalator utworzy strukturę danych, konto administratora, strony systemowe, tłumaczenia, szablony e-mail i podstawową konfigurację witryny.</p>
+    {% if error %}<div class="install-error">{{ error }}{% if bootstrap_failed %}<br><strong>Popraw konfigurację bazy, a następnie odśwież ten krok.</strong>{% endif %}</div>{% endif %}
+    <form method="post" class="install-form">
+        <input type="hidden" name="_token" value="{{ csrf_token('shopro-install-configuration') }}">
+        <div class="install-section">
+            <h2>Witryna</h2><p>Te ustawienia można później zmienić w Panelu Administracyjnym.</p>
+            <label class="install-field">Nazwa witryny<input name="site_name" value="{{ values.site_name }}" required></label>
+            <label class="install-field">E-mail witryny<input name="site_email" type="email" value="{{ values.site_email }}" required></label>
+            <label class="install-field install-field--full">Adres witryny<input name="site_url" type="url" value="{{ values.site_url }}" required></label>
+            <label class="install-field">Język bazowy<select name="language"><option value="pl">Polski</option></select><span class="install-help">Angielski zostanie dodany jako aktywny język dodatkowy.</span></label>
+            <label class="install-field">Strefa czasowa<select name="timezone"><option value="Europe/Warsaw" {{ values.timezone == 'Europe/Warsaw' ? 'selected' : '' }}>Europe/Warsaw</option><option value="UTC" {{ values.timezone == 'UTC' ? 'selected' : '' }}>UTC</option><option value="Europe/London" {{ values.timezone == 'Europe/London' ? 'selected' : '' }}>Europe/London</option><option value="Europe/Berlin" {{ values.timezone == 'Europe/Berlin' ? 'selected' : '' }}>Europe/Berlin</option></select></label>
+        </div>
+        <div class="install-section">
+            <h2>Administrator</h2><p>Hasło jest haszowane i nigdy nie jest zapisywane w jawnej postaci.</p>
+            <label class="install-field">Login<input name="admin_username" value="{{ values.admin_username }}" autocomplete="username" required></label>
+            <label class="install-field">E-mail<input name="admin_email" type="email" value="{{ values.admin_email }}" autocomplete="email" required></label>
+            <label class="install-field">Hasło<input name="admin_password" type="password" minlength="12" autocomplete="new-password" required><span class="install-help">Minimum 12 znaków.</span></label>
+            <label class="install-field">Powtórz hasło<input name="admin_password_confirmation" type="password" minlength="12" autocomplete="new-password" required></label>
+        </div>
+        <div class="install-section">
+            <h2>Poczta SMTP</h2><p>Opcjonalnie. Możesz pozostawić puste i skonfigurować pocztę później w panelu.</p>
+            <label class="install-field">Host SMTP<input name="smtp_host" value="{{ values.smtp_host }}"></label>
+            <label class="install-field">Port<input name="smtp_port" type="number" min="1" max="65535" value="{{ values.smtp_port }}"></label>
+            <label class="install-field">Szyfrowanie<select name="smtp_encryption"><option value="tls" {{ values.smtp_encryption == 'tls' ? 'selected' : '' }}>STARTTLS (587)</option><option value="ssl" {{ values.smtp_encryption == 'ssl' ? 'selected' : '' }}>TLS bezpośredni (465)</option><option value="none" {{ values.smtp_encryption == 'none' ? 'selected' : '' }}>Brak</option></select></label>
+            <label class="install-field">Użytkownik SMTP<input name="smtp_user" value="{{ values.smtp_user }}" autocomplete="off"></label>
+            <label class="install-field">Hasło SMTP<input name="smtp_password" type="password" autocomplete="new-password"></label>
+            <label class="install-field">Adres nadawcy<input name="mail_from_address" type="email" value="{{ values.mail_from_address }}"></label>
+            <label class="install-field install-field--full">Nazwa nadawcy<input name="mail_from_name" value="{{ values.mail_from_name }}" placeholder="{{ values.site_name }}"></label>
+        </div>
+        <div class="install-actions"><a class="install-button install-button--ghost" href="{{ path('installer_database') }}">← Baza danych</a><button class="install-button" {{ bootstrap_failed ? 'disabled' : '' }}>Zainstaluj Shopro</button></div>
+    </form>
+{% endblock %}

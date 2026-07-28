@@ -13,6 +13,7 @@ final class ControllerModuleOwnershipTest extends TestCase
     private const FOUNDATION = [
         'App\\Audit\\Presentation\\Http\\Admin\\AuditLogController',
         'App\\Identity\\Presentation\\Http\\LoginController',
+        'App\\Installer\\Presentation\\Http\\InstallerController',
         'App\\Module\\Presentation\\Http\\Admin\\ModuleController',
         'App\\Shared\\Presentation\\Http\\HealthController',
     ];

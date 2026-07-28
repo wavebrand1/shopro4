@@ -13,7 +13,9 @@ final class LanguageContextSubscriber
 {
  public function __construct(private readonly EntityManagerInterface $em,private readonly ModuleAvailability $modules){}
  public function __invoke(RequestEvent $event):void{
-  if(!$event->isMainRequest()||!$this->modules->isEnabled('language'))return;$request=$event->getRequest();
+  if(!$event->isMainRequest())return;$request=$event->getRequest();
+  if($request->getPathInfo()==='/install'||str_starts_with($request->getPathInfo(),'/install/'))return;
+  if(!$this->modules->isEnabled('language'))return;
   try{
    $code=mb_strtolower((string)($request->attributes->get('_locale')?:$request->query->get('lang')?:($request->hasSession()?$request->getSession()->get('shopro_language'):'')));
    $language=$code!==''?$this->em->getRepository(Language::class)->findOneBy(['code'=>$code,'active'=>true]):null;

@@ -1,0 +1,43 @@
+name: Build installation package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version, for example 4.0.0
+        required: true
+        default: 4.0.0
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          extensions: pdo_mysql, intl, gd
+          tools: composer:v2
+
+      - name: Build ready-to-upload ZIP
+        run: bash bin/build-release-package "${{ inputs.version || github.ref_name }}"
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: shopro-installation-package
+          path: dist/shopro-*.zip
+          if-no-files-found: error
+          retention-days: 30

@@ -18,9 +18,11 @@ final class MaintenanceSubscriber
 
     public function __invoke(RequestEvent $event): void
     {
-        if (!$event->isMainRequest() || !$this->modules->isEnabled('settings') || !$this->settings->get('maintenance', false)) return;
+        if (!$event->isMainRequest()) return;
         $request = $event->getRequest();
         $path = $request->getPathInfo();
+        if (self::isPathSpace($path, '/install')) return;
+        if (!$this->modules->isEnabled('settings') || !$this->settings->get('maintenance', false)) return;
         if (self::isPathSpace($path, '/admin') || self::isPathSpace($path, '/_') || $path === '/newsletter/unsubscribe') return;
         $event->setResponse(new Response($this->twig->render('cms/maintenance.html.twig', [
             'message' => $this->settings->get('maintenance_message'),

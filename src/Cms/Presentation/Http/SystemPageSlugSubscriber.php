@@ -59,6 +59,7 @@ final class SystemPageSlugSubscriber
     {
         if (!$event->isMainRequest()) return;
         $request = $event->getRequest();
+        if ($request->getPathInfo() === '/install' || str_starts_with($request->getPathInfo(), '/install/')) return;
         if (!in_array($request->getMethod(), ['GET', 'POST', 'HEAD'], true)) return;
         $effectiveMethod = $request->isMethod('HEAD') ? 'GET' : $request->getMethod();
 

@@ -32,7 +32,9 @@ final class SecurityHeadersSubscriber implements EventSubscriberInterface
         }
 
         $path = $request->getPathInfo();
-        if ($path === '/admin' || str_starts_with($path, '/admin/') || $path === '/api' || str_starts_with($path, '/api/')) {
+        if ($path === '/admin' || str_starts_with($path, '/admin/')
+            || $path === '/api' || str_starts_with($path, '/api/')
+            || $path === '/install' || str_starts_with($path, '/install/')) {
             $response->setPrivate();
             $headers->addCacheControlDirective('no-store');
             $headers->addCacheControlDirective('max-age', '0');

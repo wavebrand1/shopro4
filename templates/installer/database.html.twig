@@ -1,0 +1,28 @@
+{% extends 'installer/layout.html.twig' %}
+{% block body %}
+    <p class="install-kicker">KROK 2 Z 4</p>
+    <h1>Połączenie z bazą</h1>
+    <p class="install-lead">Utwórz pustą bazę MySQL lub MariaDB w panelu hostingu i wpisz jej dane. Instalator najpierw sprawdzi połączenie, a dopiero później zapisze konfigurację.</p>
+    {% if error %}<div class="install-error">{{ error }}</div>{% endif %}
+    <form method="post" class="install-form">
+        <input type="hidden" name="_token" value="{{ csrf_token('shopro-install-database') }}">
+        <div class="install-section">
+            <h2>Dane bazy danych</h2>
+            <p>Hasło zostanie zapisane wyłącznie w chronionym pliku `.env.local` poza repozytorium.</p>
+            <label class="install-field">Host<input name="host" value="{{ values.host }}" required></label>
+            <label class="install-field">Port<input name="port" type="number" min="1" max="65535" value="{{ values.port }}" required></label>
+            <label class="install-field">Nazwa bazy<input name="name" value="{{ values.name }}" autocomplete="off" required></label>
+            <label class="install-field">Użytkownik<input name="user" value="{{ values.user }}" autocomplete="off" required></label>
+            <label class="install-field">Hasło<input name="password" type="password" autocomplete="new-password"></label>
+            <label class="install-field">Wersja serwera
+                <select name="server_version">
+                    {% for value,label in {'10.6.0-MariaDB':'MariaDB 10.6','10.11.0-MariaDB':'MariaDB 10.11','11.4.0-MariaDB':'MariaDB 11.4','8.0.0':'MySQL 8.0'} %}
+                        <option value="{{ value }}" {{ values.server_version == value ? 'selected' : '' }}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label class="install-field install-field--full">Publiczny adres witryny<input name="site_url" type="url" value="{{ values.site_url }}" placeholder="https://example.pl" required><span class="install-help">Pełny adres z HTTPS, bez końcowego ukośnika.</span></label>
+        </div>
+        <div class="install-actions"><a class="install-button install-button--ghost" href="{{ path('installer_requirements') }}">← Wróć</a><button class="install-button">Sprawdź i zapisz →</button></div>
+    </form>
+{% endblock %}

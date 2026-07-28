@@ -1,0 +1,14 @@
+{% extends 'installer/layout.html.twig' %}
+{% block body %}
+    <p class="install-kicker">INSTALACJA ZAKOŃCZONA</p>
+    <h1>Shopro jest gotowe</h1>
+    <p class="install-lead">Baza, administrator, strony systemowe, tłumaczenia, moduły i zasoby zostały przygotowane. Instalator został trwale zablokowany.</p>
+    <div class="install-complete"><h2>✓ Instalacja przebiegła poprawnie</h2><span>Możesz przejść do panelu i rozpocząć konfigurację treści.</span></div>
+    <div class="install-summary"><div><small>Adres witryny</small><strong>{{ site_url }}</strong></div><div><small>Login administratora</small><strong>{{ admin_username }}</strong></div></div>
+    {% if not cron_installed %}
+        <div class="install-error"><strong>Worker kolejki wymaga jednego kroku w Plesku.</strong><br>Dodaj poniższe polecenie jako zadanie wykonywane co minutę. Odpowiedź serwera: {{ cron_output ?: 'brak dostępu do crontab' }}<code class="install-code">{{ cron_command }}</code></div>
+    {% else %}
+        <div class="install-complete"><strong>✓ Worker newslettera został dodany do harmonogramu.</strong></div>
+    {% endif %}
+    <div class="install-actions"><a class="install-button install-button--ghost" href="{{ site_url }}">Otwórz witrynę</a><a class="install-button" href="{{ site_url }}/admin">Przejdź do panelu →</a></div>
+{% endblock %}

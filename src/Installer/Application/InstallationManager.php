@@ -1,0 +1,302 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Installer\Application;
+
+use PDO;
+use Symfony\Component\Process\Process;
+
+final class InstallationManager
+{
+    private const MANAGED_ENV_KEYS = [
+        'APP_ENV', 'APP_DEBUG', 'APP_SECRET', 'DEFAULT_URI', 'DATABASE_URL',
+        'MESSENGER_TRANSPORT_DSN', 'MAILER_DSN',
+    ];
+
+    public function __construct(private readonly string $projectDir) {}
+
+    public function isInstalled(): bool
+    {
+        if (is_file($this->lockPath())) return true;
+
+        // Existing deployments created before the web installer do not have
+        // install.lock. A local environment without our pending marker must
+        // therefore be treated as an already configured application.
+        return is_file($this->projectDir.'/.env.local') && !is_file($this->pendingPath());
+    }
+
+    /** @return list<array{label:string,ok:bool,required:bool,details:string}> */
+    public function requirements(): array
+    {
+        $checks = [
+            ['PHP 8.2 lub nowszy', version_compare(PHP_VERSION, '8.2.0', '>='), true, PHP_VERSION],
+            ['Rozszerzenie PDO MySQL', extension_loaded('pdo_mysql'), true, extension_loaded('pdo_mysql') ? 'dostępne' : 'brak'],
+            ['Rozszerzenie OpenSSL', extension_loaded('openssl'), true, extension_loaded('openssl') ? 'dostępne' : 'brak'],
+            ['Rozszerzenie Intl', extension_loaded('intl'), false, extension_loaded('intl') ? 'dostępne' : 'zalecane'],
+            ['Optymalizacja obrazów', extension_loaded('imagick') || extension_loaded('gd'), false, extension_loaded('imagick') ? 'Imagick' : (extension_loaded('gd') ? 'GD' : 'brak — obrazy nie będą automatycznie konwertowane')],
+            ['Zależności aplikacji', is_file($this->projectDir.'/vendor/autoload.php'), true, 'vendor/autoload.php'],
+            ['Katalog var z prawem zapisu', $this->ensureWritableDirectory($this->projectDir.'/var'), true, 'var/'],
+            ['Katalog uploads z prawem zapisu', $this->ensureWritableDirectory($this->projectDir.'/public/uploads'), true, 'public/uploads/'],
+            ['Możliwość zapisu konfiguracji', $this->environmentIsWritable(), true, '.env.local'],
+        ];
+
+        return array_map(
+            static fn (array $check): array => [
+                'label' => $check[0],
+                'ok' => $check[1],
+                'required' => $check[2],
+                'details' => $check[3],
+            ],
+            $checks,
+        );
+    }
+
+    public function requirementsPass(): bool
+    {
+        foreach ($this->requirements() as $check) {
+            if ($check['required'] && !$check['ok']) return false;
+        }
+
+        return true;
+    }
+
+    /** @param array{host:string,port:int,name:string,user:string,password:string,server_version:string} $database */
+    public function testDatabase(array $database): void
+    {
+        $dsn = sprintf(
+            'mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4',
+            $database['host'],
+            $database['port'],
+            $database['name'],
+        );
+        $pdo = new PDO($dsn, $database['user'], $database['password'], [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_TIMEOUT => 5,
+        ]);
+        $pdo->query('SELECT 1');
+    }
+
+    /** @param array{host:string,port:int,name:string,user:string,password:string,server_version:string} $database */
+    public function writeEnvironment(array $database, string $siteUrl): void
+    {
+        $secret = bin2hex(random_bytes(32));
+        $databaseUrl = sprintf(
+            'mysql://%s:%s@%s:%d/%s?serverVersion=%s&charset=utf8mb4',
+            rawurlencode($database['user']),
+            rawurlencode($database['password']),
+            $database['host'],
+            $database['port'],
+            rawurlencode($database['name']),
+            rawurlencode($database['server_version']),
+        );
+        $values = [
+            'APP_ENV' => 'prod',
+            'APP_DEBUG' => '0',
+            'APP_SECRET' => $secret,
+            'DEFAULT_URI' => rtrim($siteUrl, '/'),
+            'DATABASE_URL' => $databaseUrl,
+            'MESSENGER_TRANSPORT_DSN' => 'doctrine://default?auto_setup=0',
+            'MAILER_DSN' => 'null://null',
+        ];
+
+        $path = $this->projectDir.'/.env.local';
+        $existing = is_file($path) ? (string) file_get_contents($path) : '';
+        $lines = preg_split('/\R/', $existing) ?: [];
+        $kept = array_values(array_filter($lines, static function (string $line): bool {
+            foreach (self::MANAGED_ENV_KEYS as $key) {
+                if (preg_match('/^\s*'.preg_quote($key, '/').'\s*=/', $line) === 1) return false;
+            }
+            return true;
+        }));
+        while ($kept !== [] && trim((string) end($kept)) === '') array_pop($kept);
+
+        $content = $kept === [] ? '' : implode(PHP_EOL, $kept).PHP_EOL.PHP_EOL;
+        $content .= '# Generated by the Shopro web installer.'.PHP_EOL;
+        foreach ($values as $key => $value) {
+            $content .= $key.'='.$this->quoteEnv($value).PHP_EOL;
+        }
+
+        $temporary = $path.'.'.bin2hex(random_bytes(6)).'.tmp';
+        if (file_put_contents($temporary, $content, LOCK_EX) === false) {
+            throw new \RuntimeException('Nie udało się zapisać tymczasowego pliku konfiguracji.');
+        }
+        @chmod($temporary, 0600);
+        if (!@rename($temporary, $path)) {
+            @unlink($temporary);
+            throw new \RuntimeException('Nie udało się zapisać pliku .env.local.');
+        }
+        $pending = json_encode([
+            'started_at' => (new \DateTimeImmutable())->format(DATE_ATOM),
+            'site_url' => rtrim($siteUrl, '/'),
+            'database_bootstrapped' => false,
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        if (file_put_contents($this->pendingPath(), $pending.PHP_EOL, LOCK_EX) === false) {
+            throw new \RuntimeException('Konfiguracja została zapisana, ale nie udało się utworzyć stanu instalacji.');
+        }
+    }
+
+    public function pendingSiteUrl(): ?string
+    {
+        $state = $this->pendingState();
+        $siteUrl = $state['site_url'] ?? null;
+
+        return is_string($siteUrl) && $siteUrl !== '' ? $siteUrl : null;
+    }
+
+    public function isDatabaseBootstrapped(): bool
+    {
+        return ($this->pendingState()['database_bootstrapped'] ?? false) === true;
+    }
+
+    public function markDatabaseBootstrapped(): void
+    {
+        $state = $this->pendingState();
+        if ($state === []) {
+            throw new \RuntimeException('Nie znaleziono rozpoczętej instalacji.');
+        }
+        $state['database_bootstrapped'] = true;
+        $this->writePendingState($state);
+    }
+
+    /** @return list<array{command:string,output:string}> */
+    public function bootstrapDatabase(): array
+    {
+        return $this->runConsoleCommands([
+            ['doctrine:migrations:migrate', '--no-interaction'],
+            ['app:translations:sync'],
+            ['app:modules:sync'],
+            ['app:modules:verify'],
+            ['app:pages:install-system'],
+        ]);
+    }
+
+    /** @return array{commands:list<array{command:string,output:string}>,cron:bool,cron_output:string} */
+    public function finalize(): array
+    {
+        $commands = $this->runConsoleCommands([
+            ['assets:install', 'public'],
+            ['importmap:install'],
+            ['asset-map:compile'],
+            ['app:images:optimize'],
+            ['cache:clear'],
+        ], 180);
+
+        $cron = new Process(['/bin/bash', 'bin/setup-queue-worker', '--install-only'], $this->projectDir, [
+            'SHOPRO_DEPLOY_ENV' => 'prod',
+            'SHOPRO_DEPLOY_DEBUG' => '0',
+        ]);
+        try {
+            $cron->setTimeout(30);
+            $cron->run();
+            $cronInstalled = $cron->isSuccessful();
+            $cronOutput = trim($cron->getOutput().$cron->getErrorOutput());
+        } catch (\Throwable $exception) {
+            $cronInstalled = false;
+            $cronOutput = $exception->getMessage();
+        }
+
+        return ['commands' => $commands, 'cron' => $cronInstalled, 'cron_output' => $cronOutput];
+    }
+
+    /** @param array<string,scalar|null> $summary */
+    public function lock(array $summary): void
+    {
+        $payload = json_encode([
+            'installed_at' => (new \DateTimeImmutable())->format(DATE_ATOM),
+            'php' => PHP_VERSION,
+            'site_url' => (string) ($summary['site_url'] ?? ''),
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        if (file_put_contents($this->lockPath(), $payload.PHP_EOL, LOCK_EX) === false) {
+            throw new \RuntimeException('Instalacja zakończyła się, ale nie udało się utworzyć blokady instalatora.');
+        }
+        if (is_file($this->pendingPath())) @unlink($this->pendingPath());
+    }
+
+    public function scheduledTaskCommand(): string
+    {
+        return sprintf(
+            'cd %s && SHOPRO_DEPLOY_ENV=prod SHOPRO_DEPLOY_DEBUG=0 /bin/bash bin/run-queue-worker --cron',
+            $this->projectDir,
+        );
+    }
+
+    /**
+     * @param list<list<string>> $commands
+     * @return list<array{command:string,output:string}>
+     */
+    private function runConsoleCommands(array $commands, int $timeout = 120): array
+    {
+        $result = [];
+        foreach ($commands as $arguments) {
+            $process = new Process(
+                [PHP_BINARY, 'bin/console', ...$arguments],
+                $this->projectDir,
+                ['APP_ENV' => 'prod', 'APP_DEBUG' => '0'],
+            );
+            $process->setTimeout($timeout);
+            $process->mustRun();
+            $result[] = [
+                'command' => implode(' ', $arguments),
+                'output' => trim($process->getOutput().$process->getErrorOutput()),
+            ];
+        }
+
+        return $result;
+    }
+
+    private function ensureWritableDirectory(string $path): bool
+    {
+        if (!is_dir($path) && !@mkdir($path, 0775, true) && !is_dir($path)) return false;
+
+        return is_writable($path);
+    }
+
+    private function environmentIsWritable(): bool
+    {
+        $path = $this->projectDir.'/.env.local';
+
+        return is_file($path) ? is_writable($path) : is_writable($this->projectDir);
+    }
+
+    private function quoteEnv(string $value): string
+    {
+        return '"'.addcslashes($value, "\\\"\n\r").'"';
+    }
+
+    private function lockPath(): string
+    {
+        return $this->projectDir.'/var/install.lock';
+    }
+
+    private function pendingPath(): string
+    {
+        return $this->projectDir.'/var/install.pending';
+    }
+
+    /** @return array<string,mixed> */
+    private function pendingState(): array
+    {
+        if (!is_file($this->pendingPath())) return [];
+
+        try {
+            $state = json_decode((string) file_get_contents($this->pendingPath()), true, 32, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return [];
+        }
+
+        return is_array($state) ? $state : [];
+    }
+
+    /** @param array<string,mixed> $state */
+    private function writePendingState(array $state): void
+    {
+        $payload = json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        $path = $this->pendingPath();
+        $temporary = $path.'.'.bin2hex(random_bytes(6)).'.tmp';
+        if (file_put_contents($temporary, $payload.PHP_EOL, LOCK_EX) === false || !@rename($temporary, $path)) {
+            @unlink($temporary);
+            throw new \RuntimeException('Nie udało się zapisać postępu instalacji.');
+        }
+    }
+}
