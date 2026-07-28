@@ -2041,24 +2041,25 @@ final class AdminCmsTest extends WebTestCase
 
     public function testNewsletterRecipientSearchIsPaginatedAndLimitedToActiveSiteUsers(): void
     {
-        $admin = new AdminUser('newsletter-search-admin@example.test', 'newsletter-search-admin');
+        $suffix = bin2hex(random_bytes(4));
+        $admin = new AdminUser('newsletter-search-admin-'.$suffix.'@example.test', 'newsletter-search-admin-'.$suffix);
         $this->entityManager->persist($admin);
         for ($number = 1; $number <= 25; ++$number) {
-            $user = new SiteUser(sprintf('recipient-%02d@example.test', $number), sprintf('recipient-%02d', $number));
+            $user = new SiteUser(sprintf('recipient-%s-%02d@example.test', $suffix, $number), sprintf('recipient-%s-%02d', $suffix, $number));
             if ($number === 25) $user->setActive(false);
             $this->entityManager->persist($user);
         }
         $this->entityManager->flush();
         $this->client->loginUser($admin, 'admin');
 
-        $this->client->request('GET', '/admin/newsletter/users/search?q=recipient&page=1');
+        $this->client->request('GET', '/admin/newsletter/users/search?q=recipient-'.$suffix.'&page=1');
         self::assertResponseIsSuccessful();
         $payload = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
         self::assertCount(20, $payload['results']);
         self::assertTrue($payload['more']);
-        self::assertSame('recipient-01 — recipient-01@example.test', $payload['results'][0]['text']);
+        self::assertSame('recipient-'.$suffix.'-01 — recipient-'.$suffix.'-01@example.test', $payload['results'][0]['text']);
 
-        $this->client->request('GET', '/admin/newsletter/users/search?q=recipient-24');
+        $this->client->request('GET', '/admin/newsletter/users/search?q=recipient-'.$suffix.'-24');
         self::assertResponseIsSuccessful();
         $payload = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
         self::assertCount(1, $payload['results']);
@@ -2066,6 +2067,8 @@ final class AdminCmsTest extends WebTestCase
 
         $this->client->request('GET', '/admin/newsletter/new');
         self::assertResponseIsSuccessful();
+        self::assertStringContainsString("import 'rich-editor'", (string) $this->client->getResponse()->getContent());
+        self::assertStringNotContainsString("import 'newsletter-recipients'", (string) $this->client->getResponse()->getContent());
         self::assertSelectorExists('select[data-newsletter-user-picker][multiple]');
         self::assertSelectorNotExists('#newsletter_campaign_selectedSiteUserIds input[type="checkbox"]');
     }

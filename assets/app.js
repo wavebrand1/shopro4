@@ -1,4 +1,5 @@
 import './stimulus_bootstrap.js';
+import './newsletter-recipients.js';
 /*
  * Welcome to your app's main JavaScript file!
  *
