@@ -31,8 +31,22 @@ jobs:
           extensions: pdo_mysql, intl, gd
           tools: composer:v2
 
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
       - name: Build ready-to-upload ZIP
         run: bash bin/build-release-package "${{ inputs.version || github.ref_name }}"
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
 
       - name: Upload package
         uses: actions/upload-artifact@v4
