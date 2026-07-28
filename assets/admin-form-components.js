@@ -1,76 +1,116 @@
-const SEARCHABLE_SELECT_SELECTOR = 'select[data-searchable-select], select[data-newsletter-user-picker]';
+const SEARCHABLE_SELECT_SELECTOR = '.admin-body select[multiple], select[data-searchable-select], select[data-newsletter-user-picker]';
 
 const initializeSearchableSelect = (select) => {
     if (select.dataset.componentReady === 'true') return;
+
     select.dataset.componentReady = 'true';
     select.dataset.pickerReady = 'true';
     select.hidden = true;
     select.style.setProperty('display', 'none', 'important');
     select.classList.add('ui-native-control--enhanced');
-    if (select.nextElementSibling?.classList.contains('async-user-picker')) {
-        select.nextElementSibling.remove();
-    }
+    if (select.nextElementSibling?.classList.contains('async-user-picker')) select.nextElementSibling.remove();
 
+    const multiple = select.multiple;
+    const displayCount = Math.max(1, Number.parseInt(select.dataset.displayCount || '2', 10) || 2);
     const component = document.createElement('div');
     component.className = 'ui-searchable-select';
     component.innerHTML = `
-        <div class="ui-searchable-select__control">
-            <div class="ui-searchable-select__selected" data-selected></div>
-            <input class="ui-searchable-select__search" type="search" autocomplete="off"
-                   role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false">
+        <button class="ui-searchable-select__control" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span class="ui-searchable-select__summary" data-summary></span>
             <span class="ui-searchable-select__arrow" aria-hidden="true"></span>
-        </div>
-        <div class="ui-searchable-select__dropdown" role="listbox" data-dropdown hidden></div>`;
+        </button>
+        <div class="ui-searchable-select__dropdown" data-dropdown hidden>
+            <div class="ui-searchable-select__search-wrap">
+                <span class="ui-searchable-select__search-icon" aria-hidden="true"></span>
+                <input class="ui-searchable-select__search" type="search" autocomplete="off">
+            </div>
+            <div class="ui-searchable-select__chosen" data-chosen hidden></div>
+            <div class="ui-searchable-select__options" role="listbox" data-options></div>
+        </div>`;
     select.after(component);
 
     const control = component.querySelector('.ui-searchable-select__control');
-    const selected = component.querySelector('[data-selected]');
+    const summary = component.querySelector('[data-summary]');
     const input = component.querySelector('input');
     const dropdown = component.querySelector('[data-dropdown]');
-    const multiple = select.multiple;
+    const chosen = component.querySelector('[data-chosen]');
+    const options = component.querySelector('[data-options]');
     const optionByValue = (value) => [...select.options].find((option) => option.value === String(value));
     let controller = null;
     let timer = null;
     let page = 1;
     let currentQuery = '';
 
-    input.placeholder = select.dataset.searchPlaceholder || '';
     dropdown.id = `${select.id || `searchable-select-${crypto.randomUUID()}`}-dropdown`;
-    input.setAttribute('aria-controls', dropdown.id);
+    input.placeholder = select.dataset.searchPlaceholder || 'Szukaj';
+    input.setAttribute('aria-label', input.placeholder);
+    control.setAttribute('aria-controls', dropdown.id);
+    options.setAttribute('aria-multiselectable', multiple ? 'true' : 'false');
 
     const close = () => {
         dropdown.hidden = true;
         component.classList.remove('is-open');
-        input.setAttribute('aria-expanded', 'false');
+        control.setAttribute('aria-expanded', 'false');
     };
     const open = () => {
         dropdown.hidden = false;
         component.classList.add('is-open');
-        input.setAttribute('aria-expanded', 'true');
+        control.setAttribute('aria-expanded', 'true');
+        window.requestAnimationFrame(() => input.focus());
     };
     const notifyChange = () => select.dispatchEvent(new Event('change', { bubbles: true }));
 
-    const renderSelected = () => {
-        selected.replaceChildren();
-        [...select.selectedOptions].forEach((option) => {
-            const chip = document.createElement('span');
-            chip.className = 'ui-searchable-select__chip';
-            chip.append(document.createTextNode(option.text));
-            if (multiple) {
-                const remove = document.createElement('button');
-                remove.type = 'button';
-                remove.setAttribute('aria-label', `${select.dataset.removeLabel || 'Usuń'} ${option.text}`);
-                remove.textContent = '×';
-                remove.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    option.selected = false;
-                    if (!option.defaultSelected) option.remove();
-                    renderSelected();
-                    notifyChange();
-                });
-                chip.append(remove);
-            }
-            selected.append(chip);
+    const renderSummary = () => {
+        summary.replaceChildren();
+        const selectedOptions = [...select.selectedOptions].filter((option) => option.value !== '');
+        if (selectedOptions.length === 0) {
+            const placeholder = document.createElement('span');
+            placeholder.className = 'ui-searchable-select__placeholder';
+            placeholder.textContent = select.dataset.placeholder || select.getAttribute('placeholder') || 'Wybierz';
+            summary.append(placeholder);
+            return;
+        }
+        selectedOptions.slice(0, displayCount).forEach((option) => {
+            const value = document.createElement('span');
+            value.className = 'ui-searchable-select__value';
+            value.textContent = option.text;
+            summary.append(value);
+        });
+        if (selectedOptions.length > displayCount) {
+            const overflow = document.createElement('span');
+            overflow.className = 'ui-searchable-select__count';
+            overflow.textContent = `+${selectedOptions.length - displayCount}`;
+            summary.append(overflow);
+        }
+    };
+
+    const renderChosen = () => {
+        chosen.replaceChildren();
+        if (!multiple) {
+            chosen.hidden = true;
+            return;
+        }
+        const selectedOptions = [...select.selectedOptions].filter((option) => option.value !== '');
+        chosen.hidden = selectedOptions.length === 0;
+        selectedOptions.forEach((option) => {
+            const row = document.createElement('div');
+            row.className = 'ui-searchable-select__chosen-row';
+            const label = document.createElement('span');
+            label.textContent = option.text;
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'ui-searchable-select__remove';
+            remove.setAttribute('aria-label', `${select.dataset.removeLabel || 'Usuń'} ${option.text}`);
+            remove.textContent = '×';
+            remove.addEventListener('click', () => {
+                option.selected = false;
+                renderSummary();
+                renderChosen();
+                notifyChange();
+                if (!dropdown.hidden) load();
+            });
+            row.append(label, remove);
+            chosen.append(row);
         });
     };
 
@@ -82,11 +122,14 @@ const initializeSearchableSelect = (select) => {
             select.add(option);
         }
         option.selected = true;
-        renderSelected();
+        renderSummary();
+        renderChosen();
         notifyChange();
         input.value = '';
         currentQuery = '';
-        close();
+        page = 1;
+        if (multiple) load();
+        else close();
     };
 
     const createOption = (item) => {
@@ -94,12 +137,44 @@ const initializeSearchableSelect = (select) => {
         button.type = 'button';
         button.className = 'ui-searchable-select__option';
         button.setAttribute('role', 'option');
+        button.setAttribute('aria-selected', 'false');
         button.textContent = item.text;
         button.addEventListener('click', () => choose(item));
         return button;
     };
 
+    const staticResults = () => [...select.options]
+        .filter((option) => option.value !== '' && !option.selected)
+        .filter((option) => option.text.toLocaleLowerCase().includes(currentQuery.toLocaleLowerCase()))
+        .map((option) => ({ id: option.value, text: option.text }));
+
+    const renderResults = (results, append = false, more = false) => {
+        if (!append) options.replaceChildren();
+        results.filter((item) => !optionByValue(item.id)?.selected).forEach((item) => options.append(createOption(item)));
+        if (more) {
+            const moreButton = document.createElement('button');
+            moreButton.type = 'button';
+            moreButton.className = 'ui-searchable-select__option ui-searchable-select__more';
+            moreButton.textContent = select.dataset.searchMore || 'Pokaż więcej';
+            moreButton.addEventListener('click', () => {
+                page += 1;
+                load(true);
+            });
+            options.append(moreButton);
+        }
+        if (!options.children.length) {
+            const empty = document.createElement('p');
+            empty.className = 'ui-searchable-select__empty';
+            empty.textContent = select.dataset.searchEmpty || 'Brak wyników';
+            options.append(empty);
+        }
+    };
+
     const load = async (append = false) => {
+        if (!select.dataset.searchUrl) {
+            renderResults(staticResults(), append);
+            return;
+        }
         controller?.abort();
         controller = new AbortController();
         const url = new URL(select.dataset.searchUrl, window.location.origin);
@@ -112,57 +187,44 @@ const initializeSearchableSelect = (select) => {
             });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const payload = await response.json();
-            if (!append) dropdown.replaceChildren();
-            payload.results
-                .filter((item) => !optionByValue(item.id)?.selected)
-                .forEach((item) => dropdown.append(createOption(item)));
-            if (payload.more) {
-                const more = document.createElement('button');
-                more.type = 'button';
-                more.className = 'ui-searchable-select__option ui-searchable-select__more';
-                more.textContent = select.dataset.searchMore || 'Pokaż więcej';
-                more.addEventListener('click', () => {
-                    page += 1;
-                    load(true);
-                });
-                dropdown.append(more);
-            }
-            if (!dropdown.children.length) {
-                const empty = document.createElement('p');
-                empty.className = 'ui-searchable-select__empty';
-                empty.textContent = select.dataset.searchEmpty || 'Brak wyników';
-                dropdown.append(empty);
-            }
-            open();
+            renderResults(payload.results || [], append, Boolean(payload.more));
         } catch (error) {
-            if (error.name !== 'AbortError') close();
+            if (error.name !== 'AbortError') renderResults([], false);
         }
     };
 
+    const show = () => {
+        if (select.disabled) return;
+        currentQuery = '';
+        input.value = '';
+        page = 1;
+        renderChosen();
+        load();
+        open();
+    };
+
+    control.addEventListener('click', () => dropdown.hidden ? show() : close());
     input.addEventListener('input', () => {
         clearTimeout(timer);
         currentQuery = input.value.trim();
         page = 1;
         timer = setTimeout(() => load(), 250);
     });
-    input.addEventListener('focus', () => {
-        currentQuery = input.value.trim();
-        page = 1;
-        load();
-    });
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
             close();
-            input.blur();
+            control.focus();
         }
-    });
-    control.addEventListener('click', (event) => {
-        if (!event.target.closest('button')) input.focus();
     });
     document.addEventListener('click', (event) => {
         if (!component.contains(event.target)) close();
     });
-    renderSelected();
+    select.addEventListener('change', () => {
+        renderSummary();
+        renderChosen();
+    });
+    renderSummary();
+    renderChosen();
 };
 
 export const initializeAdminFormComponents = () => {
