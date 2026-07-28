@@ -11,6 +11,7 @@ use App\Language\Domain\Entity\Language;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class SystemPageInstallerTest extends KernelTestCase
 {
@@ -76,5 +77,15 @@ final class SystemPageInstallerTest extends KernelTestCase
         );
         self::assertSame(11, $pages->count([]));
         self::assertSame(1, substr_count($pages->findOneBy(['registrationPage' => true])->getBuilderData(), '"type":"system_role"'));
+
+        $translator = self::getContainer()->get(TranslatorInterface::class);
+        self::assertSame(
+            'Ta strona systemowa musi zawierać dokładnie jeden komponent roli strony.',
+            $translator->trans('validation.page.system_role_required', domain: 'validators', locale: 'pl'),
+        );
+        self::assertSame(
+            'The page role component only works on a page with an assigned functional role. Assign a page role or remove this component.',
+            $translator->trans('validation.page.system_role_forbidden', domain: 'validators', locale: 'en'),
+        );
     }
 }

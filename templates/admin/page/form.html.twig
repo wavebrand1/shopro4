@@ -24,7 +24,7 @@
     <div class="cms-card-body">
     {{ form_widget(form.editorMode) }}{{ form_widget(form.content) }}
     <div class="cms-editor-mode">
-        <div class="component-builder" data-component-builder data-project-field="page_builderData">
+        <div class="component-builder" data-component-builder data-project-field="page_builderData" data-system-role-required="{{ page.requiresSystemRoleComponent ? 'true' : 'false' }}">
             <aside class="component-builder__library">
                 <p class="component-builder__label">{{ shopro_trans('builder.section_layout') }}</p>
                 <button class="component-library-item" type="button" data-add-section><span class="component-library-item__icon">§</span><span><strong>{{ shopro_trans('builder.add_section') }}</strong><small>{{ shopro_trans('builder.add_section_help') }}</small></span></button>

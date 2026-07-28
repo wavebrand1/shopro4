@@ -9,6 +9,8 @@ validation.page.canonical_url: 'Enter a complete canonical URL beginning with ht
 validation.page_builder.invalid_json: 'The Page Builder data is corrupted. Refresh the form and try again.'
 validation.page_builder.link_invalid: 'The Page Builder contains an unsafe link. Use an internal path, anchor, HTTPS/HTTP URL, email address, or phone number.'
 validation.page_builder.image_invalid: 'The Page Builder image must come from the local file manager.'
+validation.page.system_role_required: 'This system page must contain exactly one page role component.'
+validation.page.system_role_forbidden: 'The page role component only works on a page with an assigned functional role. Assign a page role or remove this component.'
 validation.menu.page_required: 'Select a page for this menu item.'
 validation.menu.link_required: 'Enter the external link URL.'
 validation.menu.link_invalid: 'Enter a safe HTTPS/HTTP URL, internal path, anchor, email address, or phone number.'

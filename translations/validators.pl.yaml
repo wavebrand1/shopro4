@@ -9,6 +9,8 @@ validation.page.canonical_url: 'Podaj pełny adres canonical rozpoczynający si�
 validation.page_builder.invalid_json: 'Dane Page Buildera są uszkodzone. Odśwież formularz i spróbuj ponownie.'
 validation.page_builder.link_invalid: 'Page Builder zawiera niebezpieczny adres odnośnika. Użyj ścieżki wewnętrznej, kotwicy, HTTPS/HTTP, adresu e-mail lub telefonu.'
 validation.page_builder.image_invalid: 'Obraz Page Buildera musi pochodzić z lokalnego menedżera plików.'
+validation.page.system_role_required: 'Ta strona systemowa musi zawierać dokładnie jeden komponent roli strony.'
+validation.page.system_role_forbidden: 'Komponent roli strony działa tylko na stronie z przypisaną rolą funkcjonalną. Przypisz rolę strony albo usuń ten komponent.'
 validation.menu.page_required: 'Wybierz podstronę dla tej pozycji menu.'
 validation.menu.link_required: 'Podaj adres linku zewnętrznego.'
 validation.menu.link_invalid: 'Podaj bezpieczny adres HTTPS/HTTP, ścieżkę wewnętrzną, kotwicę, adres e-mail lub telefon.'
