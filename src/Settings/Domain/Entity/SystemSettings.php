@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SystemSettingsRepository::class)]
 #[ORM\Table(name: 'system_settings')]
-final class SystemSettings
+class SystemSettings
 {
     #[ORM\Id]
     #[ORM\Column]

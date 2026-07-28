@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PasswordResetTokenRepository::class)]
 #[ORM\Table(name: 'admin_password_reset_token')]
 #[ORM\Index(columns: ['token_hash'], name: 'idx_password_reset_hash')]
-final class PasswordResetToken
+class PasswordResetToken
 {
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
