@@ -17,6 +17,12 @@ final class SystemEmailTemplateCatalog
 
     public function __construct(private readonly SystemTranslator $translator) {}
 
+    /** @return list<string> */
+    public function codes(): array
+    {
+        return self::CODES;
+    }
+
     /** @return array<string, array{label:string, description:string}> */
     public function all(): array
     {

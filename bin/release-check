@@ -93,6 +93,13 @@ console doctrine:schema:validate --skip-sync
 echo "[Shopro release] Checking module registry"
 console app:modules:verify
 
+echo "[Shopro release] Checking release data and configuration"
+if [ "${SHOPRO_PUBLIC_RELEASE:-0}" = "1" ]; then
+    console app:release:verify --strict
+else
+    console app:release:verify
+fi
+
 echo "[Shopro release] Checking compiled assets"
 assert_file_contains public/assets/importmap.json '"rich-editor"' "Rich text editor is missing from the import map."
 assert_file_contains public/assets/manifest.json '"admin-form-components.js"' "Shared form components are missing from the asset manifest."

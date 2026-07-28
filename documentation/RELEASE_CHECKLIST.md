@@ -35,8 +35,10 @@ bash bin/release-check --runtime
 ```
 
 Weryfikowane są migracje, mapowanie Doctrine, rejestr modułów, skompilowane
-zasoby oraz prawa zapisu do katalogów roboczych. Błąd przerywa wdrożenie i musi
-zostać naprawiony przed uznaniem wersji za gotową.
+zasoby, prawa zapisu do katalogów roboczych oraz dane wymagane przez wydanie:
+operator panelu, język bazowy, strona główna, szablony e-mail i konfiguracja
+wysyłki. Błąd przerywa wdrożenie i musi zostać naprawiony przed uznaniem wersji
+za gotową.
 
 Plesk na środowisku developerskim nadal używa:
 
