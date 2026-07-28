@@ -18,6 +18,9 @@ W panelu administracyjnym komponent jest automatycznie stosowany do wszystkich s
 kontrolkę natywną. Obsługuje wybór pojedynczy i wielokrotny. Może filtrować opcje istniejące
 w HTML albo korzystać z wyszukiwania asynchronicznego, dzięki czemu nie pobiera całej kolekcji.
 
+Selecty stanowiące część edytora tekstu Quill są zawsze pomijane i zachowują oryginalny
+wygląd oraz zachowanie dostarczane przez edytor.
+
 Select korzystający z endpointu wymaga atrybutów:
 
 ```html

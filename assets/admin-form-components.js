@@ -6,6 +6,7 @@ const SEARCHABLE_SELECT_SELECTOR = [
 
 const initializeSearchableSelect = (select) => {
     if (select.dataset.componentReady === 'true') return;
+    if (select.closest('.ql-toolbar, .ql-container, .email-rich-editor, .component-rich-field')) return;
 
     select.dataset.componentReady = 'true';
     select.dataset.pickerReady = 'true';
