@@ -6,12 +6,73 @@ zawiera zależności produkcyjne oraz skompilowane zasoby.
 
 ## Przygotowanie paczki
 
-W GitHub Actions wybierz workflow **Build installation package**, użyj
-**Run workflow** i podaj numer wersji. Po zakończeniu pobierz artefakt
-`shopro-installation-package`.
+### Utworzenie paczki w GitHub Actions
 
-Paczka powstaje również automatycznie po wysłaniu tagu `v*`. Lokalnie można ją
-zbudować poleceniem:
+1. Zaloguj się do GitHub i otwórz repozytorium
+   `wavebrand1/shopro4`.
+2. W górnym menu repozytorium wybierz **Actions**.
+3. Z listy po lewej stronie wybierz workflow
+   **Build installation package**.
+4. Kliknij **Run workflow**.
+5. Pozostaw gałąź `main`, a w polu wersji wpisz numer wydania, np. `4.0.0`.
+6. Ponownie kliknij zielony przycisk **Run workflow**.
+7. Odśwież listę i otwórz rozpoczęte wykonanie. Zaczekaj, aż zadanie
+   `package` otrzyma zielony status.
+8. Na dole strony, w sekcji **Artifacts**, kliknij
+   `shopro-installation-package`.
+
+GitHub pobierze na komputer plik `shopro-installation-package.zip`. Jest to
+opakowanie artefaktu. Po jego rozpakowaniu znajduje się w nim właściwa paczka
+systemu, np. `shopro-4.0.0.zip`. Na serwer należy wysłać właśnie plik
+`shopro-4.0.0.zip`, a następnie rozpakować jego zawartość.
+
+Artefakt jest przechowywany przez 30 dni. Paczka powstaje również automatycznie
+po wysłaniu tagu zaczynającego się od `v`, np. `v4.0.0`.
+
+### Wysłanie paczki na serwer przez Plesk
+
+1. Zaloguj się do Pleska serwera docelowego.
+2. Otwórz **Domeny**, wybierz domenę i przejdź do **Menedżera plików**.
+3. Otwórz katalog aplikacji, zwykle `httpdocs`.
+4. Jeżeli jest to nowa domena, usuń wyłącznie domyślny plik
+   `index.html` utworzony przez Plesk.
+5. Kliknij **Prześlij**, wybierz `shopro-4.0.0.zip` i poczekaj na zakończenie
+   wysyłania.
+6. Zaznacz przesłany plik, wybierz **Wyodrębnij pliki** i jako miejsce
+   docelowe wskaż bieżący katalog `httpdocs`.
+7. Sprawdź, czy bezpośrednio w `httpdocs` znajdują się m.in. katalogi
+   `bin`, `config`, `public`, `src`, `templates`, `vendor` oraz plik
+   `composer.json`. Nie mogą znajdować się w dodatkowym podkatalogu
+   `shopro-4.0.0`.
+8. Po prawidłowym rozpakowaniu usuń z serwera przesłany plik ZIP.
+9. W ustawieniach hostingu domeny ustaw **Document root** na
+   `httpdocs/public`.
+10. Ustaw PHP 8.2 lub nowsze, włącz HTTPS i przejdź do
+    `https://twoja-domena.pl/install`.
+
+Nie rozpakowuj na serwerze zewnętrznego pliku
+`shopro-installation-package.zip` bez sprawdzenia jego zawartości. Zawiera on
+jeszcze właściwy plik ZIP, a nie bezpośrednio pliki Shopro.
+
+### Alternatywnie: wysłanie przez SFTP
+
+1. Rozpakuj na komputerze `shopro-installation-package.zip`.
+2. Połącz się z serwerem w programie obsługującym SFTP, np. WinSCP lub
+   FileZilla.
+3. Przejdź do katalogu domeny `httpdocs`.
+4. Prześlij `shopro-4.0.0.zip`.
+5. Rozpakuj go w Plesku albo w terminalu SSH:
+
+```bash
+cd ~/httpdocs
+unzip shopro-4.0.0.zip
+rm shopro-4.0.0.zip
+```
+
+Polecenie `rm` wykonuj dopiero po sprawdzeniu, że archiwum zostało poprawnie
+rozpakowane i w katalogu znajdują się pliki Shopro.
+
+Lokalnie paczkę można zbudować poleceniem:
 
 ```bash
 bash bin/build-release-package 4.0.0
