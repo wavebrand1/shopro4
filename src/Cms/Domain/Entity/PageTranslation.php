@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace App\Cms\Domain\Entity;
 
 use App\Cms\Domain\PageSlug;
+use App\Cms\Domain\SystemRoleComponent;
 use App\Language\Domain\Entity\Language;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -32,6 +33,7 @@ class PageTranslation
  public function getId():?int{return $this->id;} public function getPage():Page{return $this->page;} public function getLanguage():Language{return $this->language;}
  public function getTitle():string{return $this->title;}public function setTitle(string $v):void{$this->title=trim($v);} public function getSlug():string{return $this->slug;}public function setSlug(string $v):void{$this->slug=mb_strtolower(trim($v));}
  #[Assert\Callback] public function validateSlugIsNotReserved(ExecutionContextInterface $context):void{if(PageSlug::isReserved($this->slug))$context->buildViolation('validation.page.slug_reserved')->atPath('slug')->addViolation();}
+ #[Assert\Callback] public function validateSystemRoleComponent(ExecutionContextInterface $context):void{$count=SystemRoleComponent::count($this->builderData);if($this->page->requiresSystemRoleComponent()&&$count!==1)$context->buildViolation('validation.page.system_role_required')->atPath('builderData')->addViolation();elseif(!$this->page->requiresSystemRoleComponent()&&$count>0)$context->buildViolation('validation.page.system_role_forbidden')->atPath('builderData')->addViolation();}
  public function getCaption():string{return $this->caption;}public function setCaption(?string $v):void{$this->caption=trim($v??'');} public function getSeoTitle():string{return $this->seoTitle;}public function setSeoTitle(?string $v):void{$this->seoTitle=trim($v??'');}
  public function getDescription():string{return $this->description;}public function setDescription(?string $v):void{$this->description=trim($v??'');} public function getContent():string{return $this->content;}public function setContent(?string $v):void{$this->content=$v??'';}
  public function getBuilderData():string{return $this->builderData;}public function setBuilderData(?string $v):void{$this->builderData=$v??'';} public function getBuilderCss():string{return $this->builderCss;}public function setBuilderCss(?string $v):void{$this->builderCss=$v??'';}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Cms\Domain\Entity;
 
 use App\Cms\Domain\PageSlug;
+use App\Cms\Domain\SystemRoleComponent;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\Membership;
 use DateTimeImmutable;
@@ -150,6 +151,16 @@ class Page
             $context->buildViolation('validation.page.slug_reserved')->atPath('slug')->addViolation();
         }
     }
+    #[Assert\Callback]
+    public function validateSystemRoleComponent(ExecutionContextInterface $context): void
+    {
+        $count = SystemRoleComponent::count($this->builderData);
+        if ($this->requiresSystemRoleComponent() && $count !== 1) {
+            $context->buildViolation('validation.page.system_role_required')->atPath('builderData')->addViolation();
+        } elseif (!$this->requiresSystemRoleComponent() && $count > 0) {
+            $context->buildViolation('validation.page.system_role_forbidden')->atPath('builderData')->addViolation();
+        }
+    }
     public function getContent(): string { return $this->content; }
     public function setContent(?string $content): void { $this->content = trim($content ?? ''); }
     public function getEditorMode(): string { return $this->editorMode; }
@@ -244,6 +255,7 @@ class Page
     public function isTermsPage(): bool { return $this->termsPage; }
     public function setTermsPage(bool $v): void { $this->termsPage = $v; }
     public function isSystemPage(): bool { return $this->homePage || $this->loginPage || $this->activationPage || $this->accountPage || $this->registrationPage || $this->searchPage || $this->sitemapPage || $this->profilePage || $this->errorPage || $this->termsPage; }
+    public function requiresSystemRoleComponent(): bool { return $this->loginPage || $this->activationPage || $this->accountPage || $this->registrationPage || $this->searchPage || $this->sitemapPage || $this->profilePage; }
     public function copyAs(string $slug): self
     {
         $copy = clone $this;

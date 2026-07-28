@@ -54,6 +54,9 @@ Funkcjonalna część strony systemowej jest osadzana w Page Builderze przez kom
 niego dodawać zwykły tekst, obrazy oraz pozostałe komponenty. Sam komponent nie ma
 konfiguracji: na stronie rejestracji zawsze renderuje bezpieczny formularz
 rejestracji, a nie funkcję wybraną ręcznie przez użytkownika.
+Komponent jest wymagany, nieusuwalny i może wystąpić dokładnie jeden raz.
+Ograniczenie jest egzekwowane zarówno w interfejsie Page Buildera, jak i podczas
+walidacji formularza po stronie serwera.
 
 Polecenie instalacyjne dopisuje brakujący komponent do funkcjonalnych stron
 systemowych i ich tłumaczeń. Operacja nie zmienia istniejących komponentów ani
