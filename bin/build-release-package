@@ -22,6 +22,12 @@ mkdir -p "$PACKAGE_ROOT" dist
 echo "[Shopro package] Exporting tracked source files"
 git archive HEAD | tar -x -C "$PACKAGE_ROOT"
 
+# The source checkout defaults to dev for local development. A production
+# package cannot use that default because require-dev packages (including
+# DebugBundle) are intentionally absent. The installer replaces these values
+# with the final, secret configuration after validating the server.
+sed -i 's/^APP_ENV=.*/APP_ENV=prod/' "$PACKAGE_ROOT/.env"
+
 echo "[Shopro package] Installing production dependencies"
 (
     cd "$PACKAGE_ROOT"

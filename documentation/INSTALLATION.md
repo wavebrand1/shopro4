@@ -50,6 +50,11 @@ po wysłaniu tagu zaczynającego się od `v`, np. `v4.0.0`.
 10. Ustaw PHP 8.2 lub nowsze, włącz HTTPS i przejdź do
     `https://twoja-domena.pl/install`.
 
+Gotowa paczka ma domyślnie ustawione `APP_ENV=prod`, ponieważ nie zawiera
+narzędzi deweloperskich takich jak Symfony `DebugBundle`. Nie ustawiaj w Plesku
+zmiennej środowiskowej `APP_ENV=dev`. Zmienne serwera mają pierwszeństwo przed
+plikami `.env` i wymusiłyby uruchomienie nieobecnych pakietów deweloperskich.
+
 Nie rozpakowuj na serwerze zewnętrznego pliku
 `shopro-installation-package.zip` bez sprawdzenia jego zawartości. Zawiera on
 jeszcze właściwy plik ZIP, a nie bezpośrednio pliki Shopro.
