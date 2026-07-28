@@ -35,7 +35,7 @@ jobs:
           php bin/console lint:yaml config --parse-tags
           php bin/console lint:twig templates
           php bin/console lint:container
-          bash -n bin/deploy-dev bin/create-backup bin/run-queue-worker bin/setup-queue-worker
+          bash -n bin/deploy-dev bin/create-backup bin/release-check bin/run-queue-worker bin/setup-queue-worker
 
       - name: Run tests
         run: php bin/phpunit

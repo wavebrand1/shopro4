@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+cd "$(dirname "$0")/.."
+
+MODE="${1:---ci}"
+
+case "$MODE" in
+    --ci|--runtime)
+        ;;
+    *)
+        echo "Usage: bash bin/release-check [--ci|--runtime]" >&2
+        exit 2
+        ;;
+esac
+
+resolve_php() {
+    if [ -n "${SHOPRO_PHP_BIN:-}" ] && [ -x "$SHOPRO_PHP_BIN" ]; then
+        printf '%s\n' "$SHOPRO_PHP_BIN"
+        return
+    fi
+
+    for candidate in /opt/plesk/php/8.3/bin/php php; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            command -v "$candidate"
+            return
+        fi
+        if [ -x "$candidate" ]; then
+            printf '%s\n' "$candidate"
+            return
+        fi
+    done
+
+    echo "PHP 8.3 binary was not found. Set SHOPRO_PHP_BIN." >&2
+    exit 1
+}
+
+PHP_BIN="$(resolve_php)"
+APP_ENV="${APP_ENV:-dev}"
+APP_DEBUG="${APP_DEBUG:-1}"
+
+console() {
+    APP_ENV="$APP_ENV" APP_DEBUG="$APP_DEBUG" "$PHP_BIN" bin/console "$@"
+}
+
+assert_file_contains() {
+    local file="$1"
+    local pattern="$2"
+    local description="$3"
+
+    if [ ! -f "$file" ] || ! grep -q "$pattern" "$file"; then
+        echo "[FAIL] $description" >&2
+        exit 1
+    fi
+}
+
+if [ "$MODE" = "--ci" ]; then
+    echo "[Shopro release] Validating Composer metadata"
+    composer validate --strict
+
+    echo "[Shopro release] Validating Symfony configuration and templates"
+    console lint:yaml config --parse-tags
+    console lint:twig templates
+    console lint:container
+
+    echo "[Shopro release] Validating deployment scripts"
+    bash -n bin/deploy-dev bin/create-backup bin/release-check bin/run-queue-worker bin/setup-queue-worker
+
+    if command -v node >/dev/null 2>&1; then
+        echo "[Shopro release] Validating application JavaScript"
+        while IFS= read -r -d '' file; do
+            node --check "$file"
+        done < <(find assets -type f -name '*.js' -print0)
+    fi
+
+    echo "[Shopro release] Running automated tests"
+    "$PHP_BIN" bin/phpunit
+
+    echo "[Shopro release] CI checks passed"
+    exit 0
+fi
+
+echo "[Shopro release] Checking database migrations"
+console doctrine:migrations:up-to-date --no-interaction
+
+echo "[Shopro release] Checking Doctrine mapping"
+console doctrine:schema:validate --skip-sync
+
+echo "[Shopro release] Checking module registry"
+console app:modules:verify
+
+echo "[Shopro release] Checking compiled assets"
+assert_file_contains public/assets/importmap.json '"rich-editor"' "Rich text editor is missing from the import map."
+assert_file_contains public/assets/manifest.json '"admin-form-components.js"' "Shared form components are missing from the asset manifest."
+assert_file_contains public/assets/manifest.json '"styles/admin-select.css"' "Shared select styles are missing from the asset manifest."
+
+if ! grep -R -q 'ui-searchable-select__dropdown' public/assets/styles; then
+    echo "[FAIL] Compiled searchable-select styles are missing." >&2
+    exit 1
+fi
+
+echo "[Shopro release] Checking writable runtime directories"
+for directory in var/cache var/log public/uploads; do
+    if [ ! -d "$directory" ] || [ ! -w "$directory" ]; then
+        echo "[FAIL] Directory is missing or not writable: $directory" >&2
+        exit 1
+    fi
+done
+
+if [ "${SHOPRO_PUBLIC_RELEASE:-0}" = "1" ]; then
+    if [ "$APP_ENV" != "prod" ] || [ "$APP_DEBUG" != "0" ]; then
+        echo "[FAIL] Public release requires APP_ENV=prod and APP_DEBUG=0." >&2
+        exit 1
+    fi
+fi
+
+echo "[Shopro release] Runtime checks passed"
