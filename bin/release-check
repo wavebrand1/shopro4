@@ -59,6 +59,9 @@ if [ "$MODE" = "--ci" ]; then
     echo "[Shopro release] Validating Composer metadata"
     composer validate --strict
 
+    echo "[Shopro release] Auditing Composer dependencies"
+    composer audit --locked
+
     echo "[Shopro release] Validating Symfony configuration and templates"
     console lint:yaml config --parse-tags
     console lint:twig templates

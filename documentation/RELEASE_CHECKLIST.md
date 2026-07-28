@@ -24,8 +24,9 @@ Przed wysłaniem zmian uruchom lokalnie:
 bash bin/release-check --ci
 ```
 
-Kontrola obejmuje Composer, konfigurację Symfony, Twig, skrypty wdrożeniowe,
-JavaScript i pełny zestaw testów.
+Kontrola obejmuje metadane i aktualne podatności zależności Composer,
+konfigurację Symfony, Twig, skrypty wdrożeniowe, JavaScript i pełny zestaw
+testów.
 
 `bin/deploy-dev` automatycznie uruchamia po wdrożeniu:
 
