@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Newsletter\Presentation\Form;
 
-use App\Identity\Infrastructure\Persistence\Doctrine\AdminUserRepository;
+use App\Identity\Infrastructure\Persistence\Doctrine\SiteUserRepository;
 use App\Language\Application\SystemTranslator;
 use App\Newsletter\Domain\Entity\NewsletterCampaign;
 use Symfony\Component\Form\AbstractType;
@@ -21,23 +23,30 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class NewsletterCampaignType extends AbstractType
 {
-    public function __construct(private readonly AdminUserRepository $users, private readonly SystemTranslator $translator) {}
+    public function __construct(private readonly SiteUserRepository $users, private readonly SystemTranslator $translator) {}
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $choices=[];
-        $t=$this->translator->translate(...);
-        foreach ($this->users->findBy([], ['username'=>'ASC']) as $user) $choices[$user->getDisplayName().' — '.$user->getEmail()]=$user->getId();
+        $choices = [];
+        $t = $this->translator->translate(...);
+        foreach ($this->users->findBy([], ['username' => 'ASC']) as $user) {
+            $choices[$user->getUsername().' — '.$user->getEmail()] = $user->getId();
+        }
         $builder
-            ->add('subject', TextType::class, ['label'=>$t('newsletter.subject'),'constraints'=>[new NotBlank()]])
-            ->add('includeSubscribers', CheckboxType::class, ['label'=>$t('newsletter.include_subscribers'),'required'=>false])
-            ->add('selectedUserIds', ChoiceType::class, ['label'=>$t('newsletter.selected_users'),'choices'=>$choices,'multiple'=>true,'expanded'=>true,'required'=>false,'help'=>$t('newsletter.selected_users_help')])
-            ->add('customEmails', TextareaType::class, ['label'=>$t('newsletter.custom_emails'),'required'=>false,'help'=>$t('newsletter.custom_emails_help'),'attr'=>['rows'=>5],'constraints'=>[new All([new Email()])]])
-            ->add('recipientFile', FileType::class, ['label'=>$t('newsletter.recipient_csv'),'mapped'=>false,'required'=>false,'help'=>$t('newsletter.recipient_csv_help'),'constraints'=>[new File(maxSize:'2M',mimeTypes:['text/plain','text/csv','application/csv','application/vnd.ms-excel'],mimeTypesMessage:$t('newsletter.recipient_csv_invalid'))]])
-            ->add('content', TextareaType::class, ['label'=>$t('newsletter.html_content'),'attr'=>['rows'=>16,'data-rich-editor'=>true],'constraints'=>[new NotBlank()]]);
+            ->add('subject', TextType::class, ['label' => $t('newsletter.subject'), 'constraints' => [new NotBlank()]])
+            ->add('includeSubscribers', CheckboxType::class, ['label' => $t('newsletter.include_subscribers'), 'required' => false])
+            ->add('selectedSiteUserIds', ChoiceType::class, ['label' => $t('newsletter.selected_users'), 'choices' => $choices, 'multiple' => true, 'expanded' => true, 'required' => false, 'help' => $t('newsletter.selected_users_help')])
+            ->add('customEmails', TextareaType::class, ['label' => $t('newsletter.custom_emails'), 'required' => false, 'help' => $t('newsletter.custom_emails_help'), 'attr' => ['rows' => 5], 'constraints' => [new All([new Email()])]])
+            ->add('recipientFile', FileType::class, ['label' => $t('newsletter.recipient_csv'), 'mapped' => false, 'required' => false, 'help' => $t('newsletter.recipient_csv_help'), 'constraints' => [new File(maxSize: '2M', mimeTypes: ['text/plain', 'text/csv', 'application/csv', 'application/vnd.ms-excel'], mimeTypesMessage: $t('newsletter.recipient_csv_invalid'))]])
+            ->add('content', TextareaType::class, ['label' => $t('newsletter.html_content'), 'attr' => ['rows' => 16, 'data-rich-editor' => true], 'constraints' => [new NotBlank()]]);
         $builder->get('customEmails')->addModelTransformer(new CallbackTransformer(
-            static fn(array $emails): string => implode("\n", $emails),
-            static fn(?string $value): array => array_values(array_filter(array_map('trim', preg_split('/[\s,;]+/', (string) $value) ?: [])))
+            static fn (array $emails): string => implode("\n", $emails),
+            static fn (?string $value): array => array_values(array_filter(array_map('trim', preg_split('/[\s,;]+/', (string) $value) ?: [])))
         ));
     }
-    public function configureOptions(OptionsResolver $resolver): void { $resolver->setDefaults(['data_class'=>NewsletterCampaign::class]); }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults(['data_class' => NewsletterCampaign::class]);
+    }
 }

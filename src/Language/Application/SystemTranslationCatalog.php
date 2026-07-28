@@ -6,6 +6,9 @@ final class SystemTranslationCatalog
 {
  /** @return array<string,array{pl:string,en:string}> */
  public static function phrases():array{return [
+  'site_registration.newsletter'=>['pl'=>'Chcę otrzymywać newsletter','en'=>'I want to receive the newsletter'],
+  'site_users.newsletter'=>['pl'=>'Zapisany do newslettera','en'=>'Subscribed to the newsletter'],
+  'site_users.newsletter_help'=>['pl'=>'Zgoda użytkownika na otrzymywanie kampanii e-mail.','en'=>'The user has consented to receive email campaigns.'],
   'module.runtime_blocked'=>['pl'=>'Wymaga synchronizacji','en'=>'Synchronization required'],'module.runtime_blocked_help'=>['pl'=>'Moduł lub jego zależność ma niezgodną wersję albo jest wyłączona.','en'=>'The module or one of its dependencies has an incompatible version or is disabled.'],
   'auth.remember_me'=>['pl'=>'Zapamiętaj mnie przez 30 dni','en'=>'Remember me for 30 days'],
   'newsletter.campaign_pages'=>['pl'=>'Strony kampanii','en'=>'Campaign pages'],'newsletter.delivery_pages'=>['pl'=>'Strony historii dostarczeń','en'=>'Delivery history pages'],

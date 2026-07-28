@@ -20,6 +20,8 @@ class NewsletterCampaign
     #[ORM\Column(options: ['default' => true])] private bool $includeSubscribers = true;
     /** @var list<int> */
     #[ORM\Column(type: Types::JSON)] private array $selectedUserIds = [];
+    /** @var list<int> */
+    #[ORM\Column(type: Types::JSON)] private array $selectedSiteUserIds = [];
     /** @var list<string> */
     #[ORM\Column(type: Types::JSON)] private array $customEmails = [];
     public function __construct() { $this->createdAt = new \DateTimeImmutable(); }
@@ -35,6 +37,8 @@ class NewsletterCampaign
     public function setIncludeSubscribers(bool $value): void { $this->includeSubscribers = $value; }
     /** @return list<int> */ public function getSelectedUserIds(): array { return $this->selectedUserIds; }
     /** @param list<int|string> $ids */ public function setSelectedUserIds(array $ids): void { $this->selectedUserIds = array_values(array_unique(array_map('intval', $ids))); }
+    /** @return list<int> */ public function getSelectedSiteUserIds(): array { return $this->selectedSiteUserIds; }
+    /** @param list<int|string> $ids */ public function setSelectedSiteUserIds(array $ids): void { $this->selectedSiteUserIds = array_values(array_unique(array_map('intval', $ids))); }
     /** @return list<string> */ public function getCustomEmails(): array { return $this->customEmails; }
     /** @param list<string> $emails */ public function setCustomEmails(array $emails): void { $this->customEmails = array_values(array_unique(array_map(static fn(string $email): string => mb_strtolower(trim($email)), $emails))); }
     public function markQueued(): void { $this->status = 'queued'; $this->queuedAt = new \DateTimeImmutable(); }

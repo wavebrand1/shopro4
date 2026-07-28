@@ -42,6 +42,14 @@ Stałe rozmiary miniatur ze starego systemu zastąpił zestaw responsywnych szer
 
 ## E-mail i newsletter
 
+Subskrypcja newslettera należy do konta użytkownika witryny (`SiteUser`), a nie
+do operatora panelu (`AdminUser`). Użytkownik może wyrazić zgodę przy rejestracji,
+operator może ją skorygować w edycji konta witryny, a podpisany link wypisu zmienia
+ten sam stan. Kampania pozwala wybrać aktywne konta witryny. Historyczne
+`selected_user_ids` pozostają zachowane jako dane zgodności; nowe wybory trafiają
+do `selected_site_user_ids`, dzięki czemu dawne identyfikatory operatorów nie
+zostaną omyłkowo zinterpretowane jako identyfikatory klientów.
+
 Kampania tworzy osobną dostawę dla każdego zapisanego odbiorcy i przekazuje ją do Symfony Messenger. Historia przechowuje status, czas wysłania i błąd; nieudane wiadomości mają retry i failed transport. Każdy newsletter zawiera podpisany, roczny link wypisu oraz nagłówki `List-Unsubscribe` i `List-Unsubscribe-Post`.
 
 Odbiorców można wskazać z kont, wpisać ręcznie albo zaimportować z CSV do 2 MB.

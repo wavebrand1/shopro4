@@ -31,6 +31,7 @@ final class SiteUserType extends AbstractType
             ->add('email', EmailType::class, ['label' => $t('site_users.email')])
             ->add('plainPassword', PasswordType::class, ['label' => $t($new ? 'site_users.password' : 'site_users.new_password'), 'mapped' => false, 'required' => $new, 'constraints' => $new ? [new NotBlank(), new Length(min: 12)] : [new Length(min: 12)]])
             ->add('active', CheckboxType::class, ['label' => $t('site_users.active'), 'required' => false])
+            ->add('newsletter', CheckboxType::class, ['label' => $t('site_users.newsletter'), 'help' => $t('site_users.newsletter_help'), 'required' => false])
             ->add('memberships', EntityType::class, ['label' => $t('site_users.memberships'), 'help' => $t('site_users.memberships_help'), 'class' => Membership::class, 'choice_label' => 'title', 'query_builder' => static fn (MembershipRepository $repository) => $repository->createQueryBuilder('membership')->orderBy('membership.title', 'ASC'), 'multiple' => true, 'required' => false, 'attr' => ['size' => 7]]);
     }
     public function configureOptions(OptionsResolver $resolver): void { $resolver->setDefaults(['data_class' => SiteUser::class]); }

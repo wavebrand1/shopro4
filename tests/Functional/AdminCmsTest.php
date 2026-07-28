@@ -967,7 +967,6 @@ final class AdminCmsTest extends WebTestCase
         $apiUser = $userRepository->findOneBy(['email' => 'admin@example.test']);
         self::assertNotNull($apiUser);
         $apiUser->setApiScopes(['read']);
-        $apiUser->setNewsletter(true);
         $apiToken = $apiUser->rotateApiToken();
         $userRepository->save($apiUser);
         $this->client->request('GET', '/api/v1/me', server: ['HTTP_AUTHORIZATION' => 'Bearer '.$apiToken]);
@@ -984,11 +983,18 @@ final class AdminCmsTest extends WebTestCase
         self::assertResponseStatusCodeSame(403);
         self::assertJsonStringEqualsJsonString('{"error":"insufficient_scope","required_scope":"read"}', (string) $this->client->getResponse()->getContent());
 
-        $unsubscribeToken = self::getContainer()->get(UnsubscribeToken::class)->create('admin@example.test');
+        $newsletterUser = new SiteUser('newsletter-reader@example.test', 'newsletter-reader');
+        $newsletterUser->setPassword('irrelevant-test-password');
+        $newsletterUser->setNewsletter(true);
+        $this->entityManager->persist($newsletterUser);
+        $this->entityManager->flush();
+        $unsubscribeToken = self::getContainer()->get(UnsubscribeToken::class)->create('newsletter-reader@example.test');
         $this->client->request('POST', '/newsletter/unsubscribe', ['token' => $unsubscribeToken]);
         self::assertResponseIsSuccessful();
-        $apiUser = self::getContainer()->get(AdminUserRepository::class)->findOneBy(['email' => 'admin@example.test']);
-        self::assertFalse($apiUser->isNewsletter());
+        $this->entityManager->clear();
+        $newsletterUser = $this->entityManager->getRepository(SiteUser::class)->findOneBy(['email' => 'newsletter-reader@example.test']);
+        self::assertNotNull($newsletterUser);
+        self::assertFalse($newsletterUser->isNewsletter());
     }
 
     public function testScheduledPublicationWindowControlsPublicAvailability(): void

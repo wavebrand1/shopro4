@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Newsletter\Presentation\Http\Admin;
 
-use App\Identity\Domain\Entity\AdminUser;
+use App\Identity\Domain\Entity\SiteUser;
 use App\Language\Application\SystemTranslator;
 use App\Mail\Infrastructure\Persistence\Doctrine\EmailTemplateRepository;
 use App\Newsletter\Application\Message\SendNewsletterDelivery;
@@ -334,6 +334,7 @@ final class NewsletterController extends AbstractController
         $repeated->setContent($campaign->getContent());
         $repeated->setIncludeSubscribers($campaign->isIncludeSubscribers());
         $repeated->setSelectedUserIds($campaign->getSelectedUserIds());
+        $repeated->setSelectedSiteUserIds($campaign->getSelectedSiteUserIds());
         $repeated->setCustomEmails($campaign->getCustomEmails());
         $em->persist($repeated);
         $em->flush();
@@ -370,12 +371,12 @@ final class NewsletterController extends AbstractController
     {
         $emails = $campaign->getCustomEmails();
         if ($campaign->isIncludeSubscribers()) {
-            foreach ($em->getRepository(AdminUser::class)->findBy(['active' => true, 'newsletter' => true]) as $user) {
+            foreach ($em->getRepository(SiteUser::class)->findBy(['active' => true, 'newsletter' => true]) as $user) {
                 $emails[] = $user->getEmail();
             }
         }
-        if ($campaign->getSelectedUserIds()) {
-            foreach ($em->getRepository(AdminUser::class)->findBy(['id' => $campaign->getSelectedUserIds()]) as $user) {
+        if ($campaign->getSelectedSiteUserIds()) {
+            foreach ($em->getRepository(SiteUser::class)->findBy(['id' => $campaign->getSelectedSiteUserIds(), 'active' => true]) as $user) {
                 $emails[] = $user->getEmail();
             }
         }

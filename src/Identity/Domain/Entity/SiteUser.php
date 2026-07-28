@@ -31,6 +31,8 @@ class SiteUser implements UserInterface, PasswordAuthenticatedUserInterface
     private string $password = '';
     #[ORM\Column(options: ['default' => true])]
     private bool $active = true;
+    #[ORM\Column(options: ['default' => false])]
+    private bool $newsletter = false;
     /** @var Collection<int, Membership> */
     #[ORM\ManyToMany(targetEntity: Membership::class)]
     #[ORM\JoinTable(name: 'site_user_membership')]
@@ -62,6 +64,8 @@ class SiteUser implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): void { $this->password = $password; }
     public function isActive(): bool { return $this->active; }
     public function setActive(bool $active): void { $this->active = $active; }
+    public function isNewsletter(): bool { return $this->newsletter; }
+    public function setNewsletter(bool $newsletter): void { $this->newsletter = $newsletter; }
     /** @return list<string> */
     public function getRoles(): array { return ['ROLE_SITE_USER']; }
     public function eraseCredentials(): void {}
