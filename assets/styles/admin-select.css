@@ -1,0 +1,288 @@
+/* Global Shopro select component. Its layout follows legacy wb_chosen while
+   colors and focus states use the current Shopro 4 admin theme. */
+.admin-body select[data-component-ready="true"] {
+    display: none !important;
+}
+
+.admin-body .ui-searchable-select {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.admin-body .ui-searchable-select__control {
+    position: relative !important;
+    display: flex !important;
+    width: 100% !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 6px 40px 6px 12px !important;
+    border: 1px solid #dfe5ef !important;
+    border-radius: 7px !important;
+    outline: 0 !important;
+    background: #fff !important;
+    color: #17233c !important;
+    font: inherit !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    appearance: none !important;
+}
+
+.admin-body .ui-searchable-select__control:hover {
+    border-color: #9eacbf !important;
+}
+
+.admin-body .ui-searchable-select.is-open .ui-searchable-select__control,
+.admin-body .ui-searchable-select__control:focus-visible {
+    border-color: #5d83ff !important;
+    box-shadow: 0 0 0 3px rgba(93, 131, 255, .13) !important;
+}
+
+.admin-body .ui-searchable-select__summary {
+    display: flex !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+}
+
+.admin-body .ui-searchable-select__single-value,
+.admin-body .ui-searchable-select__placeholder {
+    display: block !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.admin-body .ui-searchable-select__placeholder {
+    color: #7786a3 !important;
+}
+
+.admin-body .ui-searchable-select__value,
+.admin-body .ui-searchable-select__count {
+    display: inline-flex !important;
+    flex: 0 1 auto !important;
+    max-width: 240px !important;
+    min-width: 0 !important;
+    min-height: 26px !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    padding: 3px 8px !important;
+    border: 1px solid #d6dde8 !important;
+    border-radius: 5px !important;
+    background: #fff !important;
+    color: #34425a !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    line-height: 1.3rem !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.admin-body .ui-searchable-select__count {
+    flex: 0 0 auto !important;
+    border-color: #cfdcff !important;
+    background: #eaf0ff !important;
+    color: #5275d7 !important;
+}
+
+.admin-body .ui-searchable-select__arrow {
+    position: absolute !important;
+    top: 19px !important;
+    right: 16px !important;
+    display: block !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-top: 6px solid #7c8797 !important;
+    border-right: 5px solid transparent !important;
+    border-bottom: 0 !important;
+    border-left: 5px solid transparent !important;
+    pointer-events: none !important;
+}
+
+.admin-body .ui-searchable-select.is-open .ui-searchable-select__arrow {
+    transform: rotate(180deg) !important;
+}
+
+.admin-body .ui-searchable-select__dropdown {
+    position: absolute !important;
+    z-index: 9999 !important;
+    top: calc(100% + 4px) !important;
+    right: 0 !important;
+    left: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 200px !important;
+    box-sizing: border-box !important;
+    padding: 1rem !important;
+    border: 0 !important;
+    border-radius: 5px !important;
+    background: #fff !important;
+    box-shadow: 0 0 30px rgba(73, 84, 120, .16) !important;
+}
+
+.admin-body .ui-searchable-select__dropdown[hidden] {
+    display: none !important;
+}
+
+.admin-body .ui-searchable-select__search-wrap {
+    position: relative !important;
+    display: block !important;
+    margin: 0 0 .5rem !important;
+}
+
+.admin-body .ui-searchable-select__search-icon {
+    display: none !important;
+}
+
+.admin-body .ui-searchable-select__search[type="search"] {
+    display: block !important;
+    width: 100% !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: .375rem .75rem !important;
+    border: 1px solid #dfe5ef !important;
+    border-radius: 5px !important;
+    outline: 0 !important;
+    background: #fff !important;
+    color: #17233c !important;
+    font: inherit !important;
+    box-shadow: none !important;
+}
+
+.admin-body .ui-searchable-select__search[type="search"]:focus {
+    border-color: #5d83ff !important;
+    box-shadow: 0 0 0 3px rgba(93, 131, 255, .11) !important;
+}
+
+.admin-body .ui-searchable-select__chosen {
+    display: flex !important;
+    max-height: 100px !important;
+    flex-wrap: wrap !important;
+    gap: 0 !important;
+    overflow-y: auto !important;
+    margin: 0 0 .25rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+}
+
+.admin-body .ui-searchable-select__chosen[hidden] {
+    display: none !important;
+}
+
+.admin-body .ui-searchable-select__chosen-row {
+    position: relative !important;
+    display: inline-flex !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    margin: .25rem .25rem .25rem 0 !important;
+    padding: .5rem 2rem .5rem .5rem !important;
+    border: 0 !important;
+    border-radius: 5px !important;
+    background: #edf2ff !important;
+    color: #34425a !important;
+    font-size: .8em !important;
+    line-height: 1.35 !important;
+}
+
+.admin-body .ui-searchable-select__chosen-row:hover {
+    background: #dfe8ff !important;
+}
+
+.admin-body .ui-searchable-select__chosen-row > span {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.admin-body .ui-searchable-select__remove {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: .5rem !important;
+    border: 0 !important;
+    border-radius: 5px !important;
+    outline: 0 !important;
+    background: transparent !important;
+    color: #7184ad !important;
+    font: inherit !important;
+    font-size: 0 !important;
+    text-align: right !important;
+    cursor: pointer !important;
+    transform: none !important;
+}
+
+.admin-body .ui-searchable-select__remove::after {
+    content: "×";
+    font-size: 16px;
+    line-height: 1;
+}
+
+.admin-body .ui-searchable-select__options {
+    display: block !important;
+    max-height: 160px !important;
+    overflow-y: auto !important;
+    padding-right: 5px !important;
+}
+
+.admin-body .ui-searchable-select__group {
+    margin: .6rem .5rem .2rem !important;
+    color: #59677d !important;
+    font-size: .76rem !important;
+    font-weight: 700 !important;
+}
+
+.admin-body .ui-searchable-select__option {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    margin: .5rem 0 !important;
+    padding: .5rem !important;
+    border: 0 !important;
+    border-radius: 5px !important;
+    outline: 0 !important;
+    background: transparent !important;
+    color: #34425a !important;
+    font: inherit !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    appearance: none !important;
+}
+
+.admin-body .ui-searchable-select__option:hover,
+.admin-body .ui-searchable-select__option:focus {
+    background: #edf2ff !important;
+    color: #34425a !important;
+}
+
+.admin-body .ui-searchable-select__more {
+    border-top: 1px solid #edf0f5 !important;
+    color: #5275d7 !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+}
+
+.admin-body .ui-searchable-select__empty {
+    margin: 0 !important;
+    padding: .75rem .5rem !important;
+    color: #7786a3 !important;
+    font-size: .8rem !important;
+    text-align: center !important;
+}
