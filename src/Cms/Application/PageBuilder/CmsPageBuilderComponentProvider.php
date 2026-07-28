@@ -16,6 +16,7 @@ final class CmsPageBuilderComponentProvider implements PageBuilderComponentProvi
         yield new PageBuilderComponentDefinition('audience', 'cms', 'builder.audience', 'builder.audience_help', 'A');
         yield new PageBuilderComponentDefinition('cta', 'cms', 'builder.cta', 'builder.cta_help', '→');
         yield new PageBuilderComponentDefinition('rich_text', 'cms', 'builder.rich_text', 'builder.rich_text_help', 'T');
+        yield new PageBuilderComponentDefinition('system_role', 'cms', 'builder.system_role', 'builder.system_role_help', 'R');
         yield new PageBuilderComponentDefinition('image', 'cms', 'builder.image', 'builder.image_help', '▧');
         yield new PageBuilderComponentDefinition('layout_section', 'cms', 'builder.add_section', 'builder.add_section_help', '§', library: false);
     }

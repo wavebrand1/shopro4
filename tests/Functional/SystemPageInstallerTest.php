@@ -61,11 +61,20 @@ final class SystemPageInstallerTest extends KernelTestCase
             self::assertSame(1, $pages->count([$role => true]), $role);
         }
         self::assertSame(11, $entityManager->getRepository(PageTranslation::class)->count(['language' => $english]));
+        foreach (['loginPage', 'activationPage', 'accountPage', 'registrationPage', 'searchPage', 'sitemapPage', 'profilePage'] as $role) {
+            $systemPage = $pages->findOneBy([$role => true]);
+            self::assertInstanceOf(Page::class, $systemPage);
+            self::assertSame(1, substr_count($systemPage->getBuilderData(), '"type":"system_role"'), $role);
+            $translation = $entityManager->getRepository(PageTranslation::class)->findOneBy(['page' => $systemPage, 'language' => $english]);
+            self::assertInstanceOf(PageTranslation::class, $translation);
+            self::assertSame(1, substr_count($translation->getBuilderData(), '"type":"system_role"'), $role.' translation');
+        }
 
         self::assertSame(
             ['created' => 0, 'translations' => 0, 'existing' => 11],
             $installer->install(),
         );
         self::assertSame(11, $pages->count([]));
+        self::assertSame(1, substr_count($pages->findOneBy(['registrationPage' => true])->getBuilderData(), '"type":"system_role"'));
     }
 }

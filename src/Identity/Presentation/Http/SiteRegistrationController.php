@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Identity\Presentation\Http;
 
+use App\Cms\Domain\Entity\Page;
+use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Application\SiteRegistrationMailer;
 use App\Identity\Domain\Entity\SiteUser;
 use App\Identity\Infrastructure\Persistence\Doctrine\SiteUserRepository;
@@ -24,7 +26,7 @@ final class SiteRegistrationController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator, private readonly RateLimiterFactory $activationResendLimiter) {}
     #[Route('/rejestracja', name: 'site_register', methods: ['GET', 'POST'])]
-    public function register(Request $request, SettingsProvider $settings, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer): Response
+    public function register(Request $request, SettingsProvider $settings, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer, PageRepository $pages): Response
     {
         if (!(bool) $settings->get('registration_allowed', false)) {
             return $this->render('cms/security/registration_unavailable.html.twig', [
@@ -62,6 +64,16 @@ final class SiteRegistrationController extends AbstractController
             );
             return $this->redirectToRoute('site_login');
         }
+        $page = $pages->findOneBy(['registrationPage' => true, 'deletedAt' => null]);
+        if ($page instanceof Page && str_contains($page->getBuilderData(), '"type":"system_role"')) {
+            return $this->render('cms/page/show.html.twig', [
+                'page' => $page,
+                'source_page' => $page,
+                'alternates' => $pages->findPublishedActiveTranslations($page),
+                'system_role_content' => $this->renderView('cms/security/_register_content.html.twig', ['form' => $form->createView()]),
+            ]);
+        }
+
         return $this->render('cms/security/register.html.twig', ['form' => $form]);
     }
 

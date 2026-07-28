@@ -9,7 +9,7 @@
    hand-built homepage and avoids wrapping their own internal grids. #}
 {% if container == 'full' and columns|length == 1 %}
     {% for component in columns[0] %}
-        {% include 'cms/block/_render.html.twig' with {component: component, image_sizes: '100vw'} only %}
+        {% include 'cms/block/_render.html.twig' with {component: component, image_sizes: '100vw', system_role_content: system_role_content|default('')} only %}
     {% endfor %}
 {% else %}
     <section class="builder-public-section builder-public-section--{{ container }}">
@@ -21,7 +21,7 @@
                     : '(max-width: 760px) 100vw, '~column_percent~'vw' %}
                 <div class="builder-public-section__column">
                     {% for component in column %}
-                        {% include 'cms/block/_render.html.twig' with {component: component, image_sizes: column_sizes} only %}
+                        {% include 'cms/block/_render.html.twig' with {component: component, image_sizes: column_sizes, system_role_content: system_role_content|default('')} only %}
                     {% endfor %}
                 </div>
             {% endfor %}

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Identity\Presentation\Http;
 
+use App\Cms\Domain\Entity\Page;
+use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Identity\Domain\Entity\SiteUser;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,7 +17,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 final class SiteLoginController extends AbstractController
 {
     #[Route('/login', name: 'site_login', methods: ['GET', 'POST'])]
-    public function login(AuthenticationUtils $authenticationUtils, EntityManagerInterface $entityManager): Response
+    public function login(AuthenticationUtils $authenticationUtils, EntityManagerInterface $entityManager, PageRepository $pages): Response
     {
         $user = $this->getUser();
         if ($user instanceof SiteUser) {
@@ -23,10 +25,20 @@ final class SiteLoginController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        return $this->render('cms/security/login.html.twig', [
+        $context = [
             'last_username' => $authenticationUtils->getLastUsername(),
             'error' => $authenticationUtils->getLastAuthenticationError(),
-        ]);
+        ];
+        $page = $pages->findOneBy(['loginPage' => true, 'deletedAt' => null]);
+        if ($page instanceof Page && str_contains($page->getBuilderData(), '"type":"system_role"')) {
+            return $this->render('cms/page/show.html.twig', [
+                'page' => $page, 'source_page' => $page,
+                'alternates' => $pages->findPublishedActiveTranslations($page),
+                'system_role_content' => $this->renderView('cms/security/_login_content.html.twig', $context),
+            ]);
+        }
+
+        return $this->render('cms/security/login.html.twig', $context);
     }
 
     #[Route('/logout', name: 'site_logout', methods: ['POST'])]

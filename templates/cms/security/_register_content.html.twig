@@ -1,0 +1,13 @@
+<div class="modern-login-card site-account-card">
+    <p class="modern-kicker">{{ shopro_trans('site_auth.account') }}</p>
+    <h1>{{ shopro_trans('site_registration.title') }}</h1>
+    <p class="modern-login-lead">{{ shopro_trans('site_registration.help') }}</p>
+    {{ form_start(form,{attr:{class:'admin-form modern-login-form'}}) }}
+        {{ form_row(form.username) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.plainPassword) }}
+        {{ form_row(form.termsAccepted) }}
+        <button class="modern-button modern-button--primary modern-button--wide">{{ shopro_trans('site_registration.submit') }}</button>
+    {{ form_end(form) }}
+    <a class="modern-login-footer" href="{{ path('site_login') }}">{{ shopro_trans('site_registration.have_account') }}</a>
+</div>

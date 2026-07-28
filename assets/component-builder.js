@@ -61,6 +61,10 @@ const initializeComponentBuilder = () => {
             label:t('Edytor tekstu','Text editor'),itemLabel:'',fields:[{label:t('Treść','Content'),key:'content',type:'richtext'}],
             defaults:{content:'<p>Rozpocznij pisanie treści…</p>'}
         },
+        system_role: {
+            label:t('Komponent roli strony','Page role component'),itemLabel:'',fields:[],
+            defaults:{}
+        },
         image: {
             label:t('Obraz','Image'),itemLabel:'',fields:[media(t('Plik obrazu','Image file'),'src'),text(t('Tekst alternatywny','Alternative text'),'alt'),area(t('Podpis','Caption'),'caption'),select(t('Proporcje','Aspect ratio'),'ratio',[[t('Oryginalne','Original'),'auto'],['16:9','16/9'],['4:3','4/3'],['1:1','1/1']]),select(t('Dopasowanie','Fit'),'fit',[[t('Wypełnij','Cover'),'cover'],[t('Pokaż cały obraz','Contain'),'contain']]),select(t('Ładowanie','Loading'),'loading',[[t('Leniwe','Lazy'),'lazy'],[t('Priorytetowe','Priority'),'eager']])],
             defaults:{src:'',alt:'',caption:'',ratio:'auto',fit:'cover',loading:'lazy'}
@@ -105,6 +109,12 @@ const initializeComponentBuilder = () => {
         }
         return null;
     };
+    const findComponentLocationByType = type => {
+        for (const section of blocks) for (const column of section.data.columns || []) {
+            const component = column.find(item => item.type === type); if (component) return {section,column,component};
+        }
+        return null;
+    };
     const findComponentLocation = id => {
         for (const section of blocks) for (let columnIndex=0;columnIndex<section.data.columns.length;columnIndex++) {
             const column=section.data.columns[columnIndex];
@@ -139,7 +149,11 @@ const initializeComponentBuilder = () => {
 
     const markDirty=()=>{dirty=true;};
     root.querySelectorAll('[data-add-section]').forEach(button=>button.addEventListener('click',()=>{const section=createSection();blocks.push(section);selectedSlot={sectionId:section.id,column:0};markDirty();render();}));
-    root.querySelectorAll('[data-add-component]').forEach(button=>button.addEventListener('click',()=>{let column=selectedColumn();if(!column){const section=createSection();blocks.push(section);selectedSlot={sectionId:section.id,column:0};column=section.data.columns[0];}column.push(createComponent(button.dataset.addComponent));markDirty();render();}));
+    root.querySelectorAll('[data-add-component]').forEach(button=>button.addEventListener('click',()=>{
+        const type=button.dataset.addComponent;
+        if(type==='system_role'&&findComponentLocationByType('system_role')){globalThis.alert(t('Komponent roli strony może wystąpić tylko raz.','The page role component can only be added once.'));return;}
+        let column=selectedColumn();if(!column){const section=createSection();blocks.push(section);selectedSlot={sectionId:section.id,column:0};column=section.data.columns[0];}column.push(createComponent(type));markDirty();render();
+    }));
     root.querySelector('[data-add-preset]')?.addEventListener('click',()=>{if(blocks.length&&!globalThis.confirm(t('Zastąpić aktualny układ kompletną stroną główną?','Replace the current layout with the complete homepage?')))return;blocks=homepagePreset();selectedSlot={sectionId:blocks[0].id,column:0};markDirty();render();});
     list.addEventListener('input',event=>{const section=blocks.find(item=>item.id===event.target.closest('[data-section-id]')?.dataset.sectionId);if(section&&event.target.dataset.sectionField){section.data[event.target.dataset.sectionField]=event.target.value;markDirty();synchronize();return;}if(section&&event.target.dataset.columnWidth!==undefined){section.data.widths[Number(event.target.dataset.columnWidth)]=Number(event.target.value);markDirty();synchronize();return;}const component=findComponent(event.target.closest('[data-component-id]')?.dataset.componentId);if(!component||!event.target.dataset.field)return;const itemElement=event.target.closest('[data-item-id]');const target=itemElement?component.data.items.find(item=>item.id===itemElement.dataset.itemId):component.data;target[event.target.dataset.field]=event.target.dataset.field==='columns'?Number(event.target.value):event.target.value;markDirty();synchronize();});
     const clearComponentDropState=()=>list.querySelectorAll('.is-component-dragging,.is-component-drop-target,.is-component-drop-before,.is-component-drop-after').forEach(element=>element.classList.remove('is-component-dragging','is-component-drop-target','is-component-drop-before','is-component-drop-after'));
@@ -159,7 +173,7 @@ const initializeComponentBuilder = () => {
         else if(event.target.closest('[data-duplicate-section]')){const copy=duplicateSection(section);blocks.splice(sectionIndex+1,0,copy);selectedSlot={sectionId:copy.id,column:0};}
         else if(event.target.closest('[data-move-section]')){const next=sectionIndex+Number(event.target.closest('[data-move-section]').dataset.moveSection);if(next>=0&&next<blocks.length)[blocks[sectionIndex],blocks[next]]=[blocks[next],blocks[sectionIndex]];}
         else if(event.target.closest('[data-remove-component]'))column.splice(componentIndex,1);
-        else if(event.target.closest('[data-duplicate-component]'))column.splice(componentIndex+1,0,duplicateComponent(component));
+        else if(event.target.closest('[data-duplicate-component]')){if(component.type==='system_role'){globalThis.alert(t('Komponent roli strony może wystąpić tylko raz.','The page role component can only be added once.'));return;}column.splice(componentIndex+1,0,duplicateComponent(component));}
         else if(event.target.closest('[data-move-component]')){const next=componentIndex+Number(event.target.closest('[data-move-component]').dataset.moveComponent);if(next>=0&&next<column.length)[column[componentIndex],column[next]]=[column[next],column[componentIndex]];}
         else if(event.target.closest('[data-add-item]')){const item={id:uid()};definition.itemFields.forEach(field=>item[field.key]='');component.data.items.push(item);}
         else if(event.target.closest('[data-remove-item]'))component.data.items.splice(itemIndex,1);

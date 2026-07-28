@@ -8,6 +8,7 @@ use App\Cms\Application\SystemPageInstaller;
 use App\Language\Domain\Entity\Language;
 use App\Module\Application\ModuleRegistry;
 use App\Module\Infrastructure\Persistence\Doctrine\InstalledModuleRepository;
+use App\Settings\Infrastructure\Persistence\Doctrine\SystemSettingsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -47,6 +48,11 @@ final class SystemPageRoutingTest extends WebTestCase
         $entityManager->flush();
 
         self::getContainer()->get(SystemPageInstaller::class)->install();
+        $settings = self::getContainer()->get(SystemSettingsRepository::class)->get();
+        $configuration = $settings->getConfiguration();
+        $configuration['registration_allowed'] = true;
+        $settings->setConfiguration($configuration);
+        self::getContainer()->get(SystemSettingsRepository::class)->save($settings);
 
         foreach ([
             '/logowanie' => '/login',
@@ -60,8 +66,13 @@ final class SystemPageRoutingTest extends WebTestCase
             self::assertResponseRedirects($target, message: $source);
         }
 
+        $client->request('GET', '/login');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.builder-system-role form');
+
         $client->request('GET', '/rejestracja');
-        self::assertResponseStatusCodeSame(404);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.builder-system-role form[name="site_registration"]');
 
         $client->request('GET', '/register');
         self::assertResponseRedirects('/rejestracja', 308);

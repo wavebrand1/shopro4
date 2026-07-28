@@ -30,10 +30,12 @@
                 <button class="component-library-item" type="button" data-add-section><span class="component-library-item__icon">§</span><span><strong>{{ shopro_trans('builder.add_section') }}</strong><small>{{ shopro_trans('builder.add_section_help') }}</small></span></button>
                 <p class="component-builder__label">{{ shopro_trans('builder.available_components') }}</p>
                 {% for component in shopro_builder_components() %}
+                    {% if component.type != 'system_role' or page.systemPage %}
                     <button class="component-library-item{{ component.preset ? ' component-library-item--preset' : '' }}" type="button" {% if component.preset %}data-add-preset="{{ component.type }}"{% else %}data-add-component="{{ component.type }}"{% endif %}>
                         <span class="component-library-item__icon">{{ component.icon }}</span>
                         <span><strong>{{ component.label starts with 'builder.' ? shopro_trans(component.label) : component.label }}</strong><small>{{ shopro_trans(component.help) }}</small></span>
                     </button>
+                    {% endif %}
                 {% endfor %}
             </aside>
             <div class="component-builder__workspace">

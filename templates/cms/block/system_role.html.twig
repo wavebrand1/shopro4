@@ -1,0 +1,5 @@
+{% if system_role_content %}
+    <div class="builder-system-role">{{ system_role_content|raw }}</div>
+{% elseif app.environment == 'dev' %}
+    <div class="site-container"><div class="builder-system-role__notice">{{ shopro_trans('builder.system_role_unavailable') }}</div></div>
+{% endif %}

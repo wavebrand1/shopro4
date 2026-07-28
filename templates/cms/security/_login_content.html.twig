@@ -1,0 +1,18 @@
+<div class="modern-login-card site-account-card">
+    <p class="modern-kicker">{{ shopro_trans('site_auth.account') }}</p>
+    <h1>{{ shopro_trans('site_auth.login_title') }}</h1>
+    <p class="modern-login-lead">{{ shopro_trans('site_auth.login_help') }}</p>
+    {% if error %}<div class="flash flash--error">{{ shopro_trans('auth.invalid_credentials') }}</div>{% endif %}
+    <form method="post" class="admin-form modern-login-form">
+        <label>{{ shopro_trans('auth.identifier') }}<input type="text" name="_username" value="{{ last_username }}" required autofocus autocomplete="username"></label>
+        <label>{{ shopro_trans('auth.password') }}<input type="password" name="_password" required autocomplete="current-password"></label>
+        <div class="ui-choice"><input id="site_remember_me" type="checkbox" name="_remember_me" value="1"><div class="ui-choice__content"><label for="site_remember_me">{{ shopro_trans('auth.remember_me') }}</label></div></div>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('site_authenticate') }}">
+        <button class="modern-button modern-button--primary modern-button--wide" type="submit">{{ shopro_trans('auth.sign_in') }}</button>
+    </form>
+    <a class="modern-login-footer" href="{{ path('site_password_forgot') }}">{{ shopro_trans('auth.forgot_password_link') }}</a>
+    <a class="modern-login-footer" href="{{ path('site_activation_resend') }}">{{ shopro_trans('site_registration.resend_link') }}</a>
+    {% if shopro_setting('registration_allowed', false) %}
+        <a class="modern-login-footer" href="{{ path('site_register') }}">{{ shopro_trans('site_registration.create_account') }}</a>
+    {% endif %}
+</div>

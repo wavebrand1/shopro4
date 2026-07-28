@@ -12,6 +12,11 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class SystemPageInstaller
 {
+    private const FUNCTIONAL_ROLES = [
+        'loginPage', 'activationPage', 'accountPage', 'registrationPage',
+        'searchPage', 'sitemapPage', 'profilePage',
+    ];
+
     /**
      * @var array<string, array{
      *     title: string,
@@ -121,6 +126,7 @@ final class SystemPageInstaller
         foreach (self::DEFINITIONS as $role => $definition) {
             $page = $this->pages->findOneBy([$role => true, 'deletedAt' => null]);
             if ($page instanceof Page) {
+                $this->ensureSystemRoleComponent($page, $role);
                 ++$existing;
                 $installedPages[$role] = $page;
                 continue;
@@ -131,7 +137,7 @@ final class SystemPageInstaller
             $page->setSlug($this->availableBaseSlug($definition['slug']));
             $page->setPublished(true);
             $page->setDescription($definition['lead']);
-            $page->setBuilderData($this->builderData($definition['heading'], $definition['lead']));
+            $page->setBuilderData($this->builderData($definition['heading'], $definition['lead'], $role));
             $page->{$definition['setter']}(true);
             $this->entityManager->persist($page);
             $installedPages[$role] = $page;
@@ -156,10 +162,12 @@ final class SystemPageInstaller
 
         foreach ($languages as $language) {
             foreach ($pages as $role => $page) {
-                if ($this->entityManager->getRepository(PageTranslation::class)->findOneBy([
+                $existingTranslation = $this->entityManager->getRepository(PageTranslation::class)->findOneBy([
                     'page' => $page,
                     'language' => $language,
-                ])) {
+                ]);
+                if ($existingTranslation instanceof PageTranslation) {
+                    $this->ensureSystemRoleComponent($existingTranslation, $role);
                     continue;
                 }
 
@@ -169,7 +177,7 @@ final class SystemPageInstaller
                     $translation->setTitle($definition['title_en']);
                     $translation->setSlug($this->availableTranslationSlug($language, $definition['slug_en']));
                     $translation->setDescription($definition['lead_en']);
-                    $translation->setBuilderData($this->builderData($definition['heading_en'], $definition['lead_en']));
+                    $translation->setBuilderData($this->builderData($definition['heading_en'], $definition['lead_en'], $role));
                 }
                 $translation->setPublished(true);
                 $this->entityManager->persist($translation);
@@ -203,24 +211,70 @@ final class SystemPageInstaller
         return $candidate;
     }
 
-    private function builderData(string $heading, string $lead): string
+    private function builderData(string $heading, string $lead, string $role): string
     {
+        $components = [[
+            'id' => 'system-content-'.substr(hash('sha256', $lead), 0, 12),
+            'type' => 'rich_text',
+            'data' => ['content' => sprintf(
+                '<h1>%s</h1><p>%s</p>',
+                htmlspecialchars($heading, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                htmlspecialchars($lead, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            )],
+        ]];
+        if (in_array($role, self::FUNCTIONAL_ROLES, true)) {
+            $components[] = [
+                'id' => 'system-role-'.$role,
+                'type' => 'system_role',
+                'data' => [],
+            ];
+        }
+
         return json_encode([[
             'id' => 'system-section-'.substr(hash('sha256', $heading), 0, 12),
             'type' => 'layout_section',
             'data' => [
                 'container' => 'grid',
                 'widths' => [100],
-                'columns' => [[[
-                    'id' => 'system-content-'.substr(hash('sha256', $lead), 0, 12),
-                    'type' => 'rich_text',
-                    'data' => ['content' => sprintf(
-                        '<h1>%s</h1><p>%s</p>',
-                        htmlspecialchars($heading, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-                        htmlspecialchars($lead, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-                    )],
-                ]]],
+                'columns' => [$components],
             ],
         ]], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
+    private function ensureSystemRoleComponent(Page|PageTranslation $page, string $role): void
+    {
+        if (!in_array($role, self::FUNCTIONAL_ROLES, true)) return;
+
+        try {
+            $blocks = json_decode($page->getBuilderData(), true, 64, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return;
+        }
+        if (!is_array($blocks) || $this->containsSystemRoleComponent($blocks)) return;
+
+        $component = ['id' => 'system-role-'.$role, 'type' => 'system_role', 'data' => []];
+        foreach ($blocks as &$block) {
+            if (($block['type'] ?? null) !== 'layout_section' || !isset($block['data']['columns'][0]) || !is_array($block['data']['columns'][0])) continue;
+            $block['data']['columns'][0][] = $component;
+            $page->setBuilderData(json_encode($blocks, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            return;
+        }
+        unset($block);
+
+        $blocks[] = [
+            'id' => 'system-role-section-'.$role,
+            'type' => 'layout_section',
+            'data' => ['container' => 'grid', 'widths' => [100], 'columns' => [[$component]]],
+        ];
+        $page->setBuilderData(json_encode($blocks, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    }
+
+    private function containsSystemRoleComponent(array $node): bool
+    {
+        if (($node['type'] ?? null) === 'system_role') return true;
+        foreach ($node as $value) {
+            if (is_array($value) && $this->containsSystemRoleComponent($value)) return true;
+        }
+        return false;
     }
 }

@@ -42,7 +42,7 @@
 {% if preview|default(false) %}<div class="page-preview-banner"><strong>{{ shopro_trans('page.preview_mode') }}</strong><span>{{ shopro_trans('page.preview_not_saved') }}</span></div>{% endif %}
 {% if page.usesComponentBuilder %}
     {% for block in page.builderBlocks %}
-        {% include 'cms/block/_render.html.twig' with {component: block} only %}
+        {% include 'cms/block/_render.html.twig' with {component: block, system_role_content: system_role_content|default('')} only %}
     {% else %}
         <section class="site-section"><div class="site-container"><p>{{ shopro_trans('page.no_content') }}</p></div></section>
     {% endfor %}

@@ -19,6 +19,7 @@ final class PageBuilderComponentCatalogTest extends TestCase
         self::assertSame('homepage', $components[0]->type);
         self::assertTrue($components[0]->preset);
         self::assertContains('rich_text', $types);
+        self::assertContains('system_role', $types);
         self::assertContains('image', $types);
         self::assertContains('layout_section', $types);
         self::assertFalse($components[array_search('layout_section', $types, true)]->library);

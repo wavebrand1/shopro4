@@ -21,7 +21,9 @@
             <aside class="component-builder__library">
                 <button class="component-library-item" type="button" data-add-section><strong>{{ shopro_trans('builder.add_section') }}</strong></button>
                 {% for component in shopro_builder_components()|filter(component => not component.preset) %}
+                    {% if component.type != 'system_role' or page.systemPage %}
                     <button class="component-library-item" type="button" data-add-component="{{ component.type }}"><strong>{{ component.label starts with 'builder.' ? shopro_trans(component.label) : component.label }}</strong></button>
+                    {% endif %}
                 {% endfor %}
             </aside>
             <div class="component-builder__workspace"><div class="component-builder__empty" data-builder-empty><strong>{{ shopro_trans('builder.empty') }}</strong></div><div class="component-builder__list" data-builder-list></div></div>

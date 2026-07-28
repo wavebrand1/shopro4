@@ -1,6 +1,7 @@
 {% set templates = {
     layout_section: 'cms/block/layout_section.html.twig',
     rich_text: 'cms/block/rich_text.html.twig',
+    system_role: 'cms/block/system_role.html.twig',
     image: 'cms/block/image.html.twig',
     hero: 'cms/block/hero.html.twig',
     logo_bar: 'cms/block/logo_bar.html.twig',
@@ -10,5 +11,5 @@
     cta: 'cms/block/cta.html.twig'
 } %}
 {% if templates[component.type] is defined and shopro_builder_component_enabled(component.type) %}
-    {% include templates[component.type] with {block: component.data, image_sizes: image_sizes|default('100vw')} only %}
+    {% include templates[component.type] with {block: component.data, image_sizes: image_sizes|default('100vw'), system_role_content: system_role_content|default('')} only %}
 {% endif %}
