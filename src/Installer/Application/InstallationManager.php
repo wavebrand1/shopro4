@@ -248,15 +248,21 @@ final class InstallationManager
     private function cliPhpBinary(): string
     {
         $configured = $_SERVER['SHOPRO_PHP_BIN'] ?? $_ENV['SHOPRO_PHP_BIN'] ?? getenv('SHOPRO_PHP_BIN');
-        $candidates = [];
-        if (is_string($configured) && trim($configured) !== '') $candidates[] = trim($configured);
+        if (is_string($configured) && trim($configured) !== '') return trim($configured);
 
         $binaryName = strtolower(pathinfo(PHP_BINARY, PATHINFO_BASENAME));
-        if (in_array($binaryName, ['php', 'php.exe'], true)) $candidates[] = PHP_BINARY;
+        if (in_array($binaryName, ['php', 'php.exe'], true)) return PHP_BINARY;
 
         // Plesk handles web requests with .../sbin/php-fpm, while console
-        // commands must use the matching .../bin/php executable.
-        $candidates[] = dirname(dirname(PHP_BINARY)).'/bin/php';
+        // commands must use the matching .../bin/php executable. open_basedir
+        // can make is_file()/is_executable() return false for /opt/plesk even
+        // though Process is allowed to execute the binary, so trust this
+        // deterministic mapping and let Process report a real execution error.
+        if (in_array($binaryName, ['php-fpm', 'php-fpm.exe'], true)) {
+            return dirname(dirname(PHP_BINARY)).'/bin/'.(PHP_OS_FAMILY === 'Windows' ? 'php.exe' : 'php');
+        }
+
+        $candidates = [];
         $candidates[] = sprintf('/opt/plesk/php/%d.%d/bin/php', PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
         $candidates[] = rtrim(PHP_BINDIR, '/\\').DIRECTORY_SEPARATOR.(PHP_OS_FAMILY === 'Windows' ? 'php.exe' : 'php');
 

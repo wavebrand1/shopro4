@@ -3,7 +3,7 @@
     <p class="install-kicker">KROK 3 Z 4</p>
     <h1>Konfiguracja Shopro</h1>
     <p class="install-lead">Instalator utworzy strukturę danych, konto administratora, strony systemowe, tłumaczenia, szablony e-mail i podstawową konfigurację witryny.</p>
-    {% if error %}<div class="install-error">{{ error }}{% if bootstrap_failed %}<br><strong>Popraw konfigurację bazy, a następnie odśwież ten krok.</strong>{% endif %}</div>{% endif %}
+    {% if error %}<div class="install-error">{{ error }}{% if bootstrap_failed %}<br><strong>Usuń wskazany problem, a następnie odśwież ten krok. Dane rozpoczętej instalacji są zachowane.</strong>{% endif %}</div>{% endif %}
     <form method="post" class="install-form">
         <input type="hidden" name="_token" value="{{ csrf_token('shopro-install-configuration') }}">
         <div class="install-section">
