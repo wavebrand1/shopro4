@@ -55,6 +55,20 @@ assert_file_contains() {
     fi
 }
 
+manifest_asset_path() {
+    local logical_path="$1"
+
+    "$PHP_BIN" -r '
+        $manifest = json_decode(
+            file_get_contents("public/assets/manifest.json"),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+        echo $manifest[$argv[1]] ?? "";
+    ' "$logical_path"
+}
+
 if [ "$MODE" = "--ci" ]; then
     echo "[Shopro release] Validating Composer metadata"
     composer validate --strict
@@ -102,10 +116,14 @@ fi
 
 echo "[Shopro release] Checking compiled assets"
 assert_file_contains public/assets/importmap.json '"rich-editor"' "Rich text editor is missing from the import map."
-assert_file_contains public/assets/manifest.json '"admin-form-components.js"' "Shared form components are missing from the asset manifest."
-assert_file_contains public/assets/manifest.json '"styles/admin-select.css"' "Shared select styles are missing from the asset manifest."
 
-SELECT_STYLE_ASSET="$("$PHP_BIN" -r '$manifest = json_decode(file_get_contents("public/assets/manifest.json"), true, 512, JSON_THROW_ON_ERROR); echo $manifest["styles/admin-select.css"] ?? "";')"
+FORM_COMPONENT_ASSET="$(manifest_asset_path 'admin-form-components.js')"
+if [ -z "$FORM_COMPONENT_ASSET" ] || [ ! -f "public$FORM_COMPONENT_ASSET" ]; then
+    echo "[FAIL] Shared form components are missing from the asset manifest." >&2
+    exit 1
+fi
+
+SELECT_STYLE_ASSET="$(manifest_asset_path 'styles/admin-select.css')"
 if [ -z "$SELECT_STYLE_ASSET" \
     ] || [ ! -f "public$SELECT_STYLE_ASSET" \
     ] || ! grep -q 'ui-searchable-select__dropdown' "public$SELECT_STYLE_ASSET"; then
