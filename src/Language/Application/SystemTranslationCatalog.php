@@ -6,6 +6,9 @@ final class SystemTranslationCatalog
 {
  /** @return array<string,array{pl:string,en:string}> */
  public static function phrases():array{return [
+  'newsletter.user_search_placeholder'=>['pl'=>'Szukaj po loginie lub adresie e-mail…','en'=>'Search by username or email address…'],
+  'newsletter.user_search_empty'=>['pl'=>'Nie znaleziono aktywnych użytkowników.','en'=>'No active users found.'],
+  'newsletter.user_search_more'=>['pl'=>'Pokaż więcej wyników','en'=>'Show more results'],
   'site_registration.newsletter'=>['pl'=>'Chcę otrzymywać newsletter','en'=>'I want to receive the newsletter'],
   'site_users.newsletter'=>['pl'=>'Zapisany do newslettera','en'=>'Subscribed to the newsletter'],
   'site_users.newsletter_help'=>['pl'=>'Zgoda użytkownika na otrzymywanie kampanii e-mail.','en'=>'The user has consented to receive email campaigns.'],

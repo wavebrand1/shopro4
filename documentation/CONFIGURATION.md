@@ -50,6 +50,12 @@ ten sam stan. Kampania pozwala wybrać aktywne konta witryny. Historyczne
 do `selected_site_user_ids`, dzięki czemu dawne identyfikatory operatorów nie
 zostaną omyłkowo zinterpretowane jako identyfikatory klientów.
 
+Wybór konkretnych odbiorców nie pobiera całej tabeli użytkowników. Panel używa
+wielokrotnego selecta z wyszukiwaniem asynchronicznym po loginie i adresie e-mail.
+Endpoint zwraca po 20 aktywnych kont na stronę, a formularz pobiera z bazy tylko
+rekordy wskazane przez przesłane identyfikatory. Dzięki temu liczba zapytań i
+rozmiar HTML nie rosną wraz z liczbą kont w systemie.
+
 Kampania tworzy osobną dostawę dla każdego zapisanego odbiorcy i przekazuje ją do Symfony Messenger. Historia przechowuje status, czas wysłania i błąd; nieudane wiadomości mają retry i failed transport. Każdy newsletter zawiera podpisany, roczny link wypisu oraz nagłówki `List-Unsubscribe` i `List-Unsubscribe-Post`.
 
 Odbiorców można wskazać z kont, wpisać ręcznie albo zaimportować z CSV do 2 MB.

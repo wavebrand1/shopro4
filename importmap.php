@@ -36,6 +36,10 @@ return [
         'path' => './assets/newsletter-template.js',
         'entrypoint' => true,
     ],
+    'newsletter-recipients' => [
+        'path' => './assets/newsletter-recipients.js',
+        'entrypoint' => true,
+    ],
     '@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],

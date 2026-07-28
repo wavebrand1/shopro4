@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -34,6 +35,36 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class NewsletterController extends AbstractController
 {
     public function __construct(private readonly SystemTranslator $translator) {}
+
+    #[Route('/users/search', name: 'admin_newsletter_user_search', methods: ['GET'])]
+    public function searchUsers(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $query = trim($request->query->getString('q'));
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = 20;
+        $builder = $em->getRepository(SiteUser::class)->createQueryBuilder('user')
+            ->select('user.id, user.username, user.email')
+            ->andWhere('user.active = true')
+            ->orderBy('user.username', 'ASC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit + 1);
+        if ($query !== '') {
+            $builder
+                ->andWhere('LOWER(user.username) LIKE :query OR LOWER(user.email) LIKE :query')
+                ->setParameter('query', '%'.mb_strtolower($query).'%');
+        }
+        $rows = $builder->getQuery()->getArrayResult();
+        $hasMore = count($rows) > $limit;
+        $rows = array_slice($rows, 0, $limit);
+
+        return $this->json([
+            'results' => array_map(static fn (array $row): array => [
+                'id' => (int) $row['id'],
+                'text' => $row['username'].' — '.$row['email'],
+            ], $rows),
+            'more' => $hasMore,
+        ]);
+    }
 
     #[Route('', name: 'admin_newsletter_index', methods: ['GET'])]
     public function index(Request $request, EntityManagerInterface $em, SettingsProvider $settings, QueueHealthInspector $queueHealth, FailedNewsletterMessageCleaner $failedMessages): Response

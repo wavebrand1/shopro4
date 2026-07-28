@@ -2039,6 +2039,37 @@ final class AdminCmsTest extends WebTestCase
         self::assertSelectorTextContains('.admin-pagination', 'Strona 2 z 2');
     }
 
+    public function testNewsletterRecipientSearchIsPaginatedAndLimitedToActiveSiteUsers(): void
+    {
+        $admin = new AdminUser('newsletter-search-admin@example.test', 'newsletter-search-admin');
+        $this->entityManager->persist($admin);
+        for ($number = 1; $number <= 25; ++$number) {
+            $user = new SiteUser(sprintf('recipient-%02d@example.test', $number), sprintf('recipient-%02d', $number));
+            if ($number === 25) $user->setActive(false);
+            $this->entityManager->persist($user);
+        }
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+
+        $this->client->request('GET', '/admin/newsletter/users/search?q=recipient&page=1');
+        self::assertResponseIsSuccessful();
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        self::assertCount(20, $payload['results']);
+        self::assertTrue($payload['more']);
+        self::assertSame('recipient-01 — recipient-01@example.test', $payload['results'][0]['text']);
+
+        $this->client->request('GET', '/admin/newsletter/users/search?q=recipient-24');
+        self::assertResponseIsSuccessful();
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        self::assertCount(1, $payload['results']);
+        self::assertFalse($payload['more']);
+
+        $this->client->request('GET', '/admin/newsletter/new');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('select[data-newsletter-user-picker][multiple]');
+        self::assertSelectorNotExists('#newsletter_campaign_selectedSiteUserIds input[type="checkbox"]');
+    }
+
     public function testNewsletterCampaignDetailsPaginateDeliveriesWithoutChangingTotals(): void
     {
         $admin = new AdminUser('newsletter-details-pagination@example.test', 'newsletter-details-pagination');
