@@ -1,9 +1,15 @@
-const SEARCHABLE_SELECT_SELECTOR = 'select[data-searchable-select]';
+const SEARCHABLE_SELECT_SELECTOR = 'select[data-searchable-select], select[data-newsletter-user-picker]';
 
 const initializeSearchableSelect = (select) => {
     if (select.dataset.componentReady === 'true') return;
     select.dataset.componentReady = 'true';
+    select.dataset.pickerReady = 'true';
+    select.hidden = true;
+    select.style.setProperty('display', 'none', 'important');
     select.classList.add('ui-native-control--enhanced');
+    if (select.nextElementSibling?.classList.contains('async-user-picker')) {
+        select.nextElementSibling.remove();
+    }
 
     const component = document.createElement('div');
     component.className = 'ui-searchable-select';
