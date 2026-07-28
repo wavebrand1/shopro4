@@ -84,7 +84,16 @@ final class SystemPageRoutingTest extends WebTestCase
         $client->request('GET', '/site-map');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('h1', 'Mapa witryny');
+        self::assertSelectorExists('.builder-system-role .site-sitemap');
         self::assertSelectorExists('.site-sitemap__list a');
+
+        $client->request('GET', '/activation/resend');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.builder-system-role form');
+
+        $client->request('GET', '/search?q=witamy');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.builder-system-role .site-search-form');
 
         $client->request('GET', '/regulamin');
         self::assertResponseIsSuccessful();
@@ -101,5 +110,9 @@ final class SystemPageRoutingTest extends WebTestCase
             $client->request('GET', $source);
             self::assertResponseRedirects($target, message: $source);
         }
+
+        $client->request('GET', '/en/search');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('.builder-system-role .site-search-form');
     }
 }

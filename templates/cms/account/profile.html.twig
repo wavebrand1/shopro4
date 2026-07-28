@@ -1,3 +1,3 @@
 {% extends 'cms/layout.html.twig' %}
 {% block title %}{{ shopro_trans('site_account.edit_profile') }} — Shopro 4.0{% endblock %}
-{% block page_content %}<section class="site-section"><div class="site-container"><div class="modern-login-card site-account-card"><p class="modern-kicker">{{ shopro_trans('site_auth.account') }}</p><h1>{{ shopro_trans('site_account.edit_profile') }}</h1><p class="modern-login-lead">{{ shopro_trans('site_account.profile_help') }}</p>{{ form_start(form,{attr:{class:'admin-form modern-login-form'}}) }}{{ form_row(form.username) }}{{ form_row(form.email) }}<button class="modern-button modern-button--primary modern-button--wide">{{ shopro_trans('common.save') }}</button>{{ form_end(form) }}<a class="modern-login-footer" href="{{ path('site_account') }}">← {{ shopro_trans('common.back') }}</a></div></div></section>{% endblock %}
+{% block page_content %}{% include 'cms/account/_profile_content.html.twig' %}{% endblock %}

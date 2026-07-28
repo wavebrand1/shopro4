@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cms\Presentation\Http;
 
+use App\Cms\Application\SystemPageRenderer;
 use App\Cms\Domain\Entity\Page;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
@@ -19,22 +20,22 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SearchController extends AbstractController
 {
     #[Route('/search', name: 'cms_search', methods: ['GET'], priority: 90)]
-    public function search(Request $request, PageRepository $pages, SettingsProvider $settings): Response
+    public function search(Request $request, PageRepository $pages, SettingsProvider $settings, SystemPageRenderer $systemPages): Response
     {
-        return $this->renderResults($request, $pages, $settings, null);
+        return $this->renderResults($request, $pages, $settings, $systemPages, null);
     }
 
     #[Route('/{_locale}/search', name: 'cms_search_localized', requirements: ['_locale' => '[a-z]{2}'], methods: ['GET'], priority: 90)]
-    public function localized(string $_locale, Request $request, PageRepository $pages, SettingsProvider $settings, EntityManagerInterface $em): Response
+    public function localized(string $_locale, Request $request, PageRepository $pages, SettingsProvider $settings, EntityManagerInterface $em, SystemPageRenderer $systemPages): Response
     {
         $language = $em->getRepository(Language::class)->findOneBy(['code' => $_locale, 'active' => true]);
         if (!$language) throw $this->createNotFoundException();
         if ($language->isDefaultLanguage()) return $this->redirectToRoute('cms_search', $request->query->all());
 
-        return $this->renderResults($request, $pages, $settings, $language);
+        return $this->renderResults($request, $pages, $settings, $systemPages, $language);
     }
 
-    private function renderResults(Request $request, PageRepository $pages, SettingsProvider $settings, ?Language $language): Response
+    private function renderResults(Request $request, PageRepository $pages, SettingsProvider $settings, SystemPageRenderer $systemPages, ?Language $language): Response
     {
         $query = trim(mb_substr((string) $request->query->get('q', ''), 0, 120));
         $perPage = min(50, max(5, (int) $settings->get('per_page', 10)));
@@ -53,10 +54,12 @@ final class SearchController extends AbstractController
             foreach ($matches as $match) $items[] = $this->result($match, $language, $query);
         }
 
-        $response = $this->render('cms/search/index.html.twig', [
+        $context = [
             'query' => $query, 'searchable' => $searchable, 'results' => $items, 'total' => $total,
             'current_page' => $page, 'last_page' => max(1, (int) ceil($total / $perPage)), 'language' => $language,
-        ]);
+        ];
+        $response = $systemPages->render(['searchPage' => true], 'cms/search/_content.html.twig', $context)
+            ?? $this->render('cms/search/index.html.twig', $context);
         $response->headers->set('X-Robots-Tag', 'noindex, follow');
 
         return $response;

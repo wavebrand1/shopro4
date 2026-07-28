@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Identity\Presentation\Http;
 
-use App\Cms\Domain\Entity\Page;
-use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
+use App\Cms\Application\SystemPageRenderer;
 use App\Identity\Application\SiteRegistrationMailer;
 use App\Identity\Domain\Entity\SiteUser;
 use App\Identity\Infrastructure\Persistence\Doctrine\SiteUserRepository;
@@ -24,9 +23,13 @@ use Symfony\Component\RateLimiter\RateLimiterFactory;
 #[\App\Module\Application\RequiresModule('identity')]
 final class SiteRegistrationController extends AbstractController
 {
-    public function __construct(private readonly SystemTranslator $translator, private readonly RateLimiterFactory $activationResendLimiter) {}
+    public function __construct(
+        private readonly SystemTranslator $translator,
+        private readonly RateLimiterFactory $activationResendLimiter,
+        private readonly SystemPageRenderer $systemPages,
+    ) {}
     #[Route('/rejestracja', name: 'site_register', methods: ['GET', 'POST'])]
-    public function register(Request $request, SettingsProvider $settings, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer, PageRepository $pages): Response
+    public function register(Request $request, SettingsProvider $settings, SiteUserRepository $users, UserPasswordHasherInterface $hasher, SiteRegistrationMailer $mailer): Response
     {
         if (!(bool) $settings->get('registration_allowed', false)) {
             return $this->render('cms/security/registration_unavailable.html.twig', [
@@ -64,15 +67,12 @@ final class SiteRegistrationController extends AbstractController
             );
             return $this->redirectToRoute('site_login');
         }
-        $page = $pages->findOneBy(['registrationPage' => true, 'deletedAt' => null]);
-        if ($page instanceof Page && str_contains($page->getBuilderData(), '"type":"system_role"')) {
-            return $this->render('cms/page/show.html.twig', [
-                'page' => $page,
-                'source_page' => $page,
-                'alternates' => $pages->findPublishedActiveTranslations($page),
-                'system_role_content' => $this->renderView('cms/security/_register_content.html.twig', ['form' => $form->createView()]),
-            ]);
-        }
+        $systemPage = $this->systemPages->render(
+            ['registrationPage' => true],
+            'cms/security/_register_content.html.twig',
+            ['form' => $form->createView()],
+        );
+        if ($systemPage !== null) return $systemPage;
 
         return $this->render('cms/security/register.html.twig', ['form' => $form]);
     }
@@ -115,6 +115,11 @@ final class SiteRegistrationController extends AbstractController
             }
             $sent = true;
         }
-        return $this->render('cms/security/resend_activation.html.twig', ['sent' => $sent]);
+        $context = ['sent' => $sent];
+        return $this->systemPages->render(
+            ['activationPage' => true],
+            'cms/security/_resend_activation_content.html.twig',
+            $context,
+        ) ?? $this->render('cms/security/resend_activation.html.twig', $context);
     }
 }

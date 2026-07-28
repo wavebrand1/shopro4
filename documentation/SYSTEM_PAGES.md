@@ -60,9 +60,12 @@ walidacji formularza po stronie serwera.
 
 Polecenie instalacyjne dopisuje brakujący komponent do funkcjonalnych stron
 systemowych i ich tłumaczeń. Operacja nie zmienia istniejących komponentów ani
-treści i nie tworzy duplikatu przy kolejnych wdrożeniach. Obecnie bezpośrednie
-renderowanie w układzie Page Buildera obsługuje logowanie i rejestrację; kolejne
-role korzystają z tego samego kontraktu komponentu podczas podłączania ich procesów.
+treści i nie tworzy duplikatu przy kolejnych wdrożeniach. Wspólny renderer
+`SystemPageRenderer` osadza w Page Builderze logowanie, rejestrację, ponowienie
+aktywacji, konto, profil, wyszukiwarkę oraz mapę witryny. Dla aktywnego języka
+dodatkowego wybiera opublikowany projekt tłumaczenia, a przy jego braku bezpiecznie
+wraca do projektu strony bazowej. Dotychczasowe samodzielne widoki pozostają
+fallbackiem, gdy rola lub komponent nie zostały jeszcze poprawnie skonfigurowane.
 
 Adresy tłumaczeń, np. `/en/sign-in`, uruchamiają tę samą funkcję w aktualnie
 wybranym języku. Techniczne adresy procesów pozostają stabilne, dzięki czemu

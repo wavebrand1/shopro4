@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cms\Presentation\Http;
 
+use App\Cms\Application\SystemPageRenderer;
 use App\Cms\Domain\Entity\Page;
 use App\Language\Domain\Entity\Language;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
@@ -19,13 +20,13 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class SeoController extends AbstractController
 {
     #[Route('/site-map', name: 'cms_sitemap_page', methods: ['GET'], priority: 100)]
-    public function sitemapPage(PageRepository $pages): Response
+    public function sitemapPage(PageRepository $pages, SystemPageRenderer $systemPages): Response
     {
-        return $this->renderSitemapPage($pages, null);
+        return $this->renderSitemapPage($pages, $systemPages, null);
     }
 
     #[Route('/{_locale}/site-map', name: 'cms_sitemap_page_localized', requirements: ['_locale' => '[a-z]{2}'], methods: ['GET'], priority: 100)]
-    public function localizedSitemapPage(string $_locale, PageRepository $pages, EntityManagerInterface $entityManager, Request $request): Response
+    public function localizedSitemapPage(string $_locale, PageRepository $pages, EntityManagerInterface $entityManager, Request $request, SystemPageRenderer $systemPages): Response
     {
         $language = $entityManager->getRepository(Language::class)->findOneBy(['code' => $_locale, 'active' => true]);
         if (!$language) {
@@ -35,7 +36,7 @@ final class SeoController extends AbstractController
             return $this->redirectToRoute('cms_sitemap_page', $request->query->all());
         }
 
-        return $this->renderSitemapPage($pages, $language);
+        return $this->renderSitemapPage($pages, $systemPages, $language);
     }
 
     #[Route('/sitemap.xml', name: 'cms_sitemap', methods: ['GET'], priority: 100)]
@@ -85,7 +86,7 @@ final class SeoController extends AbstractController
         $response->headers->addCacheControlDirective('must-revalidate');
     }
 
-    private function renderSitemapPage(PageRepository $pages, ?Language $language): Response
+    private function renderSitemapPage(PageRepository $pages, SystemPageRenderer $systemPages, ?Language $language): Response
     {
         $entries = [];
         foreach ($pages->findPublicForSitemap() as $page) {
@@ -115,7 +116,9 @@ final class SeoController extends AbstractController
             ];
         }
 
-        return $this->render('cms/seo/sitemap.html.twig', ['entries' => $entries]);
+        $context = ['entries' => $entries];
+        return $systemPages->render(['sitemapPage' => true], 'cms/seo/_sitemap_content.html.twig', $context)
+            ?? $this->render('cms/seo/sitemap.html.twig', $context);
     }
 
     private function pageUrl(Page $page): string

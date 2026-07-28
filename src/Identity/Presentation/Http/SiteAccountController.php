@@ -6,6 +6,7 @@ namespace App\Identity\Presentation\Http;
 
 use App\Audit\Domain\Entity\AuditLog;
 use App\Audit\Infrastructure\Persistence\Doctrine\AuditLogRepository;
+use App\Cms\Application\SystemPageRenderer;
 use App\Identity\Domain\Entity\SiteUser;
 use App\Identity\Infrastructure\Persistence\Doctrine\SiteUserRepository;
 use App\Identity\Presentation\Form\SitePasswordChangeType;
@@ -22,15 +23,20 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SiteAccountController extends AbstractController
 {
     #[Route('', name: 'site_account', methods: ['GET'])]
-    public function index(): Response
+    public function index(SystemPageRenderer $systemPages): Response
     {
         $user = $this->siteUser();
         $memberships = array_values(array_filter($user->getMemberships()->toArray(), static fn ($membership): bool => $membership->isActive()));
-        return $this->render('cms/account/index.html.twig', ['site_user' => $user, 'memberships' => $memberships]);
+        $context = ['site_user' => $user, 'memberships' => $memberships];
+        return $systemPages->render(
+            ['accountPage' => true],
+            'cms/account/_index_content.html.twig',
+            $context,
+        ) ?? $this->render('cms/account/index.html.twig', $context);
     }
 
     #[Route('/profile', name: 'site_account_profile', methods: ['GET', 'POST'])]
-    public function profile(Request $request, SiteUserRepository $users, AuditLogRepository $logs, SystemTranslator $translator): Response
+    public function profile(Request $request, SiteUserRepository $users, AuditLogRepository $logs, SystemTranslator $translator, SystemPageRenderer $systemPages): Response
     {
         $user = $this->siteUser(); $form = $this->createForm(SiteProfileType::class, $user); $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -39,7 +45,12 @@ final class SiteAccountController extends AbstractController
             $this->addFlash('success', $translator->translate('site_account.profile_saved'));
             return $this->redirectToRoute('site_account_profile');
         }
-        return $this->render('cms/account/profile.html.twig', ['form' => $form]);
+        $context = ['form' => $form->createView()];
+        return $systemPages->render(
+            ['profilePage' => true],
+            'cms/account/_profile_content.html.twig',
+            $context,
+        ) ?? $this->render('cms/account/profile.html.twig', $context);
     }
 
     #[Route('/password', name: 'site_account_password', methods: ['GET', 'POST'])]
