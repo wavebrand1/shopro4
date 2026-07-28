@@ -105,8 +105,10 @@ assert_file_contains public/assets/importmap.json '"rich-editor"' "Rich text edi
 assert_file_contains public/assets/manifest.json '"admin-form-components.js"' "Shared form components are missing from the asset manifest."
 assert_file_contains public/assets/manifest.json '"styles/admin-select.css"' "Shared select styles are missing from the asset manifest."
 
-SELECT_STYLE_FILES=(public/assets/styles/admin-select-*.css)
-if [ ! -f "${SELECT_STYLE_FILES[0]}" ] || ! grep -q 'ui-searchable-select__dropdown' "${SELECT_STYLE_FILES[@]}"; then
+SELECT_STYLE_ASSET="$("$PHP_BIN" -r '$manifest = json_decode(file_get_contents("public/assets/manifest.json"), true, 512, JSON_THROW_ON_ERROR); echo $manifest["styles/admin-select.css"] ?? "";')"
+if [ -z "$SELECT_STYLE_ASSET" \
+    ] || [ ! -f "public$SELECT_STYLE_ASSET" \
+    ] || ! grep -q 'ui-searchable-select__dropdown' "public$SELECT_STYLE_ASSET"; then
     echo "[FAIL] Compiled searchable-select styles are missing." >&2
     exit 1
 fi
