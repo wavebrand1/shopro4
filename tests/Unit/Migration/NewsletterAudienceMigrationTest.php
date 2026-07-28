@@ -29,6 +29,14 @@ final class NewsletterAudienceMigrationTest extends TestCase
         self::assertStringNotContainsString(' ADD newsletter ', implode("\n", $sql));
         self::assertStringNotContainsString(' ADD selected_site_user_ids ', implode("\n", $sql));
         self::assertStringContainsString('WHERE selected_site_user_ids IS NULL', $sql[0]);
+        self::assertStringContainsString(
+            'CONVERT(admin.email USING utf8mb4) COLLATE utf8mb4_unicode_ci',
+            $sql[2],
+        );
+        self::assertStringContainsString(
+            'CONVERT(site.email USING utf8mb4) COLLATE utf8mb4_unicode_ci',
+            $sql[2],
+        );
     }
 
     public function testUpgradeAddsColumnsOnAnOlderSchema(): void

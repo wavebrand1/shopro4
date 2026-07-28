@@ -30,7 +30,12 @@ final class Version20260728090000 extends AbstractMigration
         // by an earlier interrupted deployment; initialize only missing values.
         $this->addSql("UPDATE newsletter_campaign SET selected_site_user_ids='[]' WHERE selected_site_user_ids IS NULL");
         $this->addSql("ALTER TABLE newsletter_campaign MODIFY selected_site_user_ids JSON NOT NULL COMMENT '(DC2Type:json)'");
-        $this->addSql('UPDATE site_user site INNER JOIN admin_user admin ON LOWER(admin.email) = LOWER(site.email) SET site.newsletter = 1 WHERE admin.newsletter = 1');
+        $this->addSql(
+            'UPDATE site_user site INNER JOIN admin_user admin '.
+            'ON CONVERT(admin.email USING utf8mb4) COLLATE utf8mb4_unicode_ci = '.
+            'CONVERT(site.email USING utf8mb4) COLLATE utf8mb4_unicode_ci '.
+            'SET site.newsletter = 1 WHERE admin.newsletter = 1'
+        );
     }
 
     public function down(Schema $schema): void
