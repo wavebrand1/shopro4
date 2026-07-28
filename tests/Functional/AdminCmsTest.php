@@ -2087,6 +2087,32 @@ final class AdminCmsTest extends WebTestCase
         self::assertFalse($this->entityManager->getConnection()->isTransactionActive());
     }
 
+    public function testNewsletterQueueActionDoesNotDuplicateExistingDeliveries(): void
+    {
+        $admin = new AdminUser('newsletter-queue-lock@example.test', 'newsletter-queue-lock');
+        $campaign = new NewsletterCampaign();
+        $campaign->setSubject('Queue lock');
+        $campaign->setContent('<p>Content</p>');
+        foreach ([$admin, $campaign] as $entity) {
+            $this->entityManager->persist($entity);
+        }
+        $this->entityManager->flush();
+        $this->client->loginUser($admin, 'admin');
+        $page = $this->client->request('GET', '/admin/newsletter');
+        $queueForm = $page->filter('form[action="/admin/newsletter/'.$campaign->getId().'/queue"]');
+        self::assertCount(1, $queueForm);
+        $token = (string) $queueForm->filter('input[name="_token"]')->attr('value');
+        $delivery = new NewsletterDelivery($campaign, 'queue-lock@example.test');
+        $this->entityManager->persist($delivery);
+        $this->entityManager->flush();
+
+        $this->client->request('POST', '/admin/newsletter/'.$campaign->getId().'/queue', ['_token' => $token]);
+
+        self::assertResponseRedirects('/admin/newsletter');
+        self::assertSame(1, $this->entityManager->getRepository(NewsletterDelivery::class)->count(['campaign' => $campaign]));
+        self::assertFalse($this->entityManager->getConnection()->isTransactionActive());
+    }
+
     public function testNewOptionalModuleStateStartsDisabled(): void
     {
         $states = self::getContainer()->get(InstalledModuleRepository::class)->synchronizeAll([

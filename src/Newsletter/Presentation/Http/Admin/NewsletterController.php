@@ -18,6 +18,7 @@ use App\Newsletter\Domain\Entity\NewsletterDelivery;
 use App\Newsletter\Presentation\Form\NewsletterCampaignType;
 use App\Settings\Application\SettingsProvider;
 use App\Shared\Infrastructure\Messenger\QueueHealthInspector;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -258,12 +259,28 @@ final class NewsletterController extends AbstractController
     #[Route('/{id}/queue', name: 'admin_newsletter_queue', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function queue(NewsletterCampaign $campaign, Request $request, EntityManagerInterface $em, MessageBusInterface $bus): Response
     {
-        if (!$this->isCsrfTokenValid('queue-newsletter-'.$campaign->getId(), (string) $request->request->get('_token'))
-            || $em->getRepository(NewsletterDelivery::class)->count(['campaign' => $campaign]) > 0) {
+        if (!$this->isCsrfTokenValid('queue-newsletter-'.$campaign->getId(), (string) $request->request->get('_token'))) {
             return $this->redirectToRoute('admin_newsletter_index');
         }
 
-        $count = $this->enqueue($campaign, $em, $bus);
+        $connection = $em->getConnection();
+        $connection->beginTransaction();
+        try {
+            $em->lock($campaign, LockMode::PESSIMISTIC_WRITE);
+            if ($em->getRepository(NewsletterDelivery::class)->count(['campaign' => $campaign]) > 0) {
+                $connection->commit();
+
+                return $this->redirectToRoute('admin_newsletter_index');
+            }
+            $count = $this->enqueue($campaign, $em, $bus);
+            $connection->commit();
+        } catch (\Throwable $exception) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+
+            throw $exception;
+        }
         $this->addFlash($count === 0 ? 'error' : 'success', $count === 0
             ? $this->translator->translate('newsletter.no_valid_recipients')
             : sprintf($this->translator->translate('newsletter.queued_count'), $count));
@@ -277,18 +294,30 @@ final class NewsletterController extends AbstractController
         if (!$this->isCsrfTokenValid('retry-newsletter-'.$campaign->getId(), (string) $request->request->get('_token'))) {
             return $this->redirectToRoute('admin_newsletter_index');
         }
-        $failed = $em->getRepository(NewsletterDelivery::class)->findBy(['campaign' => $campaign, 'status' => 'failed']);
-        foreach ($failed as $delivery) {
-            $delivery->markQueued();
-            $bus->dispatch(new SendNewsletterDelivery((int) $delivery->getId()));
+        $connection = $em->getConnection();
+        $connection->beginTransaction();
+        try {
+            $em->lock($campaign, LockMode::PESSIMISTIC_WRITE);
+            $failed = $em->getRepository(NewsletterDelivery::class)->findBy(['campaign' => $campaign, 'status' => 'failed']);
+            foreach ($failed as $delivery) {
+                $delivery->markQueued();
+                $bus->dispatch(new SendNewsletterDelivery((int) $delivery->getId()));
+            }
+            if ($failed) {
+                $campaign->markQueued();
+                $em->flush();
+            }
+            $connection->commit();
+        } catch (\Throwable $exception) {
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
+
+            throw $exception;
         }
-        if ($failed) {
-            $campaign->markQueued();
-            $em->flush();
-            $this->addFlash('success', sprintf($this->translator->translate('newsletter.retried_count'), count($failed)));
-        } else {
-            $this->addFlash('error', $this->translator->translate('newsletter.no_failed'));
-        }
+        $this->addFlash($failed ? 'success' : 'error', $failed
+            ? sprintf($this->translator->translate('newsletter.retried_count'), count($failed))
+            : $this->translator->translate('newsletter.no_failed'));
 
         return $this->redirectToRoute('admin_newsletter_show', ['id' => $campaign->getId()]);
     }
@@ -320,10 +349,14 @@ final class NewsletterController extends AbstractController
     private function enqueue(NewsletterCampaign $campaign, EntityManagerInterface $em, MessageBusInterface $bus): int
     {
         $emails = $this->recipientEmails($campaign, $em);
+        $deliveries = [];
         foreach ($emails as $email) {
             $delivery = new NewsletterDelivery($campaign, $email);
             $em->persist($delivery);
-            $em->flush();
+            $deliveries[] = $delivery;
+        }
+        $em->flush();
+        foreach ($deliveries as $delivery) {
             $bus->dispatch(new SendNewsletterDelivery((int) $delivery->getId()));
         }
         count($emails) === 0 ? $campaign->markWithoutRecipients() : $campaign->markQueued();

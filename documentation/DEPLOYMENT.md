@@ -66,6 +66,9 @@ Równoległy worker albo zduplikowana wiadomość kolejki zobaczy po zwolnieniu
 blokady aktualny status i nie wyśle ponownie dostarczenia już oznaczonego jako
 wysłane. Błąd SMTP jest zapisywany przed przekazaniem zadania do mechanizmu
 automatycznych ponowień.
+Akcje **Wyślij** i **Ponów błędne** blokują dodatkowo rekord kampanii. Podwójne
+kliknięcie albo dwa równoległe żądania nie utworzą drugiego zestawu dostarczeń
+i nie zakolejkują ponownie tych samych błędów.
 
 Skrypt `bin/run-queue-worker` zabezpiecza wykonanie blokadą `flock` i po każdym
 uruchomieniu zapisuje atomowo heartbeat do `var/queue-worker-heartbeat.json`.
