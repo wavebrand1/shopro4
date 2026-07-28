@@ -2070,6 +2070,7 @@ final class AdminCmsTest extends WebTestCase
         self::assertStringContainsString("import 'rich-editor'", (string) $this->client->getResponse()->getContent());
         self::assertSelectorExists('select[data-searchable-select][multiple]');
         self::assertSelectorNotExists('#newsletter_campaign_selectedSiteUserIds input[type="checkbox"]');
+        self::assertSelectorExists('script[type="module"][src*="admin-form-components"]');
     }
 
     public function testNewsletterCampaignDetailsPaginateDeliveriesWithoutChangingTotals(): void

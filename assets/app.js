@@ -1,5 +1,4 @@
 import './stimulus_bootstrap.js';
-import './admin-form-components.js';
 /*
  * Welcome to your app's main JavaScript file!
  *
