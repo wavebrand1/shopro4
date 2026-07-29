@@ -48,7 +48,7 @@ final class PublicPageController extends AbstractController
         }
         if ($denied = $this->guard($page, $request, $access)) return $denied;
 
-        return $this->render('cms/page/show.html.twig', ['page' => $translation, 'source_page' => $page, 'alternates' => $pages->findPublishedActiveTranslations($page)]);
+        return $this->freshPageResponse($this->render('cms/page/show.html.twig', ['page' => $translation, 'source_page' => $page, 'alternates' => $pages->findPublishedActiveTranslations($page)]));
     }
 
     #[Route('/{slug}', name: 'cms_page_show', requirements: ['slug' => '[a-z0-9-]+'], methods: ['GET'], priority: -100)]
@@ -72,7 +72,7 @@ final class PublicPageController extends AbstractController
             if($localizedUrl!==$baseUrl)return $this->redirect($localizedUrl);
         }
 
-        return $this->render('cms/page/show.html.twig', ['page' => $page, 'source_page' => $page, 'alternates' => $pages->findPublishedActiveTranslations($page)]);
+        return $this->freshPageResponse($this->render('cms/page/show.html.twig', ['page' => $page, 'source_page' => $page, 'alternates' => $pages->findPublishedActiveTranslations($page)]));
     }
 
     private function guard(Page $page, Request $request, PageAccess $access): ?Response
@@ -85,5 +85,11 @@ final class PublicPageController extends AbstractController
             return $this->redirectToRoute('site_login');
         }
         throw $this->createAccessDeniedException($this->translator->translate('site_auth.membership_required'));
+    }
+
+    private function freshPageResponse(Response $response): Response
+    {
+        $response->headers->set('Cache-Control', 'no-cache, private, must-revalidate');
+        return $response;
     }
 }

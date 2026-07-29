@@ -44,12 +44,14 @@ final class SystemPageRenderer
             $displayPage = $page;
         }
 
-        return new Response($this->twig->render('cms/page/show.html.twig', [
+        $response = new Response($this->twig->render('cms/page/show.html.twig', [
             'page' => $displayPage,
             'source_page' => $page,
             'alternates' => $this->pages->findPublishedActiveTranslations($page),
             'system_role_content' => $this->twig->render($contentTemplate, $contentContext),
         ]), $status);
+        $response->headers->set('Cache-Control', 'no-cache, private, must-revalidate');
+        return $response;
     }
 
     private function translatedPage(Page $page): Page|PageTranslation

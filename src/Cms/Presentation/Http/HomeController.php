@@ -35,11 +35,13 @@ final class HomeController extends AbstractController
                 $localizedUrl=$localizedUrls->page($page,$language);
                 if($localizedUrl!==$this->generateUrl('app_home'))return $this->redirect($localizedUrl);
             }
-            return $this->render('cms/page/show.html.twig', [
+            $response = $this->render('cms/page/show.html.twig', [
                 'page' => $page,
                 'source_page' => $page,
                 'alternates' => $pages->findPublishedActiveTranslations($page),
             ]);
+            $response->headers->set('Cache-Control', 'no-cache, private, must-revalidate');
+            return $response;
         }
         return $this->render('cms/home.html.twig');
     }
