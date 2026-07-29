@@ -78,6 +78,24 @@ const initializeComponentBuilder = () => {
         if (data.items) data.items = data.items.map(item => ({id:uid(),...item}));
         return {id:uid(),type,data};
     };
+    const hydrateComponent = component => {
+        const definition = definitions[component?.type];
+        if (!definition) return component;
+        const storedData = component.data && typeof component.data === 'object' ? component.data : {};
+        const hasStoredItems = Array.isArray(storedData.items) && storedData.items.length > 0;
+        const data = {...clone(definition.defaults || {}), ...storedData};
+        if (typeof definition.normalizeData === 'function') definition.normalizeData(data);
+        if (Array.isArray(data.items)) {
+            if (!hasStoredItems && Array.isArray(definition.defaults?.items)) data.items = clone(definition.defaults.items);
+            data.items = data.items.map(item => {
+                const normalized = item && typeof item === 'object' ? item : {};
+
+                return {...normalized, id: normalized.id || uid()};
+            });
+        }
+        component.data = data;
+        return component;
+    };
     const duplicateComponent = component => {
         const copy = clone(component);
         copy.id = uid();
@@ -93,6 +111,7 @@ const initializeComponentBuilder = () => {
     };
     const normalizeSection = section => {
         if (!Array.isArray(section.data.columns) || !section.data.columns.length) section.data.columns=[[]];
+        section.data.columns = section.data.columns.map(column => Array.isArray(column) ? column.map(hydrateComponent) : []);
         if (!section.data.container) section.data.container=section.data.layout === 'full' ? 'full' : 'grid';
         if (!Array.isArray(section.data.widths)) section.data.widths=section.data.layout === '70_30' ? [70,30] : section.data.layout === '50_50' ? [50,50] : section.data.columns.map(()=>Math.round(100/section.data.columns.length));
         delete section.data.layout; return section;
