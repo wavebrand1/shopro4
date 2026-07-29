@@ -87,6 +87,9 @@ APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console app:modul
 echo "[Shopro] Synchronizing required system pages"
 APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console app:pages:install-system
 
+echo "[Shopro] Synchronizing active theme content"
+APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console app:themes:sync-content
+
 echo "[Shopro] Installing bundle assets"
 APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console assets:install public
 
