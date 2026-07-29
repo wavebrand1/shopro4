@@ -46,7 +46,7 @@ final class PageBuilderComponentRegistry
 
     public function isRenderableEnabled(string $type): bool
     {
-        $component = $this->resolve($type);
+        $component = $this->resolveRenderable($type);
         return $component !== null && !$component->preset && $this->isAvailable($component);
     }
 
@@ -55,7 +55,7 @@ final class PageBuilderComponentRegistry
 
     public function template(string $type): ?string
     {
-        $component = $this->resolve($type);
+        $component = $this->resolveRenderable($type);
         return $component !== null && $this->isAvailable($component) ? $component->template : null;
     }
 
@@ -65,6 +65,14 @@ final class PageBuilderComponentRegistry
     /** @return array<string, PageBuilderComponentDefinition> */
     private function activeComponents(): array { return array_replace($this->coreComponents, $this->themeComponents[$this->activeTheme()] ?? []); }
     private function resolve(string $type): ?PageBuilderComponentDefinition { return ($this->themeComponents[$this->activeTheme()][$type] ?? null) ?? ($this->coreComponents[$type] ?? null); }
+    private function resolveRenderable(string $type): ?PageBuilderComponentDefinition
+    {
+        $component = $this->resolve($type);
+        if ($component !== null) return $component;
+        foreach ($this->themeComponents as $components) if (isset($components[$type])) return $components[$type];
+
+        return null;
+    }
     private function activeTheme(): string { return (string) $this->settings->get('theme', 'modernize'); }
     private function isAvailable(PageBuilderComponentDefinition $component): bool { return $component->moduleCode === null || $this->runtime->isEnabled($component->moduleCode); }
 }
