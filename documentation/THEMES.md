@@ -60,3 +60,22 @@ może dostarczyć własny zestaw lub własną implementację tego samego typu.
 Starter do nowej skórki znajduje się w `examples/shopro-theme-starter`. Należy
 skopiować go do osobnego prywatnego repozytorium klienta, zmienić namespace,
 nazwę pakietu, kod skórki i bundle.
+# Skórki klienta przy wdrożeniach Plesk
+
+Core i skórki klienta są wdrażane niezależnie. Wdrożenie Git przez Plesk zastępuje pliki śledzone przez repozytorium Core, w tym `composer.json`; dlatego skórka klienta musi być zadeklarowana w zewnętrznym manifeście poza `httpdocs`.
+
+Dla witryny, której aplikacja znajduje się w `~/httpdocs`, należy utworzyć `~/shopro-themes/installed.json`:
+
+```json
+{
+  "themes": [
+    {
+      "package": "vendor/shopro-theme-example",
+      "path": "../shopro-themes/example",
+      "constraint": "*@dev"
+    }
+  ]
+}
+```
+
+`bin/deploy-dev` i `bin/deploy-prod` odczytują ten manifest przed instalacją Composera. Odtwarzają repozytorium typu `path`, dołączają każdy wymieniony pakiet i pozwalają Symfony Flex zarejestrować jego bundle. Manifest oraz źródła skórki przetrwają więc aktualizację Core. Ścieżka `path` jest liczona względem `httpdocs`; należy użyć katalogu poza `httpdocs`, dostępnego do odczytu dla użytkownika hostingu.

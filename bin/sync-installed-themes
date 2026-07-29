@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+# Restores customer-owned theme packages after a Core deployment. The manifest
+# intentionally lives outside httpdocs, so Plesk's Git deployment cannot
+# overwrite it together with composer.json.
+set -Eeuo pipefail
+
+cd "$(dirname "$0")/.."
+
+PHP_BIN="${SHOPRO_PHP_BIN:-php}"
+COMPOSER_BIN="${SHOPRO_COMPOSER_BIN:-composer}"
+MANIFEST="${SHOPRO_THEME_MANIFEST:-$(cd .. && pwd)/shopro-themes/installed.json}"
+
+if [ ! -f "$MANIFEST" ]; then
+    echo "[Shopro themes] No external theme manifest found; using bundled themes only"
+    exit 0
+fi
+
+if ! command -v "$PHP_BIN" >/dev/null 2>&1; then
+    echo "[Shopro themes] PHP CLI was not found: $PHP_BIN" >&2
+    exit 1
+fi
+
+if ! command -v "$COMPOSER_BIN" >/dev/null 2>&1; then
+    echo "[Shopro themes] Composer was not found: $COMPOSER_BIN" >&2
+    exit 1
+fi
+
+mapfile -t THEMES < <("$PHP_BIN" -r '
+    $manifest = $argv[1];
+    $data = json_decode((string) file_get_contents($manifest), true, 512, JSON_THROW_ON_ERROR);
+    foreach (($data["themes"] ?? []) as $theme) {
+        if (!is_array($theme) || !isset($theme["package"], $theme["path"])) {
+            throw new RuntimeException("Every theme requires package and path.");
+        }
+        $constraint = (string) ($theme["constraint"] ?? "*@dev");
+        echo $theme["package"], "\t", $theme["path"], "\t", $constraint, PHP_EOL;
+    }
+' "$MANIFEST")
+
+if [ "${#THEMES[@]}" -eq 0 ]; then
+    echo "[Shopro themes] Manifest contains no customer themes"
+    exit 0
+fi
+
+for index in "${!THEMES[@]}"; do
+    IFS=$'\t' read -r package path constraint <<< "${THEMES[$index]}"
+    if [ -z "$package" ] || [ -z "$path" ]; then
+        echo "[Shopro themes] Invalid theme manifest entry" >&2
+        exit 1
+    fi
+
+    # A path repository keeps customer source outside the Core checkout while
+    # Composer/Flex registers its Symfony bundle in the current application.
+    echo "[Shopro themes] Synchronizing $package"
+    "$COMPOSER_BIN" config --no-interaction "repositories.shopro_theme_$index" path "$path"
+    "$COMPOSER_BIN" require "$package:$constraint" --no-interaction --no-progress --no-scripts
+done
