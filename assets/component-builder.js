@@ -97,7 +97,17 @@ const initializeComponentBuilder = () => {
         if (!Array.isArray(section.data.widths)) section.data.widths=section.data.layout === '70_30' ? [70,30] : section.data.layout === '50_50' ? [50,50] : section.data.columns.map(()=>Math.round(100/section.data.columns.length));
         delete section.data.layout; return section;
     };
-    const homepagePreset = () => ['hero','logo_bar','feature_cards','process','audience','cta'].map(type => createSection('full',[createComponent(type)]));
+    const defaultHomepagePreset = () => ['hero','logo_bar','feature_cards','process','audience','cta'].map(type => createSection('full',[createComponent(type)]));
+    const createPreset = type => {
+        if (type === 'homepage') return defaultHomepagePreset();
+        const preset = globalThis.ShoproThemePresets?.[type];
+        if (!preset || !Array.isArray(preset.sections)) return null;
+
+        return preset.sections.map(section => createSection(
+            section.container === 'grid' ? 'grid' : 'full',
+            (Array.isArray(section.components) ? section.components : []).filter(componentType => definitions[componentType]).map(createComponent),
+        ));
+    };
     try {
         const parsed = JSON.parse(projectField.value || '[]');
         if (Array.isArray(parsed)) blocks = parsed.map(block => normalizeSection(block.type === 'layout_section' ? block : createSection('full',[block])));
@@ -158,7 +168,15 @@ const initializeComponentBuilder = () => {
         if(type==='system_role'&&findComponentLocationByType('system_role')){globalThis.alert(t('Komponent roli strony może wystąpić tylko raz.','The page role component can only be added once.'));return;}
         let column=selectedColumn();if(!column){const section=createSection();blocks.push(section);selectedSlot={sectionId:section.id,column:0};column=section.data.columns[0];}column.push(createComponent(type));markDirty();render();
     }));
-    root.querySelector('[data-add-preset]')?.addEventListener('click',()=>{if(blocks.length&&!globalThis.confirm(t('Zastąpić aktualny układ kompletną stroną główną?','Replace the current layout with the complete homepage?')))return;blocks=homepagePreset();selectedSlot={sectionId:blocks[0].id,column:0};markDirty();render();});
+    root.querySelectorAll('[data-add-preset]').forEach(button => button.addEventListener('click',()=>{
+        const preset = createPreset(button.dataset.addPreset);
+        if (!preset?.length) {
+            globalThis.alert(t('Ten układ nie jest dostępny dla aktywnej skórki.','This layout is not available for the active theme.'));
+            return;
+        }
+        if(blocks.length&&!globalThis.confirm(t('Zastąpić aktualny układ kompletną stroną główną?','Replace the current layout with the complete homepage?')))return;
+        blocks=preset;selectedSlot={sectionId:blocks[0].id,column:0};markDirty();render();
+    }));
     list.addEventListener('input',event=>{const section=blocks.find(item=>item.id===event.target.closest('[data-section-id]')?.dataset.sectionId);if(section&&event.target.dataset.sectionField){section.data[event.target.dataset.sectionField]=event.target.value;markDirty();synchronize();return;}if(section&&event.target.dataset.columnWidth!==undefined){section.data.widths[Number(event.target.dataset.columnWidth)]=Number(event.target.value);markDirty();synchronize();return;}const component=findComponent(event.target.closest('[data-component-id]')?.dataset.componentId);if(!component||!event.target.dataset.field)return;const itemElement=event.target.closest('[data-item-id]');const target=itemElement?component.data.items.find(item=>item.id===itemElement.dataset.itemId):component.data;target[event.target.dataset.field]=event.target.dataset.field==='columns'?Number(event.target.value):event.target.value;markDirty();synchronize();});
     const clearComponentDropState=()=>list.querySelectorAll('.is-component-dragging,.is-component-drop-target,.is-component-drop-before,.is-component-drop-after').forEach(element=>element.classList.remove('is-component-dragging','is-component-drop-target','is-component-drop-before','is-component-drop-after'));
     list.addEventListener('dragstart',event=>{const handle=event.target.closest('.component-block__handle[draggable="true"]');if(!handle)return;const componentElement=handle.closest('[data-component-id]');draggedComponentId=componentElement?.dataset.componentId||null;if(!draggedComponentId)return;componentElement.classList.add('is-component-dragging');event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('text/plain',draggedComponentId);});
