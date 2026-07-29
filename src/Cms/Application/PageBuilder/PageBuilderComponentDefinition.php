@@ -8,7 +8,7 @@ final readonly class PageBuilderComponentDefinition
 {
     public function __construct(
         public string $type,
-        public string $moduleCode,
+        public ?string $moduleCode,
         public string $label,
         public string $help,
         public string $icon,
@@ -16,7 +16,7 @@ final readonly class PageBuilderComponentDefinition
         public bool $library = true,
     ) {
         if (!preg_match('/^[a-z][a-z0-9_]{1,63}$/', $type)) throw new \InvalidArgumentException('Invalid Page Builder component type: '.$type);
-        if (!preg_match('/^[a-z][a-z0-9_-]{1,79}$/', $moduleCode)) throw new \InvalidArgumentException('Invalid Page Builder component module: '.$moduleCode);
+        if ($moduleCode !== null && !preg_match('/^[a-z][a-z0-9_-]{1,79}$/', $moduleCode)) throw new \InvalidArgumentException('Invalid Page Builder component module: '.$moduleCode);
         if ($label === '' || $help === '' || $icon === '') throw new \InvalidArgumentException('Page Builder component metadata cannot be empty: '.$type);
     }
 }

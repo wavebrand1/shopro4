@@ -1,0 +1,6 @@
+/*
+ * Theme package styles. The active theme code and selected variant are present
+ * on <body>, so this package never needs to write global configuration.
+ */
+.front-theme--client_starter.theme-variant--light { --site-accent: #5d87ff; }
+.front-theme--client_starter.theme-variant--dark { --site-accent: #7c5cff; }

@@ -6,11 +6,14 @@
     {% block meta %}{% if shopro_setting('meta_description') %}<meta name="description" content="{{ shopro_setting('meta_description') }}">{% endif %}{% if shopro_setting('meta_keywords') %}<meta name="keywords" content="{{ shopro_setting('meta_keywords') }}">{% endif %}{% endblock %}
         <title>{% block title %}{{ shopro_setting('site_name', 'Shopro 4.0') }}{% endblock %}</title>
         {% if shopro_setting('favicon') %}<link rel="icon" href="{{ shopro_setting('favicon') }}">{% endif %}
+        {% set active_theme = shopro_active_front_theme() %}
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+            {% if not (app.request.pathInfo starts with '/admin') and active_theme.frontStylesheet %}<link rel="stylesheet" href="{{ active_theme.frontStylesheet }}">{% endif %}
         {% endblock %}
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
+            {% if not (app.request.pathInfo starts with '/admin') and active_theme.frontJavascript %}<script src="{{ active_theme.frontJavascript }}" defer></script>{% endif %}
             {% set ga_id = shopro_setting('analytics_measurement_id') %}{% if ga_id and not shopro_setting('analytics_consent_required', true) and not (app.request.pathInfo starts with '/admin') %}<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id|url_encode }}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',{{ ga_id|json_encode|raw }},{anonymize_ip:true});</script>{% endif %}
         {% endblock %}
     </head>

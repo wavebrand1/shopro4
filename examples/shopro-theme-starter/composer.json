@@ -1,0 +1,15 @@
+{
+  "name": "wavebrand/shopro-theme-starter",
+  "description": "Starter package for a separately installable Shopro website theme",
+  "type": "symfony-bundle",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.2",
+    "symfony/framework-bundle": "^7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Shopro\\Theme\\Starter\\": "src/"
+    }
+  }
+}
