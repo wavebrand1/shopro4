@@ -17,6 +17,10 @@ final class ResponsiveImageOptimizer
         if (!function_exists('imagecreatetruecolor')) return [];
         $info = @getimagesize($source);
         if (!$info || !in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP], true)) return [];
+        // GD decodes the complete source into memory. A compressed 5 MB photo
+        // may easily require more than 150 MB after decoding, which must never
+        // turn an upload or a deployment into a fatal error on shared hosting.
+        if (!self::fitsMemoryBudget((int) $info[0], (int) $info[1])) return [];
         $image = match ($info[2]) {
             IMAGETYPE_JPEG => @imagecreatefromjpeg($source),
             IMAGETYPE_PNG => @imagecreatefrompng($source),
@@ -48,6 +52,36 @@ final class ResponsiveImageOptimizer
     public static function isVariant(string $path): bool
     {
         return preg_match('/\.\d+\.(?:webp|avif)$/i', basename($path)) === 1;
+    }
+
+    private static function fitsMemoryBudget(int $width, int $height): bool
+    {
+        if ($width < 1 || $height < 1) return false;
+        $limit = self::memoryLimitBytes();
+        if ($limit === null) return true;
+
+        // 6 bytes per source pixel leaves room for GD's internal structures.
+        // A 24 MP source therefore needs roughly 144 MB before a resized copy
+        // is created. Keep a 24 MB reserve for Symfony and the current request.
+        $estimated = $width * $height * 6;
+
+        return memory_get_usage(true) + $estimated + 24 * 1024 * 1024 < $limit;
+    }
+
+    private static function memoryLimitBytes(): ?int
+    {
+        $raw = trim((string) ini_get('memory_limit'));
+        if ($raw === '' || $raw === '-1') return null;
+        if (!preg_match('/^(\d+)([KMG]?)$/i', $raw, $matches)) return null;
+        $value = (int) $matches[1];
+        $multiplier = match (strtoupper($matches[2])) {
+            'G' => 1024 * 1024 * 1024,
+            'M' => 1024 * 1024,
+            'K' => 1024,
+            default => 1,
+        };
+
+        return $value * $multiplier;
     }
 
     /** @return list<string> */
