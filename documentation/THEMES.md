@@ -28,6 +28,11 @@ Provider zwraca `ThemeDefinition`: techniczny kod, nazwę, wersję, warianty z
 etykietami PL/EN oraz obsługę frontu i/lub panelu administracyjnego. Dane strony,
 treści bloków i wybór wariantu pozostają w bazie Shopro.
 
+Jeżeli skórka ma własny nagłówek lub stopkę, deklaruje także
+`frontLayoutTemplate`. Jej layout rozszerza `cms/layout_base.html.twig` i
+nadpisuje bloki `site_header` oraz `site_footer`; dzięki temu treść systemowych
+podstron, menu, logowanie, języki i wszystkie mechanizmy Core nadal działają.
+
 Przed odinstalowaniem skórki trzeba przełączyć witrynę na inną skórkę albo
 zmigrować strony korzystające z jej bloków. Nie usuwamy kodu Modernize w trakcie
 tej zmiany — chroni to strony działające na wersji 4.0.

@@ -19,6 +19,7 @@ final readonly class ThemeDefinition
         public ?string $frontStylesheet = null,
         public ?string $frontJavascript = null,
         public ?string $builderJavascript = null,
+        public ?string $frontLayoutTemplate = null,
     ) {
         if (!preg_match('/^[a-z][a-z0-9_-]{1,79}$/', $code)) throw new \InvalidArgumentException('Invalid theme code: '.$code);
         if ($name === '' || $version === '') throw new \InvalidArgumentException('Theme name and version cannot be empty.');
@@ -26,6 +27,9 @@ final readonly class ThemeDefinition
         if ($variants === []) throw new \InvalidArgumentException('A theme must expose at least one variant.');
         foreach ([$frontStylesheet, $frontJavascript, $builderJavascript] as $asset) {
             if ($asset !== null && (!str_starts_with($asset, '/') || str_contains($asset, '..'))) throw new \InvalidArgumentException('Theme asset paths must be absolute public paths.');
+        }
+        if ($frontLayoutTemplate !== null && ($frontLayoutTemplate === '' || str_contains($frontLayoutTemplate, '..') || !str_ends_with($frontLayoutTemplate, '.html.twig'))) {
+            throw new \InvalidArgumentException('Theme layout template must be a safe Twig template path.');
         }
         foreach ($variants as $variantCode => $labels) {
             if (!preg_match('/^[a-z][a-z0-9_-]{1,79}$/', $variantCode) || !isset($labels['pl'], $labels['en'])) throw new \InvalidArgumentException('Invalid theme variant definition.');

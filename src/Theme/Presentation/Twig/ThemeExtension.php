@@ -16,7 +16,10 @@ final class ThemeExtension extends AbstractExtension
 
     public function getFunctions(): array
     {
-        return [new TwigFunction('shopro_active_front_theme', $this->activeFrontTheme(...))];
+        return [
+            new TwigFunction('shopro_active_front_theme', $this->activeFrontTheme(...)),
+            new TwigFunction('shopro_active_front_layout', $this->activeFrontLayout(...)),
+        ];
     }
 
     public function activeFrontTheme(): ThemeDefinition
@@ -25,5 +28,10 @@ final class ThemeExtension extends AbstractExtension
         $theme = $this->themes->get($code);
 
         return $theme !== null && $theme->front ? $theme : $this->themes->require('modernize');
+    }
+
+    public function activeFrontLayout(): string
+    {
+        return $this->activeFrontTheme()->frontLayoutTemplate ?? 'cms/layout_base.html.twig';
     }
 }

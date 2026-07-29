@@ -22,6 +22,7 @@ final class StarterThemeProvider implements ThemeProvider
             frontStylesheet: '/bundles/shoprothemestarter/theme.css',
             frontJavascript: '/bundles/shoprothemestarter/theme.js',
             builderJavascript: '/bundles/shoprothemestarter/page-builder.js',
+            frontLayoutTemplate: '@ShoproThemeStarter/layout.html.twig',
         );
     }
 }
