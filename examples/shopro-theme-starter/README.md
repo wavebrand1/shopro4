@@ -20,3 +20,16 @@ Page Builder components will be registered in this package through
 `ThemePageBuilderComponentProvider`. Keep Twig templates, CSS, JavaScript and
 component definitions in the package; do not add customer implementation files
 to Shopro Core.
+
+## Page Builder contract
+
+`StarterComponentProvider` is the server-side definition of a block. It declares
+the technical type, labels, fields, defaults, the Twig template and the fields
+that contain HTML and must be sanitised. The corresponding browser definition is
+in `public/page-builder.js` and is loaded through `builderJavascript` in the
+theme definition. Its field names must match the server-side definition.
+
+This split is intentional: Shopro Core owns page data and security, whereas a
+skin owns the client-specific appearance and its available blocks. A skin may
+replace the visual component type used by another skin; Shopro resolves that
+component according to the currently selected front theme.

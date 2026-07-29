@@ -6,15 +6,15 @@ namespace App\Cms\Application\PageBuilder;
 
 use App\Module\Application\ModuleRegistry;
 use App\Module\Application\ModuleRuntime;
-use App\Theme\Application\ThemeRegistry;
 use App\Settings\Application\SettingsProvider;
+use App\Theme\Application\ThemeRegistry;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 final class PageBuilderComponentRegistry
 {
     /** @var array<string, PageBuilderComponentDefinition> */
-    private array $components = [];
-    /** @var array<string, string> component type => theme code */
+    private array $coreComponents = [];
+    /** @var array<string, array<string, PageBuilderComponentDefinition>> */
     private array $themeComponents = [];
 
     public function __construct(
@@ -25,51 +25,46 @@ final class PageBuilderComponentRegistry
         private readonly SettingsProvider $settings,
         private readonly ModuleRuntime $runtime,
     ) {
-        foreach ($providers as $provider) {
-            foreach ($provider->components() as $component) {
-                if ($component->moduleCode === null || $modules->get($component->moduleCode) === null) throw new \LogicException(sprintf('Page Builder component "%s" belongs to unknown module "%s".', $component->type, $component->moduleCode ?? 'none'));
-                if (isset($this->components[$component->type])) throw new \LogicException('Duplicate Page Builder component type: '.$component->type);
-                $this->components[$component->type] = $component;
-            }
+        foreach ($providers as $provider) foreach ($provider->components() as $component) {
+            if ($component->moduleCode === null || $modules->get($component->moduleCode) === null) throw new \LogicException(sprintf('Page Builder component "%s" belongs to unknown module "%s".', $component->type, $component->moduleCode ?? 'none'));
+            if (isset($this->coreComponents[$component->type])) throw new \LogicException('Duplicate core Page Builder component type: '.$component->type);
+            $this->coreComponents[$component->type] = $component;
         }
         foreach ($themeProviders as $provider) {
-            if ($themes->get($provider->themeCode()) === null) {
-                throw new \LogicException(sprintf('Page Builder theme provider belongs to unknown theme "%s".', $provider->themeCode()));
-            }
+            $theme = $provider->themeCode();
+            if ($themes->get($theme) === null) throw new \LogicException(sprintf('Page Builder theme provider belongs to unknown theme "%s".', $theme));
             foreach ($provider->components() as $component) {
-                if ($component->moduleCode !== null && $modules->get($component->moduleCode) === null) {
-                    throw new \LogicException(sprintf('Theme component "%s" belongs to unknown optional module "%s".', $component->type, $component->moduleCode));
-                }
-                if (isset($this->components[$component->type])) {
-                    throw new \LogicException('Duplicate Page Builder component type: '.$component->type);
-                }
-                $this->components[$component->type] = $component;
-                $this->themeComponents[$component->type] = $provider->themeCode();
+                if ($component->moduleCode !== null && $modules->get($component->moduleCode) === null) throw new \LogicException(sprintf('Theme component "%s" belongs to unknown optional module "%s".', $component->type, $component->moduleCode));
+                if (isset($this->themeComponents[$theme][$component->type])) throw new \LogicException(sprintf('Duplicate Page Builder component type "%s" in theme "%s".', $component->type, $theme));
+                $this->themeComponents[$theme][$component->type] = $component;
             }
         }
     }
 
     /** @return list<PageBuilderComponentDefinition> */
-    public function enabled(): array
-    {
-        return array_values(array_filter($this->components, fn (PageBuilderComponentDefinition $component): bool => $component->library && $this->isAvailable($component)));
-    }
+    public function enabled(): array { return array_values(array_filter($this->activeComponents(), fn (PageBuilderComponentDefinition $component): bool => $component->library && $this->isAvailable($component))); }
 
     public function isRenderableEnabled(string $type): bool
     {
-        $component = $this->components[$type] ?? null;
-
+        $component = $this->resolve($type);
         return $component !== null && !$component->preset && $this->isAvailable($component);
     }
 
     /** @return array<string, PageBuilderComponentDefinition> */
-    public function all(): array { return $this->components; }
+    public function all(): array { return $this->activeComponents(); }
 
-    private function isAvailable(PageBuilderComponentDefinition $component): bool
+    public function template(string $type): ?string
     {
-        $theme = $this->themeComponents[$component->type] ?? null;
-        if ($theme !== null && $theme !== (string) $this->settings->get('theme', 'modernize')) return false;
-
-        return $component->moduleCode === null || $this->runtime->isEnabled($component->moduleCode);
+        $component = $this->resolve($type);
+        return $component !== null && $this->isAvailable($component) ? $component->template : null;
     }
+
+    /** @return list<string> */
+    public function htmlFields(string $type): array { return $this->resolve($type)?->htmlFields ?? []; }
+
+    /** @return array<string, PageBuilderComponentDefinition> */
+    private function activeComponents(): array { return array_replace($this->coreComponents, $this->themeComponents[$this->activeTheme()] ?? []); }
+    private function resolve(string $type): ?PageBuilderComponentDefinition { return ($this->themeComponents[$this->activeTheme()][$type] ?? null) ?? ($this->coreComponents[$type] ?? null); }
+    private function activeTheme(): string { return (string) $this->settings->get('theme', 'modernize'); }
+    private function isAvailable(PageBuilderComponentDefinition $component): bool { return $component->moduleCode === null || $this->runtime->isEnabled($component->moduleCode); }
 }

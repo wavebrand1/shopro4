@@ -1,6 +1,6 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}{{ shopro_trans('page.translation') }} {{ language.name }} — Shopro 4.0{% endblock %}
-{% block javascripts %}{{ importmap(['app','component-builder']) }}{% endblock %}
+{% block javascripts %}{% set active_theme = shopro_active_front_theme() %}{% if active_theme.builderJavascript %}<script src="{{ active_theme.builderJavascript }}"></script>{% endif %}{{ importmap(['app','component-builder']) }}{% endblock %}
 {% block body %}
 <div class="modern-page-heading">
     <div><p class="modern-kicker">{{ language.code|upper }} · {{ language.name }}</p><h1>{{ shopro_trans('page.translation') }}: {{ page.title }}</h1><p>{{ shopro_trans('page.translation_help') }}</p></div>

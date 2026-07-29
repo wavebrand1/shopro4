@@ -16,6 +16,7 @@ final class PageBuilderExtension extends AbstractExtension
         return [
             new TwigFunction('shopro_builder_components', $this->components->enabled(...)),
             new TwigFunction('shopro_builder_component_enabled', $this->components->isRenderableEnabled(...)),
+            new TwigFunction('shopro_builder_component_template', $this->components->template(...)),
         ];
     }
 }

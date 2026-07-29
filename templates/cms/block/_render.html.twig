@@ -10,6 +10,7 @@
     audience: 'cms/block/audience.html.twig',
     cta: 'cms/block/cta.html.twig'
 } %}
-{% if templates[component.type] is defined and shopro_builder_component_enabled(component.type) %}
-    {% include templates[component.type] with {block: component.data, image_sizes: image_sizes|default('100vw'), system_role_content: system_role_content|default('')} only %}
+{% set template = shopro_builder_component_template(component.type)|default(templates[component.type]|default(null)) %}
+{% if template and shopro_builder_component_enabled(component.type) %}
+    {% include template with {block: component.data, image_sizes: image_sizes|default('100vw'), system_role_content: system_role_content|default('')} only %}
 {% endif %}

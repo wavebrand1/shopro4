@@ -18,12 +18,13 @@ final readonly class ThemeDefinition
         public bool $system = false,
         public ?string $frontStylesheet = null,
         public ?string $frontJavascript = null,
+        public ?string $builderJavascript = null,
     ) {
         if (!preg_match('/^[a-z][a-z0-9_-]{1,79}$/', $code)) throw new \InvalidArgumentException('Invalid theme code: '.$code);
         if ($name === '' || $version === '') throw new \InvalidArgumentException('Theme name and version cannot be empty.');
         if (!$front && !$admin) throw new \InvalidArgumentException('A theme must support the front end, administration panel, or both.');
         if ($variants === []) throw new \InvalidArgumentException('A theme must expose at least one variant.');
-        foreach ([$frontStylesheet, $frontJavascript] as $asset) {
+        foreach ([$frontStylesheet, $frontJavascript, $builderJavascript] as $asset) {
             if ($asset !== null && (!str_starts_with($asset, '/') || str_contains($asset, '..'))) throw new \InvalidArgumentException('Theme asset paths must be absolute public paths.');
         }
         foreach ($variants as $variantCode => $labels) {

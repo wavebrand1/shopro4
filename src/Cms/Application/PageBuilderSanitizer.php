@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cms\Application;
 
+use App\Cms\Application\PageBuilder\PageBuilderComponentRegistry;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 
@@ -12,6 +13,7 @@ final class PageBuilderSanitizer
     public function __construct(
         #[Autowire(service: 'html_sanitizer.sanitizer.app.page_content')]
         private readonly HtmlSanitizerInterface $htmlSanitizer,
+        private readonly PageBuilderComponentRegistry $components,
     ) {}
 
     public function sanitize(string $json): string
@@ -31,8 +33,9 @@ final class PageBuilderSanitizer
 
     private function sanitizeNode(array &$node): void
     {
-        if (($node['type'] ?? null) === 'rich_text' && isset($node['data']['content'])) {
-            $node['data']['content'] = $this->htmlSanitizer->sanitize((string) $node['data']['content']);
+        $type = is_string($node['type'] ?? null) ? $node['type'] : '';
+        foreach ($this->components->htmlFields($type) as $field) {
+            if (isset($node['data'][$field])) $node['data'][$field] = $this->htmlSanitizer->sanitize((string) $node['data'][$field]);
         }
 
         foreach ($node as &$value) {

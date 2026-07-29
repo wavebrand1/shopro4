@@ -1,0 +1,8 @@
+<section class="client-banner">
+    <div class="site-container">
+        <p>{{ block.eyebrow|default('') }}</p>
+        <h2>{{ block.heading|default('') }}</h2>
+        <div>{{ block.content|default('')|raw }}</div>
+        {% if block.url|default('') and block.buttonLabel|default('') %}<a href="{{ block.url }}">{{ block.buttonLabel }}</a>{% endif %}
+    </div>
+</section>
