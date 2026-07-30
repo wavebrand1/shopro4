@@ -28,11 +28,6 @@
 <link rel="alternate" hreflang="x-default" href="{{ absolute_url(source.homePage ? path('app_home') : path('cms_page_show',{slug:source.slug})) }}">
 {% if default_language %}<link rel="alternate" hreflang="{{ default_language.code }}" href="{{ absolute_url(source.homePage ? path('app_home') : path('cms_page_show',{slug:source.slug})) }}">{% endif %}
 {% for alternate in alternates|default([]) %}<link rel="alternate" hreflang="{{ alternate.language.code }}" href="{{ absolute_url(path('cms_page_show_localized',{_locale:alternate.language.code,slug:alternate.slug})) }}">{% endfor %}
-{% set home_url = absolute_url(path('app_home')) %}
-{% set organization = {'@type':'Organization','@id':home_url ~ '#organization','name':shopro_setting('company') ?: site_name,'url':home_url} %}
-{% if shopro_setting('site_logo') %}{% set organization = organization|merge({'logo':absolute_url(shopro_setting('site_logo'))}) %}{% endif %}
-{% set schema = {'@context':'https://schema.org','@graph':[organization,{'@type':'WebPage','@id':seo_url ~ '#webpage','url':seo_url,'name':page.effectiveSeoTitle,'description':seo_description,'isPartOf':{'@id':home_url ~ '#website'},'about':{'@id':home_url ~ '#organization'},'inLanguage':shopro_language() ? shopro_language().locale : app.request.locale},{'@type':'WebSite','@id':home_url ~ '#website','url':home_url,'name':site_name,'publisher':{'@id':home_url ~ '#organization'}}]} %}
-<script type="application/ld+json">{{ schema|json_encode|raw }}</script>
 {% endif %}
 {{ page.meta|raw }}
 {% endblock %}

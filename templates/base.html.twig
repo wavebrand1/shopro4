@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% block meta %}{% if shopro_setting('meta_description') %}<meta name="description" content="{{ shopro_setting('meta_description') }}">{% endif %}{% if shopro_setting('meta_keywords') %}<meta name="keywords" content="{{ shopro_setting('meta_keywords') }}">{% endif %}{% endblock %}
+    {% block structured_data %}{% include 'cms/seo/_structured_data.html.twig' %}{% endblock %}
         <title>{% block title %}{{ shopro_setting('site_name', 'Shopro 4.0') }}{% endblock %}</title>
         {# A favicon must always be rendered.  A site may intentionally not have a
            custom upload yet, so fall back to the bundled Shopro asset instead of

@@ -1,0 +1,15 @@
+{# Wspólne dane strukturalne dla wszystkich publicznych widoków CMS. #}
+{% set home_url = absolute_url(path('app_home')) %}
+{% set page_url = absolute_url(app.request.pathInfo) %}
+{% set site_name = shopro_setting('site_name', 'Shopro 4.0') %}
+{% set company_name = shopro_setting('company') ?: site_name %}
+{% set page_name = page is defined ? page.effectiveSeoTitle : site_name %}
+{% set page_description = page is defined and page.description ? page.description : shopro_setting('meta_description', '') %}
+{% set organization = {'@type':'Organization','@id':home_url ~ '#organization','name':company_name,'url':home_url} %}
+{% if shopro_setting('site_logo') %}{% set organization = organization|merge({'logo':absolute_url(shopro_setting('site_logo'))}) %}{% endif %}
+{% if shopro_setting('site_email') %}{% set organization = organization|merge({'email':shopro_setting('site_email')}) %}{% endif %}
+{% if shopro_setting('site_phone') %}{% set organization = organization|merge({'telephone':shopro_setting('site_phone')}) %}{% endif %}
+{% if shopro_setting('site_address') %}{% set organization = organization|merge({'address':{'@type':'PostalAddress','streetAddress':shopro_setting('site_address')}}) %}{% endif %}
+{% set graph = [organization, {'@type':'WebSite','@id':home_url ~ '#website','url':home_url,'name':site_name,'publisher':{'@id':home_url ~ '#organization'}}, {'@type':'WebPage','@id':page_url ~ '#webpage','url':page_url,'name':page_name,'description':page_description,'isPartOf':{'@id':home_url ~ '#website'},'about':{'@id':home_url ~ '#organization'},'inLanguage':shopro_language() ? shopro_language().locale : app.request.locale}] %}
+{% if page_url != home_url %}{% set graph = graph|merge([{'@type':'BreadcrumbList','@id':page_url ~ '#breadcrumb','itemListElement':[{'@type':'ListItem','position':1,'name':shopro_trans('front.home'),'item':home_url},{'@type':'ListItem','position':2,'name':page_name,'item':page_url}]}]) %}{% endif %}
+<script type="application/ld+json">{{ {'@context':'https://schema.org','@graph':graph}|json_encode|raw }}</script>
