@@ -18,3 +18,28 @@ DirectoryIndex index.php
     # Pozostałe adresy aplikacji obsługuje kontroler frontowy Symfony.
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Build assets, theme resources and generated responsive image variants are
+# addressed by a versioned filename or a newly generated upload path. Cache
+# them aggressively; application HTML remains outside this rule and therefore
+# is always served dynamically by Symfony.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType image/avif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(?:css|js|avif|webp|svg|png|jpe?g|woff2?|otf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
