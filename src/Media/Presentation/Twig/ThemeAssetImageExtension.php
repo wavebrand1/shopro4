@@ -29,7 +29,11 @@ final class ThemeAssetImageExtension extends AbstractExtension
     public function picture(string $src, string $alt = '', string $class = '', bool $eager = false, string $sizes = '100vw'): Markup
     {
         $decoded = rawurldecode($src);
-        if (!str_starts_with($decoded, '/bundles/') || str_contains($decoded, "\0") || str_contains($decoded, '\\') || str_contains($decoded, '?') || str_contains($decoded, '#')) {
+        // `asset()` goes through AssetMapper in development and returns an
+        // `/assets/bundles/...` URL. Installed bundle assets use `/bundles/...`
+        // in production. Both locations are public theme assets.
+        $isBundleAsset = str_starts_with($decoded, '/bundles/') || str_starts_with($decoded, '/assets/bundles/');
+        if (!$isBundleAsset || str_contains($decoded, "\0") || str_contains($decoded, '\\') || str_contains($decoded, '?') || str_contains($decoded, '#')) {
             return new Markup('', 'UTF-8');
         }
 
@@ -38,10 +42,20 @@ final class ThemeAssetImageExtension extends AbstractExtension
         $fallback = new Markup('<picture><img'.$classAttribute.' src="'.htmlspecialchars($src, ENT_QUOTES | ENT_SUBSTITUTE).'" alt="'.htmlspecialchars($alt, ENT_QUOTES | ENT_SUBSTITUTE).'"'.$loading.' decoding="async"></picture>', 'UTF-8');
 
         $source = realpath($this->projectDir.'/public'.$decoded);
-        $bundles = realpath($this->projectDir.'/public/bundles');
+        $roots = array_filter([
+            realpath($this->projectDir.'/public/bundles'),
+            realpath($this->projectDir.'/public/assets/bundles'),
+        ]);
         $normalizedSource = $source ? str_replace('\\', '/', $source) : '';
-        $normalizedBundles = $bundles ? rtrim(str_replace('\\', '/', $bundles), '/') : '';
-        if (!$source || !$bundles || !str_starts_with($normalizedSource, $normalizedBundles.'/') || !is_file($source)) {
+        $isAllowedSource = false;
+        foreach ($roots as $root) {
+            $normalizedRoot = rtrim(str_replace('\\', '/', $root), '/');
+            if (str_starts_with($normalizedSource, $normalizedRoot.'/')) {
+                $isAllowedSource = true;
+                break;
+            }
+        }
+        if (!$source || !$isAllowedSource || !is_file($source)) {
             return $fallback;
         }
 

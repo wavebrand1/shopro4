@@ -21,13 +21,16 @@ final class OptimizeThemeImagesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $directory = $this->kernel->getProjectDir().'/public/bundles';
-        if (!is_dir($directory)) {
+        $directories = array_filter([
+            $this->kernel->getProjectDir().'/public/bundles',
+            $this->kernel->getProjectDir().'/public/assets/bundles',
+        ], 'is_dir');
+        if ($directories === []) {
             $io->note('Nie ma jeszcze opublikowanych zasobów skórek.');
             return Command::SUCCESS;
         }
 
-        $finder = (new Finder())->files()->in($directory)->name('/\.(jpe?g|png|webp)$/i')->notName('/\.\d+\.(webp|avif)$/i');
+        $finder = (new Finder())->files()->in($directories)->name('/\.(jpe?g|png|webp)$/i')->notName('/\.\d+\.(webp|avif)$/i');
         $files = 0;
         $variants = 0;
         foreach ($finder as $file) {
