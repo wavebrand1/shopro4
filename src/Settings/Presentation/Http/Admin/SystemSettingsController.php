@@ -13,6 +13,7 @@ use App\Language\Application\SystemTranslator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -55,20 +56,27 @@ final class SystemSettingsController extends AbstractController
                 $branding->remove($configuration['social_image'] ?? null);
                 $configuration['social_image'] = '';
             }
-            if ($file = $form->get('site_logo_file')->getData()) {
-                $previous = $configuration['site_logo'] ?? null;
-                $configuration['site_logo'] = $branding->store($file, 'logo');
-                $branding->remove($previous);
-            }
-            if ($file = $form->get('favicon_file')->getData()) {
-                $previous = $configuration['favicon'] ?? null;
-                $configuration['favicon'] = $branding->store($file, 'favicon');
-                $branding->remove($previous);
-            }
-            if ($file = $form->get('social_image_file')->getData()) {
-                $previous = $configuration['social_image'] ?? null;
-                $configuration['social_image'] = $branding->store($file, 'social');
-                $branding->remove($previous);
+            try {
+                if ($file = $form->get('site_logo_file')->getData()) {
+                    $previous = $configuration['site_logo'] ?? null;
+                    $configuration['site_logo'] = $branding->store($file, 'logo');
+                    $branding->remove($previous);
+                }
+                if ($file = $form->get('favicon_file')->getData()) {
+                    $previous = $configuration['favicon'] ?? null;
+                    $configuration['favicon'] = $branding->store($file, 'favicon');
+                    $branding->remove($previous);
+                }
+                if ($file = $form->get('social_image_file')->getData()) {
+                    $previous = $configuration['social_image'] ?? null;
+                    $configuration['social_image'] = $branding->store($file, 'social');
+                    $branding->remove($previous);
+                }
+            } catch (\InvalidArgumentException|\RuntimeException $exception) {
+                $field = $form->get('site_logo_file')->getData() ? 'site_logo_file' : ($form->get('favicon_file')->getData() ? 'favicon_file' : 'social_image_file');
+                $form->get($field)->addError(new FormError($exception->getMessage()));
+
+                return $this->render('admin/settings/system.html.twig', ['form' => $form, 'settings' => $settings, 'storage_available' => $storageAvailable], new Response('', Response::HTTP_UNPROCESSABLE_ENTITY));
             }
             $settings->setConfiguration($configuration);
             if ($password = $form->get('smtp_password')->getData()) $settings->setSmtpPassword($cipher->encrypt($password));

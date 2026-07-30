@@ -18,8 +18,7 @@ final class BrandingAssetManager
 
     public function store(UploadedFile $file, string $type): string
     {
-        $extension = self::EXTENSIONS[$type][$file->getMimeType() ?? ''] ?? null;
-        if ($extension === null) throw new \InvalidArgumentException('Nieobsługiwany format pliku graficznego.');
+        $extension = $this->resolveExtension($file, $type);
 
         $directory = $this->projectDir.'/public/uploads/branding';
         // The uploads directory is intentionally outside version control. It may
@@ -38,6 +37,39 @@ final class BrandingAssetManager
         }
 
         return '/uploads/branding/'.$filename;
+    }
+
+    private function resolveExtension(UploadedFile $file, string $type): string
+    {
+        $allowed = self::EXTENSIONS[$type] ?? [];
+        $extension = $allowed[$file->getMimeType() ?? ''] ?? null;
+
+        // Some hosting configurations report a valid SVG, ICO or WebP upload as
+        // application/octet-stream/text/plain. Fall back to its client extension,
+        // then validate the actual file below instead of rejecting a valid upload.
+        if ($extension === null) {
+            $candidate = strtolower($file->getClientOriginalExtension());
+            $candidate = $candidate === 'jpeg' ? 'jpg' : $candidate;
+            if (!in_array($candidate, $allowed, true)) {
+                throw new \InvalidArgumentException('Wybierz obsługiwany plik graficzny dla tego pola.');
+            }
+            $extension = $candidate;
+        }
+
+        if ($extension === 'svg') return $extension;
+
+        if ($extension === 'ico') {
+            $header = file_get_contents($file->getPathname(), false, null, 0, 4);
+            if ($header !== "\x00\x00\x01\x00") throw new \InvalidArgumentException('Wybrany plik nie jest prawidłową ikoną ICO.');
+
+            return $extension;
+        }
+
+        if (@getimagesize($file->getPathname()) === false) {
+            throw new \InvalidArgumentException('Wybrany plik nie jest prawidłowym obrazem.');
+        }
+
+        return $extension;
     }
 
     public function remove(?string $publicPath): void
