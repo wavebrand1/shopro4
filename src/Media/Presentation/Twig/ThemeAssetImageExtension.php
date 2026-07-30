@@ -33,12 +33,16 @@ final class ThemeAssetImageExtension extends AbstractExtension
             return new Markup('', 'UTF-8');
         }
 
+        $classAttribute = $class !== '' ? ' class="'.htmlspecialchars($class, ENT_QUOTES | ENT_SUBSTITUTE).'"' : '';
+        $loading = $eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"';
+        $fallback = new Markup('<picture><img'.$classAttribute.' src="'.htmlspecialchars($src, ENT_QUOTES | ENT_SUBSTITUTE).'" alt="'.htmlspecialchars($alt, ENT_QUOTES | ENT_SUBSTITUTE).'"'.$loading.' decoding="async"></picture>', 'UTF-8');
+
         $source = realpath($this->projectDir.'/public'.$decoded);
         $bundles = realpath($this->projectDir.'/public/bundles');
         $normalizedSource = $source ? str_replace('\\', '/', $source) : '';
         $normalizedBundles = $bundles ? rtrim(str_replace('\\', '/', $bundles), '/') : '';
         if (!$source || !$bundles || !str_starts_with($normalizedSource, $normalizedBundles.'/') || !is_file($source)) {
-            return new Markup('', 'UTF-8');
+            return $fallback;
         }
 
         $size = @getimagesize($source);
@@ -64,9 +68,6 @@ final class ThemeAssetImageExtension extends AbstractExtension
         }
 
         $dimensions = $size ? ' width="'.$size[0].'" height="'.$size[1].'"' : '';
-        $loading = $eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"';
-        $classAttribute = $class !== '' ? ' class="'.htmlspecialchars($class, ENT_QUOTES | ENT_SUBSTITUTE).'"' : '';
-
         return new Markup('<picture>'.$sources.'<img'.$classAttribute.' src="'.htmlspecialchars($src, ENT_QUOTES | ENT_SUBSTITUTE).'" alt="'.htmlspecialchars($alt, ENT_QUOTES | ENT_SUBSTITUTE).'"'.$dimensions.$loading.' decoding="async"></picture>', 'UTF-8');
     }
 }
