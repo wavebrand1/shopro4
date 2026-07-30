@@ -41,6 +41,24 @@ final class BrandingAssetManager
         if (is_file($path)) @unlink($path);
     }
 
+    /**
+     * Returns an uploaded branding path only while its file is available.
+     *
+     * Deployments and restored backups can leave an old path in the database
+     * while the matching upload is no longer present. Rendering that stale URL
+     * breaks the header and favicon. In that situation the caller receives its
+     * bundled fallback instead.
+     */
+    public function pathOrFallback(?string $publicPath, string $fallback): string
+    {
+        if (!is_string($publicPath) || $publicPath === '') return $fallback;
+        if (!str_starts_with($publicPath, '/uploads/branding/')) return $publicPath;
+
+        $path = $this->projectDir.'/public/uploads/branding/'.basename($publicPath);
+
+        return is_file($path) ? $publicPath : $fallback;
+    }
+
     private function sanitizeSvg(string $source): string
     {
         $previous = libxml_use_internal_errors(true);

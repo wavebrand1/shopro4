@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <title>{% block title %}Panel Shopro 4.0{% endblock %}</title>
-    {% set site_favicon = shopro_setting('favicon') ?: asset('branding/favicon.svg') %}
+    {% set site_favicon = shopro_branding_asset(shopro_setting('favicon'), asset('branding/favicon.svg')) %}
     <link rel="icon" href="{{ site_favicon }}">
     {% block stylesheets %}<link rel="stylesheet" href="{{ asset('styles/app.css') }}"><link rel="stylesheet" href="{{ asset('styles/admin-select.css') }}">{% endblock %}
     {% block javascripts %}{{ importmap('app') }}{% endblock %}

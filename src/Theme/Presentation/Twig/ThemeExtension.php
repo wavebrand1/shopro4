@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Theme\Presentation\Twig;
 
 use App\Settings\Application\SettingsProvider;
+use App\Settings\Application\BrandingAssetManager;
 use App\Theme\Application\ThemeDefinition;
 use App\Theme\Application\ThemeRegistry;
 use Twig\Extension\AbstractExtension;
@@ -12,7 +13,11 @@ use Twig\TwigFunction;
 
 final class ThemeExtension extends AbstractExtension
 {
-    public function __construct(private readonly ThemeRegistry $themes, private readonly SettingsProvider $settings) {}
+    public function __construct(
+        private readonly ThemeRegistry $themes,
+        private readonly SettingsProvider $settings,
+        private readonly BrandingAssetManager $branding,
+    ) {}
 
     public function getFunctions(): array
     {
@@ -20,6 +25,7 @@ final class ThemeExtension extends AbstractExtension
             new TwigFunction('shopro_active_front_theme', $this->activeFrontTheme(...)),
             new TwigFunction('shopro_active_front_layout', $this->activeFrontLayout(...)),
             new TwigFunction('shopro_theme_setting', $this->themeSetting(...)),
+            new TwigFunction('shopro_branding_asset', $this->brandingAsset(...)),
         ];
     }
 
@@ -42,5 +48,10 @@ final class ThemeExtension extends AbstractExtension
         $themeSettings = $configuration['theme_settings'][$this->activeFrontTheme()->code] ?? [];
 
         return is_array($themeSettings) && array_key_exists($key, $themeSettings) ? $themeSettings[$key] : $default;
+    }
+
+    public function brandingAsset(mixed $path, string $fallback): string
+    {
+        return $this->branding->pathOrFallback(is_string($path) ? $path : null, $fallback);
     }
 }
