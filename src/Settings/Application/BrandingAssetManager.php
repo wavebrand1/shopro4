@@ -22,9 +22,15 @@ final class BrandingAssetManager
         if ($extension === null) throw new \InvalidArgumentException('Nieobsługiwany format pliku graficznego.');
 
         $directory = $this->projectDir.'/public/uploads/branding';
+        // The uploads directory is intentionally outside version control. It may
+        // therefore be absent after a fresh deployment or restoring an older
+        // backup. Create it for every accepted file type, not only SVGs.
+        if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) {
+            throw new \RuntimeException('Nie można utworzyć katalogu na pliki identyfikacji wizualnej.');
+        }
+
         $filename = sprintf('%s-%s.%s', $type, bin2hex(random_bytes(8)), $extension);
         if ($extension === 'svg') {
-            if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) throw new \RuntimeException('Nie można utworzyć katalogu na logo.');
             $svg = $this->sanitizeSvg((string) file_get_contents($file->getPathname()));
             if (file_put_contents($directory.'/'.$filename, $svg, LOCK_EX) === false) throw new \RuntimeException('Nie można zapisać logo.');
         } else {
