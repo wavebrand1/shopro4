@@ -16,7 +16,7 @@
             {% if not (app.request.pathInfo starts with '/admin') and active_theme.frontStylesheet %}<link rel="stylesheet" href="{{ active_theme.frontStylesheet }}">{% endif %}
         {% endblock %}
         {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
+            {% block importmap %}{{ importmap('front') }}{% endblock %}
             {% if not (app.request.pathInfo starts with '/admin') and active_theme.frontJavascript %}<script src="{{ active_theme.frontJavascript }}" defer></script>{% endif %}
             {% set ga_id = shopro_setting('analytics_measurement_id') %}{% if ga_id and not shopro_setting('analytics_consent_required', true) and not (app.request.pathInfo starts with '/admin') %}<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id|url_encode }}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config',{{ ga_id|json_encode|raw }},{anonymize_ip:true});</script>{% endif %}
         {% endblock %}

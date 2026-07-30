@@ -60,12 +60,14 @@ final class ResponsiveImageOptimizer
         $limit = self::memoryLimitBytes();
         if ($limit === null) return true;
 
-        // 6 bytes per source pixel leaves room for GD's internal structures.
-        // A 24 MP source therefore needs roughly 144 MB before a resized copy
-        // is created. Keep a 24 MB reserve for Symfony and the current request.
-        $estimated = $width * $height * 6;
+        // GD keeps both the decoded source and a target bitmap in memory. For
+        // PNG files its real allocation can be substantially higher than the
+        // nominal RGBA 4 bytes/pixel. Be deliberately conservative: skipping
+        // one oversized source is always preferable to terminating deployment
+        // (or an upload) with an out-of-memory fatal error.
+        $estimated = $width * $height * 16;
 
-        return memory_get_usage(true) + $estimated + 24 * 1024 * 1024 < $limit;
+        return memory_get_usage(true) + $estimated + 48 * 1024 * 1024 < $limit;
     }
 
     private static function memoryLimitBytes(): ?int

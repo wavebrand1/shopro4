@@ -121,6 +121,8 @@ fi
 echo "[Shopro] Generating responsive image variants"
 APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M bin/console app:images:optimize \
     || echo "[Shopro] Image variants could not be fully regenerated; original uploads remain available"
+APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M bin/console app:theme-images:optimize \
+    || echo "[Shopro] Theme image variants could not be fully regenerated; original theme assets remain available"
 
 # Cache must be cleared after compilation so that Symfony discovers the
 # freshly generated manifest instead of retaining old asset URLs.
