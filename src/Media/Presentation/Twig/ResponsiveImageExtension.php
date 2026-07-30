@@ -18,8 +18,18 @@ final class ResponsiveImageExtension extends AbstractExtension
     public function getFunctions(): array { return [new TwigFunction('shopro_picture', $this->picture(...), ['is_safe' => ['html']])]; }
     public function picture(string $src, string $alt = '', ?int $width = null, ?int $height = null, bool $eager = false, string $sizes = '100vw'): Markup
     {
-        if (!$this->modules->isEnabled('media')) return new Markup('', 'UTF-8');
         if (!MediaPath::isSafePublicUploadUrl($src)) return new Markup('', 'UTF-8');
+
+        // The original upload must always remain usable. Responsive variants
+        // are an optimisation generated asynchronously/by deployment scripts;
+        // their absence may never make the public image disappear.
+        $fallbackLoading = $eager ? ' loading="eager" fetchpriority="high" decoding="async"' : ' loading="lazy" decoding="async"';
+        $fallback = new Markup(
+            '<picture><img src="'.htmlspecialchars($src, ENT_QUOTES | ENT_SUBSTITUTE).'" alt="'.htmlspecialchars($alt, ENT_QUOTES | ENT_SUBSTITUTE).'"'.$fallbackLoading.'></picture>',
+            'UTF-8',
+        );
+
+        if (!$this->modules->isEnabled('media')) return $fallback;
         $urlPath = $src;
         $decodedPath = rawurldecode($urlPath);
         if (str_contains($decodedPath, "\0")) return new Markup('', 'UTF-8');
@@ -27,7 +37,7 @@ final class ResponsiveImageExtension extends AbstractExtension
         $uploads = realpath($this->projectDir.'/public/uploads');
         $normalizedSource = $source ? str_replace('\\', '/', $source) : '';
         $normalizedUploads = $uploads ? rtrim(str_replace('\\', '/', $uploads), '/') : '';
-        if (!$source || !$uploads || !MediaPath::isSupportedImageFile($source) || !str_starts_with($normalizedSource, $normalizedUploads.'/')) return new Markup('', 'UTF-8');
+        if (!$source || !$uploads || !MediaPath::isSupportedImageFile($source) || !str_starts_with($normalizedSource, $normalizedUploads.'/')) return $fallback;
         $settingsEnabled = $this->modules->isEnabled('settings');
         $widths = array_filter(array_map('intval', explode(',', (string) ($settingsEnabled ? $this->settings->get('image_widths') : SettingsProvider::defaults()['image_widths']))));
         $baseUrl = preg_replace('/\.[^.]+$/', '', $urlPath); $baseFile = preg_replace('/\.[^.]+$/', '', $source);
