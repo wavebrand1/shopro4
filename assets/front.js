@@ -97,7 +97,7 @@ const initializeCookieConsent = () => {
         activateCategoryScripts(consent);
         hideBanner();
         preferences.hidden = true;
-        manageButton.hidden = false;
+        if (manageButton) manageButton.hidden = true;
     };
     const setControls = (consent) => {
         banner.querySelectorAll('[data-cookie-category]').forEach((input) => { input.checked = Boolean(consent?.[input.dataset.cookieCategory]); });
