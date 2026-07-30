@@ -38,6 +38,9 @@ final class ThemeExtension extends AbstractExtension
 
     public function themeSetting(string $key, mixed $default = null): mixed
     {
-        return $this->settings->get('theme_settings.'.$this->activeFrontTheme()->code.'.'.$key, $default);
+        $configuration = $this->settings->all();
+        $themeSettings = $configuration['theme_settings'][$this->activeFrontTheme()->code] ?? [];
+
+        return is_array($themeSettings) && array_key_exists($key, $themeSettings) ? $themeSettings[$key] : $default;
     }
 }
