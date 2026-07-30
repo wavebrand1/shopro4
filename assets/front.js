@@ -21,6 +21,14 @@ const initializeCookieConsent = () => {
     const manageButton = document.querySelector('[data-cookie-manage]');
     const preferences = banner.querySelector('[data-cookie-preferences]');
     const requiresAnalyticsConsent = banner.dataset.analyticsConsentRequired !== 'false';
+    const hideBanner = () => {
+        banner.hidden = true;
+        banner.setAttribute('aria-hidden', 'true');
+    };
+    const showBanner = () => {
+        banner.hidden = false;
+        banner.setAttribute('aria-hidden', 'false');
+    };
 
     const readCookie = () => {
         const value = document.cookie.split('; ').find((item) => item.startsWith(`${key}=`))?.split('=').slice(1).join('=');
@@ -87,7 +95,7 @@ const initializeCookieConsent = () => {
     const applyConsent = (consent) => {
         loadAnalytics(consent);
         activateCategoryScripts(consent);
-        banner.hidden = true;
+        hideBanner();
         preferences.hidden = true;
         manageButton.hidden = false;
     };
@@ -98,7 +106,7 @@ const initializeCookieConsent = () => {
     const consent = readConsent();
     if (consent) applyConsent(consent);
     else {
-        banner.hidden = false;
+        showBanner();
         if (!requiresAnalyticsConsent) loadAnalytics({ analytics: true });
     }
 
@@ -114,7 +122,7 @@ const initializeCookieConsent = () => {
         banner.querySelectorAll('[data-cookie-category]').forEach((input) => { selection[input.dataset.cookieCategory] = input.checked; });
         applyConsent(storeConsent(selection));
     });
-    manageButton?.addEventListener('click', () => { setControls(readConsent()); preferences.hidden = false; banner.hidden = false; manageButton.hidden = true; });
+    manageButton?.addEventListener('click', () => { setControls(readConsent()); preferences.hidden = false; showBanner(); manageButton.hidden = true; });
 };
 
 initializeCookieConsent();
