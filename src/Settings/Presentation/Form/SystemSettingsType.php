@@ -19,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Intl\Languages;
+use Symfony\Component\Intl\Countries;
 use Symfony\Component\Intl\Locales;
 use Symfony\Component\Intl\Timezones;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -100,6 +101,15 @@ final class SystemSettingsType extends AbstractType
             ->add('analytics_consent_required', ChoiceType::class, $yesNo($t('settings.analytics_consent')))
             ->add('meta_keywords', TextareaType::class, ['label' => $t('settings.meta_keywords'), 'required' => false])
             ->add('meta_description', TextareaType::class, ['label' => $t('settings.meta_description'), 'required' => false])
+            ->add('business_schema_type', ChoiceType::class, ['label' => $t('settings.business_schema_type'), 'choices' => [$t('settings.business_type_organization') => 'Organization', $t('settings.business_type_local') => 'LocalBusiness', $t('settings.business_type_sports') => 'SportsActivityLocation']])
+            ->add('business_postal_code', TextType::class, ['label' => $t('settings.business_postal_code'), 'required' => false])
+            ->add('business_locality', TextType::class, ['label' => $t('settings.business_locality'), 'required' => false])
+            ->add('business_region', TextType::class, ['label' => $t('settings.business_region'), 'required' => false])
+            ->add('business_country', ChoiceType::class, ['label' => $t('settings.business_country'), 'choices' => array_flip(Countries::getNames($this->translator->locale())), 'required' => false, 'placeholder' => $t('settings.business_country_placeholder')])
+            ->add('business_latitude', TextType::class, ['label' => $t('settings.business_latitude'), 'required' => false, 'help' => $t('settings.business_coordinates_help')])
+            ->add('business_longitude', TextType::class, ['label' => $t('settings.business_longitude'), 'required' => false, 'help' => $t('settings.business_coordinates_help')])
+            ->add('business_opening_hours', TextareaType::class, ['label' => $t('settings.business_opening_hours'), 'required' => false, 'help' => $t('settings.business_opening_hours_help')])
+            ->add('business_price_range', TextType::class, ['label' => $t('settings.business_price_range'), 'required' => false, 'help' => $t('settings.business_price_range_help')])
             ->add('social_image_file', FileType::class, ['label' => $t('settings.social_image'), 'mapped' => false, 'required' => false, 'help' => $t('settings.social_image_help'), 'attr' => ['accept' => '.png,.jpg,.jpeg,.webp'], 'constraints' => [new File(maxSize: '5M')]])
             ->add('remove_social_image', CheckboxType::class, ['label' => $t('settings.remove_social_image'), 'mapped' => false, 'required' => false])
             ->add('smtp_host', TextType::class, ['label' => 'SMTP host', 'required' => false])

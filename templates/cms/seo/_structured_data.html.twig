@@ -1,15 +1,27 @@
 {# Wspólne dane strukturalne dla wszystkich publicznych widoków CMS. #}
 {% set home_url = absolute_url(path('app_home')) %}
-{% set page_url = absolute_url(app.request.pathInfo) %}
+{% set page_url = page is defined and page.canonical ? page.canonical : absolute_url(app.request.pathInfo) %}
 {% set site_name = shopro_setting('site_name', 'Shopro 4.0') %}
 {% set company_name = shopro_setting('company') ?: site_name %}
 {% set page_name = page is defined ? page.effectiveSeoTitle : site_name %}
 {% set page_description = page is defined and page.description ? page.description : shopro_setting('meta_description', '') %}
-{% set organization = {'@type':'Organization','@id':home_url ~ '#organization','name':company_name,'url':home_url} %}
+{% set organization = {'@type':shopro_setting('business_schema_type', 'Organization'),'@id':home_url ~ '#organization','name':company_name,'url':home_url} %}
 {% if shopro_setting('site_logo') %}{% set organization = organization|merge({'logo':absolute_url(shopro_setting('site_logo'))}) %}{% endif %}
 {% if shopro_setting('site_email') %}{% set organization = organization|merge({'email':shopro_setting('site_email')}) %}{% endif %}
 {% if shopro_setting('site_phone') %}{% set organization = organization|merge({'telephone':shopro_setting('site_phone')}) %}{% endif %}
-{% if shopro_setting('site_address') %}{% set organization = organization|merge({'address':{'@type':'PostalAddress','streetAddress':shopro_setting('site_address')}}) %}{% endif %}
+{% set address = {'@type':'PostalAddress'} %}
+{% if shopro_setting('site_address') %}{% set address = address|merge({'streetAddress':shopro_setting('site_address')}) %}{% endif %}
+{% if shopro_setting('business_postal_code') %}{% set address = address|merge({'postalCode':shopro_setting('business_postal_code')}) %}{% endif %}
+{% if shopro_setting('business_locality') %}{% set address = address|merge({'addressLocality':shopro_setting('business_locality')}) %}{% endif %}
+{% if shopro_setting('business_region') %}{% set address = address|merge({'addressRegion':shopro_setting('business_region')}) %}{% endif %}
+{% if shopro_setting('business_country') %}{% set address = address|merge({'addressCountry':shopro_setting('business_country')}) %}{% endif %}
+{% if address|length > 1 %}{% set organization = organization|merge({'address':address}) %}{% endif %}
+{% if shopro_setting('business_latitude') and shopro_setting('business_longitude') %}{% set organization = organization|merge({'geo':{'@type':'GeoCoordinates','latitude':shopro_setting('business_latitude'),'longitude':shopro_setting('business_longitude')}}) %}{% endif %}
+{% if shopro_setting('business_opening_hours') %}{% set organization = organization|merge({'openingHours':shopro_setting('business_opening_hours')|split('\n')}) %}{% endif %}
+{% if shopro_setting('business_price_range') %}{% set organization = organization|merge({'priceRange':shopro_setting('business_price_range')}) %}{% endif %}
+{% set profiles = [] %}
+{% for channel in ['facebook','instagram','twitter','pinterest','linkedin','youtube','tiktok'] %}{% if shopro_setting(channel) %}{% set profiles = profiles|merge([shopro_setting(channel)]) %}{% endif %}{% endfor %}
+{% if profiles %}{% set organization = organization|merge({'sameAs':profiles}) %}{% endif %}
 {% set graph = [organization, {'@type':'WebSite','@id':home_url ~ '#website','url':home_url,'name':site_name,'publisher':{'@id':home_url ~ '#organization'}}, {'@type':'WebPage','@id':page_url ~ '#webpage','url':page_url,'name':page_name,'description':page_description,'isPartOf':{'@id':home_url ~ '#website'},'about':{'@id':home_url ~ '#organization'},'inLanguage':shopro_language() ? shopro_language().locale : app.request.locale}] %}
 {% if page_url != home_url %}{% set graph = graph|merge([{'@type':'BreadcrumbList','@id':page_url ~ '#breadcrumb','itemListElement':[{'@type':'ListItem','position':1,'name':shopro_trans('front.home'),'item':home_url},{'@type':'ListItem','position':2,'name':page_name,'item':page_url}]}]) %}{% endif %}
 <script type="application/ld+json">{{ {'@context':'https://schema.org','@graph':graph}|json_encode|raw }}</script>

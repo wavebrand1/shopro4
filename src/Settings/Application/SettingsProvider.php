@@ -39,6 +39,8 @@ final class SettingsProvider
             'user_limit' => 0, 'login_attempts' => 5, 'flood_seconds' => 60, 'logging' => true, 'alert_email_template' => 0,
             'facebook' => '', 'instagram' => '', 'twitter' => '', 'pinterest' => '', 'linkedin' => '', 'youtube' => '', 'tiktok' => '',
             'meta_keywords' => '', 'meta_description' => '', 'social_image' => '', 'analytics_measurement_id' => '', 'analytics_consent_required' => true,
+            'business_schema_type' => 'Organization', 'business_postal_code' => '', 'business_locality' => '', 'business_region' => '', 'business_country' => '',
+            'business_latitude' => '', 'business_longitude' => '', 'business_opening_hours' => '', 'business_price_range' => '',
             'smtp_host' => '', 'smtp_user' => '', 'smtp_port' => 587, 'smtp_encryption' => 'tls', 'mail_from_address' => '', 'mail_from_name' => 'Shopro', 'mail_reply_to' => '',
         ];
     }
