@@ -16,10 +16,43 @@ const initializeCookieConsent = () => {
     const banner = document.querySelector('[data-cookie-consent]');
     if (!banner) return;
 
-    const key = 'shopro_analytics_consent';
-    const loadAnalytics = () => {
+    const key = 'shopro_cookie_consent';
+    const legacyKey = 'shopro_analytics_consent';
+    const manageButton = document.querySelector('[data-cookie-manage]');
+    const preferences = banner.querySelector('[data-cookie-preferences]');
+    const requiresAnalyticsConsent = banner.dataset.analyticsConsentRequired !== 'false';
+
+    const readCookie = () => {
+        const value = document.cookie.split('; ').find((item) => item.startsWith(`${key}=`))?.split('=').slice(1).join('=');
+        if (!value) return null;
+        try { return JSON.parse(decodeURIComponent(value)); } catch (_) { return null; }
+    };
+    const normalizeConsent = (value) => value && typeof value === 'object' ? {
+        version: Number(value.version || 1),
+        necessary: true,
+        preferences: Boolean(value.preferences),
+        analytics: Boolean(value.analytics),
+        marketing: Boolean(value.marketing),
+    } : null;
+    const readConsent = () => {
+        try {
+            const current = normalizeConsent(JSON.parse(localStorage.getItem(key) || 'null')) || normalizeConsent(readCookie());
+            if (current) return current;
+            const legacy = localStorage.getItem(legacyKey);
+            if (legacy) return { version: 1, necessary: true, preferences: false, analytics: legacy === 'granted', marketing: false };
+        } catch (_) { return normalizeConsent(readCookie()); }
+        return null;
+    };
+    const storeConsent = (selection) => {
+        const consent = { version: 1, savedAt: new Date().toISOString(), necessary: true, preferences: Boolean(selection.preferences), analytics: Boolean(selection.analytics), marketing: Boolean(selection.marketing) };
+        const serialized = JSON.stringify(consent);
+        try { localStorage.setItem(key, serialized); localStorage.removeItem(legacyKey); } catch (_) { /* Cookie remains available. */ }
+        document.cookie = `${key}=${encodeURIComponent(serialized)}; Max-Age=31536000; Path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+        return consent;
+    };
+    const loadAnalytics = (consent) => {
         const id = banner.dataset.measurementId;
-        if (!id || window.shoproAnalyticsLoaded) return;
+        if (!id || !consent.analytics || window.shoproAnalyticsLoaded) return;
 
         window.shoproAnalyticsLoaded = true;
         const script = document.createElement('script');
@@ -38,20 +71,50 @@ const initializeCookieConsent = () => {
         });
         window.gtag('config', id, { anonymize_ip: true });
     };
+    const activateCategoryScripts = (consent) => {
+        document.querySelectorAll('script[type="text/plain"][data-cookie-category]').forEach((placeholder) => {
+            const category = placeholder.dataset.cookieCategory;
+            if (!consent[category] || placeholder.dataset.cookieActivated === 'true') return;
+            const script = document.createElement('script');
+            [...placeholder.attributes].forEach((attribute) => {
+                if (!['type', 'data-cookie-category'].includes(attribute.name)) script.setAttribute(attribute.name, attribute.value);
+            });
+            script.text = placeholder.text;
+            placeholder.dataset.cookieActivated = 'true';
+            placeholder.replaceWith(script);
+        });
+    };
+    const applyConsent = (consent) => {
+        loadAnalytics(consent);
+        activateCategoryScripts(consent);
+        banner.hidden = true;
+        preferences.hidden = true;
+        manageButton.hidden = false;
+    };
+    const setControls = (consent) => {
+        banner.querySelectorAll('[data-cookie-category]').forEach((input) => { input.checked = Boolean(consent?.[input.dataset.cookieCategory]); });
+    };
 
-    const consent = localStorage.getItem(key);
-    if (consent === 'granted') loadAnalytics();
-    if (!consent) banner.hidden = false;
+    const consent = readConsent();
+    if (consent) applyConsent(consent);
+    else {
+        banner.hidden = false;
+        if (!requiresAnalyticsConsent) loadAnalytics({ analytics: true });
+    }
 
     banner.querySelector('[data-cookie-accept]')?.addEventListener('click', () => {
-        localStorage.setItem(key, 'granted');
-        banner.hidden = true;
-        loadAnalytics();
+        applyConsent(storeConsent({ preferences: true, analytics: true, marketing: true }));
     });
     banner.querySelector('[data-cookie-reject]')?.addEventListener('click', () => {
-        localStorage.setItem(key, 'denied');
-        banner.hidden = true;
+        applyConsent(storeConsent({ preferences: false, analytics: false, marketing: false }));
     });
+    banner.querySelector('[data-cookie-settings]')?.addEventListener('click', () => { preferences.hidden = false; });
+    banner.querySelector('[data-cookie-save]')?.addEventListener('click', () => {
+        const selection = {};
+        banner.querySelectorAll('[data-cookie-category]').forEach((input) => { selection[input.dataset.cookieCategory] = input.checked; });
+        applyConsent(storeConsent(selection));
+    });
+    manageButton?.addEventListener('click', () => { setControls(readConsent()); preferences.hidden = false; banner.hidden = false; manageButton.hidden = true; });
 };
 
 initializeCookieConsent();

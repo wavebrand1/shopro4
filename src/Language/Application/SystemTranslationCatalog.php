@@ -112,5 +112,12 @@ final class SystemTranslationCatalog
   'sitemap.title'=>['pl'=>'Mapa witryny','en'=>'Sitemap'],
   'sitemap.lead'=>['pl'=>'Przejdź bezpośrednio do wybranej części witryny.','en'=>'Go directly to the selected section of the website.'],
   'sitemap.empty'=>['pl'=>'Brak opublikowanych podstron.','en'=>'There are no published pages.'],
+  'cookie.title'=>['pl'=>'Twoja prywatność','en'=>'Your privacy'],
+  'cookie.lead'=>['pl'=>'Korzystamy z plików cookie, aby zapewnić prawidłowe działanie witryny. Dodatkowe kategorie aktywujemy wyłącznie po Twojej zgodzie.','en'=>'We use cookies to ensure the website works correctly. Optional categories are enabled only with your consent.'],
+  'cookie.necessary'=>['pl'=>'Niezbędne','en'=>'Necessary'],'cookie.necessary_help'=>['pl'=>'Zapewniają działanie strony, bezpieczeństwo i zapamiętanie sesji. Zawsze aktywne.','en'=>'They enable the website, security and session functionality. Always active.'],'cookie.necessary_always'=>['pl'=>'Zawsze aktywne','en'=>'Always active'],
+  'cookie.preferences'=>['pl'=>'Preferencje','en'=>'Preferences'],'cookie.preferences_help'=>['pl'=>'Pozwalają zapamiętać ustawienia ułatwiające korzystanie z witryny.','en'=>'They remember settings that make the website easier to use.'],
+  'cookie.analytics'=>['pl'=>'Analityczne','en'=>'Analytics'],'cookie.analytics_help'=>['pl'=>'Pomagają nam mierzyć ruch i poprawiać działanie strony.','en'=>'They help us measure traffic and improve the website.'],
+  'cookie.marketing'=>['pl'=>'Marketingowe','en'=>'Marketing'],'cookie.marketing_help'=>['pl'=>'Umożliwiają dopasowanie reklam oraz materiałów promocyjnych.','en'=>'They allow us to tailor ads and promotional content.'],
+  'cookie.accept_all'=>['pl'=>'Akceptuj wszystkie','en'=>'Accept all'],'cookie.reject_optional'=>['pl'=>'Tylko niezbędne','en'=>'Necessary only'],'cookie.settings'=>['pl'=>'Ustawienia','en'=>'Settings'],'cookie.save_settings'=>['pl'=>'Zapisz wybór','en'=>'Save preferences'],'cookie.manage'=>['pl'=>'Zmień ustawienia cookies','en'=>'Change cookie settings'],
  ];}
 }
