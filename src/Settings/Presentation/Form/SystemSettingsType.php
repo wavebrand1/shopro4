@@ -45,6 +45,8 @@ final class SystemSettingsType extends AbstractType
             ->add('site_url', UrlType::class, ['label' => $t('settings.site_url'), 'constraints' => [new Url(requireTld: false)]])
             ->add('site_dir', TextType::class, ['label' => $t('settings.site_dir'), 'help' => $t('settings.site_dir_help'), 'required' => false])
             ->add('site_email', EmailType::class, ['label' => $t('settings.site_email'), 'constraints' => [new Email()]])
+            ->add('site_phone', TextType::class, ['label' => 'Telefon witryny', 'required' => false])
+            ->add('site_address', TextareaType::class, ['label' => 'Adres firmy', 'required' => false, 'help' => 'Każdy wiersz będzie wyświetlany w nowej linii.'])
             ->add('site_logo_file', FileType::class, ['label' => $t('settings.site_logo'), 'mapped' => false, 'required' => false, 'help' => $t('settings.site_logo_help'), 'constraints' => [new File(maxSize: '3M', mimeTypes: ['image/svg+xml', 'image/png', 'image/jpeg', 'image/webp'])]])
             ->add('remove_site_logo', CheckboxType::class, ['label' => $t('settings.remove_logo'), 'mapped' => false, 'required' => false])
             ->add('favicon_file', FileType::class, ['label' => 'Favicon', 'mapped' => false, 'required' => false, 'help' => $t('settings.favicon_help'), 'constraints' => [new File(maxSize: '1M', mimeTypes: ['image/png', 'image/webp', 'image/x-icon', 'image/vnd.microsoft.icon'])]])

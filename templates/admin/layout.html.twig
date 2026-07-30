@@ -56,7 +56,7 @@
                     </div>
                 </details>
                 {% endif %}
-                {% set configuration_group_active = route starts with 'admin_system_settings_' or route starts with 'admin_newsletter_' or route starts with 'admin_email_template_' or route starts with 'admin_language_' or route starts with 'admin_file_manager_' or route starts with 'admin_url_redirect_' %}
+                {% set configuration_group_active = route starts with 'admin_system_settings_' or route starts with 'admin_theme_settings_' or route starts with 'admin_newsletter_' or route starts with 'admin_email_template_' or route starts with 'admin_language_' or route starts with 'admin_file_manager_' or route starts with 'admin_url_redirect_' %}
                 {% if shopro_module_enabled('settings') or shopro_module_enabled('newsletter') or shopro_module_enabled('language') or shopro_module_enabled('media') or shopro_module_enabled('cms') %}
                 <details class="modern-nav-group{{ configuration_group_active ? ' is-active' : '' }}"{{ configuration_group_active ? ' open' : '' }}>
                     <summary><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 15a2 2 0 0 0 .4 2l-2.4 2.4a2 2 0 0 0-2-.4M9 19a2 2 0 0 0-2 .4L4.6 17A2 2 0 0 0 5 15M5 9a2 2 0 0 0-.4-2L7 4.6A2 2 0 0 0 9 5M15 5a2 2 0 0 0 2-.4L19.4 7A2 2 0 0 0 19 9"/></svg></span>{{ shopro_trans('nav.configuration') }}<span class="modern-nav-group__chevron">⌄</span></summary>
@@ -65,6 +65,7 @@
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 15a2 2 0 0 0 .4 2l-2.4 2.4a2 2 0 0 0-2-.4 2 2 0 0 0-1 1.7V21h-4v-.3A2 2 0 0 0 9 19a2 2 0 0 0-2 .4L4.6 17a2 2 0 0 0 .4-2 2 2 0 0 0-1.7-1H3v-4h.3A2 2 0 0 0 5 9a2 2 0 0 0-.4-2L7 4.6A2 2 0 0 0 9 5a2 2 0 0 0 1-1.7V3h4v.3A2 2 0 0 0 15 5a2 2 0 0 0 2-.4L19.4 7a2 2 0 0 0-.4 2 2 2 0 0 0 1.7 1h.3v4h-.3A2 2 0 0 0 19 15Z"/></svg></span>
                     {{ shopro_trans('nav.system_configuration') }}
                 </a>{% endif %}
+                {% if shopro_module_enabled('settings') %}<a class="{{ route starts with 'admin_theme_settings_' ? 'is-active' : '' }}" href="{{ path('admin_theme_settings_edit') }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Zm3 4h10M7 13h6"/></svg></span>Ustawienia szablonu</a>{% endif %}
                 {% if shopro_module_enabled('newsletter') %}<a class="{{ route starts with 'admin_newsletter_' ? 'is-active' : '' }}" href="{{ path('admin_newsletter_index') }}">
                     <span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3V5Zm1 1 8 7 8-7"/></svg></span>
                     {{ shopro_trans('nav.newsletter') }}

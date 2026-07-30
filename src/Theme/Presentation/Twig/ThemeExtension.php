@@ -19,6 +19,7 @@ final class ThemeExtension extends AbstractExtension
         return [
             new TwigFunction('shopro_active_front_theme', $this->activeFrontTheme(...)),
             new TwigFunction('shopro_active_front_layout', $this->activeFrontLayout(...)),
+            new TwigFunction('shopro_theme_setting', $this->themeSetting(...)),
         ];
     }
 
@@ -33,5 +34,10 @@ final class ThemeExtension extends AbstractExtension
     public function activeFrontLayout(): string
     {
         return $this->activeFrontTheme()->frontLayoutTemplate ?? 'cms/layout_base.html.twig';
+    }
+
+    public function themeSetting(string $key, mixed $default = null): mixed
+    {
+        return $this->settings->get('theme_settings.'.$this->activeFrontTheme()->code.'.'.$key, $default);
     }
 }

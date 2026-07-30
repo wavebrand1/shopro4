@@ -5,7 +5,7 @@
 {% if not storage_available %}<div class="flash flash--error">{{ shopro_trans('settings.storage_missing') }}</div>{% endif %}
 {{ form_start(form, {attr: {class: 'settings-form'}}) }}
 {% set groups = {
-    'settings.group_website': ['site_name','company','site_url','site_dir','site_email','site_logo_file','remove_site_logo','favicon_file','remove_favicon','theme','theme_variant','admin_theme','admin_theme_variant'],
+    'settings.group_website': ['site_name','company','site_url','site_dir','site_email','site_phone','site_address','site_logo_file','remove_site_logo','favicon_file','remove_favicon','theme','theme_variant','admin_theme','admin_theme_variant'],
     'settings.group_datetime': ['date_short','date_long','time_format','timezone','locale','week_start','language'],
     'settings.group_visibility': ['show_login','show_search','show_breadcrumbs','show_language','eu_cookie'],
     'settings.group_maintenance': ['maintenance','maintenance_date','maintenance_time','maintenance_message'],

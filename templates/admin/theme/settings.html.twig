@@ -1,0 +1,14 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Ustawienia szablonu — Shopro 4.0{% endblock %}
+
+{% block body %}
+<div class="modern-page-heading">
+    <div><p class="modern-kicker">SZABLON STRONY</p><h1>{{ theme.name }}</h1><p>Ustawienia wyglądu i zachowania aktywnej skórki.</p></div>
+    <a class="modern-button" href="{{ path('admin_system_settings_edit') }}">← Konfiguracja systemu</a>
+</div>
+{{ form_start(form, {attr: {class: 'settings-form'}}) }}
+<section class="modern-card settings-card"><div class="modern-card__heading"><h2>Ustawienia szablonu</h2><p>Dane firmy, logo i social media są pobierane z konfiguracji globalnej.</p></div><div class="settings-grid">{% for field in form %}<div class="settings-field settings-field--{{ field.vars.block_prefixes|last }}">{{ form_row(field) }}</div>{% endfor %}</div></section>
+<div class="modern-form-actions"><button class="modern-button modern-button--primary" type="submit">Zapisz ustawienia</button></div>
+{{ form_end(form) }}
+{% endblock %}
