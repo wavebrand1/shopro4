@@ -8,7 +8,7 @@ namespace App\Theme\Application;
 final readonly class ThemeDefinition
 {
     /** @param array<string, array{pl: string, en: string}> $variants
-     *  @param array<string, array{label: string, type: 'text'|'textarea'|'checkbox', default?: mixed, help?: string}> $settings
+     *  @param array<string, array{label: string, type: 'text'|'textarea'|'checkbox'|'file', default?: mixed, help?: string, asset_key?: string, remove_asset_key?: string}> $settings
      */
     public function __construct(
         public string $code,
@@ -38,7 +38,7 @@ final readonly class ThemeDefinition
             if (!preg_match('/^[a-z][a-z0-9_-]{1,79}$/', $variantCode) || !isset($labels['pl'], $labels['en'])) throw new \InvalidArgumentException('Invalid theme variant definition.');
         }
         foreach ($settings as $key => $field) {
-            if (!preg_match('/^[a-z][a-z0-9_]{1,79}$/', $key) || !isset($field['label'], $field['type']) || !in_array($field['type'], ['text', 'textarea', 'checkbox'], true)) {
+            if (!preg_match('/^[a-z][a-z0-9_]{1,79}$/', $key) || !isset($field['label'], $field['type']) || !in_array($field['type'], ['text', 'textarea', 'checkbox', 'file'], true)) {
                 throw new \InvalidArgumentException('Invalid theme settings definition.');
             }
         }
