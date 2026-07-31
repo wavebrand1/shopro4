@@ -31,7 +31,7 @@ final class Version20260717130000 extends AbstractMigration
             ['admin_new_user','Nowy użytkownik','Nowe konto w [SITE_NAME]','<h1>Zarejestrowano użytkownika</h1><p><strong>Login:</strong> [USERNAME]<br><strong>E-mail:</strong> [EMAIL]<br><strong>IP:</strong> [IP]</p>'.$button('Otwórz panel','[LINK]')],
         ];
         foreach ($templates as [$code,$name,$subject,$content]) {
-            $this->addSql('INSERT IGNORE INTO email_template (code,name,subject,content,system) VALUES (:code,:name,:subject,:content,1)', compact('code','name','subject','content'));
+            $this->addSql('INSERT IGNORE INTO email_template (code,name,subject,content,`system`) VALUES (:code,:name,:subject,:content,1)', compact('code','name','subject','content'));
         }
     }
 
