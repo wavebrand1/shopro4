@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b398507ce1c95b5dc0fc20fff3d29177",
+    "content-hash": "f503c5ba5fc0c3f3c68376af963f1bf3",
     "packages": [
         {
             "name": "composer/semver",
@@ -8368,6 +8368,33 @@
             "time": "2026-07-03T20:44:34+00:00"
         },
         {
+            "name": "wavebrand/shopro-theme-atena-fit",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../themes/shopro-theme-atena-fit",
+                "reference": "7c23382df9f055c607c6c35886701648b2bf6b80"
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/framework-bundle": "^7.4"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Wavebrand\\ShoproTheme\\AtenaFit\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Atena Fit front theme for Shopro 4",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "webmozart/assert",
             "version": "2.4.1",
             "source": {
@@ -10597,7 +10624,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "wavebrand/shopro-theme-atena-fit": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

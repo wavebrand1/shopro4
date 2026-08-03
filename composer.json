@@ -5,6 +5,13 @@
     "license": "proprietary",
     "minimum-stability": "stable",
     "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../themes/shopro-theme-atena-fit",
+            "options": {"symlink": true}
+        }
+    ],
     "require": {
         "php": ">=8.2",
         "ext-ctype": "*",
@@ -47,7 +54,8 @@
         "symfony/web-link": "7.4.*",
         "symfony/yaml": "7.4.*",
         "twig/extra-bundle": "^2.12|^3.24",
-        "twig/twig": "^2.12|^3.28"
+        "twig/twig": "^2.12|^3.28",
+        "wavebrand/shopro-theme-atena-fit": "*@dev"
     },
     "config": {
         "allow-plugins": {
