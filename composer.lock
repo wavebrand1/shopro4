@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f503c5ba5fc0c3f3c68376af963f1bf3",
+    "content-hash": "145ab2c9908a3d3cd247f68cc974e935",
     "packages": [
         {
             "name": "composer/semver",
@@ -8369,11 +8369,11 @@
         },
         {
             "name": "wavebrand/shopro-theme-atena-fit",
-            "version": "dev-master",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "../themes/shopro-theme-atena-fit",
-                "reference": "7c23382df9f055c607c6c35886701648b2bf6b80"
+                "url": "themes/shopro-theme-atena-fit",
+                "reference": "47d80fb8682c4cb74c71df5dc2cd4fe7cfcbbaf5"
             },
             "require": {
                 "php": ">=8.2",

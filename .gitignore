@@ -18,3 +18,7 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+# Theme packages are deployed inside this application and maintained in
+# separate repositories.
+/themes/

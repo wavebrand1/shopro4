@@ -8,7 +8,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../themes/shopro-theme-atena-fit",
+            "url": "themes/shopro-theme-atena-fit",
             "options": {"symlink": true}
         }
     ],
