@@ -11,17 +11,8 @@ framework:
         sanitizers:
             app.page_content:
                 allow_safe_elements: true
-                allow_elements: ['iframe']
-                allow_attributes:
-                    src: ['iframe']
-                    title: ['iframe']
-                    width: ['iframe']
-                    height: ['iframe']
-                    loading: ['iframe']
-                    frameborder: ['iframe']
-                    allow: ['iframe']
-                    referrerpolicy: ['iframe']
-                    allowfullscreen: ['iframe']
+                allow_elements:
+                    iframe: ['src', 'title', 'width', 'height', 'loading', 'frameborder', 'allow', 'referrerpolicy', 'allowfullscreen']
                 allow_relative_links: true
                 allow_relative_medias: true
                 drop_elements: ['script', 'style', 'object', 'embed']
