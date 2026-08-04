@@ -44,7 +44,7 @@ fi
 echo "[Shopro] Using PHP: $PHP_BIN ($DEPLOY_ENV, debug=$DEPLOY_DEBUG)"
 
 echo "[Shopro] Synchronizing externally installed customer themes"
-SHOPRO_PHP_BIN="$PHP_BIN" SHOPRO_COMPOSER_BIN="$COMPOSER_BIN" bash bin/sync-installed-themes
+SHOPRO_PHP_BIN="$PHP_BIN" SHOPRO_COMPOSER_BIN="$COMPOSER_BIN" SHOPRO_DEPLOY_ENV="$DEPLOY_ENV" bash bin/sync-installed-themes
 
 echo "[Shopro] Synchronizing installed modules"
 SHOPRO_PHP_BIN="$PHP_BIN" SHOPRO_COMPOSER_BIN="$COMPOSER_BIN" SHOPRO_DEPLOY_ENV="$DEPLOY_ENV" bash bin/sync-installed-modules

@@ -79,3 +79,8 @@ Dla witryny, której aplikacja znajduje się w `~/httpdocs`, należy utworzyć `
 ```
 
 `bin/deploy-dev` i `bin/deploy-prod` odczytują ten manifest przed instalacją Composera. Odtwarzają repozytorium typu `path`, dołączają każdy wymieniony pakiet i pozwalają Symfony Flex zarejestrować jego bundle. Manifest oraz źródła skórki przetrwają więc aktualizację Core. Ścieżka `path` jest liczona względem `httpdocs`; należy użyć katalogu poza `httpdocs`, dostępnego do odczytu dla użytkownika hostingu.
+
+Na środowisku dev domyślna Atena jest wyjątkiem bootstrapowym: ponieważ Core
+wymaga jej pakietu już w `composer.json`, `bin/sync-installed-themes` klonuje lub
+aktualizuje repozytorium do `themes/shopro-theme-atena-fit` przed pierwszym
+wywołaniem Composera. Produkcja nadal wymaga jawnego, wersjonowanego źródła.

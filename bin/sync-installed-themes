@@ -10,6 +10,37 @@ cd "$(dirname "$0")/.."
 PHP_BIN="${SHOPRO_PHP_BIN:-php}"
 COMPOSER_BIN="${SHOPRO_COMPOSER_BIN:-composer}"
 MANIFEST="${SHOPRO_THEME_MANIFEST:-$(cd .. && pwd)/shopro-themes/installed.json}"
+DEFAULT_DEV_THEME_PATH="themes/shopro-theme-atena-fit"
+DEFAULT_DEV_THEME_REPOSITORY="https://github.com/wavebrand1/shopro-theme-atena-fit.git"
+
+# The Core composer.json references the default Atena theme as a path package.
+# Restore that source before the first Composer operation on dev deployments.
+if [ "${SHOPRO_DEPLOY_ENV:-dev}" != "prod" ]; then
+    if ! command -v git >/dev/null 2>&1; then
+        echo "[Shopro themes] Git was not found" >&2
+        exit 1
+    fi
+    if [ ! -e "$DEFAULT_DEV_THEME_PATH" ]; then
+        echo "[Shopro themes] Cloning the default Atena theme"
+        mkdir -p "$(dirname "$DEFAULT_DEV_THEME_PATH")"
+        git clone --branch main --single-branch "$DEFAULT_DEV_THEME_REPOSITORY" "$DEFAULT_DEV_THEME_PATH"
+    elif [ ! -d "$DEFAULT_DEV_THEME_PATH/.git" ]; then
+        echo "[Shopro themes] Default theme path is not a Git repository: $DEFAULT_DEV_THEME_PATH" >&2
+        exit 1
+    elif [ -n "$(git -C "$DEFAULT_DEV_THEME_PATH" status --porcelain)" ]; then
+        echo "[Shopro themes] Refusing to update the default theme with local changes" >&2
+        exit 1
+    else
+        current_remote="$(git -C "$DEFAULT_DEV_THEME_PATH" remote get-url origin)"
+        if [ "$current_remote" != "$DEFAULT_DEV_THEME_REPOSITORY" ]; then
+            echo "[Shopro themes] Default theme repository URL mismatch" >&2
+            exit 1
+        fi
+        echo "[Shopro themes] Updating the default Atena theme"
+        git -C "$DEFAULT_DEV_THEME_PATH" fetch --prune origin main
+        git -C "$DEFAULT_DEV_THEME_PATH" merge --ff-only FETCH_HEAD
+    fi
+fi
 
 if [ ! -f "$MANIFEST" ]; then
     echo "[Shopro themes] No external theme manifest found; using bundled themes only"
