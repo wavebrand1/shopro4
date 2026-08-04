@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+# Restores independently installed Shopro modules after a Core deployment.
+# A customer manifest may live outside httpdocs; local development may use
+# modules/installed.json, which is intentionally ignored by the Core repo.
+set -Eeuo pipefail
+
+cd "$(dirname "$0")/.."
+
+PHP_BIN="${SHOPRO_PHP_BIN:-php}"
+COMPOSER_BIN="${SHOPRO_COMPOSER_BIN:-composer}"
+EXTERNAL_MANIFEST="$(cd .. && pwd)/shopro-modules/installed.json"
+LOCAL_MANIFEST="modules/installed.json"
+if [ -n "${SHOPRO_MODULE_MANIFEST:-}" ]; then
+    MANIFEST="$SHOPRO_MODULE_MANIFEST"
+elif [ -f "$LOCAL_MANIFEST" ]; then
+    MANIFEST="$LOCAL_MANIFEST"
+else
+    MANIFEST="$EXTERNAL_MANIFEST"
+fi
+
+if [ ! -f "$MANIFEST" ]; then
+    echo "[Shopro modules] No installed module manifest found"
+    exit 0
+fi
+
+if ! command -v "$PHP_BIN" >/dev/null 2>&1; then
+    echo "[Shopro modules] PHP CLI was not found: $PHP_BIN" >&2
+    exit 1
+fi
+if ! command -v "$COMPOSER_BIN" >/dev/null 2>&1; then
+    echo "[Shopro modules] Composer was not found: $COMPOSER_BIN" >&2
+    exit 1
+fi
+
+mapfile -t MODULES < <("$PHP_BIN" -r '
+    $manifest = $argv[1];
+    $data = json_decode((string) file_get_contents($manifest), true, 512, JSON_THROW_ON_ERROR);
+    foreach (($data["modules"] ?? []) as $module) {
+        if (!is_array($module) || !isset($module["package"], $module["path"])) {
+            throw new RuntimeException("Every module requires package and path.");
+        }
+        $constraint = (string) ($module["constraint"] ?? "*@dev");
+        echo $module["package"], "\t", $module["path"], "\t", $constraint, PHP_EOL;
+    }
+' "$MANIFEST")
+
+if [ "${#MODULES[@]}" -eq 0 ]; then
+    echo "[Shopro modules] Manifest contains no modules"
+    exit 0
+fi
+
+for index in "${!MODULES[@]}"; do
+    IFS=$'\t' read -r package path constraint <<< "${MODULES[$index]}"
+    if [ -z "$package" ] || [ -z "$path" ]; then
+        echo "[Shopro modules] Invalid module manifest entry" >&2
+        exit 1
+    fi
+    if [ ! -f "$path/composer.json" ]; then
+        echo "[Shopro modules] Module package is missing composer.json: $path" >&2
+        exit 1
+    fi
+
+    echo "[Shopro modules] Synchronizing $package"
+    "$COMPOSER_BIN" config --no-interaction "repositories.shopro_module_$index" path "$path"
+    "$COMPOSER_BIN" require "$package:$constraint" --no-interaction --no-progress --no-scripts
+done
