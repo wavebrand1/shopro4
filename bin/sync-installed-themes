@@ -42,6 +42,11 @@ if [ "${SHOPRO_DEPLOY_ENV:-dev}" != "prod" ]; then
     fi
 fi
 
+if [ "${SHOPRO_THEME_PREPARE_ONLY:-0}" = "1" ]; then
+    echo "[Shopro themes] Theme sources are ready"
+    exit 0
+fi
+
 if [ ! -f "$MANIFEST" ]; then
     echo "[Shopro themes] No external theme manifest found; using bundled themes only"
     exit 0

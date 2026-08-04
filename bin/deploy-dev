@@ -43,11 +43,18 @@ fi
 
 echo "[Shopro] Using PHP: $PHP_BIN ($DEPLOY_ENV, debug=$DEPLOY_DEBUG)"
 
-echo "[Shopro] Synchronizing externally installed customer themes"
-SHOPRO_PHP_BIN="$PHP_BIN" SHOPRO_COMPOSER_BIN="$COMPOSER_BIN" SHOPRO_DEPLOY_ENV="$DEPLOY_ENV" bash bin/sync-installed-themes
+echo "[Shopro] Preparing external theme sources"
+SHOPRO_THEME_PREPARE_ONLY=1 SHOPRO_PHP_BIN="$PHP_BIN" SHOPRO_COMPOSER_BIN="$COMPOSER_BIN" SHOPRO_DEPLOY_ENV="$DEPLOY_ENV" bash bin/sync-installed-themes
 
 echo "[Shopro] Synchronizing installed modules"
 SHOPRO_PHP_BIN="$PHP_BIN" SHOPRO_COMPOSER_BIN="$COMPOSER_BIN" SHOPRO_DEPLOY_ENV="$DEPLOY_ENV" bash bin/sync-installed-modules
+
+# Core deployments restore the repository version of composer.json, which does
+# not contain optional customer modules. Register modules before updating theme
+# packages so Composer cannot remove them as packages absent from the root
+# requirements during the theme synchronization step.
+echo "[Shopro] Synchronizing externally installed customer themes"
+SHOPRO_PHP_BIN="$PHP_BIN" SHOPRO_COMPOSER_BIN="$COMPOSER_BIN" SHOPRO_DEPLOY_ENV="$DEPLOY_ENV" bash bin/sync-installed-themes
 
 echo "[Shopro] Installing Composer dependencies"
 # On Plesk, `composer` can be a phpenv shell shim rather than a PHP/PHAR file.
