@@ -6,6 +6,7 @@ namespace App\Cms\Presentation\Http;
 
 use App\Cms\Application\PageAccess;
 use App\Cms\Application\SystemPageRouteResolver;
+use App\Cms\Application\PublicContentResolver;
 use App\Cms\Domain\Entity\Page;
 use App\Cms\Domain\Entity\PageTranslation;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
@@ -25,6 +26,7 @@ final class PublicPageController extends AbstractController
     public function __construct(
         private readonly SystemTranslator $translator,
         private readonly SystemPageRouteResolver $systemPageRoutes,
+        private readonly PublicContentResolver $publicContent,
     )
     {
     }
@@ -35,11 +37,11 @@ final class PublicPageController extends AbstractController
         $language = $em->getRepository(Language::class)->findOneBy(['code' => $_locale, 'active' => true]);
         if ($language?->isDefaultLanguage()) {
             $basePage = $pages->findPublishedBySlug($slug);
-            if (!$basePage) throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
+            if (!$basePage) return $this->publicContent->resolve($slug,$request)??throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
             return $this->redirectToRoute('cms_page_show', ['slug' => $basePage->getSlug()], Response::HTTP_FOUND);
         }
         $translation = $language ? $em->getRepository(PageTranslation::class)->findOneBy(['language' => $language, 'slug' => $slug]) : null;
-        if (!$translation || (!$translation->isPublished() && !$this->isGranted('ROLE_ADMIN'))) throw $this->createNotFoundException($this->translator->translate('page.public_translation_not_found'));
+        if (!$translation || (!$translation->isPublished() && !$this->isGranted('ROLE_ADMIN'))) return $this->publicContent->resolve($slug,$request,$_locale)??throw $this->createNotFoundException($this->translator->translate('page.public_translation_not_found'));
         $page = $translation->getPage();
         if (!$page->isPubliclyAvailable()) throw $this->createNotFoundException($this->translator->translate('page.public_unpublished'));
         if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
@@ -56,7 +58,7 @@ final class PublicPageController extends AbstractController
     {
         $page = $pages->findPublishedBySlug($slug);
         if ($page === null) {
-            throw $this->createNotFoundException($this->translator->translate('page.public_unpublished'));
+            return $this->publicContent->resolve($slug,$request)??throw $this->createNotFoundException($this->translator->translate('page.public_unpublished'));
         }
         if ($page->isAdminOnly() && !$this->isGranted('ROLE_ADMIN')) {
             throw $this->createNotFoundException($this->translator->translate('page.public_not_found'));
