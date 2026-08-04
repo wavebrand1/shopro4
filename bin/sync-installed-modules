@@ -2,7 +2,7 @@
 
 # Restores independently installed Shopro modules after a Core deployment.
 # A customer manifest may live outside httpdocs; local development may use
-# modules/installed.json, which is intentionally ignored by the Core repo.
+# ../modules/installed.json next to the Core directory.
 set -Eeuo pipefail
 
 cd "$(dirname "$0")/.."
@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 PHP_BIN="${SHOPRO_PHP_BIN:-php}"
 COMPOSER_BIN="${SHOPRO_COMPOSER_BIN:-composer}"
 EXTERNAL_MANIFEST="$(cd .. && pwd)/shopro-modules/installed.json"
-LOCAL_MANIFEST="modules/installed.json"
+LOCAL_MANIFEST="../modules/installed.json"
 if [ -n "${SHOPRO_MODULE_MANIFEST:-}" ]; then
     MANIFEST="$SHOPRO_MODULE_MANIFEST"
 elif [ -f "$LOCAL_MANIFEST" ]; then

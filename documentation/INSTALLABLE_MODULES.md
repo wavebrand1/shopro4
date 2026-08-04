@@ -6,20 +6,20 @@ Moduł biznesowy jest prywatnym pakietem Composer typu `symfony-bundle` i ma
 własne repozytorium Git. Kod modułu nie należy do Core. Pakiet dostarcza co
 najmniej `ModuleDefinition`, konfigurację usług, mapowania Doctrine oraz migracje.
 
-Źródła modułów na lokalnym środowisku mogą znajdować się w `modules/`. Katalog
-jest ignorowany przez repozytorium Core, dzięki czemu każde jego poddrzewo może
-być osobnym repozytorium Git.
+Źródła modułów znajdują się w katalogu `modules` położonym obok katalogu
+aplikacji `symfony`. Każdy moduł jest osobnym repozytorium Git; wewnątrz Core
+nie przechowujemy kopii ich kodu.
 
 ## Manifest development
 
-Lokalny plik `modules/installed.json`:
+Lokalny plik `../modules/installed.json` (patrząc z katalogu `symfony`):
 
 ```json
 {
   "modules": [
     {
       "package": "wavebrand1/shopro4-mod-blog",
-      "path": "modules/shopro4_mod_blog",
+      "path": "../modules/shopro4_mod_blog",
       "constraint": "*@dev"
     }
   ]

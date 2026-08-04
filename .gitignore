@@ -22,6 +22,3 @@
 # Theme packages are deployed inside this application and maintained in
 # separate repositories.
 /themes/
-
-# Installable modules are independent Composer packages/repositories.
-/modules/
