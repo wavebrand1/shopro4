@@ -237,7 +237,8 @@ const initializeComponentBuilder = () => {
     document.addEventListener('turbo:before-visit',beforeVisit);
     form?.addEventListener('input',markDirty);
     form?.addEventListener('change',markDirty);
-    form?.addEventListener('submit',event=>{synchronizeRichTextSources();synchronize();if(event.submitter?.matches('[data-preview-submit]'))return;submitting=true;dirty=false;document.removeEventListener('turbo:before-visit',beforeVisit);});
+    form?.addEventListener('formdata',event=>{synchronizeRichTextSources();synchronize();if(projectField.name)event.formData.set(projectField.name,projectField.value);});
+    form?.addEventListener('submit',event=>{synchronizeRichTextSources();synchronize();if(event.submitter?.matches('[data-preview-submit]'))return;submitting=true;dirty=false;document.removeEventListener('turbo:before-visit',beforeVisit);},{capture:true});
     render();
 };
 
