@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Settings\Application;
 
+use App\Media\Application\ResponsiveImageOptimizer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class BrandingAssetManager
@@ -14,7 +15,7 @@ final class BrandingAssetManager
         'social' => ['image/png' => 'png', 'image/jpeg' => 'jpg', 'image/webp' => 'webp'],
     ];
 
-    public function __construct(private readonly string $projectDir) {}
+    public function __construct(private readonly string $projectDir, private readonly ?ResponsiveImageOptimizer $imageOptimizer = null) {}
 
     public function store(UploadedFile $file, string $type): string
     {
@@ -34,6 +35,11 @@ final class BrandingAssetManager
             if (file_put_contents($directory.'/'.$filename, $svg, LOCK_EX) === false) throw new \RuntimeException('Nie można zapisać logo.');
         } else {
             $file->move($directory, $filename);
+        }
+
+        $storedPath = $directory.'/'.$filename;
+        if ($this->imageOptimizer && !in_array($extension, ['svg', 'ico'], true)) {
+            $this->imageOptimizer->optimize($storedPath);
         }
 
         return '/uploads/branding/'.$filename;
@@ -76,7 +82,10 @@ final class BrandingAssetManager
     {
         if (!$publicPath || !str_starts_with($publicPath, '/uploads/branding/')) return;
         $path = $this->projectDir.'/public/uploads/branding/'.basename($publicPath);
-        if (is_file($path)) @unlink($path);
+        if (is_file($path)) {
+            ResponsiveImageOptimizer::removeVariants($path);
+            @unlink($path);
+        }
     }
 
     /**
