@@ -4,7 +4,7 @@
       "package": "wavebrand1/shopro4-mod-blog",
       "path": "../modules/shopro4_mod_blog",
       "constraint": "*@dev",
-      "repository": "https://github.com/wavebrand1/shopro4_mod_blog.git",
+      "repository": "git@github.com:wavebrand1/shopro4_mod_blog.git",
       "ref": "main"
     }
   ]
