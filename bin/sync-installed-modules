@@ -11,10 +11,15 @@ PHP_BIN="${SHOPRO_PHP_BIN:-php}"
 COMPOSER_BIN="${SHOPRO_COMPOSER_BIN:-composer}"
 EXTERNAL_MANIFEST="$(cd .. && pwd)/shopro-modules/installed.json"
 LOCAL_MANIFEST="../modules/installed.json"
+DEV_MANIFEST="config/modules.dev.json"
 if [ -n "${SHOPRO_MODULE_MANIFEST:-}" ]; then
     MANIFEST="$SHOPRO_MODULE_MANIFEST"
 elif [ -f "$LOCAL_MANIFEST" ]; then
     MANIFEST="$LOCAL_MANIFEST"
+elif [ -f "$EXTERNAL_MANIFEST" ]; then
+    MANIFEST="$EXTERNAL_MANIFEST"
+elif [ "${SHOPRO_DEPLOY_ENV:-dev}" != "prod" ] && [ -f "$DEV_MANIFEST" ]; then
+    MANIFEST="$DEV_MANIFEST"
 else
     MANIFEST="$EXTERNAL_MANIFEST"
 fi
@@ -41,7 +46,9 @@ mapfile -t MODULES < <("$PHP_BIN" -r '
             throw new RuntimeException("Every module requires package and path.");
         }
         $constraint = (string) ($module["constraint"] ?? "*@dev");
-        echo $module["package"], "\t", $module["path"], "\t", $constraint, PHP_EOL;
+        $repository = (string) ($module["repository"] ?? "-");
+        $ref = (string) ($module["ref"] ?? "main");
+        echo $module["package"], "\t", $module["path"], "\t", $constraint, "\t", $repository, "\t", $ref, "\n";
     }
 ' "$MANIFEST")
 
@@ -51,11 +58,40 @@ if [ "${#MODULES[@]}" -eq 0 ]; then
 fi
 
 for index in "${!MODULES[@]}"; do
-    IFS=$'\t' read -r package path constraint <<< "${MODULES[$index]}"
+    IFS=$'\t' read -r package path constraint repository ref <<< "${MODULES[$index]}"
     if [ -z "$package" ] || [ -z "$path" ]; then
         echo "[Shopro modules] Invalid module manifest entry" >&2
         exit 1
     fi
+    if [ "$repository" != "-" ]; then
+        if ! command -v git >/dev/null 2>&1; then
+            echo "[Shopro modules] Git was not found" >&2
+            exit 1
+        fi
+        if [ ! -e "$path" ]; then
+            echo "[Shopro modules] Cloning $package ($ref)"
+            mkdir -p "$(dirname "$path")"
+            git clone --branch "$ref" --single-branch "$repository" "$path"
+        else
+            if [ ! -d "$path/.git" ]; then
+                echo "[Shopro modules] Existing module path is not a Git repository: $path" >&2
+                exit 1
+            fi
+            if [ -n "$(git -C "$path" status --porcelain)" ]; then
+                echo "[Shopro modules] Refusing to update a module with local changes: $path" >&2
+                exit 1
+            fi
+            current_remote="$(git -C "$path" remote get-url origin)"
+            if [ "$current_remote" != "$repository" ]; then
+                echo "[Shopro modules] Repository URL mismatch for $path" >&2
+                exit 1
+            fi
+            echo "[Shopro modules] Updating $package ($ref)"
+            git -C "$path" fetch --prune origin "$ref"
+            git -C "$path" merge --ff-only FETCH_HEAD
+        fi
+    fi
+
     if [ ! -f "$path/composer.json" ]; then
         echo "[Shopro modules] Module package is missing composer.json: $path" >&2
         exit 1

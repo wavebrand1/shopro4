@@ -32,6 +32,12 @@ przed właściwym `composer install`. Skrypt tworzy repozytorium Composer typu
 bundle. Następnie standardowe wdrożenie wykonuje migracje, `app:modules:sync`
 oraz `app:modules:verify`.
 
+Repozytorium dev ma także śledzony `config/modules.dev.json`. Jeśli klient nie
+ma własnego manifestu, wdrożenie dev automatycznie klonuje brakujący moduł albo
+wykonuje `fetch` i wyłącznie bezpieczny fast-forward do wskazanego `ref`. Lokalne
+zmiany lub inny adres `origin` zatrzymują wdrożenie zamiast nadpisywać kod.
+Manifest dev nie jest używany, gdy `SHOPRO_DEPLOY_ENV=prod`.
+
 ## Serwer produkcyjny
 
 Manifest i źródła klienta powinny znajdować się poza katalogiem `httpdocs`, aby
