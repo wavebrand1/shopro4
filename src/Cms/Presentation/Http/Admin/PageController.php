@@ -8,6 +8,8 @@ use App\Cms\Domain\Entity\Page;
 use App\Cms\Application\UrlRedirectManager;
 use App\Cms\Application\PageRevisionManager;
 use App\Cms\Application\PageBuilderSanitizer;
+use App\Cms\Application\PublicSlugRegistry;
+use App\Cms\Application\PublicSlugUnavailable;
 use App\Identity\Domain\Entity\AdminUser;
 use App\Cms\Infrastructure\Persistence\Doctrine\PageRepository;
 use App\Cms\Infrastructure\Persistence\Doctrine\MenuItemRepository;
@@ -35,6 +37,7 @@ final class PageController extends AbstractController
         private readonly UrlRedirectManager $redirectManager,
         private readonly EntityManagerInterface $entityManager,
         private readonly PageRevisionManager $revisionManager,
+        private readonly PublicSlugRegistry $publicSlugs,
     ) {}
 
     #[Route('', name: 'admin_page_index', methods: ['GET'])]
@@ -287,6 +290,7 @@ final class PageController extends AbstractController
         foreach ($pages->findBy(['id' => $ids]) as $page) {
             if (!$page->isDeleted()) continue;
             if ($page->isSystemPage() || ($usage[$page->getId()] ?? 0) > 0) { ++$skipped; continue; }
+            $this->publicSlugs->release('cms_page', (int) $page->getId());
             $this->entityManager->remove($page);
             ++$destroyed;
         }
@@ -320,6 +324,7 @@ final class PageController extends AbstractController
             return $this->redirectToRoute('admin_page_trash');
         }
         if ($page->isDeleted() && $this->isCsrfTokenValid('destroy-page-'.$page->getId(), $request->request->getString('_token'))) {
+            $this->publicSlugs->release('cms_page', (int) $page->getId());
             $pages->remove($page);
             $this->addFlash('success', $this->translator->translate('page.deleted_permanently'));
         }
@@ -331,11 +336,14 @@ final class PageController extends AbstractController
     {
         if ($this->isCsrfTokenValid('duplicate-page-'.$page->getId(), (string) $request->request->get('_token'))) {
             try {
-                $copy = $page->copyAs($pages->nextCopySlug($page->getSlug()));
+                $base = mb_substr($page->getSlug(), 0, 170).'-kopia'; $slug = $base; $number = 2;
+                while (!$this->publicSlugs->isAvailable($slug, 'cms_page')) $slug = mb_substr($base, 0, 175).'-'.$number++;
+                $copy = $page->copyAs($slug);
                 $pages->save($copy);
+                $this->publicSlugs->claim($copy->getSlug(), 'cms_page', (int) $copy->getId());
                 $this->addFlash('success', $this->translator->translate('page.duplicated'));
                 return $this->redirectToRoute('admin_page_edit', ['id' => $copy->getId()]);
-            } catch (UniqueConstraintViolationException) {
+            } catch (UniqueConstraintViolationException|PublicSlugUnavailable) {
                 $this->addFlash('error', $this->translator->translate('page.slug_exists'));
             }
         }
@@ -365,12 +373,16 @@ final class PageController extends AbstractController
         if ($page->getId() !== null && $form->isSubmitted() && (int) $form->get('lockVersion')->getData() !== $currentLockVersion) {
             $form->addError(new FormError($this->translator->translate('page.concurrent_edit')));
         }
+        if ($form->isSubmitted() && $form->isValid() && !$this->publicSlugs->isAvailable($page->getSlug(), 'cms_page', $page->getId())) {
+            $form->get('slug')->addError(new FormError($this->translator->translate('validation.page.slug_exists')));
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $page->setBuilderData($this->builderSanitizer->sanitize($page->getBuilderData()));
                 $this->entityManager->getConnection()->beginTransaction();
                 $pages->save($page);
+                $this->publicSlugs->claim($page->getSlug(), 'cms_page', (int) $page->getId());
                 if ($previousSlug !== null && $previousSlug !== $page->getSlug()) $this->redirectManager->registerSlugChange($previousSlug, $page->getSlug(), $page->isHomePage());
                 $user = $this->getUser();
                 $this->revisionManager->snapshot($page, $user instanceof AdminUser ? $user : null);
@@ -385,7 +397,7 @@ final class PageController extends AbstractController
             } catch (OptimisticLockException) {
                 if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
                 $form->addError(new FormError($this->translator->translate('page.concurrent_edit')));
-            } catch (UniqueConstraintViolationException) {
+            } catch (UniqueConstraintViolationException|PublicSlugUnavailable) {
                 if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
                 $this->addFlash('error', $this->translator->translate('page.slug_exists'));
             } catch (\LogicException $exception) {

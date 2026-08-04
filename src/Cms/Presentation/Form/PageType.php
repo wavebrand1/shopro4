@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Cms\Presentation\Form;
 
 use App\Cms\Domain\Entity\Page;
+use App\Cms\Application\PublicSlugRegistry;
 use App\Cms\Domain\PageBuilderData;
 use App\Language\Application\SystemTranslator;
 use App\Identity\Domain\Entity\Membership;
@@ -31,6 +32,7 @@ final class PageType extends AbstractType
         private readonly SluggerInterface $slugger,
         private readonly SystemTranslator $translator,
         private readonly AuthorizationCheckerInterface $authorization,
+        private readonly PublicSlugRegistry $publicSlugs,
     )
     {
     }
@@ -82,7 +84,13 @@ final class PageType extends AbstractType
                 return;
             }
 
-            $data['slug'] = $this->slugger->slug((string) ($data['title'] ?? ''))->lower()->toString();
+            $page = $event->getForm()->getData();
+            $base = $this->slugger->slug((string) ($data['title'] ?? ''))->lower()->toString() ?: 'strona';
+            $slug = $base;
+            while (!$this->publicSlugs->isAvailable($slug, 'cms_page', $page instanceof Page ? $page->getId() : null)) {
+                $slug = $base.'-'.bin2hex(random_bytes(3));
+            }
+            $data['slug'] = $slug;
             $event->setData($data);
         });
     }

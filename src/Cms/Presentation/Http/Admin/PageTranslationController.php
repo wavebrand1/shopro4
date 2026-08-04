@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 namespace App\Cms\Presentation\Http\Admin;
-use App\Cms\Application\PageBuilderSanitizer;use App\Cms\Domain\Entity\Page;use App\Cms\Domain\Entity\PageTranslation;use App\Cms\Presentation\Form\PageTranslationType;use App\Language\Domain\Entity\Language;use App\Language\Application\SystemTranslator;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\HttpFoundation\Request;use Symfony\Component\HttpFoundation\Response;use Symfony\Component\Routing\Attribute\Route;use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Cms\Application\PageBuilderSanitizer;use App\Cms\Application\PublicSlugRegistry;use App\Cms\Domain\Entity\Page;use App\Cms\Domain\Entity\PageTranslation;use App\Cms\Presentation\Form\PageTranslationType;use App\Language\Domain\Entity\Language;use App\Language\Application\SystemTranslator;use Doctrine\ORM\EntityManagerInterface;use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;use Symfony\Component\Form\FormError;use Symfony\Component\HttpFoundation\Request;use Symfony\Component\HttpFoundation\Response;use Symfony\Component\Routing\Attribute\Route;use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/admin/pages/{id}/translations')]
 #[IsGranted('ROLE_EDITOR')]
 #[\App\Module\Application\RequiresModule('cms')]
 final class PageTranslationController extends AbstractController
 {
- public function __construct(private readonly PageBuilderSanitizer $builderSanitizer,private readonly ?SystemTranslator $translator=null){}
+ public function __construct(private readonly PageBuilderSanitizer $builderSanitizer,private readonly PublicSlugRegistry $publicSlugs,private readonly ?SystemTranslator $translator=null){}
  #[Route('',name:'admin_page_translation_index',requirements:['id'=>'\d+'],methods:['GET'])]
  public function index(Page $page,EntityManagerInterface $em):Response{$translations=[];foreach($em->getRepository(PageTranslation::class)->findBy(['page'=>$page]) as $t)$translations[$t->getLanguage()->getId()]=$t;return $this->render('admin/page/translations.html.twig',['page'=>$page,'languages'=>$em->getRepository(Language::class)->findBy(['active'=>true,'defaultLanguage'=>false],['name'=>'ASC']),'translations'=>$translations]);}
  #[Route('/{languageId}',name:'admin_page_translation_edit',requirements:['id'=>'\d+','languageId'=>'\d+'],methods:['GET','POST'])]
@@ -19,10 +19,11 @@ final class PageTranslationController extends AbstractController
   $translation=$em->getRepository(PageTranslation::class)->findOneBy(['page'=>$page,'language'=>$language])??new PageTranslation($page,$language);
   $form=$this->createForm(PageTranslationType::class,$translation);
   $form->handleRequest($request);
+  if($form->isSubmitted()&&$form->isValid()&&!$this->publicSlugs->isAvailable($translation->getSlug(),'cms_page_translation',$translation->getId(),$language->getCode()))$form->get('slug')->addError(new FormError($this->translator->translate('validation.page.slug_exists')));
   if($form->isSubmitted()&&$form->isValid()){
    $translation->setBuilderData($this->builderSanitizer->sanitize($translation->getBuilderData()));
    $this->addFlash('success',$this->translator->translate('page.translation_saved'));
-   $em->persist($translation);$em->flush();
+   $em->persist($translation);$em->flush();$this->publicSlugs->claim($translation->getSlug(),'cms_page_translation',(int)$translation->getId(),$language->getCode());
    return $this->redirectToRoute('admin_page_translation_edit',['id'=>$page->getId(),'languageId'=>$language->getId()]);
   }
   return $this->render('admin/page/translation_form.html.twig',['form'=>$form,'page'=>$page,'translation'=>$translation,'language'=>$language]);
