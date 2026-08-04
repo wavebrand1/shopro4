@@ -15,7 +15,7 @@ final class PublicSlugRegistry
     public function isAvailable(string $slug, string $ownerType, ?int $ownerId = null, string $locale = ''): bool
     {
         if ($locale === '' && PageSlug::isReserved($slug)) return false;
-        if ($locale === '' && (int) $this->connection->fetchOne('SELECT COUNT(*) FROM url_redirect WHERE active = 1 AND source_path = :path', ['path' => '/'.$slug]) > 0) return false;
+        if ($locale === '' && (int) $this->connection->fetchOne('SELECT COUNT(*) FROM cms_url_redirect WHERE active = 1 AND source_path = :path', ['path' => '/'.$slug]) > 0) return false;
         $owner = $this->connection->fetchAssociative(
             'SELECT owner_type, owner_id FROM public_slug WHERE locale = :locale AND slug = :slug',
             ['locale' => $locale, 'slug' => $slug],
@@ -40,5 +40,12 @@ final class PublicSlugRegistry
     {
         $criteria=['owner_type'=>$ownerType,'owner_id'=>$ownerId];if($locale!==null)$criteria['locale']=$locale;
         $this->connection->delete('public_slug',$criteria);
+    }
+
+    /** @return array{type:string,id:int}|null */
+    public function owner(string $slug,string $locale=''):?array
+    {
+        $row=$this->connection->fetchAssociative('SELECT owner_type, owner_id FROM public_slug WHERE locale = :locale AND slug = :slug',['locale'=>$locale,'slug'=>$slug]);
+        return $row===false?null:['type'=>(string)$row['owner_type'],'id'=>(int)$row['owner_id']];
     }
 }
