@@ -11,7 +11,7 @@
       "package": "wavebrand1/shopro4-mod-portfolio",
       "path": "../modules/shopro4_mod_portfolio",
       "constraint": "*@dev",
-      "repository": "https://github.com/wavebrand1/shopro4_mod_portfolio.git",
+      "repository": "git@github-shopro-portfolio:wavebrand1/shopro4_mod_portfolio.git",
       "ref": "main"
     }
   ]
