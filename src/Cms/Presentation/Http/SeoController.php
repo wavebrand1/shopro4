@@ -15,10 +15,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
+use App\Cms\Application\SitemapProvider;
 
 #[\App\Module\Application\RequiresModule('cms')]
 final class SeoController extends AbstractController
 {
+    public function __construct(#[AutowireIterator('shopro.sitemap_provider')] private readonly iterable $sitemapProviders) {}
     #[Route('/site-map', name: 'cms_sitemap_page', methods: ['GET'], priority: 100)]
     public function sitemapPage(PageRepository $pages, SystemPageRenderer $systemPages): Response
     {
@@ -49,6 +52,10 @@ final class SeoController extends AbstractController
                 'modified' => $page->getUpdatedAt(),
                 'alternates' => $this->translationUrls($page, $pages),
             ];
+        }
+        foreach ($this->sitemapProviders as $provider) {
+            if (!$provider instanceof SitemapProvider) continue;
+            array_push($entries, ...$provider->entries());
         }
 
         $response = $this->render('cms/seo/sitemap.xml.twig', ['entries' => $entries]);
