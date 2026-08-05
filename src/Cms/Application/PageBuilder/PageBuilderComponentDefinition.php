@@ -19,6 +19,9 @@ final readonly class PageBuilderComponentDefinition
         public ?string $stylesheet = null,
         /** @var list<string> fields containing trusted HTML edited through the rich-text editor */
         public array $htmlFields = [],
+        public string $group = 'builder.group.builtin',
+        /** @var list<string> Editor contexts; `*` means every Page Builder. */
+        public array $contexts = ['*'],
     ) {
         if (!preg_match('/^[a-z][a-z0-9_]{1,63}$/', $type)) throw new \InvalidArgumentException('Invalid Page Builder component type: '.$type);
         if ($moduleCode !== null && !preg_match('/^[a-z][a-z0-9_-]{1,79}$/', $moduleCode)) throw new \InvalidArgumentException('Invalid Page Builder component module: '.$moduleCode);
@@ -26,6 +29,9 @@ final readonly class PageBuilderComponentDefinition
         if ($template !== null && ($template === '' || str_contains($template, '..'))) throw new \InvalidArgumentException('Invalid Page Builder component Twig template: '.$type);
         if ($editorJavascript !== null && ($editorJavascript === '' || !str_starts_with($editorJavascript, '/'))) throw new \InvalidArgumentException('Invalid Page Builder editor script: '.$type);
         if ($stylesheet !== null && ($stylesheet === '' || !str_starts_with($stylesheet, '/'))) throw new \InvalidArgumentException('Invalid Page Builder stylesheet: '.$type);
+        if ($group === '') throw new \InvalidArgumentException('Invalid Page Builder component group: '.$type);
         foreach ($htmlFields as $field) if (!preg_match('/^[a-z][a-zA-Z0-9_]{0,63}$/', $field)) throw new \InvalidArgumentException('Invalid Page Builder HTML field: '.$field);
+        if ($contexts === []) throw new \InvalidArgumentException('Page Builder component contexts cannot be empty: '.$type);
+        foreach ($contexts as $context) if ($context !== '*' && !preg_match('/^[a-z][a-z0-9_.-]*(?:\.\*)?$/', $context)) throw new \InvalidArgumentException('Invalid Page Builder component context: '.$type);
     }
 }

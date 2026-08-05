@@ -16,6 +16,8 @@ final class PageBuilderComponentRegistry
     private array $coreComponents = [];
     /** @var array<string, array<string, PageBuilderComponentDefinition>> */
     private array $themeComponents = [];
+    /** @var array<string, string> */
+    private array $moduleNames = [];
 
     public function __construct(
         #[AutowireIterator('shopro.page_builder_component_provider')] iterable $providers,
@@ -25,6 +27,7 @@ final class PageBuilderComponentRegistry
         private readonly SettingsProvider $settings,
         private readonly ModuleRuntime $runtime,
     ) {
+        foreach ($modules->all() as $code => $module) $this->moduleNames[$code] = $module->name();
         foreach ($providers as $provider) foreach ($provider->components() as $component) {
             if ($component->moduleCode === null || $modules->get($component->moduleCode) === null) throw new \LogicException(sprintf('Page Builder component "%s" belongs to unknown module "%s".', $component->type, $component->moduleCode ?? 'none'));
             if (isset($this->coreComponents[$component->type])) throw new \LogicException('Duplicate core Page Builder component type: '.$component->type);
@@ -42,7 +45,15 @@ final class PageBuilderComponentRegistry
     }
 
     /** @return list<PageBuilderComponentDefinition> */
-    public function enabled(): array { return array_values(array_filter($this->activeComponents(), fn (PageBuilderComponentDefinition $component): bool => $component->library && $this->isAvailable($component))); }
+    public function enabled(?string $context = null): array { return array_values(array_filter($this->activeComponents(), fn (PageBuilderComponentDefinition $component): bool => $component->library && $this->isAvailable($component) && $this->supportsContext($component, $context))); }
+
+    /** @return array<string, list<PageBuilderComponentDefinition>> */
+    public function grouped(string $context): array
+    {
+        $groups = [];
+        foreach ($this->enabled($context) as $component) $groups[$this->groupFor($component)][] = $component;
+        return $groups;
+    }
 
     public function isRenderableEnabled(string $type): bool
     {
@@ -90,4 +101,17 @@ final class PageBuilderComponentRegistry
     }
     private function activeTheme(): string { return (string) $this->settings->get('theme', 'modernize'); }
     private function isAvailable(PageBuilderComponentDefinition $component): bool { return $component->moduleCode === null || $this->runtime->isEnabled($component->moduleCode); }
+    private function supportsContext(PageBuilderComponentDefinition $component, ?string $context): bool
+    {
+        if ($context === null || in_array('*', $component->contexts, true) || in_array($context, $component->contexts, true)) return true;
+        foreach ($component->contexts as $allowed) if (str_ends_with($allowed, '.*') && str_starts_with($context, substr($allowed, 0, -1))) return true;
+        return false;
+    }
+    private function groupFor(PageBuilderComponentDefinition $component): string
+    {
+        if ($component->group !== 'builder.group.builtin') return $component->group;
+        if (($this->themeComponents[$this->activeTheme()][$component->type] ?? null) === $component) return 'builder.group.theme';
+        if ($component->moduleCode !== null && $component->moduleCode !== 'cms') return 'Komponenty '.($this->moduleNames[$component->moduleCode] ?? ucfirst($component->moduleCode));
+        return $component->group;
+    }
 }

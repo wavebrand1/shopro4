@@ -122,5 +122,7 @@ final class SystemTranslationCatalog
   'menu.type_module'=>['pl'=>'Treść z modułu','en'=>'Module content'],
   'menu.module_content'=>['pl'=>'Kategoria lub pozycja z modułu','en'=>'Module category or item'],
   'menu.select_module_content'=>['pl'=>'Wybierz treść z modułu','en'=>'Select module content'],
+  'builder.group.builtin'=>['pl'=>'Komponenty wbudowane','en'=>'Built-in components'],
+  'builder.group.theme'=>['pl'=>'Komponenty skórki','en'=>'Theme components'],
  ];}
 }

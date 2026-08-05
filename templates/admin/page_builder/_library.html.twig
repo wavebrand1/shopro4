@@ -1,0 +1,16 @@
+<aside class="component-builder__library">
+    <p class="component-builder__label">{{ shopro_trans('builder.section_layout') }}</p>
+    <button class="component-library-item" type="button" data-add-section><span class="component-library-item__icon">§</span><span><strong>{{ shopro_trans('builder.add_section') }}</strong><small>{{ shopro_trans('builder.add_section_help') }}</small></span></button>
+    {% for group, components in shopro_builder_component_groups(context) %}
+        {% set visible = allow_presets|default(true) ? components : components|filter(component => not component.preset) %}
+        {% if visible %}
+            <p class="component-builder__label">{{ group starts with 'builder.' ? shopro_trans(group) : group }}</p>
+            {% for component in visible %}
+                <button class="component-library-item{{ component.preset ? ' component-library-item--preset' : '' }}" type="button" {% if component.preset %}data-add-preset="{{ component.type }}"{% else %}data-add-component="{{ component.type }}"{% endif %}>
+                    <span class="component-library-item__icon">{{ component.icon }}</span>
+                    <span><strong>{{ component.label starts with 'builder.' ? shopro_trans(component.label) : component.label }}</strong><small>{{ component.help starts with 'builder.' ? shopro_trans(component.help) : component.help }}</small></span>
+                </button>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</aside>

@@ -25,17 +25,7 @@
     {{ form_widget(form.editorMode) }}{{ form_widget(form.content) }}
     <div class="cms-editor-mode">
         <div class="component-builder" data-component-builder data-project-field="page_builderData" data-system-role-required="{{ page.requiresSystemRoleComponent ? 'true' : 'false' }}">
-            <aside class="component-builder__library">
-                <p class="component-builder__label">{{ shopro_trans('builder.section_layout') }}</p>
-                <button class="component-library-item" type="button" data-add-section><span class="component-library-item__icon">§</span><span><strong>{{ shopro_trans('builder.add_section') }}</strong><small>{{ shopro_trans('builder.add_section_help') }}</small></span></button>
-                <p class="component-builder__label">{{ shopro_trans('builder.available_components') }}</p>
-                {% for component in shopro_builder_components() %}
-                    <button class="component-library-item{{ component.preset ? ' component-library-item--preset' : '' }}" type="button" {% if component.preset %}data-add-preset="{{ component.type }}"{% else %}data-add-component="{{ component.type }}"{% endif %}>
-                        <span class="component-library-item__icon">{{ component.icon }}</span>
-                        <span><strong>{{ component.label starts with 'builder.' ? shopro_trans(component.label) : component.label }}</strong><small>{{ shopro_trans(component.help) }}</small></span>
-                    </button>
-                {% endfor %}
-            </aside>
+            {% include 'admin/page_builder/_library.html.twig' with {context:'page',allow_presets:true} only %}
             <div class="component-builder__workspace">
                 <div class="component-builder__toolbar"><div><strong>{{ shopro_trans('builder.page_layout') }}</strong><small>{{ shopro_trans('builder.render_help') }}</small></div></div>
                 <div class="component-builder__empty" data-builder-empty><strong>{{ shopro_trans('builder.empty') }}</strong><span>{{ shopro_trans('builder.empty_help') }}</span></div>

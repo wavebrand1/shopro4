@@ -18,12 +18,7 @@
     <div class="modern-card__heading"><div><h2>Page Builder</h2><p>{{ shopro_trans('page.copy_base_template_help') }}</p></div><button class="modern-button" type="submit" form="copy-base-template-form">{{ shopro_trans('page.copy_base_template') }}</button></div>
     <div class="cms-card-body">{{ form_widget(form.content) }}
         <div class="component-builder" data-component-builder data-project-field="page_translation_builderData" data-system-role-required="{{ page.requiresSystemRoleComponent ? 'true' : 'false' }}">
-            <aside class="component-builder__library">
-                <button class="component-library-item" type="button" data-add-section><strong>{{ shopro_trans('builder.add_section') }}</strong></button>
-                {% for component in shopro_builder_components()|filter(component => not component.preset) %}
-                    <button class="component-library-item" type="button" data-add-component="{{ component.type }}"><strong>{{ component.label starts with 'builder.' ? shopro_trans(component.label) : component.label }}</strong></button>
-                {% endfor %}
-            </aside>
+            {% include 'admin/page_builder/_library.html.twig' with {context:'page.translation',allow_presets:false} only %}
             <div class="component-builder__workspace"><div class="component-builder__empty" data-builder-empty><strong>{{ shopro_trans('builder.empty') }}</strong></div><div class="component-builder__list" data-builder-list></div></div>
         </div>
         {{ form_widget(form.builderData) }}{{ form_widget(form.builderCss) }}
