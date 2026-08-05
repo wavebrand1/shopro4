@@ -38,6 +38,11 @@
                     {{ shopro_trans('nav.menu') }}
                 </a>
                 {% endif %}
+                {% set admin_modules = shopro_admin_modules() %}
+                {% if admin_modules %}
+                <p class="modern-nav__label">FUNKCJONALNOŚCI</p>
+                {% for module in admin_modules %}<a class="{{ route starts with module.routePrefix ? 'is-active' : '' }}" href="{{ path(module.route) }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z"/></svg></span>{{ shopro_trans(module.name) }}</a>{% endfor %}
+                {% endif %}
                 {% if is_granted('ROLE_ADMIN') %}
                 {% if shopro_module_enabled('identity') %}
                 <p class="modern-nav__label">{{ shopro_trans('admin.users_system') }}</p>

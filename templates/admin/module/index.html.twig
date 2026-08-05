@@ -22,6 +22,7 @@
                 {% else %}
                     <span class="status status--published">{{ shopro_trans('module.enabled') }}</span>
                 {% endif %}
+                {% if module.managementRoute and module.runtimeEnabled %}<a class="table-action" href="{{ path(module.managementRoute) }}">Zarządzaj</a>{% endif %}
             </td>
             <td>
                 {{ shopro_trans(module.definition.required ? 'module.required' : 'module.optional') }}

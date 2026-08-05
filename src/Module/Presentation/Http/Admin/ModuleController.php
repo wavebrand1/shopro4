@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Module\Presentation\Http\Admin;
 
 use App\Module\Application\ModuleRegistry;
+use App\Module\Application\AdminModuleDefinition;
 use App\Module\Application\ModuleLifecycleException;
 use App\Module\Application\ModuleLifecycleManager;
 use App\Module\Application\ModuleAvailability;
@@ -34,6 +35,7 @@ final class ModuleController extends AbstractController
                 'state' => $state,
                 'runtimeEnabled' => $runtime->isEnabled($definition->code()),
                 'transition' => $state === null ? null : $manager->decision($definition->code(), !$state->isEnabled(), $states),
+                'managementRoute' => $definition instanceof AdminModuleDefinition ? $definition->adminRoute() : null,
             ];
         }
         return $this->render('admin/module/index.html.twig', [
