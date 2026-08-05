@@ -1,0 +1,13 @@
+{# Shared public heading for Core pages and installable modules. #}
+<header class="public-section-header{{ class|default('') ? ' ' ~ class : '' }}">
+    <h1>{{ title }}</h1>
+    {% if shopro_setting('show_breadcrumbs', true) and breadcrumbs|default([]) %}
+        <nav class="public-section-header__breadcrumbs" aria-label="Okruszki">
+            {% for crumb in breadcrumbs %}
+                {% if not loop.first %}<span aria-hidden="true">/</span>{% endif %}
+                {% if crumb.url|default(null) %}<a href="{{ crumb.url }}">{{ crumb.label }}</a>{% else %}<span>{{ crumb.label }}</span>{% endif %}
+            {% endfor %}
+        </nav>
+    {% endif %}
+    {% if description|default('') %}<p>{{ description }}</p>{% endif %}
+</header>

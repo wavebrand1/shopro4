@@ -42,17 +42,9 @@
         <section class="site-section"><div class="site-container"><p>{{ shopro_trans('page.no_content') }}</p></div></section>
     {% endfor %}
 {% else %}
-<section class="public-page-hero">
-    <div class="public-page-hero__orb"></div>
-    <div class="site-container">
-        {% if shopro_setting('show_breadcrumbs', true) %}<nav class="public-breadcrumb" aria-label="Okruszki">
-            <a href="{{ path('app_home') }}">{{ shopro_trans('front.home') }}</a><span>›</span><span>{{ page.title }}</span>
-        </nav>{% endif %}
-        <span class="site-kicker">SHOPRO 4.0</span>
-        <h1>{{ page.title }}</h1>
-        <p>{{ page.caption ?: shopro_trans('front.page_caption') }}</p>
-    </div>
-</section>
+<section class="public-page-heading-section"><div class="site-container">
+    {% include 'cms/_page_header.html.twig' with {title:page.title,description:page.caption ?: shopro_trans('front.page_caption'),breadcrumbs:[{label:shopro_trans('front.home'),url:path('app_home')},{label:page.title}]} only %}
+</div></section>
 
 <section class="public-page-content">
     <div class="site-container public-page-grid">
