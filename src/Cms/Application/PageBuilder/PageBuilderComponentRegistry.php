@@ -62,6 +62,21 @@ final class PageBuilderComponentRegistry
     /** @return list<string> */
     public function htmlFields(string $type): array { return $this->resolve($type)?->htmlFields ?? []; }
 
+    /** @return list<string> */
+    public function editorJavascripts(): array
+    {
+        $scripts = [];
+        foreach ($this->enabled() as $component) if ($component->editorJavascript !== null) $scripts[$component->editorJavascript] = true;
+        return array_keys($scripts);
+    }
+    /** @return list<string> */
+    public function stylesheets(): array
+    {
+        $styles = [];
+        foreach ($this->enabled() as $component) if ($component->stylesheet !== null) $styles[$component->stylesheet] = true;
+        return array_keys($styles);
+    }
+
     /** @return array<string, PageBuilderComponentDefinition> */
     private function activeComponents(): array { return array_replace($this->coreComponents, $this->themeComponents[$this->activeTheme()] ?? []); }
     private function resolve(string $type): ?PageBuilderComponentDefinition { return ($this->themeComponents[$this->activeTheme()][$type] ?? null) ?? ($this->coreComponents[$type] ?? null); }

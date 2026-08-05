@@ -1,1 +1,2 @@
 {% extends shopro_active_front_layout() %}
+{% block stylesheets %}{{ parent() }}{% for stylesheet in shopro_builder_stylesheets() %}<link rel="stylesheet" href="{{ asset(stylesheet) }}">{% endfor %}{% endblock %}

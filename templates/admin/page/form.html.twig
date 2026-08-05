@@ -1,6 +1,6 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}{{ shopro_trans(page.id ? 'page.edit' : 'page.new') }} — Shopro 4.0{% endblock %}
-{% block javascripts %}{% set active_theme = shopro_active_front_theme() %}{% if active_theme.builderJavascript %}<script src="{{ active_theme.builderJavascript }}"></script>{% endif %}{{ importmap(['app', 'component-builder']) }}{% endblock %}
+{% block javascripts %}{% set active_theme = shopro_active_front_theme() %}{% if active_theme.builderJavascript %}<script src="{{ active_theme.builderJavascript }}"></script>{% endif %}{% for script in shopro_builder_editor_javascripts() %}<script src="{{ asset(script) }}"></script>{% endfor %}{{ importmap(['app', 'component-builder']) }}{% endblock %}
 {% block body %}
 <div class="modern-page-heading">
     <div><p class="modern-kicker">{{ shopro_trans('admin.content_management') }}</p><h1>{{ shopro_trans(page.id ? 'page.edit' : 'page.new') }}</h1><p>{{ shopro_trans('page.form_lead') }}</p></div>

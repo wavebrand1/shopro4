@@ -70,7 +70,8 @@ const initializeComponentBuilder = () => {
             label:t('Obraz','Image'),itemLabel:'',fields:[media(t('Plik obrazu','Image file'),'src'),text(t('Tekst alternatywny','Alternative text'),'alt'),area(t('Podpis','Caption'),'caption'),select(t('Proporcje','Aspect ratio'),'ratio',[[t('Oryginalne','Original'),'auto'],['16:9','16/9'],['4:3','4/3'],['1:1','1/1']]),select(t('Dopasowanie','Fit'),'fit',[[t('Wypełnij','Cover'),'cover'],[t('Pokaż cały obraz','Contain'),'contain']]),select(t('Ładowanie','Loading'),'loading',[[t('Leniwe','Lazy'),'lazy'],[t('Priorytetowe','Priority'),'eager']])],
             defaults:{src:'',alt:'',caption:'',ratio:'auto',fit:'cover',loading:'lazy'}
         },
-        ...(globalThis.ShoproThemeComponents ?? {})
+        ...(globalThis.ShoproThemeComponents ?? {}),
+        ...(globalThis.ShoproModuleComponents ?? {})
     };
 
     const createComponent = type => {
