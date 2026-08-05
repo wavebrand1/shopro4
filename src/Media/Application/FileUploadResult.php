@@ -10,6 +10,8 @@ final class FileUploadResult
     public function __construct(
         public readonly int $uploaded,
         public readonly array $rejections,
+        /** @var list<string> */
+        public readonly array $urls = [],
     ) {}
 
     public function rejected(): int

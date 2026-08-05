@@ -87,12 +87,13 @@ final class AdminFileManager
         $directory = $this->resolve($this->normalize($path), true);
         $uploaded = 0;
         $rejections = [];
+        $urls = [];
         foreach ($files as $file) {
             $mimeType = (string) $file->getMimeType();
             $extension = strtolower($file->getClientOriginalExtension());
             $reason = match (true) {
                 !$file->isValid() => 'invalid',
-                $file->getSize() > 20 * 1024 * 1024 => 'size',
+                $file->getSize() > 50 * 1024 * 1024 => 'size',
                 !in_array($mimeType, self::ALLOWED_MIME_TYPES, true) => 'type',
                 $imagesOnly && !str_starts_with($mimeType, 'image/') => 'type',
                 !self::matchesMimeType($mimeType, $extension) => 'mismatch',
@@ -111,10 +112,12 @@ final class AdminFileManager
             if (file_exists($directory.'/'.$name)) $name = pathinfo($name, PATHINFO_FILENAME).'-'.bin2hex(random_bytes(4)).($file->getClientOriginalExtension() ? '.'.strtolower($file->getClientOriginalExtension()) : '');
             $stored = $file->move($directory, $name);
             if ($this->imageOptimizer && str_starts_with((string) $stored->getMimeType(), 'image/')) $this->imageOptimizer->optimize($stored->getPathname());
+            $relative = trim($this->normalize($path).'/'.$name, '/');
+            $urls[] = '/uploads/'.str_replace('%2F', '/', rawurlencode($relative));
             ++$uploaded;
         }
 
-        return new FileUploadResult($uploaded, $rejections);
+        return new FileUploadResult($uploaded, $rejections, $urls);
     }
 
     public function rename(string $path, string $newName): void
