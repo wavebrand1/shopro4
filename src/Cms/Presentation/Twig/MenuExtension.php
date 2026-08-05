@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cms\Presentation\Twig;
 
+use App\Cms\Application\MenuContentRegistry;
 use App\Cms\Domain\MenuLink;
 use App\Cms\Domain\Entity\MenuItem;
 use App\Cms\Domain\Entity\MenuItemTranslation;
@@ -29,6 +30,7 @@ final class MenuExtension extends AbstractExtension
         private readonly LocalizedPageUrlGenerator $localizedUrls,
         private readonly EntityManagerInterface $em,
         private readonly ModuleAvailability $modules,
+        private readonly MenuContentRegistry $moduleContent,
     ) {
     }
 
@@ -75,11 +77,13 @@ final class MenuExtension extends AbstractExtension
             }
 
             $translation=$this->translations[$id]??null;
+            $url = $this->resolveUrl($item, $translation);
+            if ($item->getContentType() === MenuItem::TYPE_MODULE && $url === null) continue;
             $branch[] = [
                 'id' => $id,
                 'name' => $translation?->getName()??$item->getName(),
                 'caption' => $translation?->getCaption()??$item->getCaption(),
-                'url' => $this->resolveUrl($item,$translation),
+                'url' => $url,
                 'target' => $item->getTarget(),
                 'children' => $this->branch($items, $id, [...$visited, $id]),
             ];
@@ -99,6 +103,7 @@ final class MenuExtension extends AbstractExtension
                 ? $this->pageUrl($item->getPage())
                 : null,
             MenuItem::TYPE_WEB => $translation?->getLink()??$item->getLink(),
+            MenuItem::TYPE_MODULE => $this->moduleContent->resolve($item->getModuleReference(), $this->currentLanguage()),
             default => null,
         };
     }
@@ -107,5 +112,11 @@ final class MenuExtension extends AbstractExtension
     {
         $language=$this->requests->getCurrentRequest()?->attributes->get('_shopro_language');
         return $language instanceof Language?$this->localizedUrls->page($page,$language):$this->urls->generate('cms_page_show',['slug'=>$page->getSlug()]);
+    }
+
+    private function currentLanguage(): ?Language
+    {
+        $language = $this->requests->getCurrentRequest()?->attributes->get('_shopro_language');
+        return $language instanceof Language ? $language : null;
     }
 }

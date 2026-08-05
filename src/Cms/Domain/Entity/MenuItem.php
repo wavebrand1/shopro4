@@ -19,6 +19,7 @@ class MenuItem
     public const TYPE_PAGE = 'page';
     public const TYPE_WEB = 'web';
     public const TYPE_PLACEHOLDER = 'placeholder';
+    public const TYPE_MODULE = 'module';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -43,8 +44,11 @@ class MenuItem
     private ?string $caption = null;
 
     #[ORM\Column(length: 20)]
-    #[Assert\Choice(choices: [self::TYPE_PAGE, self::TYPE_WEB, self::TYPE_PLACEHOLDER])]
+    #[Assert\Choice(choices: [self::TYPE_PAGE, self::TYPE_WEB, self::TYPE_PLACEHOLDER, self::TYPE_MODULE])]
     private string $contentType = self::TYPE_PAGE;
+
+    #[ORM\Column(length: 120, nullable: true)]
+    private ?string $moduleReference = null;
 
     #[ORM\Column(length: 500, nullable: true)]
     #[Assert\Length(max: 500)]
@@ -79,6 +83,8 @@ class MenuItem
     public function setCaption(?string $caption): void { $this->caption = ($value = trim((string) $caption)) !== '' ? $value : null; }
     public function getContentType(): string { return $this->contentType; }
     public function setContentType(string $contentType): void { $this->contentType = $contentType; }
+    public function getModuleReference(): ?string { return $this->moduleReference; }
+    public function setModuleReference(?string $reference): void { $this->moduleReference = ($value = trim((string) $reference)) !== '' ? $value : null; }
     public function getLink(): ?string { return $this->link; }
     public function setLink(?string $link): void { $this->link = ($value = trim((string) $link)) !== '' ? $value : null; }
     public function getTarget(): string { return $this->target; }
@@ -104,6 +110,9 @@ class MenuItem
         }
         if ($this->contentType === self::TYPE_WEB && $this->link !== null && !MenuLink::isSafe($this->link)) {
             $context->buildViolation('validation.menu.link_invalid')->atPath('link')->addViolation();
+        }
+        if ($this->contentType === self::TYPE_MODULE && $this->moduleReference === null) {
+            $context->buildViolation('validation.menu.module_content_required')->atPath('moduleReference')->addViolation();
         }
     }
 }

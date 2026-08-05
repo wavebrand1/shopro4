@@ -234,6 +234,21 @@ const initializeMenuSorting = () => {
 document.addEventListener('turbo:load', initializeMenuSorting);
 initializeMenuSorting();
 
+const initializeMenuContentForm = () => {
+    document.querySelectorAll('[data-menu-content-form]').forEach((form) => {
+        const type = form.querySelector('[data-menu-content-type]');
+        if (!type) return;
+        const refresh = () => form.querySelectorAll('[data-menu-field]').forEach((row) => {
+            row.hidden = row.dataset.menuField !== type.value;
+        });
+        type.addEventListener('change', refresh);
+        refresh();
+    });
+};
+
+document.addEventListener('turbo:load', initializeMenuContentForm);
+initializeMenuContentForm();
+
 const initializeCookieConsent = () => {
     const banner = document.querySelector('[data-cookie-consent]');
     if (!banner) return;

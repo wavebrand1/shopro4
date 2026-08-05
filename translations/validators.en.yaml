@@ -14,6 +14,7 @@ validation.page.system_role_forbidden: 'The page role component only works on a 
 validation.menu.page_required: 'Select a page for this menu item.'
 validation.menu.link_required: 'Enter the external link URL.'
 validation.menu.link_invalid: 'Enter a safe HTTPS/HTTP URL, internal path, anchor, email address, or phone number.'
+validation.menu.module_content_required: 'Select a module category or item.'
 validation.redirect.source_unique: 'A redirect from this address already exists.'
 validation.redirect.internal_path: 'Enter a safe internal path beginning with a single slash.'
 validation.redirect.source_reserved: 'This address belongs to a system feature and cannot be a redirect source.'

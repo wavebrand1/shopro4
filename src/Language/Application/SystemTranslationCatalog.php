@@ -119,5 +119,8 @@ final class SystemTranslationCatalog
   'cookie.analytics'=>['pl'=>'Analityczne','en'=>'Analytics'],'cookie.analytics_help'=>['pl'=>'Pomagają nam mierzyć ruch i poprawiać działanie strony.','en'=>'They help us measure traffic and improve the website.'],
   'cookie.marketing'=>['pl'=>'Marketingowe','en'=>'Marketing'],'cookie.marketing_help'=>['pl'=>'Umożliwiają dopasowanie reklam oraz materiałów promocyjnych.','en'=>'They allow us to tailor ads and promotional content.'],
   'cookie.accept_all'=>['pl'=>'Akceptuj wszystkie','en'=>'Accept all'],'cookie.reject_optional'=>['pl'=>'Tylko niezbędne','en'=>'Necessary only'],'cookie.settings'=>['pl'=>'Ustawienia','en'=>'Settings'],'cookie.save_settings'=>['pl'=>'Zapisz wybór','en'=>'Save preferences'],'cookie.manage'=>['pl'=>'Zmień ustawienia cookies','en'=>'Change cookie settings'],
+  'menu.type_module'=>['pl'=>'Treść z modułu','en'=>'Module content'],
+  'menu.module_content'=>['pl'=>'Kategoria lub pozycja z modułu','en'=>'Module category or item'],
+  'menu.select_module_content'=>['pl'=>'Wybierz treść z modułu','en'=>'Select module content'],
  ];}
 }
