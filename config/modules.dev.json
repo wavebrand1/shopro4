@@ -6,6 +6,13 @@
       "constraint": "*@dev",
       "repository": "git@github-shopro-blog:wavebrand1/shopro4_mod_blog.git",
       "ref": "main"
+    },
+    {
+      "package": "wavebrand1/shopro4-mod-portfolio",
+      "path": "../modules/shopro4_mod_portfolio",
+      "constraint": "*@dev",
+      "repository": "https://github.com/wavebrand1/shopro4_mod_portfolio.git",
+      "ref": "main"
     }
   ]
 }
