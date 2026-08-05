@@ -134,6 +134,13 @@ if [ -z "$SELECT_STYLE_ASSET" \
     echo "[Shopro] The compiled stylesheet does not contain the shared SearchableSelect component" >&2
     exit 1
 fi
+APP_STYLE_ASSET="$("$PHP_BIN" -r '$manifest = json_decode(file_get_contents("public/assets/manifest.json"), true, 512, JSON_THROW_ON_ERROR); echo $manifest["styles/app.css"] ?? "";')"
+if [ -z "$APP_STYLE_ASSET" \
+    ] || [ ! -f "public$APP_STYLE_ASSET" \
+    ] || ! grep -q 'builder-section:has(.ui-searchable-select.is-open)' "public$APP_STYLE_ASSET"; then
+    echo "[Shopro] The compiled stylesheet is stale and does not contain the Page Builder select overflow fix" >&2
+    exit 1
+fi
 
 echo "[Shopro] Generating responsive image variants"
 APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M bin/console app:images:optimize \
