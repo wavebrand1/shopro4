@@ -77,7 +77,7 @@ fi
 # unrelated deployment step cannot leave the web runtime on the previous module
 # route map.
 echo "[Shopro] Refreshing application cache after package synchronization"
-APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console cache:clear
+APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M bin/console cache:clear
 
 if APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console doctrine:migrations:up-to-date --no-interaction >/dev/null 2>&1; then
     echo "[Shopro] Database is up to date; pre-migration backup is not required"
@@ -87,7 +87,7 @@ else
 fi
 
 echo "[Shopro] Running database migrations"
-APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console doctrine:migrations:migrate --no-interaction
+APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M bin/console doctrine:migrations:migrate --no-interaction
 
 echo "[Shopro] Validating Doctrine mapping"
 APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console doctrine:schema:validate --skip-sync
@@ -151,7 +151,7 @@ APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M 
 # Cache must be cleared after compilation so that Symfony discovers the
 # freshly generated manifest instead of retaining old asset URLs.
 echo "[Shopro] Clearing Symfony cache"
-APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console cache:clear
+APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M bin/console cache:clear
 
 echo "[Shopro] Ensuring newsletter queue worker is scheduled"
 SHOPRO_DEPLOY_ENV="$DEPLOY_ENV" SHOPRO_DEPLOY_DEBUG="$DEPLOY_DEBUG" bash bin/setup-queue-worker --install-only || echo "[Shopro] Cron unavailable; configure the worker in Plesk Scheduled Tasks"
