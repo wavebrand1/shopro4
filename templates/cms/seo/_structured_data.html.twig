@@ -1,10 +1,13 @@
 {# Wspólne dane strukturalne dla wszystkich publicznych widoków CMS. #}
 {% set home_url = absolute_url(path('app_home')) %}
-{% set page_url = page is defined and page.canonical ? page.canonical : absolute_url(app.request.pathInfo) %}
+{# Widoki modułów mogą używać `page` jako numeru paginacji. Obiektem CMS jest
+   wyłącznie wartość udostępniająca właściwości strony. #}
+{% set cms_page = page is defined and page.canonical is defined ? page : null %}
+{% set page_url = cms_page and cms_page.canonical ? cms_page.canonical : absolute_url(app.request.pathInfo) %}
 {% set site_name = shopro_setting('site_name', 'Shopro 4.0') %}
 {% set company_name = shopro_setting('company') ?: site_name %}
-{% set page_name = page is defined ? page.effectiveSeoTitle : site_name %}
-{% set page_description = page is defined and page.description ? page.description : shopro_setting('meta_description', '') %}
+{% set page_name = cms_page ? cms_page.effectiveSeoTitle : site_name %}
+{% set page_description = cms_page and cms_page.description ? cms_page.description : shopro_setting('meta_description', '') %}
 {% set organization = {'@type':shopro_setting('business_schema_type', 'Organization'),'@id':home_url ~ '#organization','name':company_name,'url':home_url} %}
 {% if shopro_setting('site_logo') %}{% set organization = organization|merge({'logo':absolute_url(shopro_setting('site_logo'))}) %}{% endif %}
 {% if shopro_setting('site_email') %}{% set organization = organization|merge({'email':shopro_setting('site_email')}) %}{% endif %}
