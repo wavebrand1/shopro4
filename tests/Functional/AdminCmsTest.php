@@ -42,6 +42,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class AdminCmsTest extends WebTestCase
@@ -995,6 +996,47 @@ final class AdminCmsTest extends WebTestCase
         $newsletterUser = $this->entityManager->getRepository(SiteUser::class)->findOneBy(['email' => 'newsletter-reader@example.test']);
         self::assertNotNull($newsletterUser);
         self::assertFalse($newsletterUser->isNewsletter());
+    }
+
+    public function testAdministratorSessionIsAlsoAvailableOnThePublicSite(): void
+    {
+        $installLock = dirname(__DIR__, 2).'/var/install.lock';
+        $createdInstallLock = !is_file($installLock);
+        if ($createdInstallLock) {
+            file_put_contents($installLock, '{}');
+        }
+
+        $user = new AdminUser('shared-session-admin@example.test');
+        $hasher = self::getContainer()->get(UserPasswordHasherInterface::class);
+        $user->setPassword($hasher->hashPassword($user, 'very-secure-password'));
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $crawler = $this->client->request('GET', '/admin/login');
+        self::assertResponseIsSuccessful();
+        $form = $crawler->filter('form')->form([
+            '_username' => 'shared-session-admin@example.test',
+            '_password' => 'very-secure-password',
+        ]);
+        $this->client->submit($form);
+        self::assertResponseRedirects('/admin');
+        self::assertArrayHasKey('_security_shopro_user', $this->client->getRequest()->getSession()->all());
+
+        $this->client->request('GET', '/');
+
+        self::assertResponseIsSuccessful();
+        self::assertArrayHasKey('_security_shopro_user', $this->client->getRequest()->getSession()->all());
+        self::assertInstanceOf(
+            AdminUser::class,
+            self::getContainer()->get(TokenStorageInterface::class)->getToken()?->getUser(),
+        );
+
+        $this->client->request('GET', '/admin');
+        self::assertResponseIsSuccessful();
+
+        if ($createdInstallLock) {
+            unlink($installLock);
+        }
     }
 
     public function testScheduledPublicationWindowControlsPublicAvailability(): void

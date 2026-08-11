@@ -14,6 +14,12 @@ security:
         site_users:
             entity:
                 class: App\Identity\Domain\Entity\SiteUser
+        admin_session_users:
+            chain:
+                providers: [admin_users, site_users]
+        frontend_session_users:
+            chain:
+                providers: [site_users, admin_users]
 
     firewalls:
         installer:
@@ -26,7 +32,8 @@ security:
         admin:
             pattern: ^/admin(?:/|$)
             lazy: true
-            provider: admin_users
+            provider: admin_session_users
+            context: shopro_user
             form_login:
                 login_path: admin_login
                 check_path: admin_login
@@ -47,7 +54,8 @@ security:
                 target: admin_login
         frontend:
             lazy: true
-            provider: site_users
+            provider: frontend_session_users
+            context: shopro_user
             form_login:
                 login_path: site_login
                 check_path: site_login
