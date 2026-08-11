@@ -72,13 +72,6 @@ if [ ! -f vendor/symfony/html-sanitizer/HtmlSanitizer.php ]; then
     exit 1
 fi
 
-# Composer path repositories may have just replaced an installed module with a
-# newer revision. Refresh the container and route cache immediately so a later,
-# unrelated deployment step cannot leave the web runtime on the previous module
-# route map.
-echo "[Shopro] Refreshing application cache after package synchronization"
-APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M bin/console cache:clear
-
 if APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console doctrine:migrations:up-to-date --no-interaction >/dev/null 2>&1; then
     echo "[Shopro] Database is up to date; pre-migration backup is not required"
 else
@@ -88,6 +81,13 @@ fi
 
 echo "[Shopro] Running database migrations"
 APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M bin/console doctrine:migrations:migrate --no-interaction
+
+# Only warm the container after the new schema is present. A newly synchronized
+# module may map columns introduced by its pending migration; clearing cache
+# before migrations would boot that code against the previous schema and abort
+# the deployment before Doctrine can update it.
+echo "[Shopro] Refreshing application cache after database migrations"
+APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" -d memory_limit=512M bin/console cache:clear
 
 echo "[Shopro] Validating Doctrine mapping"
 APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console doctrine:schema:validate --skip-sync
