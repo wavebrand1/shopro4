@@ -13,5 +13,6 @@ return [
     Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
-    Wavebrand\ShoproTheme\AtenaFit\ShoproThemeAtenaFitBundle::class => ['all' => true],
+    Wavebrand\ShoproBlog\ShoproBlogBundle::class => ['all' => true],
+    Wavebrand\ShoproPortfolio\ShoproPortfolioBundle::class => ['all' => true],
 ];

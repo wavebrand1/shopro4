@@ -322,7 +322,10 @@
     "twig/extra-bundle": {
         "version": "v3.24.0"
     },
-    "wavebrand/shopro-theme-atena-fit": {
-        "version": "dev-master"
+    "wavebrand1/shopro4-mod-blog": {
+        "version": "dev-main"
+    },
+    "wavebrand1/shopro4-mod-portfolio": {
+        "version": "dev-main"
     }
 }

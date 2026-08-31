@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "145ab2c9908a3d3cd247f68cc974e935",
+    "content-hash": "7578694790eba34f8b711b8223da939b",
     "packages": [
         {
             "name": "composer/semver",
@@ -8368,29 +8368,96 @@
             "time": "2026-07-03T20:44:34+00:00"
         },
         {
-            "name": "wavebrand/shopro-theme-atena-fit",
+            "name": "wavebrand1/shopro4-mod-blog",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "themes/shopro-theme-atena-fit",
-                "reference": "47d80fb8682c4cb74c71df5dc2cd4fe7cfcbbaf5"
+                "url": "../modules/shopro4_mod_blog",
+                "reference": "f4b7b10eb5f6e96641ba829df70d43a4f42b7571"
             },
             "require": {
+                "doctrine/doctrine-bundle": "^2.18",
+                "doctrine/doctrine-migrations-bundle": "^3.7",
+                "doctrine/orm": "^3.6",
                 "php": ">=8.2",
-                "symfony/framework-bundle": "^7.4"
+                "symfony/framework-bundle": "7.4.*",
+                "symfony/validator": "7.4.*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^12.5"
             },
             "type": "symfony-bundle",
+            "extra": {
+                "symfony": {
+                    "bundles": {
+                        "Wavebrand\\ShoproBlog\\ShoproBlogBundle": [
+                            "all"
+                        ]
+                    }
+                }
+            },
             "autoload": {
                 "psr-4": {
-                    "Wavebrand\\ShoproTheme\\AtenaFit\\": "src/"
+                    "Wavebrand\\ShoproBlog\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Wavebrand\\ShoproBlog\\Tests\\": "tests/"
                 }
             },
             "license": [
                 "proprietary"
             ],
-            "description": "Atena Fit front theme for Shopro 4",
+            "description": "Installable Blog module for Shopro 4",
             "transport-options": {
-                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "wavebrand1/shopro4-mod-portfolio",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../modules/shopro4_mod_portfolio",
+                "reference": "4cab5aecbd62020eb26a93058a663c79be93094a"
+            },
+            "require": {
+                "doctrine/doctrine-bundle": "^2.18",
+                "doctrine/doctrine-migrations-bundle": "^3.7",
+                "doctrine/orm": "^3.6",
+                "php": ">=8.2",
+                "symfony/framework-bundle": "7.4.*",
+                "symfony/validator": "7.4.*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^12.5"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "symfony": {
+                    "bundles": {
+                        "Wavebrand\\ShoproPortfolio\\ShoproPortfolioBundle": [
+                            "all"
+                        ]
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Wavebrand\\ShoproPortfolio\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Wavebrand\\ShoproPortfolio\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Installable Portfolio module for Shopro 4",
+            "transport-options": {
                 "relative": true
             }
         },
@@ -10625,7 +10692,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "wavebrand/shopro-theme-atena-fit": 20
+        "wavebrand1/shopro4-mod-blog": 20,
+        "wavebrand1/shopro4-mod-portfolio": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

@@ -5,13 +5,16 @@
     "license": "proprietary",
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "repositories": [
-        {
+    "repositories": {
+        "shopro_module_portfolio": {
             "type": "path",
-            "url": "themes/shopro-theme-atena-fit",
-            "options": {"symlink": true}
+            "url": "../modules/shopro4_mod_portfolio"
+        },
+        "shopro_module_0": {
+            "type": "path",
+            "url": "../modules/shopro4_mod_blog"
         }
-    ],
+    },
     "require": {
         "php": ">=8.2",
         "ext-ctype": "*",
@@ -55,7 +58,8 @@
         "symfony/yaml": "7.4.*",
         "twig/extra-bundle": "^2.12|^3.24",
         "twig/twig": "^2.12|^3.28",
-        "wavebrand/shopro-theme-atena-fit": "*@dev"
+        "wavebrand1/shopro4-mod-blog": "*@dev",
+        "wavebrand1/shopro4-mod-portfolio": "*@dev"
     },
     "config": {
         "allow-plugins": {
