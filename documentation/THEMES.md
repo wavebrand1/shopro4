@@ -72,7 +72,9 @@ Dla witryny, której aplikacja znajduje się w `~/httpdocs`, należy utworzyć `
     {
       "package": "vendor/shopro-theme-example",
       "path": "../shopro-themes/example",
-      "constraint": "*@dev"
+      "constraint": "*@dev",
+      "repository": "https://github.com/vendor/shopro-theme-example.git",
+      "ref": "main"
     }
   ]
 }
@@ -80,7 +82,53 @@ Dla witryny, której aplikacja znajduje się w `~/httpdocs`, należy utworzyć `
 
 `bin/deploy-dev` i `bin/deploy-prod` odczytują ten manifest przed instalacją Composera. Odtwarzają repozytorium typu `path`, dołączają każdy wymieniony pakiet i pozwalają Symfony Flex zarejestrować jego bundle. Manifest oraz źródła skórki przetrwają więc aktualizację Core. Ścieżka `path` jest liczona względem `httpdocs`; należy użyć katalogu poza `httpdocs`, dostępnego do odczytu dla użytkownika hostingu.
 
-Na środowisku dev domyślna Atena jest wyjątkiem bootstrapowym: ponieważ Core
-wymaga jej pakietu już w `composer.json`, `bin/sync-installed-themes` klonuje lub
-aktualizuje repozytorium do `themes/shopro-theme-atena-fit` przed pierwszym
-wywołaniem Composera. Produkcja nadal wymaga jawnego, wersjonowanego źródła.
+Jeżeli wpis zawiera `repository` i opcjonalne `ref`, skrypt przygotowawczy klonuje
+brakujące źródło, a istniejące repozytorium aktualizuje przez `fetch` i
+`merge --ff-only`. Aktualizacja jest przerywana, gdy katalog ma lokalne zmiany
+albo jego `origin` nie zgadza się z manifestem. Wpis bez `repository` zachowuje
+dotychczasowe działanie i zakłada, że źródło jest zarządzane poza skryptem.
+
+Core nie zawiera i nie wymaga żadnej skórki konkretnego klienta. Pakiety
+wdrożone przez Plesk do `themes/*` są wykrywane automatycznie, jeżeli ich
+`composer.json` ma typ `symfony-bundle` oraz znacznik:
+
+```json
+"extra": {"shopro-theme": true}
+```
+
+`bin/sync-installed-themes` rejestruje wykryte katalogi jako repozytoria typu
+`path` i dołącza pakiety przed właściwym `composer install`. Nie trzeba dla nich
+tworzyć manifestu. Dzięki temu instalacja Trackhammer nie pobiera Ateny, jeśli
+na serwerze nie ma katalogu Ateny. Skórki systemowe `modernize`, `classic` i
+`compact` pozostają dostarczane przez Core jako bezpieczny fallback.
+
+Manifest jest potrzebny wyłącznie dla skórek przechowywanych poza `themes/*`
+albo wymagających klonowania przez skrypt zamiast przez integrację Git Pleska.
+
+Przykładowy manifest środowiska Atena:
+
+```json
+{
+  "themes": [
+    {
+      "package": "wavebrand/shopro-theme-atena-fit",
+      "path": "themes/shopro-theme-atena-fit",
+      "constraint": "*@dev"
+    }
+  ]
+}
+```
+
+Przykładowy manifest środowiska Trackhammer:
+
+```json
+{
+  "themes": [
+    {
+      "package": "wavebrand/shopro-theme-trackhammer",
+      "path": "themes/shopro-theme-trackhammer",
+      "constraint": "*@dev"
+    }
+  ]
+}
+```

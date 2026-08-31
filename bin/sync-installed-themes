@@ -10,48 +10,6 @@ cd "$(dirname "$0")/.."
 PHP_BIN="${SHOPRO_PHP_BIN:-php}"
 COMPOSER_BIN="${SHOPRO_COMPOSER_BIN:-composer}"
 MANIFEST="${SHOPRO_THEME_MANIFEST:-$(cd .. && pwd)/shopro-themes/installed.json}"
-DEFAULT_DEV_THEME_PATH="themes/shopro-theme-atena-fit"
-DEFAULT_DEV_THEME_REPOSITORY="https://github.com/wavebrand1/shopro-theme-atena-fit.git"
-
-# The Core composer.json references the default Atena theme as a path package.
-# Restore that source before the first Composer operation on dev deployments.
-if [ "${SHOPRO_DEPLOY_ENV:-dev}" != "prod" ]; then
-    if ! command -v git >/dev/null 2>&1; then
-        echo "[Shopro themes] Git was not found" >&2
-        exit 1
-    fi
-    if [ ! -e "$DEFAULT_DEV_THEME_PATH" ]; then
-        echo "[Shopro themes] Cloning the default Atena theme"
-        mkdir -p "$(dirname "$DEFAULT_DEV_THEME_PATH")"
-        git clone --branch main --single-branch "$DEFAULT_DEV_THEME_REPOSITORY" "$DEFAULT_DEV_THEME_PATH"
-    elif [ ! -d "$DEFAULT_DEV_THEME_PATH/.git" ]; then
-        echo "[Shopro themes] Default theme path is not a Git repository: $DEFAULT_DEV_THEME_PATH" >&2
-        exit 1
-    elif [ -n "$(git -C "$DEFAULT_DEV_THEME_PATH" status --porcelain)" ]; then
-        echo "[Shopro themes] Refusing to update the default theme with local changes" >&2
-        exit 1
-    else
-        current_remote="$(git -C "$DEFAULT_DEV_THEME_PATH" remote get-url origin)"
-        if [ "$current_remote" != "$DEFAULT_DEV_THEME_REPOSITORY" ]; then
-            echo "[Shopro themes] Default theme repository URL mismatch" >&2
-            exit 1
-        fi
-        echo "[Shopro themes] Updating the default Atena theme"
-        git -C "$DEFAULT_DEV_THEME_PATH" fetch --prune origin main
-        git -C "$DEFAULT_DEV_THEME_PATH" merge --ff-only FETCH_HEAD
-    fi
-fi
-
-if [ "${SHOPRO_THEME_PREPARE_ONLY:-0}" = "1" ]; then
-    echo "[Shopro themes] Theme sources are ready"
-    exit 0
-fi
-
-if [ ! -f "$MANIFEST" ]; then
-    echo "[Shopro themes] No external theme manifest found; using bundled themes only"
-    exit 0
-fi
-
 if ! command -v "$PHP_BIN" >/dev/null 2>&1; then
     echo "[Shopro themes] PHP CLI was not found: $PHP_BIN" >&2
     exit 1
@@ -64,26 +22,92 @@ fi
 
 mapfile -t THEMES < <("$PHP_BIN" -r '
     $manifest = $argv[1];
-    $data = json_decode((string) file_get_contents($manifest), true, 512, JSON_THROW_ON_ERROR);
-    foreach (($data["themes"] ?? []) as $theme) {
+    $themes = [];
+
+    foreach (glob("themes/*/composer.json") ?: [] as $composerFile) {
+        $composer = json_decode((string) file_get_contents($composerFile), true, 512, JSON_THROW_ON_ERROR);
+        if (($composer["type"] ?? null) !== "symfony-bundle" || ($composer["extra"]["shopro-theme"] ?? false) !== true) {
+            continue;
+        }
+        $package = trim((string) ($composer["name"] ?? ""));
+        if ($package === "") {
+            throw new RuntimeException("Auto-discovered Shopro theme has no Composer package name: ".$composerFile);
+        }
+        $themes[$package] = [
+            "package" => $package,
+            "path" => dirname($composerFile),
+            "constraint" => "*@dev",
+        ];
+    }
+
+    if (is_file($manifest)) {
+        $data = json_decode((string) file_get_contents($manifest), true, 512, JSON_THROW_ON_ERROR);
+        foreach (($data["themes"] ?? []) as $theme) {
+            if (!is_array($theme) || !isset($theme["package"], $theme["path"])) {
+                throw new RuntimeException("Every theme requires package and path.");
+            }
+            $themes[(string) $theme["package"]] = $theme;
+        }
+    }
+
+    foreach ($themes as $theme) {
         if (!is_array($theme) || !isset($theme["package"], $theme["path"])) {
             throw new RuntimeException("Every theme requires package and path.");
         }
         $constraint = (string) ($theme["constraint"] ?? "*@dev");
-        echo $theme["package"], "\t", $theme["path"], "\t", $constraint, PHP_EOL;
+        $repository = trim((string) ($theme["repository"] ?? ""));
+        $ref = trim((string) ($theme["ref"] ?? "main"));
+        foreach ([$theme["package"], $theme["path"], $constraint, $repository, $ref] as $value) {
+            if (str_contains((string) $value, "\t") || str_contains((string) $value, "\n")) {
+                throw new RuntimeException("Theme manifest values cannot contain tabs or newlines.");
+            }
+        }
+        echo $theme["package"], "\t", $theme["path"], "\t", $constraint, "\t", ($repository !== "" ? $repository : "-"), "\t", $ref, PHP_EOL;
     }
 ' "$MANIFEST")
 
 if [ "${#THEMES[@]}" -eq 0 ]; then
-    echo "[Shopro themes] Manifest contains no customer themes"
+    echo "[Shopro themes] No installable customer themes found"
     exit 0
 fi
 
 for index in "${!THEMES[@]}"; do
-    IFS=$'\t' read -r package path constraint <<< "${THEMES[$index]}"
+    IFS=$'\t' read -r package path constraint repository ref <<< "${THEMES[$index]}"
+    ref="${ref%$'\r'}"
     if [ -z "$package" ] || [ -z "$path" ]; then
         echo "[Shopro themes] Invalid theme manifest entry" >&2
         exit 1
+    fi
+
+    if [ "$repository" != "-" ]; then
+        if ! command -v git >/dev/null 2>&1; then
+            echo "[Shopro themes] Git is required to synchronize $package" >&2
+            exit 1
+        fi
+        if [ ! -e "$path" ]; then
+            echo "[Shopro themes] Cloning $package ($ref)"
+            mkdir -p "$(dirname "$path")"
+            git clone --branch "$ref" --single-branch "$repository" "$path"
+        elif [ ! -d "$path/.git" ]; then
+            echo "[Shopro themes] Theme path is not a Git repository: $path" >&2
+            exit 1
+        elif [ -n "$(git -C "$path" status --porcelain)" ]; then
+            echo "[Shopro themes] Refusing to update $package with local changes" >&2
+            exit 1
+        else
+            current_remote="$(git -C "$path" remote get-url origin)"
+            if [ "$current_remote" != "$repository" ]; then
+                echo "[Shopro themes] Repository URL mismatch for $package" >&2
+                exit 1
+            fi
+            echo "[Shopro themes] Updating $package ($ref)"
+            git -C "$path" fetch --prune origin "$ref"
+            git -C "$path" merge --ff-only FETCH_HEAD
+        fi
+    fi
+
+    if [ "${SHOPRO_THEME_PREPARE_ONLY:-0}" = "1" ]; then
+        continue
     fi
 
     # A path repository keeps customer source outside the Core checkout while
@@ -92,3 +116,7 @@ for index in "${!THEMES[@]}"; do
     "$COMPOSER_BIN" config --no-interaction "repositories.shopro_theme_$index" path "$path"
     "$COMPOSER_BIN" require "$package:$constraint" --no-interaction --no-progress --no-scripts
 done
+
+if [ "${SHOPRO_THEME_PREPARE_ONLY:-0}" = "1" ]; then
+    echo "[Shopro themes] Theme sources are ready"
+fi
