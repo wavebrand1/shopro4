@@ -6,6 +6,11 @@ Moduł biznesowy jest prywatnym pakietem Composer typu `symfony-bundle` i ma
 własne repozytorium Git. Kod modułu nie należy do Core. Pakiet dostarcza co
 najmniej `ModuleDefinition`, konfigurację usług, mapowania Doctrine oraz migracje.
 
+Core nie wymaga pakietów modułów w `composer.json` i nie rejestruje ich bundle'i
+bezpośrednio. Czysta instalacja Shopro nie potrzebuje repozytoriów Bloga,
+Portfolio ani Sklepu. Wybór modułów dla środowiska odbywa się przez manifest;
+skrypt synchronizacji dodaje wskazane pakiety do Composera i rejestruje ich bundle'e.
+
 Źródła modułów znajdują się w katalogu `modules` położonym obok katalogu
 aplikacji `symfony`. Każdy moduł jest osobnym repozytorium Git; wewnątrz Core
 nie przechowujemy kopii ich kodu.
@@ -49,6 +54,29 @@ aktualizacja Core ich nie zastępowała. Domyślna lokalizacja manifestu to:
 
 Ścieżki pakietów w manifeście są interpretowane względem katalogu aplikacji.
 Inną lokalizację można wskazać zmienną `SHOPRO_MODULE_MANIFEST`.
+
+### Przykład dla Fotograf Trzciana
+
+Fotograf potrzebuje modułu sklepowego. Blog i portfolio nie są potrzebne, więc
+manifest produkcyjny zawiera tylko Sklep:
+
+```json
+{
+  "modules": [
+    {
+      "package": "wavebrand1/shopro4-mod-shop",
+      "path": "../shopro-modules/shopro4_mod_shop",
+      "constraint": "*@dev",
+      "repository": "git@github-shopro-shop:wavebrand1/shopro4_mod_shop.git",
+      "ref": "main"
+    }
+  ]
+}
+```
+
+Repozytorium modułu Sklep wymaga osobnego klucza wdrożeniowego GitHub z prawem
+tylko do odczytu. Jeśli manifest nie zawiera wpisów, aplikacja uruchamia się bez
+modułów i nie pobiera żadnych repozytoriów modułów.
 
 Przykład serwerowy:
 
