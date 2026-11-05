@@ -321,11 +321,5 @@
     },
     "twig/extra-bundle": {
         "version": "v3.24.0"
-    },
-    "wavebrand1/shopro4-mod-blog": {
-        "version": "dev-main"
-    },
-    "wavebrand1/shopro4-mod-portfolio": {
-        "version": "dev-main"
     }
 }
