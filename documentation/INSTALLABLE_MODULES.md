@@ -50,6 +50,10 @@ aktualizacja Core ich nie zastępowała. Domyślna lokalizacja manifestu to:
 Ścieżki pakietów w manifeście są interpretowane względem katalogu aplikacji.
 Inną lokalizację można wskazać zmienną `SHOPRO_MODULE_MANIFEST`.
 
+Starsze instalacje z manifestem `modules/installed.json` wewnątrz katalogu
+aplikacji są również obsługiwane. Skrypt wybiera ten plik po manifestach
+zewnętrznych, aby aktualizacja Core nie usunęła pakietów klienta z Composera.
+
 Przykład serwerowy:
 
 ```json

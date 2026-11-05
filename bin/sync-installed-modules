@@ -11,6 +11,7 @@ PHP_BIN="${SHOPRO_PHP_BIN:-php}"
 COMPOSER_BIN="${SHOPRO_COMPOSER_BIN:-composer}"
 EXTERNAL_MANIFEST="$(cd .. && pwd)/shopro-modules/installed.json"
 LOCAL_MANIFEST="../modules/installed.json"
+SITE_MANIFEST="modules/installed.json"
 DEV_MANIFEST="config/modules.dev.json"
 if [ -n "${SHOPRO_MODULE_MANIFEST:-}" ]; then
     MANIFEST="$SHOPRO_MODULE_MANIFEST"
@@ -18,6 +19,10 @@ elif [ -f "$LOCAL_MANIFEST" ]; then
     MANIFEST="$LOCAL_MANIFEST"
 elif [ -f "$EXTERNAL_MANIFEST" ]; then
     MANIFEST="$EXTERNAL_MANIFEST"
+elif [ -f "$SITE_MANIFEST" ]; then
+    # Older customer installations keep their manifest beside the module code.
+    # Preserve those modules when a Core Git deployment replaces composer.json.
+    MANIFEST="$SITE_MANIFEST"
 elif [ "${SHOPRO_DEPLOY_ENV:-dev}" != "prod" ] && [ -f "$DEV_MANIFEST" ]; then
     MANIFEST="$DEV_MANIFEST"
 else
