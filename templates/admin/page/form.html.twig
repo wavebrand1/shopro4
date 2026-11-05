@@ -1,5 +1,11 @@
 {% extends 'admin/layout.html.twig' %}
 {% block title %}{{ shopro_trans(page.id ? 'page.edit' : 'page.new') }} — Shopro 4.0{% endblock %}
+{% block stylesheets %}{{ parent() }}
+<style>
+.page-save-status:not([hidden]){position:fixed;right:1rem;bottom:5.5rem;z-index:50;max-width:min(26rem,calc(100vw - 2rem));padding:.75rem 1rem;border-radius:.65rem;box-shadow:0 12px 35px rgba(20,35,60,.16);background:#eef4ff;color:#234269;font-size:.85rem}
+.page-save-status[data-state="success"]{background:#e7f7ed;color:#17613a}
+.page-save-status[data-state="error"]{background:#ffeded;color:#9e2626}
+</style>{% endblock %}
 {% block javascripts %}{% set active_theme = shopro_active_front_theme() %}{% if active_theme.builderJavascript %}<script src="{{ active_theme.builderJavascript }}"></script>{% endif %}{% for script in shopro_builder_editor_javascripts() %}<script src="{{ asset(script) }}"></script>{% endfor %}{{ importmap(['app', 'component-builder']) }}{% endblock %}
 {% block body %}
 <div class="modern-page-heading">
@@ -55,6 +61,6 @@
         <div class="cms-module-placeholder"><strong>{{ shopro_trans('page.module') }}</strong><span>{{ shopro_trans('page.module_help') }}</span></div>
     </div>
 </details>
-<div class="modern-form-actions cms-sticky-actions"><a class="modern-button" href="{{ path('admin_page_index') }}">{{ shopro_trans('common.cancel') }}</a><button class="modern-button" type="submit" formaction="{{ path('admin_page_preview') }}" formtarget="_blank" data-preview-submit>{{ shopro_trans('page.preview') }}</button><button class="modern-button" type="submit" name="_save_action" value="stay">{{ shopro_trans('page.save_continue') }}</button><button class="modern-button modern-button--primary" type="submit" name="_save_action" value="list">{{ shopro_trans('page.save') }}</button></div>
+<div class="modern-form-actions cms-sticky-actions"><a class="modern-button" href="{{ path('admin_page_index') }}">{{ shopro_trans('common.cancel') }}</a><button class="modern-button" type="submit" formaction="{{ path('admin_page_preview') }}" formtarget="_blank" data-preview-submit>{{ shopro_trans('page.preview') }}</button><button class="modern-button" type="submit" name="_save_action" value="stay" data-background-save="{{ page.id ? '1' : '0' }}">{{ shopro_trans('page.save_continue') }}</button><span class="page-save-status" role="status" aria-live="polite" data-background-save-status hidden></span><button class="modern-button modern-button--primary" type="submit" name="_save_action" value="list">{{ shopro_trans('page.save') }}</button></div>
 {{ form_end(form) }}
 {% endblock %}

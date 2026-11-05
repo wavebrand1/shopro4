@@ -352,6 +352,7 @@ final class PageController extends AbstractController
 
     private function handleForm(Request $request, Page $page, PageRepository $pages, string $message): Response
     {
+        $backgroundSave = $page->getId() !== null && $request->isXmlHttpRequest() && $request->request->get('_save_action') === 'stay';
         $previousSlug = $page->getId() !== null ? $page->getSlug() : null;
         $currentLockVersion = $page->getLockVersion();
         if (!$page->usesComponentBuilder()) {
@@ -387,6 +388,15 @@ final class PageController extends AbstractController
                 $user = $this->getUser();
                 $this->revisionManager->snapshot($page, $user instanceof AdminUser ? $user : null);
                 $this->entityManager->getConnection()->commit();
+                if ($backgroundSave) {
+                    return $this->json([
+                        'saved' => true,
+                        'message' => $this->translator->translate($message),
+                        'lockVersion' => $page->getLockVersion(),
+                        'slug' => $page->getSlug(),
+                    ]);
+                }
+
                 $this->addFlash('success', $this->translator->translate($message));
 
                 if ('stay' === $request->request->get('_save_action')) {
@@ -399,14 +409,22 @@ final class PageController extends AbstractController
                 $form->addError(new FormError($this->translator->translate('page.concurrent_edit')));
             } catch (UniqueConstraintViolationException|PublicSlugUnavailable) {
                 if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
-                $this->addFlash('error', $this->translator->translate('page.slug_exists'));
+                if ($backgroundSave) $form->get('slug')->addError(new FormError($this->translator->translate('page.slug_exists')));
+                else $this->addFlash('error', $this->translator->translate('page.slug_exists'));
             } catch (\LogicException $exception) {
                 if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
-                $this->addFlash('error', $this->translator->translate($exception->getMessage()));
+                if ($backgroundSave) $form->addError(new FormError($this->translator->translate($exception->getMessage())));
+                else $this->addFlash('error', $this->translator->translate($exception->getMessage()));
             } catch (\Throwable $exception) {
                 if ($this->entityManager->getConnection()->isTransactionActive()) $this->entityManager->getConnection()->rollBack();
                 throw $exception;
             }
+        }
+
+        if ($backgroundSave) {
+            $errors = [];
+            foreach ($form->getErrors(true) as $error) $errors[] = $error->getMessage();
+            return $this->json(['saved' => false, 'errors' => array_values(array_unique($errors))], 422);
         }
 
         return $this->render('admin/page/form.html.twig', [

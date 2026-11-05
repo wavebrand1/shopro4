@@ -58,9 +58,17 @@ final class SeoController extends AbstractController
             array_push($entries, ...$provider->entries());
         }
 
-        $response = $this->render('cms/seo/sitemap.xml.twig', ['entries' => $entries]);
-        $response->headers->set('Content-Type', 'application/xml; charset=UTF-8');
+        $response = new Response(
+            $this->renderView('cms/seo/sitemap.xml.twig', ['entries' => $entries]),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/xml'],
+        );
         $this->preventStaleSeoResponse($response);
+        // Keep the sitemap response identical to a conventional XML document.
+        // In particular, do not send download/content-sniffing headers which
+        // make some browsers render only the concatenated text nodes.
+        $response->headers->remove('Content-Disposition');
+        $response->headers->remove('X-Content-Type-Options');
 
         return $response;
     }

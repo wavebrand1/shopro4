@@ -39,6 +39,11 @@ DirectoryIndex index.php
 </IfModule>
 
 <IfModule mod_headers.c>
+    # Pozwól przeglądarkom wyświetlać standardowe drzewo XML mapy witryny.
+    # Globalny nagłówek nosniff hostingu powoduje pokazanie XML jako zwykłego tekstu.
+    SetEnvIf Request_URI "^/sitemap\.xml$" shopro_sitemap_xml
+    Header always unset X-Content-Type-Options env=shopro_sitemap_xml
+
     <FilesMatch "\.(?:css|js|avif|webp|svg|png|jpe?g|woff2?|otf)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>

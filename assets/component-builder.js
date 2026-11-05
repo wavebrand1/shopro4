@@ -16,6 +16,7 @@ const initializeComponentBuilder = () => {
     let mediaPickerTarget = null;
     let dirty = false;
     let submitting = false;
+    let changeVersion = 0;
     const language = document.documentElement.lang || 'pl';
     const t = (pl, en) => language.startsWith('en') ? en : pl;
 
@@ -185,7 +186,8 @@ const initializeComponentBuilder = () => {
     const render=()=>{list.innerHTML=blocks.map(sectionTemplate).join('');empty.hidden=blocks.length>0;synchronize();initializeEditors();};
     const selectedColumn=()=>{const section=blocks.find(item=>item.id===selectedSlot?.sectionId);return section?.data.columns[selectedSlot.column];};
 
-    const markDirty=()=>{dirty=true;};
+    const saveStatus = form?.querySelector('[data-background-save-status]');
+    const markDirty=()=>{dirty=true;changeVersion++;if(saveStatus?.dataset.state==='success')saveStatus.hidden=true;};
     root.querySelectorAll('[data-add-section]').forEach(button=>button.addEventListener('click',()=>{const section=createSection();blocks.push(section);selectedSlot={sectionId:section.id,column:0};markDirty();render();}));
     root.querySelectorAll('[data-add-component]').forEach(button=>button.addEventListener('click',()=>{
         const type=button.dataset.addComponent;
@@ -215,7 +217,7 @@ const initializeComponentBuilder = () => {
         const componentElement=event.target.closest('[data-component-id]');const component=componentElement?findComponent(componentElement.dataset.componentId):null;const column=component?section.data.columns.find(items=>items.some(item=>item.id===component.id)):null;const componentIndex=column?.findIndex(item=>item.id===component.id)??-1;
         const itemElement=event.target.closest('[data-item-id]');const itemIndex=itemElement&&component?component.data.items.findIndex(item=>item.id===itemElement.dataset.itemId):-1;const definition=component?definitions[component.type]:null;
         if(event.target.closest('[data-rich-text-source-toggle]')&&component){const button=event.target.closest('[data-rich-text-source-toggle]');const fieldElement=button.closest('.component-rich-field');const editorElement=fieldElement.querySelector('[data-rich-text-component]');const toolbar=fieldElement.querySelector('.ql-toolbar');const preview=fieldElement.querySelector('[data-rich-text-embed-preview]');const source=fieldElement.querySelector('[data-rich-text-source]');const enteringSource=source.hidden;if(enteringSource){source.value=component.data[source.dataset.field]||'';source.hidden=false;toolbar.hidden=true;editorElement.hidden=true;preview.hidden=true;button.textContent=t('Wróć do podglądu','Back to preview');}else{component.data[source.dataset.field]=source.value;source.hidden=true;const hasEmbed=showEmbedPreview(fieldElement,source.value);toolbar.hidden=hasEmbed;editorElement.hidden=hasEmbed;if(!hasEmbed)editorElement.__shoproQuill.clipboard.dangerouslyPasteHTML(source.value,'silent');markDirty();synchronize();button.textContent=t('Edytuj HTML','Edit HTML');}return;}
-        if(event.target.closest('[data-media-picker]')&&component){mediaPickerTarget={componentId:component.id,key:event.target.closest('[data-media-picker]').dataset.mediaKey};globalThis.open('/admin/configuration/files?picker=1','shopro-media-picker','width=1180,height=760,resizable=yes,scrollbars=yes');return;}
+        if(event.target.closest('[data-media-picker]')&&component){const button=event.target.closest('[data-media-picker]');mediaPickerTarget={componentId:component.id,itemId:itemElement?.dataset.itemId??null,key:button.dataset.mediaKey,input:button.closest('.component-media-field')?.querySelector('input[data-field]')};globalThis.open('/admin/configuration/files?picker=1','shopro-media-picker','width=1180,height=760,resizable=yes,scrollbars=yes');return;}
         if(event.target.closest('[data-add-column]')){section.data.columns.push([]);section.data.widths=section.data.columns.map(()=>Math.round(100/section.data.columns.length));selectedSlot={sectionId:section.id,column:section.data.columns.length-1};}
         else if(event.target.closest('[data-remove-column]')){const index=Number(event.target.closest('[data-remove-column]').dataset.removeColumn);if(section.data.columns.length>1&&!section.data.columns[index].length){section.data.columns.splice(index,1);section.data.widths.splice(index,1);selectedSlot={sectionId:section.id,column:0};}else if(section.data.columns[index].length)globalThis.alert(t('Najpierw usuń lub przenieś komponenty z tej kolumny.','Delete or move the components from this column first.'));}
         else if(event.target.closest('[data-remove-section]')){if(sectionHasProtectedSystemRole(section))return;blocks.splice(sectionIndex,1);}
@@ -229,7 +231,7 @@ const initializeComponentBuilder = () => {
         else if(event.target.closest('[data-move-item]')){const next=itemIndex+Number(event.target.closest('[data-move-item]').dataset.moveItem);if(next>=0&&next<component.data.items.length)[component.data.items[itemIndex],component.data.items[next]]=[component.data.items[next],component.data.items[itemIndex]];}
         else return;markDirty();render();
     });
-    const receiveMedia=event=>{if(event.origin!==globalThis.location.origin||event.data?.type!=='shopro:media-selected'||!mediaPickerTarget)return;const component=findComponent(mediaPickerTarget.componentId);if(!component)return;component.data[mediaPickerTarget.key]=String(event.data.url||'');mediaPickerTarget=null;markDirty();render();};
+    const receiveMedia=event=>{if(event.origin!==globalThis.location.origin||event.data?.type!=='shopro:media-selected'||!mediaPickerTarget)return;const {componentId,itemId,key,input}=mediaPickerTarget;mediaPickerTarget=null;const component=findComponent(componentId);const target=itemId?component?.data.items?.find(item=>item.id===itemId):component?.data;if(!target)return;const url=String(event.data.url||'');target[key]=url;if(input?.isConnected)input.value=url;markDirty();synchronize();};
     globalThis.addEventListener('message',receiveMedia);
     document.addEventListener('shopro:component-options-updated', render);
     document.addEventListener('turbo:before-cache',()=>globalThis.removeEventListener('message',receiveMedia),{once:true});
@@ -241,7 +243,41 @@ const initializeComponentBuilder = () => {
     form?.addEventListener('input',markDirty);
     form?.addEventListener('change',markDirty);
     form?.addEventListener('formdata',event=>{synchronizeRichTextSources();synchronize();if(projectField.name)event.formData.set(projectField.name,projectField.value);});
-    form?.addEventListener('submit',event=>{synchronizeRichTextSources();synchronize();if(event.submitter?.matches('[data-preview-submit]'))return;submitting=true;dirty=false;document.removeEventListener('turbo:before-visit',beforeVisit);},{capture:true});
+    const showSaveStatus=(message,state)=>{if(!saveStatus)return;saveStatus.textContent=message;saveStatus.dataset.state=state;saveStatus.hidden=false;};
+    form?.addEventListener('submit',async event=>{
+        synchronizeRichTextSources();synchronize();
+        if(event.submitter?.matches('[data-preview-submit]'))return;
+        if(event.submitter?.matches('[data-background-save="1"]')){
+            event.preventDefault();
+            const button=event.submitter;
+            if(button.disabled)return;
+            const data=new FormData(form);
+            data.set('_save_action','stay');
+            const savedVersion=changeVersion;
+            const slugField=form.elements.namedItem('page[slug]');
+            const submittedSlug=slugField?.value;
+            button.disabled=true;
+            showSaveStatus(t('Zapisywanie…','Saving…'),'saving');
+            try{
+                const response=await fetch(form.action,{method:'POST',body:data,credentials:'same-origin',headers:{'X-Requested-With':'XMLHttpRequest','Accept':'application/json'}});
+                if(!response.headers.get('content-type')?.includes('application/json'))throw new Error(t('Serwer nie zwrócił potwierdzenia zapisu.','The server did not confirm the save.'));
+                const result=await response.json();
+                if(!response.ok||!result.saved){
+                    showSaveStatus(result.errors?.join(' ')||t('Nie udało się zapisać strony.','Could not save the page.'),'error');
+                    return;
+                }
+                const lockField=form.elements.namedItem('page[lockVersion]');
+                if(lockField&&result.lockVersion!==undefined)lockField.value=String(result.lockVersion);
+                if(slugField&&slugField.value===submittedSlug&&result.slug!==undefined)slugField.value=result.slug;
+                if(changeVersion===savedVersion)dirty=false;
+                showSaveStatus(changeVersion===savedVersion?result.message:t('Zapisano. Są też nowsze niezapisane zmiany.','Saved. There are also newer unsaved changes.'),'success');
+            }catch(error){
+                showSaveStatus(error.message||t('Nie udało się zapisać strony.','Could not save the page.'),'error');
+            }finally{button.disabled=false;}
+            return;
+        }
+        submitting=true;dirty=false;document.removeEventListener('turbo:before-visit',beforeVisit);
+    },{capture:true});
     render();
 };
 

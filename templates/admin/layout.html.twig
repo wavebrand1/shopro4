@@ -41,7 +41,40 @@
                 {% set admin_modules = shopro_admin_modules() %}
                 {% if admin_modules %}
                 <p class="modern-nav__label">FUNKCJONALNOŚCI</p>
-                {% for module in admin_modules %}<a class="{{ route starts with module.routePrefix ? 'is-active' : '' }}" href="{{ path(module.route) }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z"/></svg></span>{{ shopro_trans(module.name) }}</a>{% endfor %}
+                {% for module in admin_modules %}
+                    {% if module.code == 'shop' %}
+                        {% set shop_group_active = route starts with 'admin_shop_' %}
+                        <details class="modern-nav-group{{ shop_group_active ? ' is-active' : '' }}"{{ shop_group_active ? ' open' : '' }}>
+                            <summary><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M3 4h18l-2 7H5L3 4Zm2 7v9h14v-9M9 20v-6h6v6M7 7h.01M12 7h.01M17 7h.01"/></svg></span>{{ shopro_trans(module.name) }}<span class="modern-nav-group__chevron">⌄</span></summary>
+                            <div class="modern-nav-group__items">
+                                <a class="{{ route == 'admin_shop_delivery_index' ? 'is-active' : '' }}" href="{{ path('admin_shop_delivery_index') }}">Dostawcy</a>
+                                <a class="{{ route starts with 'admin_shop_form_' ? 'is-active' : '' }}" href="{{ path('admin_shop_form_index') }}">Formularze</a>
+                                <a class="{{ route starts with 'admin_shop_category_' ? 'is-active' : '' }}" href="{{ path('admin_shop_category_index') }}">Kategorie</a>
+                                <a class="{{ route == 'admin_shop_combination_definitions' ? 'is-active' : '' }}" href="{{ path('admin_shop_combination_definitions') }}">Kombinacje</a>
+                                <a class="{{ route == 'admin_shop_product_index' and app.request.query.get('manage') == 'combinations' or route starts with 'admin_shop_product_combination' or route starts with 'admin_shop_combination_' ? 'is-active' : '' }}" href="{{ path('admin_shop_product_index', {manage: 'combinations'}) }}">Kombinacje produktów</a>
+                                <a class="{{ route starts with 'admin_shop_warehouse_' ? 'is-active' : '' }}" href="{{ path('admin_shop_warehouse_index') }}">Magazyny</a>
+                                <a class="{{ route starts with 'admin_shop_marketing_' ? 'is-active' : '' }}" href="{{ path('admin_shop_marketing_index') }}">Marketing</a>
+                                <a class="{{ route starts with 'admin_shop_panel_' ? 'is-active' : '' }}" href="{{ path('admin_shop_panel_index') }}">Panele Sklepu</a>
+                                <a class="{{ route starts with 'admin_shop_payment_' ? 'is-active' : '' }}" href="{{ path('admin_shop_payment_index') }}">Płatności</a>
+                                <a class="{{ route starts with 'admin_shop_tax_' ? 'is-active' : '' }}" href="{{ path('admin_shop_settings') }}#shop-taxes">Podatki</a>
+                                <a class="{{ route starts with 'admin_shop_product_' and app.request.query.get('manage') != 'combinations' and route != 'admin_shop_product_combinations' ? 'is-active' : '' }}" href="{{ path('admin_shop_product_index') }}">Produkty</a>
+                                <a class="{{ route == 'admin_shop_index' ? 'is-active' : '' }}" href="{{ path('admin_shop_index') }}">Przegląd sklepu</a>
+                                <a class="{{ route starts with 'admin_shop_pricing' or route starts with 'admin_shop_reduction_' or route starts with 'admin_shop_discount_' ? 'is-active' : '' }}" href="{{ path('admin_shop_pricing') }}">Rabaty</a>
+                                <a class="{{ route starts with 'admin_shop_advertisement_' ? 'is-active' : '' }}" href="{{ path('admin_shop_advertisement_index') }}">Reklamy</a>
+                                <a class="{{ route starts with 'admin_shop_specification_' ? 'is-active' : '' }}" href="{{ path('admin_shop_specification_definitions') }}">Specyfikacja</a>
+                                <a class="{{ route starts with 'admin_shop_report' ? 'is-active' : '' }}" href="{{ path('admin_shop_report') }}">Statystyki</a>
+                                <a class="{{ route starts with 'admin_shop_status_' ? 'is-active' : '' }}" href="{{ path('admin_shop_status_index') }}">Statusy</a>
+                                <a class="{{ route starts with 'admin_shop_variant_template_' ? 'is-active' : '' }}" href="{{ path('admin_shop_variant_template_index') }}">Szablony wariantów</a>
+                                <a class="{{ route == 'admin_shop_settings' ? 'is-active' : '' }}" href="{{ path('admin_shop_settings') }}">Ustawienia sklepu</a>
+                                <a class="{{ route starts with 'admin_shop_variant_' ? 'is-active' : '' }}" href="{{ path('admin_shop_variant_definitions') }}">Warianty</a>
+                                <a class="{{ route starts with 'admin_shop_attachment_' ? 'is-active' : '' }}" href="{{ path('admin_shop_attachment_index') }}">Załączniki</a>
+                                <a class="{{ route starts with 'admin_shop_order_' ? 'is-active' : '' }}" href="{{ path('admin_shop_order_index') }}">Zamówienia</a>
+                            </div>
+                        </details>
+                    {% else %}
+                        <a class="{{ route starts with module.routePrefix ? 'is-active' : '' }}" href="{{ path(module.route) }}"><span class="modern-nav__icon"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z"/></svg></span>{{ shopro_trans(module.name) }}</a>
+                    {% endif %}
+                {% endfor %}
                 {% endif %}
                 {% if is_granted('ROLE_ADMIN') %}
                 {% if shopro_module_enabled('identity') %}

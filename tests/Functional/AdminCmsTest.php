@@ -1600,6 +1600,58 @@ final class AdminCmsTest extends WebTestCase
         self::assertSame('Zmiana drugiego operatora', $entityManager->find(Page::class, $pageId)?->getTitle());
     }
 
+    public function testPageCanBeSavedInBackgroundMoreThanOnceWithoutReloadingTheForm(): void
+    {
+        $installLock = dirname(__DIR__, 2).'/var/install.lock';
+        $createdInstallLock = !is_file($installLock);
+        if ($createdInstallLock) file_put_contents($installLock, '{}');
+
+        try {
+            $this->entityManager->getConnection()->executeStatement("CREATE TABLE public_slug (id INTEGER PRIMARY KEY AUTOINCREMENT, locale VARCHAR(10) NOT NULL DEFAULT '', slug VARCHAR(180) NOT NULL, owner_type VARCHAR(80) NOT NULL, owner_id INTEGER NOT NULL, UNIQUE(locale, slug), UNIQUE(owner_type, owner_id, locale))");
+            $admin = new AdminUser('background-save@example.test', 'background-save');
+            $admin->setPassword(self::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'very-secure-password'));
+            $page = new Page();
+            $page->setTitle('Pierwotny tytuł');
+            $page->setSlug('zapis-w-tle');
+            $this->entityManager->persist($admin);
+            $this->entityManager->persist($page);
+            $this->entityManager->flush();
+            $pageId = $page->getId();
+            $this->client->request('GET', '/admin/login');
+            $this->client->submitForm('Zaloguj się', [
+                '_username' => 'background-save@example.test',
+                '_password' => 'very-secure-password',
+            ]);
+            self::assertResponseRedirects('/admin');
+
+            $crawler = $this->client->request('GET', '/admin/pages/'.$pageId.'/edit');
+            self::assertResponseIsSuccessful();
+            $values = $crawler->filter('form[name="page"]')->form()->getPhpValues();
+            $values['_save_action'] = 'stay';
+            $headers = ['HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest', 'HTTP_ACCEPT' => 'application/json'];
+
+            $values['page']['title'] = 'Pierwszy zapis';
+            $this->client->request('POST', '/admin/pages/'.$pageId.'/edit', $values, [], $headers);
+            self::assertResponseIsSuccessful();
+            $first = json_decode((string) $this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            self::assertTrue($first['saved']);
+            self::assertGreaterThan(1, $first['lockVersion']);
+
+            $values['page']['lockVersion'] = (string) $first['lockVersion'];
+            $values['page']['title'] = 'Drugi zapis';
+            $this->client->request('POST', '/admin/pages/'.$pageId.'/edit', $values, [], $headers);
+            self::assertResponseIsSuccessful();
+            $second = json_decode((string) $this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            self::assertTrue($second['saved']);
+            self::assertGreaterThan($first['lockVersion'], $second['lockVersion']);
+
+            $this->entityManager->clear();
+            self::assertSame('Drugi zapis', $this->entityManager->find(Page::class, $pageId)?->getTitle());
+        } finally {
+            if ($createdInstallLock) unlink($installLock);
+        }
+    }
+
     public function testPageHistoryCapturesChangesAndRestoresCompleteRevision(): void
     {
         $admin = new AdminUser('history-admin@example.test', 'history-admin');
