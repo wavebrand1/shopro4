@@ -1607,7 +1607,8 @@ final class AdminCmsTest extends WebTestCase
         if ($createdInstallLock) file_put_contents($installLock, '{}');
 
         try {
-            $this->entityManager->getConnection()->executeStatement("CREATE TABLE public_slug (id INTEGER PRIMARY KEY AUTOINCREMENT, locale VARCHAR(10) NOT NULL DEFAULT '', slug VARCHAR(180) NOT NULL, owner_type VARCHAR(80) NOT NULL, owner_id INTEGER NOT NULL, UNIQUE(locale, slug), UNIQUE(owner_type, owner_id, locale))");
+            $this->entityManager->getConnection()->executeStatement("CREATE TABLE IF NOT EXISTS public_slug (id INTEGER PRIMARY KEY AUTOINCREMENT, locale VARCHAR(10) NOT NULL DEFAULT '', slug VARCHAR(180) NOT NULL, owner_type VARCHAR(80) NOT NULL, owner_id INTEGER NOT NULL, UNIQUE(locale, slug), UNIQUE(owner_type, owner_id, locale))");
+            $this->entityManager->getConnection()->executeStatement('DELETE FROM public_slug');
             $admin = new AdminUser('background-save@example.test', 'background-save');
             $admin->setPassword(self::getContainer()->get(UserPasswordHasherInterface::class)->hashPassword($admin, 'very-secure-password'));
             $page = new Page();
