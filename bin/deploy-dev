@@ -104,11 +104,19 @@ APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console app:modul
 echo "[Shopro] Verifying module registry"
 APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console app:modules:verify
 
-echo "[Shopro] Synchronizing required system pages"
-APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console app:pages:install-system
+if [ "${SHOPRO_SKIP_SYSTEM_PAGE_SYNC:-0}" = "1" ]; then
+    echo "[Shopro] Skipping system page synchronization"
+else
+    echo "[Shopro] Synchronizing required system pages"
+    APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console app:pages:install-system
+fi
 
-echo "[Shopro] Synchronizing active theme content"
-APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console app:themes:sync-content
+if [ "${SHOPRO_SKIP_THEME_CONTENT_SYNC:-0}" = "1" ]; then
+    echo "[Shopro] Skipping active theme content synchronization"
+else
+    echo "[Shopro] Synchronizing active theme content"
+    APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console app:themes:sync-content
+fi
 
 echo "[Shopro] Installing bundle assets"
 APP_ENV="$DEPLOY_ENV" APP_DEBUG="$DEPLOY_DEBUG" "$PHP_BIN" bin/console assets:install public
