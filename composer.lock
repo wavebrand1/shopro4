@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b398507ce1c95b5dc0fc20fff3d29177",
+    "content-hash": "df5728728aa41baaf01d3cea21479b57",
     "packages": [
         {
             "name": "composer/semver",
@@ -8368,6 +8368,92 @@
             "time": "2026-07-03T20:44:34+00:00"
         },
         {
+            "name": "wavebrand/shopro-theme-fotograf-trzciana",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "themes/shopro-theme-fotograf-trzciana",
+                "reference": "89421bf5549e7985aaeb970be3eb273e24f2ccf6"
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/framework-bundle": "^7.4"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "shopro-theme": true,
+                "symfony": {
+                    "bundles": {
+                        "Wavebrand\\ShoproTheme\\FotografTrzciana\\ShoproThemeFotografTrzcianaBundle": [
+                            "all"
+                        ]
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Wavebrand\\ShoproTheme\\FotografTrzciana\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Shopro 4 theme for Fotograf Trzciana",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "wavebrand1/shopro4-mod-shop",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "modules/shopro4_mod_shop",
+                "reference": "5fe4216c90e7475a5d229e19a1b1f30d1d38ad25"
+            },
+            "require": {
+                "doctrine/doctrine-bundle": "^2.18",
+                "doctrine/doctrine-migrations-bundle": "^3.7",
+                "doctrine/orm": "^3.6",
+                "php": ">=8.2",
+                "symfony/framework-bundle": "7.4.*",
+                "symfony/http-client": "7.4.*",
+                "symfony/security-bundle": "7.4.*",
+                "symfony/string": "7.4.*",
+                "symfony/twig-bundle": "7.4.*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^12.5"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "symfony": {
+                    "bundles": {
+                        "Wavebrand\\ShoproShop\\ShoproShopBundle": [
+                            "all"
+                        ]
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Wavebrand\\ShoproShop\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Wavebrand\\ShoproShop\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Installable Shop module for Shopro 4",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "webmozart/assert",
             "version": "2.4.1",
             "source": {
@@ -10597,7 +10683,10 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "wavebrand/shopro-theme-fotograf-trzciana": 20,
+        "wavebrand1/shopro4-mod-shop": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -10606,5 +10695,5 @@
         "ext-iconv": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.11.0"
 }
