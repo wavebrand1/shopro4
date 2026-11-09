@@ -8373,7 +8373,7 @@
             "dist": {
                 "type": "path",
                 "url": "themes/shopro-theme-fotograf-trzciana",
-                "reference": "455a306adfa6c0ae47fb60037c733ebeaadca6c3"
+                "reference": "965530b59e52c0cb4e46b002e309235ec77a373a"
             },
             "require": {
                 "php": ">=8.2",
