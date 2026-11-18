@@ -1,0 +1,527 @@
+[
+  {
+    "id": "ft-v5-section-5c3a7f594e",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-92bf09cc56",
+            "type": "ft_document_hero",
+            "data": {
+              "contentVersion": "document-page-v11",
+              "eyebrow": "Zdjęcia do dokumentów · Fotograf Trzciana",
+              "heading": "Zdjęcie do dowodu osobistego",
+              "text": "Zdjęcie do dokumentu powinno spełniać wymagania konkretnego urzędu lub instytucji. W studiu pomagamy dobrać kadr, przygotować właściwy format i wybrać naturalne ujęcie. Przed wydrukiem sprawdzimy, jakiego kompletu potrzebujesz.",
+              "image": "/uploads/Grafiki%20us%C5%82ug/exec-cea1d220-ce43-4fd5-8a16-78027beef081.png",
+              "imageAlt": "Studio fotograficzne Fotograf Trzciana w Trzcianie",
+              "booking": "Komplet 8 odbitek: 60 zł. Zadzwoń przed przyjazdem, aby potwierdzić dostępność.",
+              "phone": "575 445 675",
+              "whatsapp": "https://wa.me/48575445675",
+              "phoneLabel": "Zadzwoń",
+              "whatsappLabel": "WhatsApp",
+              "bookingLabel": "Przed przyjazdem potwierdź dostępność telefonicznie.",
+              "items": []
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-ca896f5c9a",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-a9ace782f0",
+            "type": "ft_document_packages",
+            "data": {
+              "eyebrow": "Cena i warianty",
+              "heading": "Wybierz potrzebny wariant",
+              "link": "/cennik#zdjecia-i-sesje",
+              "linkLabel": "Zobacz pełny cennik zdjęć do dokumentów"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-0efbea0fd5",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        34,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-487cdd9c3f",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet do dokumentu",
+              "description": "8 gotowych odbitek w formacie wymaganym dla dokumentu.",
+              "price": "60 zł"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-adc4ce790f",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet z plikiem cyfrowym",
+              "description": "8 odbitek oraz plik cyfrowy przygotowany do uzgodnionego zastosowania.",
+              "price": "80 zł"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-08161bc127",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Sam plik cyfrowy",
+              "description": "Plik przygotowany do pobrania lub przekazania zgodnie z wymaganiami.",
+              "price": "60 zł"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-5458b8a86f",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-6dcf1d0466",
+            "type": "ft_document_requirements_showcase",
+            "data": {
+              "eyebrow": "Wymagania urzędowe",
+              "heading": "Jak powinno wyglądać zdjęcie do dowodu?",
+              "intro": "Wymagania zależą od rodzaju dokumentu oraz instytucji, która go wydaje. Dopasujemy kadr i plik do wskazanych wytycznych; przy nietypowym formacie pokaż nam aktualną instrukcję.",
+              "link": "https://www.gov.pl/web/gov/zdjecie-do-dowodu-lub-paszportu",
+              "linkLabel": "Aktualne wymagania na gov.pl",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-id-requirements-v1.png",
+              "imageAlt": "Osoba przygotowana do zdjecia do dokumentu w studio fotograficznym",
+              "items": [
+                {
+                  "icon": "id",
+                  "title": "Format i kadr",
+                  "text": "Standardowy format to 35 × 45 mm. Przygotujemy kadr i układ odbitek zgodnie z przeznaczeniem zdjęcia."
+                },
+                {
+                  "icon": "camera",
+                  "title": "Pozycja i mimika",
+                  "text": "Twarz jest skierowana na wprost, głowa ustawiona prosto, oczy otwarte, a usta zamknięte. Wyraz twarzy pozostaje naturalny."
+                },
+                {
+                  "icon": "image",
+                  "title": "Tło i światło",
+                  "text": "Tło powinno być jasne i jednolite, bez cieni oraz ozdobnych elementów. Twarz musi być oświetlona równomiernie."
+                },
+                {
+                  "icon": "check",
+                  "title": "Oczy i brwi",
+                  "text": "Oczy, źrenice i brwi muszą być dobrze widoczne. Włosy ani oprawki okularów nie mogą ich zasłaniać."
+                },
+                {
+                  "icon": "shield",
+                  "title": "Aktualny wygląd",
+                  "text": "Zdjęcie powinno przedstawiać Twój obecny wygląd. Sprawdź w instrukcji dokumentu, jak aktualna musi być fotografia."
+                },
+                {
+                  "icon": "search",
+                  "title": "Jakość techniczna",
+                  "text": "Fotografia musi być ostra i mieć naturalny kolor oraz kontrast, bez pikselizacji, prześwietleń i uszkodzeń."
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-3afbef5a31",
+    "type": "layout_section",
+    "data": {
+      "container": "grid",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-36d91fae66",
+            "type": "ft_document_source_note",
+            "data": {
+              "heading": "Zdjęcie cyfrowe",
+              "text": "Jeśli składasz wniosek online lub wysyłasz fotografię do systemu instytucji, sprawdź wymagany rozmiar, proporcje i limit pliku. Przygotujemy plik według przekazanej instrukcji."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-bfa7204971",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-5d5781154f",
+            "type": "ft_document_preparation",
+            "data": {
+              "eyebrow": "Przed wizytą",
+              "heading": "Jak się przygotować?",
+              "items": [
+                {
+                  "title": "Ubranie",
+                  "text": "Najlepiej sprawdzi się gładka góra w kolorze odróżniającym się od białego tła. Biała koszula jest dozwolona, ale może zlewać się z tłem.",
+                  "id": "47fb8ccc-3687-4a5f-a7fe-808309763e2f"
+                },
+                {
+                  "title": "Włosy i makijaż",
+                  "text": "Włosy nie powinny zasłaniać oczu ani brwi. Naturalny makijaż jest dopuszczalny, o ile nie zmienia rysów twarzy.",
+                  "id": "c399c460-c958-47d9-88b7-c8fa0535f6d8"
+                },
+                {
+                  "title": "Okulary",
+                  "text": "Okulary korekcyjne mogą pozostać, jeśli oczy są dobrze widoczne, oprawki nie zasłaniają brwi, a na szkłach nie ma odblasków.",
+                  "id": "f5a20235-60da-4325-85b5-e8ac5f89a9df"
+                },
+                {
+                  "title": "Biżuteria i nakrycie głowy",
+                  "text": "Biżuteria nie może zasłaniać owalu twarzy. Nakrycie głowy jest możliwe w wyjątkach określonych przepisami i może wymagać zaświadczenia.",
+                  "id": "4c9661c3-d671-4f76-86f5-6481b0dd9f4b"
+                }
+              ],
+              "versionEyebrow": "Papier czy plik?",
+              "versionHeading": "Dopasujemy wersję do sposobu składania wniosku.",
+              "versionPaper": "Odbitka: sprawdź, czy potrzebne jest zdjęcie papierowe i jaki format wskazuje urząd lub instytucja.",
+              "versionDigital": "Przez internet: potrzebujesz odpowiednio przygotowanego pliku cyfrowego. Nie warto skanować papierowej odbitki.",
+              "versionNote": "Plik cyfrowy przygotowujemy z oryginalnego ujęcia. Zakres i cenę wersji cyfrowej potwierdzamy przed wykonaniem usługi.",
+              "versionButton": "Zapytaj o zdjęcie",
+              "versionMessage": "Dzień dobry, potrzebuję zdjęcia do dokumentu.",
+              "whatsapp": "https://wa.me/48575445675"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-f095f6b91d",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-7d665897a3",
+            "type": "ft_document_process",
+            "data": {
+              "eyebrow": "Prosto i bez stresu",
+              "heading": "Jak wygląda wizyta?",
+              "intro": "Od informacji o dokumencie do gotowego kompletu — zwykle około 15 minut."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-f72f39fc6e",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-04c15a23af",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "01",
+              "title": "Ustalamy przeznaczenie zdjęcia",
+              "text": "Powiedz, do jakiego dokumentu potrzebujesz fotografii. W razie nietypowych wytycznych pokaż instrukcję urzędu, szkoły, konsulatu lub innej instytucji."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-f467af8fd2",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "02",
+              "title": "Wykonujemy kilka ujęć",
+              "text": "Pomagamy ustawić głowę, ramiona i włosy. Dbamy o równomierne światło oraz spokojne, czytelne tło."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-714a917c42",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "03",
+              "title": "Wspólnie wybieramy zdjęcie",
+              "text": "Wybierasz ujęcie, na którym wyglądasz naturalnie. Przed przygotowaniem pliku sprawdzamy kadr i jakość."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-c0efd0c930",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "04",
+              "title": "Przygotowujemy właściwy wariant",
+              "text": "Kadrujemy fotografię do wymaganego formatu i przygotowujemy odbitki, plik cyfrowy albo oba warianty."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-5f9609186b",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-877d8fd96a",
+            "type": "ft_document_offices",
+            "data": {
+              "eyebrow": "Po zrobieniu zdjęcia",
+              "heading": "Gdzie złożyć wniosek w naszej okolicy?",
+              "intro": "Wniosek o dowód osobisty możesz złożyć w dowolnym urzędzie gminy, niezależnie od miejsca zameldowania. Wybierz urząd najwygodniejszy dla siebie.",
+              "disclaimer": "Godziny i organizacja obsługi mogą się zmieniać. Przed wyjazdem sprawdź stronę urzędu lub zadzwoń. Informacje mają charakter pomocniczy.",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona urzędu"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-aa87194187",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        34,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-833a1b3162",
+            "type": "ft_document_office_card",
+            "data": {
+              "name": "Urząd Gminy w Trzcianie",
+              "address": "Trzciana 302, 32-733 Trzciana",
+              "detail": "Najbliższa i najwygodniejsza opcja. Pod tym adresem działa stanowisko ewidencji ludności i dowodów osobistych.",
+              "phone": "14 648 44 27",
+              "site": "https://www.trzciana.pl/kontakt",
+              "url": "https://www.trzciana.pl/kontakt",
+              "map": "https://www.google.com/maps/dir/?api=1&origin=Trzciana+234,+32-733+Trzciana&destination=Trzciana+302,+32-733+Trzciana",
+              "tag": "Najbliżej studia",
+              "number": "01",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona urzędu"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-3ae422cf96",
+            "type": "ft_document_office_card",
+            "data": {
+              "name": "Urząd Gminy Łapanów",
+              "address": "Łapanów 34, 32-740 Łapanów",
+              "detail": "Alternatywny urząd w kierunku Łapanowa. Przed wizytą potwierdź obsługę dowodów osobistych i godziny pracy.",
+              "phone": "14 684 85 21",
+              "site": "https://lapanow.pl/kontakt/",
+              "url": "https://lapanow.pl/kontakt/",
+              "map": "https://www.google.com/maps/dir/?api=1&origin=Trzciana+234,+32-733+Trzciana&destination=Łapanów+34,+32-740+Łapanów",
+              "tag": "Urząd w okolicy",
+              "number": "02",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona urzędu"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-49ff16b7fe",
+            "type": "ft_document_office_card",
+            "data": {
+              "name": "Urząd Gminy Żegocina",
+              "address": "Żegocina 316, 32-731 Żegocina",
+              "detail": "Pobliska możliwość w kierunku Żegociny. Przed wizytą potwierdź stanowisko i aktualne godziny obsługi.",
+              "phone": "14 648 45 20",
+              "site": "https://zegocina.pl/urzedy-i-instytucje",
+              "url": "https://zegocina.pl/urzedy-i-instytucje",
+              "map": "https://www.google.com/maps/dir/?api=1&origin=Trzciana+234,+32-733+Trzciana&destination=Żegocina+316,+32-731+Żegocina",
+              "tag": "Urząd w okolicy",
+              "number": "03",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona urzędu"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-9f4a87f384",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        33,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-0dbcda3a75",
+            "type": "ft_document_info",
+            "data": {
+              "eyebrow": "Dobrze wiedzieć",
+              "heading": "Dowód osobisty — co dalej?",
+              "text": "Wniosek możesz złożyć w dowolnym urzędzie gminy, niezależnie od miejsca zameldowania. Wydanie dowodu jest bezpłatne — opłata w studiu dotyczy wyłącznie wykonania fotografii.",
+              "more": "Przed wizytą w urzędzie, szkole, konsulacie lub innej instytucji sprawdź aktualną instrukcję dotyczącą zdjęcia. Jeśli wymagany jest plik cyfrowy, nie skanuj odbitki — zgłoś nam to przed wykonaniem fotografii.",
+              "alertHeading": "Informacje urzędowe",
+              "alert": "Informacje urzędowe mogą się zmieniać. Przed złożeniem wniosku sprawdź aktualną procedurę na gov.pl lub stronie właściwej instytucji."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-7d1cddee3b",
+            "type": "ft_document_faq",
+            "data": {
+              "eyebrow": "Najczęstsze pytania",
+              "heading": "O co pytacie?",
+              "items": [
+                {
+                  "question": "Ile kosztuje zdjęcie do dokumentu?",
+                  "answer": "Komplet 8 odbitek kosztuje 60 zł. Komplet z plikiem cyfrowym kosztuje 80 zł, a sam plik 60 zł. Przy nietypowych wymaganiach potwierdzimy szczegóły przed wykonaniem.",
+                  "id": "3354ff30-809e-4b91-b52e-fe5c923f30f0"
+                },
+                {
+                  "question": "Czy trzeba się umawiać?",
+                  "answer": "Przed przyjazdem zadzwoń i potwierdź dostępność studia. Dzięki temu unikniesz oczekiwania lub przyjazdu podczas realizacji sesji wyjazdowej.",
+                  "id": "152cd1b8-253a-4c60-a22b-f636ee9e454f"
+                },
+                {
+                  "question": "Czy dostanę zdjęcie elektroniczne?",
+                  "answer": "Tak. Przygotujemy plik w parametrach wymaganych przez wskazany urząd, uczelnię, konsulat lub system. Zgłoś tę potrzebę przed wykonaniem zdjęcia.",
+                  "id": "f445c9ed-2b85-4cf5-845b-fefe4be89e8a"
+                },
+                {
+                  "question": "Czy mogę mieć okulary?",
+                  "answer": "Okulary korekcyjne są dozwolone, jeżeli oczy są dobrze widoczne, oprawki nie zasłaniają brwi, a szkła nie odbijają światła.",
+                  "id": "52561fcd-bd79-42f0-96de-aa8a4cc9b42a"
+                },
+                {
+                  "question": "Czy robicie zdjęcia dzieciom?",
+                  "answer": "Tak, najlepiej wcześniej podać wiek dziecka i umówić dogodną porę. Dzieci do 5. roku życia mają łagodniejsze zasady dotyczące mimiki.",
+                  "id": "675f5d5f-4d5b-4a79-ac6e-bfbcdd1182de"
+                },
+                {
+                  "question": "Jak długo zdjęcie jest aktualne?",
+                  "answer": "Do wniosku należy dołączyć aktualne zdjęcie. W przypadku dowodu osobistego powinno być wykonane nie wcześniej niż 6 miesięcy przed złożeniem wniosku.",
+                  "id": "2fc33465-8bc0-4abc-b50d-2d4e14e0dfd7"
+                }
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-257ef9e66f",
+            "type": "ft_document_contact",
+            "data": {
+              "eyebrow": "Fotograf Trzciana",
+              "heading": "Zdjęcie do dokumentu blisko Ciebie.",
+              "address": "Trzciana 234, 32-733 Trzciana",
+              "phone": "575 445 675",
+              "maps": "https://www.google.com/maps/dir/?api=1&destination=Trzciana+234,+32-733+Trzciana",
+              "mapsLabel": "Nawiguj do studia",
+              "relatedHeading": "Sprawdź także",
+              "allUrl": "/zdjecia-do-dokumentow",
+              "allLabel": "Zobacz wszystkie zdjęcia do dokumentów",
+              "items": [
+                {
+                  "title": "Paszport",
+                  "url": "/zdjecie-do-paszportu",
+                  "id": "8abd2151-f596-40df-ac47-6ca3276d5612"
+                },
+                {
+                  "title": "Karta pobytu",
+                  "url": "/zdjecie-do-karty-pobytu",
+                  "id": "adc872fd-d8dc-491c-be12-58154e5815e9"
+                },
+                {
+                  "title": "Karta Polaka",
+                  "url": "/zdjecie-do-karty-polaka",
+                  "id": "c138aae5-bc9b-4256-847b-799dd6a4ba4c"
+                },
+                {
+                  "title": "Paszport dla dziecka",
+                  "url": "/zdjecie-do-paszportu-dla-dziecka",
+                  "id": "4c0f46fc-f106-4bca-9b7b-e7957c22dfc1"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+]

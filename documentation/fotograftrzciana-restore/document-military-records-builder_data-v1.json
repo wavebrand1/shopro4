@@ -1,0 +1,489 @@
+[
+    {
+        "id":  "ft-v5-section-b8096c3352",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-633346d6f1",
+                                             "type":  "ft_document_hero",
+                                             "data":  {
+                                                          "contentVersion":  "document-page-v6",
+                                                          "eyebrow":  "ZDJĘCIA DO AKT WOJSKOWYCH · FOTOGRAF TRZCIANA",
+                                                          "heading":  "Zdjęcie do akt wojskowych",
+                                                          "text":  "Przygotujemy zdjęcie do dokumentacji wojskowej zgodnie z instrukcją jednostki, Wojskowego Centrum Rekrutacji lub innej właściwej instytucji. Przed wydrukiem wspólnie sprawdzimy kadr i wariant.",
+                                                          "image":  "/bundles/shoprothemefotograftrzciana/assets/document-military-records-hero-v1.png",
+                                                          "imageAlt":  "Żołnierz w polskim mundurze galowym trzymający rogatywkę w ręce",
+                                                          "booking":  "Odbitki drukujemy na formacie 10 × 15 cm. Liczba zdjęć zależy od wymiaru — przy 35 × 45 mm na jednej formatce mieści się 8 sztuk. Jeśli jednostka wymaga pliku, przygotujemy również wariant cyfrowy.",
+                                                          "phone":  "575 445 675",
+                                                          "whatsapp":  "https://wa.me/48575445675",
+                                                          "phoneLabel":  "Zadzwoń",
+                                                          "whatsappLabel":  "WhatsApp",
+                                                          "bookingLabel":  "Przed przyjazdem zabierz instrukcję jednostki lub WCR.",
+                                                          "items":  [
+                                                                        {
+                                                                            "label":  "Komplet odbitek",
+                                                                            "value":  "Z jednej formatki 10 × 15 cm"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Plik cyfrowy",
+                                                                            "value":  "Wariant opcjonalny"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Format",
+                                                                            "value":  "Według instrukcji jednostki"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Wizyta",
+                                                                            "value":  "Po potwierdzeniu dostępności"
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-ab1bd92e80",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-f78aa52753",
+                                             "type":  "ft_document_packages",
+                                             "data":  {
+                                                          "eyebrow":  "CENA I WARIANTY",
+                                                          "heading":  "Wybierz wariant do dokumentacji wojskowej",
+                                                          "link":  "/cennik#zdjecia-i-sesje",
+                                                          "linkLabel":  "Zobacz pełny cennik zdjęć do dokumentów"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-945942a6b1",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    34,
+                                    33,
+                                    33
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-4e6d4e8a4a",
+                                             "type":  "ft_document_package_card",
+                                             "data":  {
+                                                          "name":  "Komplet odbitek na formacie 10 × 15 cm",
+                                                          "description":  "Liczba zdjęć wynika z wymiaru i układu na jednej formatce: dla 35 × 45 mm przygotowujemy 8 sztuk, a dla 60 × 90 mm — 2 sztuki.",
+                                                          "price":  "60 zł",
+                                                          "priceKey":  "documents.standard"
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-d6c0620fcc",
+                                             "type":  "ft_document_package_card",
+                                             "data":  {
+                                                          "name":  "Odbitki oraz plik cyfrowy",
+                                                          "description":  "Odbitki z jednej formatki 10 × 15 cm oraz plik przygotowany według parametrów jednostki.",
+                                                          "price":  "80 zł",
+                                                          "priceKey":  "documents.print_and_file"
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-1786c57b5a",
+                                             "type":  "ft_document_package_card",
+                                             "data":  {
+                                                          "name":  "Sam plik cyfrowy",
+                                                          "description":  "Plik przygotowany według wymiaru, proporcji i limitu wskazanego przez właściwą instytucję.",
+                                                          "price":  "60 zł",
+                                                          "priceKey":  "documents.digital_file"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-71a7c96915",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-a1a446133a",
+                                             "type":  "ft_document_requirements_showcase",
+                                             "data":  {
+                                                          "eyebrow":  "WYMAGANIA DOKUMENTACJI WOJSKOWEJ",
+                                                          "heading":  "Jak powinno wyglądać zdjęcie do akt wojskowych?",
+                                                          "intro":  "Wymagania mogą zależeć od rodzaju dokumentu i jednostki. Przed wizytą sprawdź aktualną instrukcję, a my dopasujemy kadr, tło, wymiar i sposób przekazania zdjęcia.",
+                                                          "link":  "https://www.gov.pl/web/obrona-narodowa",
+                                                          "linkLabel":  "Sprawdź informacje Ministerstwa Obrony Narodowej",
+                                                          "image":  "/bundles/shoprothemefotograftrzciana/assets/document-military-records-requirements-v1.png",
+                                                          "imageAlt":  "Przykładowe neutralne zdjęcie biometryczne mężczyzny na białym tle",
+                                                          "items":  [
+                                                                        {
+                                                                            "icon":  "id",
+                                                                            "title":  "Format z instrukcji",
+                                                                            "text":  "Do teczki akt personalnych może być wymagane 60 × 90 mm, a dla innych dokumentów 35 × 45 mm. Zawsze sprawdź instrukcję jednostki."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "camera",
+                                                                            "title":  "Prosta pozycja",
+                                                                            "text":  "Twarz kierujemy na wprost, głowa pozostaje ustawiona prosto, oczy są otwarte, a usta zamknięte."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "image",
+                                                                            "title":  "Jednolite tło",
+                                                                            "text":  "Zdjęcie wykonujemy na jasnym, równym tle bez cieni, wzorów i elementów odciągających uwagę."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "check",
+                                                                            "title":  "Widoczne oczy i brwi",
+                                                                            "text":  "Włosy ani okulary nie mogą zasłaniać oczu i brwi. Do fotografii akt personalnych nie zakładaj nakrycia głowy."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "shield",
+                                                                            "title":  "Mundur wyjściowy",
+                                                                            "text":  "Fotografia do teczki akt personalnych jest wykonywana w mundurze wyjściowym z widocznym aktualnym stopniem, zgodnie z właściwymi przepisami."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "search",
+                                                                            "title":  "Jakość techniczna",
+                                                                            "text":  "Przygotowujemy ostre zdjęcie bez pikselizacji, prześwietleń, odblasków ani uszkodzeń."
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-1463b44af0",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "grid",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-413e61d02e",
+                                             "type":  "ft_document_source_note",
+                                             "data":  {
+                                                          "heading":  "Odbitka czy plik cyfrowy?",
+                                                          "text":  "Jeśli dokumentacja wojskowa jest prowadzona elektronicznie, sprawdź wymagany rozmiar, proporcje i limit pliku. Przygotujemy plik z oryginalnego ujęcia — nie skanuj papierowej odbitki."
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-404535e323",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "grid",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-fc530325d9",
+                                             "type":  "ft_document_preparation",
+                                             "data":  {
+                                                          "eyebrow":  "PRZED WIZYTĄ",
+                                                          "heading":  "Co sprawdzić przed zdjęciem do akt wojskowych?",
+                                                          "items":  [
+                                                                        {
+                                                                            "title":  "Instrukcja jednostki",
+                                                                            "text":  "Zabierz aktualne wymagania jednostki, WCR albo instytucji prowadzącej dokumentację. Dzięki temu przygotujemy właściwy wymiar."
+                                                                        },
+                                                                        {
+                                                                            "title":  "Mundur wyjściowy",
+                                                                            "text":  "Do fotografii do teczki akt personalnych przygotuj mundur wyjściowy z widocznym aktualnym stopniem. Jeśli nie został wydany, instrukcja może wskazywać mundur polowy."
+                                                                        },
+                                                                        {
+                                                                            "title":  "Włosy i okulary",
+                                                                            "text":  "Oczy i brwi powinny być widoczne. Okulary korekcyjne mogą pozostać, jeśli szkła nie odbijają światła."
+                                                                        },
+                                                                        {
+                                                                            "title":  "Bez nakrycia głowy",
+                                                                            "text":  "Do zdjęcia biometrycznego zdejmij czapkę i inne nakrycie głowy. Rogatywka może pojawić się wyłącznie na zdjęciu ilustracyjnym, nie na fotografii do akt."
+                                                                        }
+                                                                    ],
+                                                          "versionEyebrow":  "ODBITKA CZY PLIK CYFROWY?",
+                                                          "versionHeading":  "Dopasujemy wariant do wymagań jednostki.",
+                                                          "versionPaper":  "Odbitka: drukujemy na formacie 10 × 15 cm, a liczba zdjęć zależy od ich wymiaru. Dla 35 × 45 mm mieści się 8 sztuk, a dla 60 × 90 mm — 2 sztuki.",
+                                                          "versionDigital":  "Plik: przygotujemy fotografię w parametrach podanych przez jednostkę lub WCR.",
+                                                          "versionNote":  "Zakres i cenę wariantu cyfrowego potwierdzamy przed wykonaniem usługi.",
+                                                          "versionButton":  "Zapytaj o zdjęcie do akt wojskowych",
+                                                          "versionMessage":  "Dzień dobry, potrzebuję zdjęcia do akt wojskowych.",
+                                                          "whatsapp":  "https://wa.me/48575445675"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-cecfa222b5",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-9272f44bb8",
+                                             "type":  "ft_document_process",
+                                             "data":  {
+                                                          "eyebrow":  "PROSTO I BEZ STRESU",
+                                                          "heading":  "Od instrukcji jednostki do gotowego zdjęcia",
+                                                          "intro":  "Przynosisz wymagania dokumentacji, a my pomagamy dobrać prawidłowy kadr i wariant."
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-a923b46246",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    25,
+                                    25,
+                                    25,
+                                    25
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-d2c6a0c745",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "01",
+                                                          "title":  "Sprawdzamy wymagania",
+                                                          "text":  "Pokaż instrukcję jednostki, WCR lub instytucji. Ustalimy wymiar, liczbę zdjęć i sposób przekazania."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-dcb5ff8f0a",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "02",
+                                                          "title":  "Wykonujemy kilka ujęć",
+                                                          "text":  "Ustawimy twarz i ramiona, zadbamy o równe światło oraz spokojne, czytelne tło."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-d08901acf8",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "03",
+                                                          "title":  "Wybierasz najlepsze ujęcie",
+                                                          "text":  "Wspólnie wybierasz fotografię, na której wyglądasz naturalnie i która spełnia przekazane wytyczne."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-65cee765a8",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "04",
+                                                          "title":  "Przygotowujemy wariant",
+                                                          "text":  "Otrzymasz odbitki, plik cyfrowy albo oba warianty zgodnie z wymaganiami dokumentacji."
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-3187f75fe2",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-4a14cfdc8f",
+                                             "type":  "ft_document_offices",
+                                             "data":  {
+                                                          "eyebrow":  "PO WYKONANIU ZDJĘCIA",
+                                                          "heading":  "Gdzie przekazać zdjęcie do akt wojskowych?",
+                                                          "intro":  "Zdjęcie przekazujesz właściwej jednostce, Wojskowemu Centrum Rekrutacji albo instytucji wskazanej w instrukcji dokumentu.",
+                                                          "disclaimer":  "Przed wyjazdem sprawdź aktualne wymagania, adres i sposób przyjmowania dokumentów.",
+                                                          "mapLabel":  "Znajdź punkt",
+                                                          "siteLabel":  "Informacje urzędowe"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-3933caa95c",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "grid",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-85b31b80a9",
+                                             "type":  "ft_document_office_card",
+                                             "data":  {
+                                                          "name":  "Właściwa jednostka lub WCR",
+                                                          "address":  "Adres wskazany w instrukcji dokumentacji wojskowej",
+                                                          "detail":  "Przed przekazaniem zdjęcia potwierdź wymagany wymiar, liczbę odbitek i sposób dostarczenia.",
+                                                          "url":  "https://www.gov.pl/web/obrona-narodowa",
+                                                          "number":  "01",
+                                                          "tag":  "Miejsce przekazania dokumentów",
+                                                          "site":  "https://www.gov.pl/web/obrona-narodowa",
+                                                          "map":  "https://www.google.com/maps/search/?api=1\u0026query=wojskowe+centrum+rekrutacji",
+                                                          "phone":  "",
+                                                          "mapLabel":  "Znajdź punkt",
+                                                          "siteLabel":  "Informacje urzędowe"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-de908a76be",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    33,
+                                    33,
+                                    33
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-8cfd558b19",
+                                             "type":  "ft_document_info",
+                                             "data":  {
+                                                          "eyebrow":  "DOBRZE WIEDZIEĆ",
+                                                          "heading":  "Akta wojskowe — co ustalić przed wizytą?",
+                                                          "text":  "Dokumenty wojskowe mogą mieć różne wymagania zależnie od jednostki i celu dokumentacji. Najbezpieczniej zabrać aktualną instrukcję z WCR lub właściwej instytucji.",
+                                                          "more":  "Jeśli wymagany jest plik cyfrowy albo określony ubiór, zgłoś to przed wykonaniem zdjęcia. Przygotujemy wariant zgodny z przekazanymi parametrami.",
+                                                          "alertHeading":  "Informacje instytucji",
+                                                          "alert":  "Wymagania mogą się zmieniać. Przed złożeniem dokumentów sprawdź aktualną procedurę i adres właściwej jednostki."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-68215e828c",
+                                             "type":  "ft_document_faq",
+                                             "data":  {
+                                                          "eyebrow":  "NAJCZĘSTSZE PYTANIA",
+                                                          "heading":  "O co pytacie przed zdjęciem do akt wojskowych?",
+                                                          "items":  [
+                                                                        {
+                                                                            "question":  "Czy każde zdjęcie wojskowe ma ten sam format?",
+                                                                            "answer":  "Nie. Wymiar, proporcje i liczba odbitek mogą zależeć od dokumentu oraz właściwej jednostki. Przynieś aktualną instrukcję."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy mogę zamówić sam plik cyfrowy?",
+                                                                            "answer":  "Tak, jeśli procedura przyjmuje pliki. Przygotujemy go według podanych parametrów."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy muszę przyjść w mundurze?",
+                                                                            "answer":  "Tylko jeśli wymaga tego instrukcja właściwej jednostki. W przeciwnym razie wybierz schludny, jednolity strój."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy mogę mieć okulary?",
+                                                                            "answer":  "Tak, jeśli oczy są dobrze widoczne, oprawki nie zasłaniają brwi, a szkła nie odbijają światła."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy trzeba się umówić?",
+                                                                            "answer":  "Przed przyjazdem zadzwoń lub napisz na WhatsApp i potwierdź dostępność oraz wymagany wariant."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Ile trwa wykonanie zdjęcia?",
+                                                                            "answer":  "Sama wizyta zwykle zajmuje około 15 minut, zależnie od liczby ujęć i wybranego wariantu."
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-f5a8d1434c",
+                                             "type":  "ft_document_contact",
+                                             "data":  {
+                                                          "eyebrow":  "FOTOGRAF TRZCIANA",
+                                                          "heading":  "Zdjęcie do akt wojskowych blisko Ciebie.",
+                                                          "address":  "Trzciana 234, 32-733 Trzciana",
+                                                          "phone":  "575 445 675",
+                                                          "maps":  "https://www.google.com/maps/dir/?api=1\u0026destination=Trzciana%2B234%2C%2B32-733%2BTrzciana",
+                                                          "mapsLabel":  "Nawiguj do studia",
+                                                          "relatedHeading":  "SPRAWDŹ TAKŻE",
+                                                          "allUrl":  "/zdjecia-do-dokumentow",
+                                                          "allLabel":  "Zobacz wszystkie zdjęcia do dokumentów",
+                                                          "items":  [
+                                                                        {
+                                                                            "title":  "Karta kierowcy",
+                                                                            "url":  "/zdjecie-do-karty-kierowcy"
+                                                                        },
+                                                                        {
+                                                                            "title":  "Prawo jazdy",
+                                                                            "url":  "/zdjecie-do-prawa-jazdy"
+                                                                        },
+                                                                        {
+                                                                            "title":  "Zdjęcia do dokumentów",
+                                                                            "url":  "/zdjecia-do-dokumentow"
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    }
+]

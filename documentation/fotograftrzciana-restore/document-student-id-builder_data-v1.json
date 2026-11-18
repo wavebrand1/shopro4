@@ -1,0 +1,472 @@
+[
+  {
+    "id": "ft-v5-section-b8096c3352",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-633346d6f1",
+            "type": "ft_document_hero",
+            "data": {
+              "contentVersion": "document-page-v6",
+              "eyebrow": "Zdjęcia do dokumentów · Fotograf Trzciana",
+              "heading": "Zdjęcie do legitymacji studenckiej",
+              "text": "Przygotujemy zdjęcie do legitymacji studenckiej w formacie wskazanym przez uczelnię. Możesz przynieść instrukcję dziekanatu albo sprawdzić wymagania przed wizytą.",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-student-id-hero-v1.png",
+              "imageAlt": "Studentka pokazująca fikcyjną przykładową legitymację studencką na kampusie",
+              "booking": "Komplet 8 odbitek: 60 zł. Jeśli uczelnia przyjmuje plik, przygotujemy również wariant cyfrowy.",
+              "phone": "575 445 675",
+              "whatsapp": "https://wa.me/48575445675",
+              "phoneLabel": "Zadzwoń",
+              "whatsappLabel": "WhatsApp",
+              "bookingLabel": "Przed przyjazdem potwierdź wymagany format i wariant.",
+              "items": []
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-ab1bd92e80",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-f78aa52753",
+            "type": "ft_document_packages",
+            "data": {
+              "eyebrow": "Cena i warianty",
+              "heading": "Wybierz wariant do legitymacji studenckiej",
+              "link": "/cennik#zdjecia-i-sesje",
+              "linkLabel": "Zobacz pełny cennik zdjęć do dokumentów"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-945942a6b1",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        34,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-4e6d4e8a4a",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet do legitymacji studenckiej",
+              "description": "8 odbitek przygotowanych według wymagań uczelni.",
+              "price": "60 zł",
+              "priceKey": "documents.standard"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-d6c0620fcc",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet z plikiem cyfrowym",
+              "description": "8 odbitek oraz plik cyfrowy do dziekanatu lub systemu uczelni.",
+              "price": "80 zł",
+              "priceKey": "documents.print_and_file"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-1786c57b5a",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Sam plik cyfrowy",
+              "description": "Plik przygotowany do elektronicznego przekazania uczelni.",
+              "price": "60 zł",
+              "priceKey": "documents.digital_file"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-71a7c96915",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-a1a446133a",
+            "type": "ft_document_requirements_showcase",
+            "data": {
+              "eyebrow": "Wymagania do legitymacji studenckiej",
+              "heading": "Jak powinno wyglądać zdjęcie do legitymacji studenckiej?",
+              "intro": "Uczelnie mogą wskazywać własny format, proporcje i sposób przekazania zdjęcia. Przed wizytą sprawdź instrukcję dziekanatu lub systemu uczelni — przygotujemy kadr zgodnie z wymaganiami.",
+              "link": "https://www.gov.pl/web/edukacja",
+              "linkLabel": "Informacje dla studentów",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-student-id-requirements-v1.png",
+              "imageAlt": "Przykładowe biometryczne zdjęcie studentki do legitymacji studenckiej na białym tle",
+              "items": [
+                {
+                  "icon": "ruler",
+                  "title": "Format wskazany przez uczelnię",
+                  "text": "Sprawdź dokładny wymiar, proporcje, rozdzielczość i sposób przekazania pliku."
+                },
+                {
+                  "icon": "camera",
+                  "title": "Twarz na wprost",
+                  "text": "Głowa pozostaje ustawiona prosto, oczy są otwarte, usta zamknięte, a wyraz twarzy naturalny."
+                },
+                {
+                  "icon": "image",
+                  "title": "Jasne, jednolite tło",
+                  "text": "Tło powinno być jasne i równe, bez cieni oraz dodatkowych elementów."
+                },
+                {
+                  "icon": "check",
+                  "title": "Widoczne oczy i brwi",
+                  "text": "Włosy ani oprawki nie mogą zasłaniać oczu i brwi. Okulary mogą pozostać, jeśli nie odbijają światła."
+                },
+                {
+                  "icon": "shield",
+                  "title": "Aktualny wygląd",
+                  "text": "Zdjęcie powinno przedstawiać obecny wygląd studenta, aby uczelnia mogła potwierdzić tożsamość."
+                },
+                {
+                  "icon": "search",
+                  "title": "Ostry plik",
+                  "text": "Sprawdzimy ostrość, kolor, proporcje i parametry pliku przed przekazaniem go uczelni."
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-1463b44af0",
+    "type": "layout_section",
+    "data": {
+      "container": "grid",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-413e61d02e",
+            "type": "ft_document_source_note",
+            "data": {
+              "heading": "Odbitka czy plik do dziekanatu?",
+              "text": "Jeśli uczelnia wymaga pliku cyfrowego, przygotujemy go według wskazanych parametrów. Nie skanuj papierowej odbitki — plik powinien powstać z oryginalnego ujęcia."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-404535e323",
+    "type": "layout_section",
+    "data": {
+      "container": "grid",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-fc530325d9",
+            "type": "ft_document_preparation",
+            "data": {
+              "eyebrow": "Przed wizytą",
+              "heading": "Jak przygotować się do zdjęcia do legitymacji studenckiej?",
+              "items": [
+                {
+                  "title": "Wybierz prosty strój",
+                  "text": "Gładka, ciemniejsza góra dobrze odcina się od jasnego tła. Unikaj dużych nadruków i jaskrawych wzorów."
+                },
+                {
+                  "title": "Zadbaj o twarz i włosy",
+                  "text": "Włosy nie powinny zasłaniać oczu ani brwi. Naturalny wygląd najlepiej sprawdza się na zdjęciu do dokumentu."
+                },
+                {
+                  "title": "Okulary mogą zostać",
+                  "text": "Jeśli nosisz okulary korekcyjne, możesz je zostawić, o ile oczy są widoczne, a szkła nie odbijają światła."
+                },
+                {
+                  "title": "Przynieś wymagania uczelni",
+                  "text": "Jeśli dziekanat podał wymiar, tło lub sposób przekazania pliku, pokaż nam instrukcję przed wykonaniem zdjęcia."
+                }
+              ],
+              "versionEyebrow": "Odbitka czy plik cyfrowy?",
+              "versionHeading": "Dopasujemy wariant do wymagań uczelni.",
+              "versionPaper": "Sprawdź, czy potrzebna jest odbitka, jaki format wskazuje uczelnia i ile sztuk należy przekazać.",
+              "versionDigital": "Jeśli zdjęcie ma trafić do systemu uczelni, przygotujemy plik zgodny z instrukcją dziekanatu.",
+              "versionNote": "Zakres i cena wariantu cyfrowego zależą od wymagań uczelni. Potwierdzimy je przed wykonaniem usługi.",
+              "versionButton": "Zapytaj o zdjęcie do legitymacji",
+              "versionMessage": "Dzień dobry, potrzebuję zdjęcia do legitymacji studenckiej.",
+              "whatsapp": "https://wa.me/48575445675"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-cecfa222b5",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-9272f44bb8",
+            "type": "ft_document_process",
+            "data": {
+              "eyebrow": "Prosto i bez stresu",
+              "heading": "Jak wygląda wizyta po zdjęcie do legitymacji studenckiej?",
+              "intro": "Od sprawdzenia wymagań uczelni do gotowego kompletu lub pliku — zwykle około 15 minut."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-a923b46246",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-d2c6a0c745",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "01",
+              "title": "Ustalamy wymagania uczelni",
+              "text": "Powiedz, do jakiej uczelni i systemu potrzebujesz zdjęcia. Jeśli masz instrukcję dziekanatu, pokaż ją przed sesją."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-dcb5ff8f0a",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "02",
+              "title": "Wykonujemy kilka ujęć",
+              "text": "Pomagamy ustawić głowę i ramiona. Dbamy o równe światło, jasne tło i naturalny wygląd."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-d08901acf8",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "03",
+              "title": "Wspólnie wybieramy zdjęcie",
+              "text": "Wybierasz ujęcie, na którym twarz wygląda naturalnie i wyraźnie. Przed przygotowaniem sprawdzamy kadr."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-65cee765a8",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "04",
+              "title": "Przygotowujemy odbitki lub plik",
+              "text": "Kadrujemy zdjęcie do wymaganego formatu i przygotowujemy odbitki, plik cyfrowy albo oba warianty."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-3187f75fe2",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-4a14cfdc8f",
+            "type": "ft_document_offices",
+            "data": {
+              "eyebrow": "Po wykonaniu zdjęcia",
+              "heading": "Jak przekazać zdjęcie do uczelni?",
+              "intro": "Gotową odbitkę możesz przekazać w dziekanacie. Jeśli uczelnia korzysta z systemu online, wybierz wariant cyfrowy i sprawdź wymagany sposób przesłania.",
+              "disclaimer": "Zasady przyjmowania zdjęć ustala uczelnia. Przed wysłaniem pliku sprawdź aktualne instrukcje dziekanatu.",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona uczelni"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-3933caa95c",
+    "type": "layout_section",
+    "data": {
+      "container": "grid",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-85b31b80a9",
+            "type": "ft_document_office_card",
+            "data": {
+              "name": "Dziekanat uczelni",
+              "address": "Właściwy adres uczelni — sprawdź w systemie lub na stronie placówki",
+              "detail": "Dziekanat potwierdzi wymagany format, parametry pliku i sposób przekazania zdjęcia.",
+              "url": "https://www.gov.pl/web/edukacja",
+              "number": "01",
+              "tag": "Wymagania uczelni",
+              "site": "https://www.gov.pl/web/edukacja",
+              "map": "https://www.google.com/maps/search/?api=1&query=uczelnia",
+              "phone": "",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Informacje dla studentów"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-de908a76be",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        33,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-8cfd558b19",
+            "type": "ft_document_info",
+            "data": {
+              "eyebrow": "Dobrze wiedzieć",
+              "heading": "Legitymacja studencka — o czym pamiętać?",
+              "text": "Uczelnia może wskazać własny wymiar zdjęcia, rozdzielczość, tło albo wymagania pliku cyfrowego. Przed wizytą sprawdź instrukcję dziekanatu.",
+              "more": "Jeśli wymagania zmienią się w trakcie studiów, przygotujemy nowe zdjęcie zgodnie z aktualnymi wytycznymi. W razie wątpliwości zabierz informację z uczelni.",
+              "alertHeading": "Informacje uczelni",
+              "alert": "Zasady przyjmowania zdjęć mogą różnić się między uczelniami. Przed przekazaniem odbitki lub pliku sprawdź aktualną instrukcję."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-68215e828c",
+            "type": "ft_document_faq",
+            "data": {
+              "eyebrow": "Najczęstsze pytania",
+              "heading": "O co pytacie przed zdjęciem do legitymacji studenckiej?",
+              "items": [
+                {
+                  "question": "Czy uczelnia musi podać dokładny format?",
+                  "answer": "Najlepiej tak. Uczelnie mogą różnić się wymiarem, proporcjami, rozdzielczością i sposobem przekazania zdjęcia. Jeśli nie masz informacji, skontaktuj się z dziekanatem."
+                },
+                {
+                  "question": "Czy można zamówić sam plik cyfrowy?",
+                  "answer": "Tak, jeśli uczelnia przyjmuje pliki. Przygotujemy go zgodnie z przekazanymi parametrami."
+                },
+                {
+                  "question": "Czy mogę mieć okulary?",
+                  "answer": "Tak, jeśli oczy są dobrze widoczne, oprawki nie zasłaniają brwi, a szkła nie odbijają światła."
+                },
+                {
+                  "question": "Czy zdjęcie musi być na białym tle?",
+                  "answer": "Wiele uczelni wymaga jasnego, jednolitego tła, ale zawsze warto sprawdzić instrukcję konkretnego dziekanatu."
+                },
+                {
+                  "question": "Czy mogę użyć starszego zdjęcia?",
+                  "answer": "Zdjęcie powinno przedstawiać aktualny wygląd. Jeśli zmienił się Twój wygląd, bezpieczniej wykonać nowe ujęcie."
+                },
+                {
+                  "question": "Ile trwa wykonanie zdjęcia?",
+                  "answer": "Sama wizyta zwykle trwa około 15 minut, zależnie od liczby ujęć i wybranego wariantu."
+                }
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-f5a8d1434c",
+            "type": "ft_document_contact",
+            "data": {
+              "eyebrow": "Fotograf Trzciana",
+              "heading": "Zdjęcie do legitymacji studenckiej blisko Ciebie.",
+              "address": "Trzciana 234, 32-733 Trzciana",
+              "phone": "575 445 675",
+              "maps": "https://www.google.com/maps/dir/?api=1&destination=Trzciana%2B234%2C%2B32-733%2BTrzciana",
+              "mapsLabel": "Nawiguj do studia",
+              "relatedHeading": "Sprawdź także",
+              "allUrl": "/zdjecia-do-dokumentow",
+              "allLabel": "Zobacz wszystkie zdjęcia do dokumentów",
+              "items": [
+                {
+                  "title": "Legitymacja szkolna",
+                  "url": "/zdjecie-do-legitymacji-szkolnej"
+                },
+                {
+                  "title": "Zdjęcie do dyplomu",
+                  "url": "/zdjecie-do-dyplomu"
+                },
+                {
+                  "title": "Zdjęcie do dowodu osobistego",
+                  "url": "/zdjecie-do-dowodu-osobistego"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+]

@@ -1,0 +1,472 @@
+[
+  {
+    "id": "ft-v5-section-b8096c3352",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-633346d6f1",
+            "type": "ft_document_hero",
+            "data": {
+              "contentVersion": "document-page-v6",
+              "eyebrow": "Zdjęcia do dokumentów · Fotograf Trzciana",
+              "heading": "Zdjęcie do wizy",
+              "text": "Przygotujemy zdjęcie do wizy zgodnie z wymaganiami kraju i rodzaju wniosku. Dobierzemy kadr, tło i wariant odbioru — pokaż nam aktualną instrukcję ambasady, konsulatu lub centrum wizowego.",
+            "image": "/bundles/shoprothemefotograftrzciana/assets/document-visa-hero-v5.png",
+            "imageAlt": "Fikcyjna przykładowa wiza z polskimi danymi trzymana w dłoni na tle ambasady",
+              "booking": "Komplet 8 odbitek: 60 zł. Przy nietypowych wymaganiach zabierz instrukcję kraju docelowego.",
+              "phone": "575 445 675",
+              "whatsapp": "https://wa.me/48575445675",
+              "phoneLabel": "Zadzwoń",
+              "whatsappLabel": "WhatsApp",
+              "bookingLabel": "Przed przyjazdem potwierdź dostępność telefonicznie.",
+              "items": []
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-ab1bd92e80",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-f78aa52753",
+            "type": "ft_document_packages",
+            "data": {
+              "eyebrow": "Cena i warianty",
+              "heading": "Wybierz potrzebny wariant",
+              "link": "/cennik#zdjecia-i-sesje",
+              "linkLabel": "Zobacz pełny cennik zdjęć do dokumentów"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-945942a6b1",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        34,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-4e6d4e8a4a",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet do wizy",
+              "description": "8 odbitek przygotowanych według wymagań kraju i rodzaju wizy.",
+              "price": "60 zł",
+              "priceKey": "documents.standard"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-d6c0620fcc",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet z plikiem cyfrowym",
+              "description": "8 odbitek oraz plik cyfrowy zgodny z przekazaną instrukcją.",
+              "price": "80 zł",
+              "priceKey": "documents.print_and_file"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-1786c57b5a",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Sam plik cyfrowy",
+              "description": "Plik przygotowany do formularza lub systemu wizowego bez skanowania odbitki.",
+              "price": "60 zł",
+              "priceKey": "documents.digital_file"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-71a7c96915",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-a1a446133a",
+            "type": "ft_document_requirements_showcase",
+            "data": {
+              "eyebrow": "Wymagania do wizy",
+              "heading": "Jak powinno wyglądać zdjęcie wizowe?",
+              "intro": "Wymagania dotyczące zdjęcia zależą od kraju, rodzaju wizy i systemu przyjmującego wniosek. Przygotujemy kadr według aktualnej instrukcji ambasady, konsulatu lub centrum wizowego.",
+              "link": "https://www.gov.pl/web/dyplomacja",
+              "linkLabel": "Sprawdź informacje urzędowe",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-visa-requirements-v2.png",
+              "imageAlt": "Przykładowe biometryczne zdjęcie Polki do wizy na białym tle",
+              "items": [
+                {
+                  "icon": "globe",
+                  "title": "Wymiary kraju docelowego",
+                  "text": "Sprawdź dokładny wymiar, proporcje i liczbę odbitek dla kraju, do którego składasz wniosek. Przygotujemy zdjęcie według przekazanych wytycznych."
+                },
+                {
+                  "icon": "camera",
+                  "title": "Twarz na wprost",
+                  "text": "Głowa pozostaje ustawiona prosto, oczy są otwarte, usta zamknięte, a wyraz twarzy naturalny i neutralny."
+                },
+                {
+                  "icon": "image",
+                  "title": "Białe, jednolite tło",
+                  "text": "Tło powinno być jasne i jednolite, bez cieni oraz dodatkowych elementów. Twarz oświetlamy równomiernie."
+                },
+                {
+                  "icon": "check",
+                  "title": "Widoczne oczy i brwi",
+                  "text": "Włosy ani oprawki nie mogą zasłaniać oczu, źrenic ani brwi. Okulary korekcyjne mogą pozostać, jeśli nie odbijają światła."
+                },
+                {
+                  "icon": "shield",
+                  "title": "Zasady konkretnej wizy",
+                  "text": "Wymagania mogą różnić się między typami wiz. Przed sesją pokaż instrukcję właściwej ambasady, konsulatu lub centrum."
+                },
+                {
+                  "icon": "search",
+                  "title": "Ostry plik i odbitka",
+                  "text": "Sprawdzimy ostrość, proporcje, kolor i parametry pliku, zanim przygotujemy wybrany wariant."
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-1463b44af0",
+    "type": "layout_section",
+    "data": {
+      "container": "grid",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-413e61d02e",
+            "type": "ft_document_source_note",
+            "data": {
+              "heading": "Zdjęcie papierowe lub cyfrowe",
+              "text": "Jeśli składasz wniosek online albo centrum wizowe wymaga pliku, sprawdź jego rozmiar, proporcje i limit. Przygotujemy plik według aktualnej instrukcji — nie skanuj papierowej odbitki."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-404535e323",
+    "type": "layout_section",
+    "data": {
+      "container": "grid",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-fc530325d9",
+            "type": "ft_document_preparation",
+            "data": {
+              "eyebrow": "Przed wizytą",
+              "heading": "Co sprawdzić przed zdjęciem do wizy?",
+              "items": [
+                {
+                  "title": "Podaj kraj i rodzaj wizy",
+                  "text": "Powiedz, do jakiego kraju i w jakim celu składasz wniosek. Wymagania mogą różnić się między wizą turystyczną, pracowniczą i innymi typami."
+                },
+                {
+                  "title": "Zabierz aktualną instrukcję",
+                  "text": "Pokaż nam wytyczne ambasady, konsulatu lub centrum wizowego. Na ich podstawie dobierzemy format i wariant odbioru."
+                },
+                {
+                  "title": "Wybierz prosty strój",
+                  "text": "Gładka, ciemniejsza góra dobrze odcina się od białego tła. Unikaj wzorów i elementów, które odwracają uwagę od twarzy."
+                },
+                {
+                  "title": "Zadbaj o widoczność twarzy",
+                  "text": "Włosy nie powinny zasłaniać oczu ani brwi. Okulary korekcyjne możesz zostawić, jeśli oczy są widoczne i szkła nie odbijają światła."
+                }
+              ],
+              "versionEyebrow": "Odbitka czy plik cyfrowy?",
+              "versionHeading": "Dopasuj wariant do sposobu złożenia wniosku.",
+              "versionPaper": "Sprawdź, czy placówka wymaga odbitek, jakiego formatu i ilu sztuk. Przygotujemy wariant zgodny z instrukcją.",
+              "versionDigital": "Jeśli wniosek online wymaga pliku, przygotujemy go z oryginalnego ujęcia według podanych parametrów.",
+              "versionNote": "Zakres i cena wariantu cyfrowego zależą od wymagań kraju oraz systemu. Potwierdzimy je przed wykonaniem usługi.",
+              "versionButton": "Zapytaj o zdjęcie wizowe",
+              "versionMessage": "Dzień dobry, potrzebuję zdjęcia do wizy.",
+              "whatsapp": "https://wa.me/48575445675"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-cecfa222b5",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-9272f44bb8",
+            "type": "ft_document_process",
+            "data": {
+              "eyebrow": "Prosto i bez stresu",
+              "heading": "Jak przygotujemy zdjęcie wizowe?",
+              "intro": "Od sprawdzenia instrukcji do gotowego kompletu lub pliku — zwykle około 15 minut."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-a923b46246",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-d2c6a0c745",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "01",
+              "title": "Sprawdzamy kraj i wizę",
+              "text": "Powiedz, do jakiego kraju i rodzaju wizy potrzebujesz fotografii. W razie nietypowych wytycznych pokaż instrukcję."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-dcb5ff8f0a",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "02",
+              "title": "Ustawiamy kadr biometryczny",
+              "text": "Pomagamy ustawić głowę, ramiona i włosy. Dbamy o białe tło, równe światło i spokojną mimikę."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-d08901acf8",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "03",
+              "title": "Wybierasz najlepsze ujęcie",
+              "text": "Wspólnie oglądamy kilka fotografii i wybierasz kadr, na którym twarz jest wyraźna i naturalna."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-65cee765a8",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "04",
+              "title": "Przygotowujemy właściwy wariant",
+              "text": "Kadrujemy zdjęcie do wymaganego formatu i przygotowujemy odbitki, plik cyfrowy albo oba warianty."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-3187f75fe2",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-4a14cfdc8f",
+            "type": "ft_document_offices",
+            "data": {
+              "eyebrow": "Po wykonaniu zdjęcia",
+              "heading": "Gdzie złożyć wniosek wizowy?",
+              "intro": "Właściwe miejsce i wymagania zależą od kraju docelowego oraz rodzaju wizy. Sprawdź instrukcje ambasady, konsulatu lub oficjalnego centrum wizowego.",
+              "disclaimer": "Godziny i organizacja obsługi mogą się zmieniać. Przed wyjazdem sprawdź stronę właściwej placówki.",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona placówki"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-3933caa95c",
+    "type": "layout_section",
+    "data": {
+      "container": "grid",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-85b31b80a9",
+            "type": "ft_document_office_card",
+            "data": {
+              "name": "Ambasada, konsulat lub centrum wizowe",
+              "address": "Właściwa placówka kraju docelowego — sprawdź aktualny adres",
+              "detail": "Wymagania dotyczące fotografii różnią się zależnie od kraju i typu wizy.",
+              "url": "https://www.gov.pl/web/dyplomacja",
+              "number": "01",
+              "tag": "Właściwa placówka",
+              "site": "https://www.gov.pl/web/dyplomacja",
+              "map": "https://www.google.com/maps/search/?api=1&query=ambasada%20konsulat%20centrum%20wizowe",
+              "phone": "",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona placówki"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-de908a76be",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        33,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-8cfd558b19",
+            "type": "ft_document_info",
+            "data": {
+              "eyebrow": "Dobrze wiedzieć",
+              "heading": "Zdjęcie do wizy — o czym pamiętać?",
+              "text": "Wymiary i parametry zdjęcia zależą od kraju oraz rodzaju wizy. Przed wizytą sprawdź instrukcję właściwej ambasady, konsulatu lub centrum wizowego.",
+              "more": "Jeśli wymagany jest plik cyfrowy, nie skanuj odbitki — zgłoś nam to przed wykonaniem fotografii. Przygotujemy plik według aktualnych parametrów.",
+              "alertHeading": "Informacje urzędowe",
+              "alert": "Wymagania wizowe i organizacja obsługi mogą się zmieniać. Przed złożeniem wniosku sprawdź informacje na stronie właściwej placówki."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-68215e828c",
+            "type": "ft_document_faq",
+            "data": {
+              "eyebrow": "Najczęstsze pytania",
+              "heading": "O co pytacie przed zdjęciem do wizy?",
+              "items": [
+                {
+                  "question": "Czy zdjęcie pasuje do każdej wizy?",
+                  "answer": "Nie. Wymagania zależą od kraju i rodzaju wizy. Pokaż nam aktualną instrukcję, a przygotujemy odpowiedni format."
+                },
+                {
+                  "question": "Czy muszę się umawiać?",
+                  "answer": "Przed przyjazdem zadzwoń i potwierdź dostępność studia. Dzięki temu łatwiej zaplanujesz wizytę."
+                },
+                {
+                  "question": "Czy dostanę plik cyfrowy?",
+                  "answer": "Tak, możemy przygotować plik cyfrowy w parametrach wskazanych przez placówkę lub system. Powiedz o tym przed wykonaniem zdjęcia."
+                },
+                {
+                  "question": "Czy mogę mieć okulary?",
+                  "answer": "Okulary korekcyjne mogą pozostać, jeśli oczy są dobrze widoczne, oprawki nie zasłaniają brwi, a szkła nie odbijają światła."
+                },
+                {
+                  "question": "Czy wymagania USA i Schengen są takie same?",
+                  "answer": "Nie zawsze. Każdy kraj lub system może mieć własne wymiary i parametry. Sprawdź aktualną instrukcję przed wizytą."
+                },
+                {
+                  "question": "Jak długo trwa wykonanie zdjęcia?",
+                  "answer": "Sama wizyta zwykle trwa około 15 minut, zależnie od liczby ujęć i wybranego wariantu odbioru."
+                }
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-f5a8d1434c",
+            "type": "ft_document_contact",
+            "data": {
+              "eyebrow": "Fotograf Trzciana",
+              "heading": "Zdjęcie do wizy blisko Ciebie.",
+              "address": "Trzciana 234, 32-733 Trzciana",
+              "phone": "575 445 675",
+              "maps": "https://www.google.com/maps/dir/?api=1&destination=Trzciana+234,+32-733+Trzciana",
+              "mapsLabel": "Nawiguj do studia",
+              "relatedHeading": "Sprawdź także",
+              "allUrl": "/zdjecia-do-dokumentow",
+              "allLabel": "Zobacz wszystkie zdjęcia do dokumentów",
+              "items": [
+                {
+                  "title": "Wiza USA",
+                  "url": "/zdjecie-do-wizy-usa"
+                },
+                {
+                  "title": "Wiza Schengen",
+                  "url": "/zdjecie-do-wizy-schengen"
+                },
+                {
+                  "title": "Zdjęcie do paszportu",
+                  "url": "/zdjecie-do-paszportu"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+]

@@ -1,0 +1,479 @@
+[
+  {
+    "id": "ft-v5-section-5c3a7f594e",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-92bf09cc56",
+            "type": "ft_document_hero",
+            "data": {
+              "contentVersion": "document-page-v11",
+              "eyebrow": "Zdjęcia do dokumentów · Fotograf Trzciana",
+              "heading": "Zdjęcie do paszportu",
+              "text": "Wykonamy paszportowe zdjęcie biometryczne zgodne z wymaganiami polskiego paszportu. Wspólnie ustawimy kadr, wybierzemy ujęcie i przygotujemy odbitki lub plik cyfrowy.",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-passport-hero-v2.png",
+              "imageAlt": "Przygotowanie do zdjęcia paszportowego w studiu Fotograf Trzciana",
+              "booking": "Komplet 8 odbitek: 60 zł. Przed przyjazdem zadzwoń i potwierdź dostępność studia.",
+              "phone": "575 445 675",
+              "whatsapp": "https://wa.me/48575445675",
+              "phoneLabel": "Zadzwoń",
+              "whatsappLabel": "WhatsApp",
+              "bookingLabel": "Przed przyjazdem potwierdź dostępność telefonicznie.",
+              "items": []
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-ca896f5c9a",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-a9ace782f0",
+            "type": "ft_document_packages",
+            "data": {
+              "eyebrow": "Cena i warianty",
+              "heading": "Wybierz potrzebny wariant",
+              "link": "/cennik#zdjecia-i-sesje",
+              "linkLabel": "Zobacz pełny cennik zdjęć do dokumentów"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-0efbea0fd5",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        34,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-487cdd9c3f",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet do paszportu",
+              "description": "8 odbitek 35 × 45 mm przygotowanych do polskiego wniosku paszportowego.",
+              "price": "60 zł"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-adc4ce790f",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet z plikiem cyfrowym",
+              "description": "8 odbitek 35 × 45 mm oraz plik cyfrowy przygotowany do wskazanego zastosowania.",
+              "price": "80 zł"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-08161bc127",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Sam plik cyfrowy",
+              "description": "Plik cyfrowy przygotowany według wymagań urzędu lub konsulatu.",
+              "price": "60 zł"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-5458b8a86f",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-6dcf1d0466",
+            "type": "ft_document_requirements_showcase",
+            "data": {
+              "eyebrow": "Wymagania paszportowe",
+              "heading": "Jak powinno wyglądać zdjęcie paszportowe?",
+              "intro": "Do polskiego paszportu potrzebne jest aktualne zdjęcie biometryczne. Przygotujemy kadr zgodny z wymaganiami i podpowiemy, czy potrzebujesz odbitek, pliku cyfrowego czy obu wariantów.",
+              "link": "https://www.gov.pl/web/gov/uzyskaj-paszport",
+              "linkLabel": "Aktualne informacje na gov.pl",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-passport-requirements-v1.png",
+              "imageAlt": "Przykładowe biometryczne zdjęcie paszportowe na jasnym tle",
+              "items": [
+                {
+                  "icon": "id",
+                  "title": "Format i proporcje",
+                  "text": "Polskie zdjęcie paszportowe ma format 35 × 45 mm. Przygotujemy właściwy kadr i układ odbitek."
+                },
+                {
+                  "icon": "camera",
+                  "title": "Ujęcie biometryczne",
+                  "text": "Twarz patrzy prosto w obiektyw, głowa pozostaje ustawiona pionowo, a wyraz twarzy jest naturalny i neutralny."
+                },
+                {
+                  "icon": "image",
+                  "title": "Jasne, jednolite tło",
+                  "text": "Tło powinno być jasne i jednolite. Zadbamy o równomierne światło bez cieni na twarzy i tle."
+                },
+                {
+                  "icon": "check",
+                  "title": "Oczy i twarz widoczne",
+                  "text": "Oczy muszą być dobrze widoczne, a włosy nie mogą zasłaniać twarzy. Nie używaj nakrycia głowy ani przyciemnianych okularów."
+                },
+                {
+                  "icon": "shield",
+                  "title": "Aktualny wygląd",
+                  "text": "Fotografia powinna przedstawiać aktualny wygląd. Do wniosku paszportowego dołącz aktualne zdjęcie zgodne z instrukcją."
+                },
+                {
+                  "icon": "search",
+                  "title": "Jakość pliku",
+                  "text": "Przy wersji cyfrowej sprawdzimy wymagany rozmiar, proporcje i limit pliku wskazane przez urząd."
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-3afbef5a31",
+    "type": "layout_section",
+    "data": {
+      "container": "grid",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-36d91fae66",
+            "type": "ft_document_source_note",
+            "data": {
+              "heading": "Plik cyfrowy do paszportu",
+              "text": "Jeśli urząd lub konsulat wymaga pliku, sprawdź jego rozmiar, proporcje i limit. Przygotujemy plik według przekazanej instrukcji — bez skanowania odbitki."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-bfa7204971",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-5d5781154f",
+            "type": "ft_document_preparation",
+            "data": {
+              "eyebrow": "Przed wizytą",
+              "heading": "Jak przygotować się do zdjęcia paszportowego?",
+              "items": [
+                {
+                  "title": "Strój",
+                  "text": "Wybierz gładką, ciemniejszą górę odcinającą się od jasnego tła. Unikaj wzorów i białej koszuli zlewającej się z tłem."
+                },
+                {
+                  "title": "Włosy i twarz",
+                  "text": "Włosy nie powinny zasłaniać oczu ani owalu twarzy. Makijaż może być naturalny, bez zmiany rysów."
+                },
+                {
+                  "title": "Okulary",
+                  "text": "Jeśli nosisz okulary korekcyjne, możesz je zostawić, o ile oczy są widoczne, a szkła nie odbijają światła."
+                },
+                {
+                  "title": "Bez nakrycia głowy",
+                  "text": "Do zdjęcia paszportowego zdejmij nakrycie głowy. Wyjątki wynikające z wyznania lub stanu zdrowia wymagają potwierdzenia zgodnie z przepisami."
+                }
+              ],
+              "versionEyebrow": "Odbitka czy plik cyfrowy?",
+              "versionHeading": "Dobierz wariant do sposobu złożenia wniosku.",
+              "versionPaper": "W punkcie paszportowym zwykle potrzebujesz papierowego zdjęcia 35 × 45 mm. Sprawdź aktualną instrukcję przed wizytą.",
+              "versionDigital": "Jeśli urząd wymaga pliku, przygotujemy go z oryginalnego ujęcia. Nie skanuj papierowej odbitki.",
+              "versionNote": "Zakres i cena wersji cyfrowej zależą od wybranego wariantu. Potwierdzimy je przed wykonaniem usługi.",
+              "versionButton": "Zapytaj o zdjęcie paszportowe",
+              "versionMessage": "Dzień dobry, potrzebuję zdjęcia paszportowego.",
+              "whatsapp": "https://wa.me/48575445675"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-f095f6b91d",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-7d665897a3",
+            "type": "ft_document_process",
+            "data": {
+              "eyebrow": "Prosto i bez stresu",
+              "heading": "Jak wygląda wykonanie zdjęcia paszportowego?",
+              "intro": "Od sprawdzenia wymagań do gotowego wariantu zdjęcia — zwykle około 15 minut."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-f72f39fc6e",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-04c15a23af",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "01",
+              "title": "Sprawdzamy wymagania",
+              "text": "Powiedz, że zdjęcie będzie do polskiego paszportu. Jeśli chodzi o dokument innego kraju, pokaż nam aktualną instrukcję."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-f467af8fd2",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "02",
+              "title": "Ustawiamy kadr biometryczny",
+              "text": "Pomagamy ustawić głowę, ramiona i włosy. Dbamy o jasne tło, równe światło i spokojną mimikę."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-714a917c42",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "03",
+              "title": "Wybierasz najlepsze ujęcie",
+              "text": "Wspólnie oglądamy kilka fotografii i wybierasz kadr, na którym twarz jest naturalna i wyraźna."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-c0efd0c930",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "04",
+              "title": "Odbierasz właściwy wariant",
+              "text": "Przygotowujemy odbitki 35 × 45 mm, plik cyfrowy albo oba warianty — zgodnie z wymaganiami."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-5f9609186b",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-877d8fd96a",
+            "type": "ft_document_offices",
+            "data": {
+              "eyebrow": "Po wykonaniu zdjęcia",
+              "heading": "Gdzie złożyć wniosek paszportowy?",
+              "intro": "Wniosek paszportowy składa się osobiście w punkcie paszportowym. Dla mieszkańców okolic Trzciany praktycznym miejscem jest terenowy punkt w Bochni.",
+              "disclaimer": "Sprawdź przed wyjazdem aktualne godziny, wymagane dokumenty i zasady rezerwacji na stronie Małopolskiego Urzędu Wojewódzkiego.",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona punktu"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-aa87194187",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-833a1b3162",
+            "type": "ft_document_office_card",
+            "data": {
+              "name": "Terenowy Punkt Paszportowy w Bochni",
+              "address": "ul. Windakiewicza 9, II piętro, 32-700 Bochnia",
+              "detail": "Punkt obsługuje sprawy paszportowe. Przed wizytą sprawdź aktualne godziny, zasady rezerwacji i listę dokumentów.",
+              "phone": "",
+              "site": "https://malopolska.uw.gov.pl/default.aspx?page=miejsca_obslugi_paszportowej",
+              "url": "https://malopolska.uw.gov.pl/default.aspx?page=miejsca_obslugi_paszportowej",
+              "map": "https://www.google.com/maps/dir/?api=1&origin=Trzciana+234,+32-733+Trzciana&destination=ul.+Windakiewicza+9,+32-700+Bochnia",
+              "tag": "Najbliższy punkt paszportowy",
+              "number": "01",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona punktu"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-9f4a87f384",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        33,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-0dbcda3a75",
+            "type": "ft_document_info",
+            "data": {
+              "eyebrow": "Dobrze wiedzieć",
+              "heading": "Paszport — co przygotować?",
+              "text": "Wniosek paszportowy składa się osobiście w punkcie paszportowym. Przed wizytą sprawdź wymagane dokumenty, godziny obsługi i możliwość rezerwacji terminu.",
+              "more": "Jeżeli składasz wniosek o paszport innego kraju, wymagania dotyczące zdjęcia mogą być inne. Zabierz aktualną instrukcję konsulatu lub urzędu.",
+              "alertHeading": "Aktualne informacje urzędowe",
+              "alert": "Godziny pracy, rezerwacje i wymagane dokumenty mogą się zmieniać. Przed wyjazdem sprawdź stronę właściwego punktu paszportowego."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-7d1cddee3b",
+            "type": "ft_document_faq",
+            "data": {
+              "eyebrow": "Najczęstsze pytania",
+              "heading": "O co pytacie przed zdjęciem paszportowym?",
+              "items": [
+                {
+                  "question": "Ile kosztuje zdjęcie do paszportu?",
+                  "answer": "Komplet 8 odbitek 35 × 45 mm kosztuje 60 zł. Komplet z plikiem cyfrowym kosztuje 80 zł, a sam plik 60 zł.",
+                  "id": "3354ff30-809e-4b91-b52e-fe5c923f30f0"
+                },
+                {
+                  "question": "Czy zdjęcie paszportowe ma format 35 × 45 mm?",
+                  "answer": "Tak, dla polskiego paszportu przygotowujemy zdjęcie w formacie 35 × 45 mm. Dokumenty innych państw mogą mieć inne wymagania.",
+                  "id": "152cd1b8-253a-4c60-a22b-f636ee9e454f"
+                },
+                {
+                  "question": "Czy trzeba się umawiać?",
+                  "answer": "Przed przyjazdem zadzwoń i potwierdź dostępność studia. Dzięki temu łatwiej zaplanujesz wizytę.",
+                  "id": "f445c9ed-2b85-4cf5-845b-fefe4be89e8a"
+                },
+                {
+                  "question": "Czy mogę mieć okulary?",
+                  "answer": "Okulary korekcyjne są możliwe, jeśli oczy są wyraźnie widoczne, a szkła nie odbijają światła.",
+                  "id": "52561fcd-bd79-42f0-96de-aa8a4cc9b42a"
+                },
+                {
+                  "question": "Czy przygotujecie plik cyfrowy?",
+                  "answer": "Tak. Przygotujemy plik według parametrów podanych przez urząd lub konsulat. Nie skanujemy odbitki.",
+                  "id": "675f5d5f-4d5b-4a79-ac6e-bfbcdd1182de"
+                },
+                {
+                  "question": "Gdzie złożyć wniosek paszportowy?",
+                  "answer": "Wniosek składa się w punkcie paszportowym. Najbliższy punkt, godziny i rezerwację sprawdź przed wizytą.",
+                  "id": "2fc33465-8bc0-4abc-b50d-2d4e14e0dfd7"
+                }
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-257ef9e66f",
+            "type": "ft_document_contact",
+            "data": {
+              "eyebrow": "Fotograf Trzciana",
+              "heading": "Zdjęcie paszportowe blisko Ciebie.",
+              "address": "Trzciana 234, 32-733 Trzciana",
+              "phone": "575 445 675",
+              "maps": "https://www.google.com/maps/dir/?api=1&destination=Trzciana+234,+32-733+Trzciana",
+              "mapsLabel": "Nawiguj do studia",
+              "relatedHeading": "Sprawdź także",
+              "allUrl": "/zdjecia-do-dokumentow",
+              "allLabel": "Zobacz wszystkie zdjęcia do dokumentów",
+              "items": [
+                {
+                  "title": "Dowód osobisty",
+                  "url": "/zdjecie-do-dowodu-osobistego"
+                },
+                {
+                  "title": "Prawo jazdy",
+                  "url": "/zdjecie-do-prawa-jazdy"
+                },
+                {
+                  "title": "Paszport dla dziecka",
+                  "url": "/zdjecie-do-paszportu-dla-dziecka"
+                },
+                {
+                  "title": "Zdjęcia do dokumentów",
+                  "url": "/zdjecia-do-dokumentow"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+]

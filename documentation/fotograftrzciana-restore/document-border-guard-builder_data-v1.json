@@ -1,0 +1,493 @@
+[
+    {
+        "id":  "ft-v5-section-b8096c3352",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-633346d6f1",
+                                             "type":  "ft_document_hero",
+                                             "data":  {
+                                                          "contentVersion":  "document-page-v6",
+                                                          "eyebrow":  "ZDJĘCIA DO LEGITYMACJI STRAŻY GRANICZNEJ · FOTOGRAF TRZCIANA",
+                                                          "heading":  "Zdjęcie do legitymacji Straży Granicznej",
+                                                          "text":  "Przygotujemy aktualne zdjęcie do legitymacji służbowej Straży Granicznej. Ustalimy wymagania jednostki i dopasujemy kadr do obowiązującej instrukcji, zanim wykonamy odbitki lub plik.",
+                                                          "image":  "/bundles/shoprothemefotograftrzciana/assets/document-border-guard-hero-v1.png",
+                                                          "imageAlt":  "Funkcjonariuszka Straży Granicznej przy przejściu granicznym",
+                                                          "booking":  "Odbitki drukujemy na formacie 10 × 15 cm. Liczba zdjęć zależy od wymiaru — przy 35 × 45 mm na jednej formatce mieści się 8 sztuk. Jeśli jednostka wymaga pliku, przygotujemy również wariant cyfrowy.",
+                                                          "phone":  "575 445 675",
+                                                          "whatsapp":  "https://wa.me/48575445675",
+                                                          "phoneLabel":  "Zadzwoń",
+                                                          "whatsappLabel":  "WhatsApp",
+                                                          "bookingLabel":  "Przed przyjazdem zabierz instrukcję jednostki lub informację od przełożonego.",
+                                                          "items":  [
+                                                                        {
+                                                                            "label":  "Komplet odbitek",
+                                                                            "value":  "Z jednej formatki 10 × 15 cm"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Plik cyfrowy",
+                                                                            "value":  "Wariant opcjonalny"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Format",
+                                                                            "value":  "Według instrukcji jednostki"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Wizyta",
+                                                                            "value":  "Po potwierdzeniu dostępności"
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-ab1bd92e80",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-f78aa52753",
+                                             "type":  "ft_document_packages",
+                                             "data":  {
+                                                          "eyebrow":  "WARIANT ZDJĘCIA",
+                                                          "heading":  "Wybierz wariant do legitymacji Straży Granicznej",
+                                                          "link":  "/cennik#zdjecia-i-sesje",
+                                                          "linkLabel":  "Zobacz pełny cennik zdjęć do dokumentów"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-945942a6b1",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    34,
+                                    33,
+                                    33
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-4e6d4e8a4a",
+                                             "type":  "ft_document_package_card",
+                                             "data":  {
+                                                          "name":  "Komplet do legitymacji",
+                                                          "description":  "Odbitki przygotowane według wymagań jednostki. Przy formacie 35 × 45 mm z jednej formatki 10 × 15 cm otrzymasz 8 zdjęć.",
+                                                          "price":  "60 zł",
+                                                          "priceKey":  "documents.standard"
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-d6c0620fcc",
+                                             "type":  "ft_document_package_card",
+                                             "data":  {
+                                                          "name":  "Komplet z plikiem cyfrowym",
+                                                          "description":  "Odbitki oraz plik cyfrowy przygotowany do przekazania zgodnie z instrukcją Straży Granicznej.",
+                                                          "price":  "80 zł",
+                                                          "priceKey":  "documents.print_and_file"
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-1786c57b5a",
+                                             "type":  "ft_document_package_card",
+                                             "data":  {
+                                                          "name":  "Sam plik cyfrowy",
+                                                          "description":  "Plik przygotowany według parametrów wskazanych przez jednostkę lub przełożonego.",
+                                                          "price":  "60 zł",
+                                                          "priceKey":  "documents.digital_file"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-71a7c96915",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-a1a446133a",
+                                             "type":  "ft_document_requirements_showcase",
+                                             "data":  {
+                                                          "eyebrow":  "WYMAGANIA DO LEGITYMACJI",
+                                                          "heading":  "Jak powinno wyglądać zdjęcie do legitymacji Straży Granicznej?",
+                                                          "intro":  "Zdjęcie do legitymacji służbowej musi odpowiadać aktualnym wymaganiom Straży Granicznej. Przed wizytą sprawdź instrukcję swojej jednostki — pomożemy przełożyć ją na właściwy kadr i format.",
+                                                          "link":  "https://eli.gov.pl/api/acts/DU/2024/680/text.html",
+                                                          "linkLabel":  "Sprawdź aktualne wymagania",
+                                                          "image":  "/bundles/shoprothemefotograftrzciana/assets/document-border-guard-requirements-v1.png",
+                                                          "imageAlt":  "Przykładowe zdjęcie biometryczne funkcjonariuszki Straży Granicznej bez nakrycia głowy",
+                                                          "items":  [
+                                                                        {
+                                                                            "icon":  "id-card",
+                                                                            "title":  "Kadr i proporcje",
+                                                                            "text":  "Twarz ustawiona na wprost, oczy otwarte i widoczne. Twarz powinna zajmować około 70–80% pola zdjęcia."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "camera",
+                                                                            "title":  "Mundur wyjściowy",
+                                                                            "text":  "Na zdjęciu do legitymacji pokaż się w wymaganym umundurowaniu służbowym, zgodnie z instrukcją jednostki."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "image",
+                                                                            "title":  "Bez czapki i ciemnych okularów",
+                                                                            "text":  "Aktualne wymagania przewidują zdjęcie bez nakrycia głowy i bez ciemnych okularów."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "check",
+                                                                            "title":  "Naturalny wyraz twarzy",
+                                                                            "text":  "Usta pozostają zamknięte, brwi i oczy są odsłonięte, a wyraz twarzy naturalny."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "shield",
+                                                                            "title":  "Jasne, równe tło",
+                                                                            "text":  "Tło powinno być jednolite i jasne, a twarz oświetlona równomiernie bez cieni i refleksów."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "search",
+                                                                            "title":  "Aktualne i ostre zdjęcie",
+                                                                            "text":  "Zdjęcie musi być wyraźne, bez pikselizacji i uszkodzeń oraz przedstawiać aktualny wygląd funkcjonariusza."
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-1463b44af0",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "grid",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-413e61d02e",
+                                             "type":  "ft_document_source_note",
+                                             "data":  {
+                                                          "heading":  "Instrukcja jednostki ma pierwszeństwo",
+                                                          "text":  "Rozporządzenie określa ogólne wymagania dla fotografii do legitymacji Straży Granicznej. Szczegóły przekazania, liczby odbitek i ewentualnego pliku potwierdź w swojej jednostce — aktualne wytyczne mogą zależeć od rodzaju dokumentu."
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-404535e323",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "grid",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-fc530325d9",
+                                             "type":  "ft_document_preparation",
+                                             "data":  {
+                                                          "eyebrow":  "PRZED WIZYTĄ",
+                                                          "heading":  "Jak przygotować się do zdjęcia do legitymacji Straży Granicznej?",
+                                                          "items":  [
+                                                                        {
+                                                                            "icon":  "shirt",
+                                                                            "title":  "Mundur wyjściowy",
+                                                                            "text":  "Przyjdź w umundurowaniu wymaganym przez jednostkę. Jeśli instrukcja wskazuje elementy dodatkowe, zabierz ją ze sobą."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "sparkles",
+                                                                            "title":  "Włosy i twarz",
+                                                                            "text":  "Włosy nie powinny zasłaniać oczu ani brwi. Makijaż może być naturalny i nie powinien zmieniać rysów twarzy."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "glasses",
+                                                                            "title":  "Okulary",
+                                                                            "text":  "Do zdjęcia zdejmij ciemne okulary. Korekcyjne załóż tylko wtedy, gdy instrukcja je dopuszcza, oczy są widoczne, a szkła nie odbijają światła."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "shield",
+                                                                            "title":  "Bez nakrycia głowy",
+                                                                            "text":  "Zdjęcie do legitymacji wykonujemy bez czapki i innych nakryć głowy, zgodnie z aktualnymi wymaganiami."
+                                                                        }
+                                                                    ],
+                                                          "versionEyebrow":  "ODBITKA CZY PLIK CYFROWY?",
+                                                          "versionHeading":  "Dopasujemy wariant do instrukcji jednostki.",
+                                                          "versionPaper":  "W punkcie przygotujemy odbitki na papierze. Przy formacie 35 × 45 mm z jednej formatki 10 × 15 cm otrzymasz 8 zdjęć.",
+                                                          "versionDigital":  "Jeśli jednostka wymaga pliku cyfrowego, przygotujemy go z oryginalnego ujęcia. Nie skanuj papierowej odbitki.",
+                                                          "versionNote":  "Zakres i cena wariantu cyfrowego zależą od wymagań jednostki. Potwierdzimy szczegóły przed wykonaniem usługi.",
+                                                          "versionButton":  "Zapytaj o zdjęcie do legitymacji",
+                                                          "versionMessage":  "Dzień dobry, potrzebuję zdjęcia do legitymacji Straży Granicznej.",
+                                                          "whatsapp":  "https://wa.me/48575445675"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-cecfa222b5",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-9272f44bb8",
+                                             "type":  "ft_document_process",
+                                             "data":  {
+                                                          "eyebrow":  "PROSTO I ZGODNIE Z INSTRUKCJĄ",
+                                                          "heading":  "Jak wygląda wizyta?",
+                                                          "intro":  "Od sprawdzenia wymagań jednostki do gotowych odbitek lub pliku — zwykle około 15 minut."
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-a923b46246",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    25,
+                                    25,
+                                    25,
+                                    25
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-d2c6a0c745",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "01",
+                                                          "title":  "Ustalamy wymagania jednostki",
+                                                          "text":  "Pokaż instrukcję lub powiedz, do jakiej legitymacji potrzebujesz zdjęcia. Ustalimy format, liczbę odbitek i sposób przekazania pliku."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-dcb5ff8f0a",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "02",
+                                                          "title":  "Wykonujemy kilka ujęć",
+                                                          "text":  "Pomagamy ustawić mundur, głowę i ramiona. Dbamy o jasne, równe światło oraz jednolite tło."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-d08901acf8",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "03",
+                                                          "title":  "Wspólnie wybieramy zdjęcie",
+                                                          "text":  "Wybierasz ujęcie, na którym wyglądasz naturalnie i służbowo. Przed przygotowaniem sprawdzamy ostrość oraz kadr."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-65cee765a8",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "04",
+                                                          "title":  "Przygotowujemy właściwy wariant",
+                                                          "text":  "Kadrujemy zdjęcie do wymaganego formatu i przygotowujemy odbitki, plik cyfrowy albo oba warianty."
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-3187f75fe2",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-4a14cfdc8f",
+                                             "type":  "ft_document_offices",
+                                             "data":  {
+                                                          "eyebrow":  "PO WYKONANIU ZDJĘCIA",
+                                                          "heading":  "Gdzie przekazać zdjęcie do legitymacji Straży Granicznej?",
+                                                          "intro":  "Zdjęcie przekaż w jednostce organizacyjnej Straży Granicznej wskazanej w Twojej instrukcji lub przez przełożonego. Przed wyjazdem sprawdź aktualny adres i sposób przyjmowania dokumentów.",
+                                                          "disclaimer":  "Informacje organizacyjne mogą się zmieniać. Potwierdź w jednostce, czy potrzebujesz odbitek, pliku cyfrowego lub obu wariantów.",
+                                                          "mapLabel":  "Znajdź jednostkę",
+                                                          "siteLabel":  "Informacje Straży Granicznej"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-3933caa95c",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "grid",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-85b31b80a9",
+                                             "type":  "ft_document_office_card",
+                                             "data":  {
+                                                          "name":  "Właściwa jednostka Straży Granicznej",
+                                                          "address":  "Adres wskazany przez jednostkę organizacyjną Straży Granicznej",
+                                                          "detail":  "Przed przekazaniem zdjęcia potwierdź w jednostce wymagany format, liczbę odbitek i sposób dostarczenia pliku.",
+                                                          "url":  "https://www.strazgraniczna.pl/",
+                                                          "number":  "01",
+                                                          "tag":  "SPRAWDŹ PRZED PRZEKAZANIEM",
+                                                          "site":  "https://www.strazgraniczna.pl/",
+                                                          "map":  "https://www.google.com/maps/search/?api=1\u0026query=Stra%C5%BC%20Graniczna",
+                                                          "phone":  "",
+                                                          "mapLabel":  "Znajdź jednostkę",
+                                                          "siteLabel":  "Informacje Straży Granicznej"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-de908a76be",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    33,
+                                    33,
+                                    33
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-8cfd558b19",
+                                             "type":  "ft_document_info",
+                                             "data":  {
+                                                          "eyebrow":  "DOBRZE WIEDZIEĆ",
+                                                          "heading":  "Zdjęcie do legitymacji Straży Granicznej — co dalej?",
+                                                          "text":  "Po wykonaniu zdjęcia otrzymasz uzgodniony wariant odbitek lub pliku. Dalsze formalności, miejsce złożenia i termin wydania dokumentu zależą od właściwej jednostki Straży Granicznej.",
+                                                          "more":  "Przed przekazaniem sprawdź, czy jednostka nie zmieniła wymagań dotyczących formatu, liczby zdjęć lub sposobu dostarczenia.",
+                                                          "alertHeading":  "Ważne",
+                                                          "alert":  "Zdjęcie w hero ma charakter ilustracyjny. Do legitymacji wykonujemy fotografię bez nakrycia głowy, zgodną z aktualną instrukcją i wymaganiami jednostki."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-68215e828c",
+                                             "type":  "ft_document_faq",
+                                             "data":  {
+                                                          "eyebrow":  "NAJCZĘSTSZE PYTANIA",
+                                                          "heading":  "O co pytają funkcjonariusze?",
+                                                          "items":  [
+                                                                        {
+                                                                            "question":  "Czy na zdjęciu może być czapka?",
+                                                                            "answer":  "Nie. Aktualne wymagania dla fotografii do legitymacji przewidują zdjęcie bez nakrycia głowy. Czapka na zdjęciu hero jest wyłącznie elementem ilustracji."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy trzeba przyjść w mundurze?",
+                                                                            "answer":  "Tak, przyjdź w umundurowaniu wskazanym przez jednostkę. Jeśli nie masz pewności, zabierz instrukcję lub potwierdź wymagania przed wizytą."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy format zawsze wynosi 35 × 45 mm?",
+                                                                            "answer":  "Nie zakładaj tego bez sprawdzenia. Format i liczba zdjęć zależą od rodzaju legitymacji oraz instrukcji jednostki."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy przygotujecie plik cyfrowy?",
+                                                                            "answer":  "Tak, jeśli wymaga go jednostka. Ustalimy parametry pliku przed wykonaniem usługi."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy trzeba rezerwować termin?",
+                                                                            "answer":  "Najlepiej wcześniej potwierdzić dostępność telefonicznie lub przez WhatsApp, szczególnie gdy zdjęcie jest potrzebne na konkretny termin."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Jak długo trwa wykonanie?",
+                                                                            "answer":  "Sama wizyta zwykle zajmuje około 15 minut. Termin odbioru zależy od wybranego wariantu i ustaleń."
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-f5a8d1434c",
+                                             "type":  "ft_document_contact",
+                                             "data":  {
+                                                          "eyebrow":  "FOTOGRAF TRZCIANA",
+                                                          "heading":  "Zdjęcie do dokumentu przygotowane zgodnie z instrukcją.",
+                                                          "address":  "Trzciana 234, 32-733 Trzciana",
+                                                          "phone":  "575 445 675",
+                                                          "maps":  "https://www.google.com/maps/dir/?api=1\u0026destination=Trzciana%2B234%2C%2B32-733%2BTrzciana",
+                                                          "mapsLabel":  "Nawiguj do studia",
+                                                          "relatedHeading":  "Sprawdź także",
+                                                          "allUrl":  "/zdjecia-do-dokumentow",
+                                                          "allLabel":  "Zobacz wszystkie zdjęcia do dokumentów",
+                                                          "items":  [
+                                                                        {
+                                                                            "label":  "Akta wojskowe",
+                                                                            "url":  "/zdjecie-do-akt-wojskowych"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Karta kierowcy",
+                                                                            "url":  "/zdjecie-do-karty-kierowcy"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Zdjęcia do dokumentów",
+                                                                            "url":  "/zdjecia-do-dokumentow"
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    }
+]

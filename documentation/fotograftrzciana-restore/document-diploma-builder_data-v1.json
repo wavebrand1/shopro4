@@ -1,0 +1,489 @@
+[
+    {
+        "id":  "ft-v5-section-b8096c3352",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-633346d6f1",
+                                             "type":  "ft_document_hero",
+                                             "data":  {
+                                                          "contentVersion":  "document-page-v6",
+                                                          "eyebrow":  "ZDJĘCIA DO DYPLOMU · FOTOGRAF TRZCIANA",
+                                                          "heading":  "Zdjęcie do dyplomu",
+                                                          "text":  "Przygotujemy zdjęcie do dyplomu szkoły lub uczelni. Sprawdzimy wymagany format, kadr i sposób przekazania, a przed wydrukiem wspólnie wybierzemy najlepsze ujęcie.",
+                                                          "image":  "/bundles/shoprothemefotograftrzciana/assets/document-diploma-hero-v1.png",
+                                                          "imageAlt":  "Absolwentka w stroju akademickim z fikcyjną teczką dyplomową po uroczystości",
+                                                          "booking":  "Odbitki drukujemy na formacie 10 × 15 cm. Liczba zdjęć zależy od wymiaru — przy 35 × 45 mm na jednej formatce mieści się 8 sztuk. Jeśli placówka wymaga pliku, możemy przygotować również wariant cyfrowy.",
+                                                          "phone":  "575 445 675",
+                                                          "whatsapp":  "https://wa.me/48575445675",
+                                                          "phoneLabel":  "Zadzwoń",
+                                                          "whatsappLabel":  "WhatsApp",
+                                                          "bookingLabel":  "Przed przyjazdem sprawdź wymagania szkoły lub uczelni.",
+                                                          "items":  [
+                                                                        {
+                                                                            "label":  "Komplet odbitek",
+                                                                            "value":  "Z jednej formatki 10 × 15 cm"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Plik cyfrowy",
+                                                                            "value":  "Wariant opcjonalny"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Format",
+                                                                            "value":  "Według instrukcji szkoły lub uczelni"
+                                                                        },
+                                                                        {
+                                                                            "label":  "Wizyta",
+                                                                            "value":  "Po potwierdzeniu dostępności"
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-ab1bd92e80",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-f78aa52753",
+                                             "type":  "ft_document_packages",
+                                             "data":  {
+                                                          "eyebrow":  "CENA I WARIANTY",
+                                                          "heading":  "Wybierz wariant do dyplomu",
+                                                          "link":  "/cennik#zdjecia-i-sesje",
+                                                          "linkLabel":  "Zobacz pełny cennik zdjęć do dokumentów"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-945942a6b1",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    34,
+                                    33,
+                                    33
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-4e6d4e8a4a",
+                                             "type":  "ft_document_package_card",
+                                             "data":  {
+                                                          "name":  "Komplet do dyplomu",
+                                                          "description":  "Odbitki drukowane na jednej formatce 10 × 15 cm. Liczba zdjęć wynika z wybranego wymiaru; przy 35 × 45 mm przygotowujemy 8 sztuk.",
+                                                          "price":  "60 zł",
+                                                          "priceKey":  "documents.standard"
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-d6c0620fcc",
+                                             "type":  "ft_document_package_card",
+                                             "data":  {
+                                                          "name":  "Komplet z plikiem cyfrowym",
+                                                          "description":  "Odbitki z jednej formatki 10 × 15 cm oraz plik cyfrowy do przekazania sekretariatowi, dziekanatowi lub systemowi uczelni.",
+                                                          "price":  "80 zł",
+                                                          "priceKey":  "documents.print_and_file"
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-1786c57b5a",
+                                             "type":  "ft_document_package_card",
+                                             "data":  {
+                                                          "name":  "Sam plik cyfrowy",
+                                                          "description":  "Sam plik cyfrowy przygotowany według parametrów przekazanych przez placówkę.",
+                                                          "price":  "60 zł",
+                                                          "priceKey":  "documents.digital_file"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-71a7c96915",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-a1a446133a",
+                                             "type":  "ft_document_requirements_showcase",
+                                             "data":  {
+                                                          "eyebrow":  "WYMAGANIA SZKOŁY LUB UCZELNI",
+                                                          "heading":  "Jak powinno wyglądać zdjęcie do dyplomu?",
+                                                          "intro":  "Nie ma jednego formatu obowiązującego w każdej placówce. Sprawdź instrukcję sekretariatu lub dziekanatu, a my przygotujemy kadr, odbitkę albo plik zgodnie z podanymi parametrami.",
+                                                          "link":  "https://www.gov.pl/web/edukacja",
+                                                          "linkLabel":  "Sprawdź informacje dla szkół i uczelni",
+                                                          "image":  "/bundles/shoprothemefotograftrzciana/assets/document-diploma-requirements-v1.png",
+                                                          "imageAlt":  "Przykładowe neutralne zdjęcie biometryczne studentki na białym tle",
+                                                          "items":  [
+                                                                        {
+                                                                            "icon":  "id",
+                                                                            "title":  "Format i proporcje",
+                                                                            "text":  "Wymiar, proporcje i liczba odbitek zależą od szkoły, uczelni lub organizatora dyplomu. Przekaż nam dokładną instrukcję."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "camera",
+                                                                            "title":  "Prosta pozycja",
+                                                                            "text":  "Twarz kierujemy na wprost, głowę ustawiamy prosto, oczy pozostają otwarte, a usta zamknięte."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "image",
+                                                                            "title":  "Jasne, równe tło",
+                                                                            "text":  "Zdjęcie wykonujemy na jasnym, jednolitym tle bez cieni i ozdobnych elementów."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "check",
+                                                                            "title":  "Widoczne oczy i brwi",
+                                                                            "text":  "Włosy i oprawki nie mogą zasłaniać oczu, brwi ani owalu twarzy."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "shield",
+                                                                            "title":  "Aktualny wygląd",
+                                                                            "text":  "Zdjęcie powinno przedstawiać obecny wygląd. Jeśli placówka ma dodatkowe wymagania, stosujemy jej instrukcję."
+                                                                        },
+                                                                        {
+                                                                            "icon":  "search",
+                                                                            "title":  "Jakość techniczna",
+                                                                            "text":  "Przygotowujemy ostry plik i odbitki bez pikselizacji, prześwietleń, odblasków ani uszkodzeń."
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-1463b44af0",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "grid",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-413e61d02e",
+                                             "type":  "ft_document_source_note",
+                                             "data":  {
+                                                          "heading":  "Odbitka czy plik cyfrowy?",
+                                                          "text":  "Jeśli dyplom lub dokumentacja uczelni jest prowadzona elektronicznie, sprawdź wymagany rozmiar, proporcje i limit pliku. Przygotujemy plik z oryginalnego ujęcia — nie skanuj papierowej odbitki."
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-404535e323",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "grid",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-fc530325d9",
+                                             "type":  "ft_document_preparation",
+                                             "data":  {
+                                                          "eyebrow":  "PRZED WIZYTĄ",
+                                                          "heading":  "Co sprawdzić w sekretariacie lub dziekanacie?",
+                                                          "items":  [
+                                                                        {
+                                                                            "title":  "Wymagany format",
+                                                                            "text":  "Zapytaj o wymiary, proporcje i liczbę odbitek. Różne placówki mogą stosować własne parametry zdjęcia do dyplomu."
+                                                                        },
+                                                                        {
+                                                                            "title":  "Sposób przekazania",
+                                                                            "text":  "Ustal, czy zdjęcie ma być papierowe, cyfrowe, przesłane przez system czy dostarczone na nośniku."
+                                                                        },
+                                                                        {
+                                                                            "title":  "Aktualność zdjęcia",
+                                                                            "text":  "Sprawdź, czy placówka wymaga aktualnego ujęcia i czy fotografia ma być wykonana w określonym terminie przed obroną lub uroczystością."
+                                                                        },
+                                                                        {
+                                                                            "title":  "Strój na fotografii",
+                                                                            "text":  "Na zdjęciu wybierz gładki, schludny strój odcinający się od jasnego tła. Jeśli instrukcja wskazuje dodatkowe zasady, zabierz ją do studia."
+                                                                        }
+                                                                    ],
+                                                          "versionEyebrow":  "ODBITKA CZY PLIK CYFROWY?",
+                                                          "versionHeading":  "Dopasujemy wariant do wymagań placówki.",
+                                                          "versionPaper":  "Odbitka: drukujemy na formacie 10 × 15 cm, a liczba zdjęć zależy od ich wymiaru. Dla 35 × 45 mm mieści się 8 sztuk.",
+                                                          "versionDigital":  "Plik: zapiszemy fotografię w parametrach podanych przez sekretariat lub dziekanat.",
+                                                          "versionNote":  "Zakres i cenę wariantu cyfrowego potwierdzamy przed wykonaniem usługi.",
+                                                          "versionButton":  "Zapytaj o zdjęcie do dyplomu",
+                                                          "versionMessage":  "Dzień dobry, potrzebuję zdjęcia do dyplomu.",
+                                                          "whatsapp":  "https://wa.me/48575445675"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-cecfa222b5",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-9272f44bb8",
+                                             "type":  "ft_document_process",
+                                             "data":  {
+                                                          "eyebrow":  "PROSTO I BEZ STRESU",
+                                                          "heading":  "Od instrukcji placówki do gotowego zdjęcia",
+                                                          "intro":  "Przynosisz wymagania szkoły lub uczelni, a my pomagamy dobrać właściwy kadr i wariant."
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-a923b46246",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    25,
+                                    25,
+                                    25,
+                                    25
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-d2c6a0c745",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "01",
+                                                          "title":  "Sprawdzamy wymagania",
+                                                          "text":  "Pokaż instrukcję szkoły, uczelni lub organizatora dyplomu. Ustalimy format, liczbę odbitek i sposób przekazania."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-dcb5ff8f0a",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "02",
+                                                          "title":  "Wykonujemy kilka ujęć",
+                                                          "text":  "Ustawimy twarz, ramiona i włosy, a następnie wykonamy kilka spokojnych, równomiernie oświetlonych fotografii."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-d08901acf8",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "03",
+                                                          "title":  "Wybierasz najlepsze ujęcie",
+                                                          "text":  "Wspólnie wybierasz zdjęcie, na którym wyglądasz naturalnie i które spełnia przekazane wytyczne."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-65cee765a8",
+                                             "type":  "ft_document_process_step",
+                                             "data":  {
+                                                          "number":  "04",
+                                                          "title":  "Odbierasz właściwy wariant",
+                                                          "text":  "Przygotujemy odbitki, plik cyfrowy albo oba warianty — zgodnie z ustaleniami placówki."
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v5-section-3187f75fe2",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-4a14cfdc8f",
+                                             "type":  "ft_document_offices",
+                                             "data":  {
+                                                          "eyebrow":  "PO WYKONANIU ZDJĘCIA",
+                                                          "heading":  "Gdzie przekazać zdjęcie do dyplomu?",
+                                                          "intro":  "Zdjęcie przekazujesz sekretariatowi, dziekanatowi albo organizatorowi dokumentu. To placówka określa, czy przyjmuje odbitkę, plik lub zdjęcie przesłane przez system.",
+                                                          "disclaimer":  "Przed przekazaniem sprawdź aktualną instrukcję i termin przyjmowania dokumentów.",
+                                                          "mapLabel":  "Sprawdź informacje",
+                                                          "siteLabel":  "Instrukcja dla placówki"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-3933caa95c",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "grid",
+                     "widths":  [
+                                    100
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-85b31b80a9",
+                                             "type":  "ft_document_office_card",
+                                             "data":  {
+                                                          "name":  "Sekretariat lub dziekanat",
+                                                          "address":  "Właściwa szkoła, uczelnia albo organizator dyplomu",
+                                                          "detail":  "Placówka potwierdzi wymagany format, liczbę odbitek, sposób dostarczenia i termin.",
+                                                          "url":  "https://www.gov.pl/web/edukacja",
+                                                          "number":  "01",
+                                                          "tag":  "Właściwe miejsce przekazania",
+                                                          "site":  "https://www.gov.pl/web/edukacja",
+                                                          "map":  "https://www.google.com/maps/search/?api=1\u0026query=uczelnia",
+                                                          "phone":  "",
+                                                          "mapLabel":  "Sprawdź informacje",
+                                                          "siteLabel":  "Instrukcja dla placówki"
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    },
+    {
+        "id":  "ft-v10-section-de908a76be",
+        "type":  "layout_section",
+        "data":  {
+                     "container":  "full",
+                     "widths":  [
+                                    33,
+                                    33,
+                                    33
+                                ],
+                     "columns":  [
+                                     [
+                                         {
+                                             "id":  "component-8cfd558b19",
+                                             "type":  "ft_document_info",
+                                             "data":  {
+                                                          "eyebrow":  "DOBRZE WIEDZIEĆ",
+                                                          "heading":  "Dyplom — co ustalić przed wizytą?",
+                                                          "text":  "Szkoła lub uczelnia może wymagać własnego wymiaru, tła, rozdzielczości albo sposobu przesłania zdjęcia. Najbezpieczniej zabrać aktualną instrukcję z sekretariatu lub dziekanatu.",
+                                                          "more":  "Jeżeli zdjęcie będzie używane podczas uroczystości, sprawdź także, czy placówka wymaga konkretnego stroju lub terminu wykonania. Przygotujemy wariant zgodny z przekazanymi wytycznymi.",
+                                                          "alertHeading":  "Informacje placówki",
+                                                          "alert":  "Wymagania mogą się różnić między szkołami i uczelniami. Przed zamówieniem sprawdź aktualną instrukcję organizatora dyplomu."
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-68215e828c",
+                                             "type":  "ft_document_faq",
+                                             "data":  {
+                                                          "eyebrow":  "NAJCZĘSTSZE PYTANIA",
+                                                          "heading":  "O co pytacie przed zdjęciem do dyplomu?",
+                                                          "items":  [
+                                                                        {
+                                                                            "question":  "Czy każda szkoła i uczelnia wymaga tego samego formatu?",
+                                                                            "answer":  "Nie. Format, proporcje, liczba odbitek i sposób przekazania mogą być różne. Przynieś instrukcję sekretariatu lub dziekanatu."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy mogę zamówić sam plik cyfrowy?",
+                                                                            "answer":  "Tak, jeśli placówka przyjmuje pliki. Przygotujemy go według wskazanych parametrów."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy zdjęcie może być wykonane w stroju galowym?",
+                                                                            "answer":  "Tak, o ile instrukcja placówki nie wskazuje inaczej. Wybierz schludny strój, który odcina się od jasnego tła."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy mogę mieć okulary?",
+                                                                            "answer":  "Tak, jeśli oczy są dobrze widoczne, oprawki nie zasłaniają brwi, a szkła nie odbijają światła."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy zdjęcie trzeba umówić?",
+                                                                            "answer":  "Przed przyjazdem zadzwoń lub napisz na WhatsApp i potwierdź dostępność oraz wymagany wariant."
+                                                                        },
+                                                                        {
+                                                                            "question":  "Czy przygotujecie zdjęcie na uroczystość wręczenia dyplomu?",
+                                                                            "answer":  "Tak. Ustalimy wymagania placówki i przygotujemy odbitki lub plik w terminie potwierdzonym przed realizacją."
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ],
+                                     [
+                                         {
+                                             "id":  "component-f5a8d1434c",
+                                             "type":  "ft_document_contact",
+                                             "data":  {
+                                                          "eyebrow":  "FOTOGRAF TRZCIANA",
+                                                          "heading":  "Zdjęcie do dyplomu blisko Ciebie.",
+                                                          "address":  "Trzciana 234, 32-733 Trzciana",
+                                                          "phone":  "575 445 675",
+                                                          "maps":  "https://www.google.com/maps/dir/?api=1\u0026destination=Trzciana%2B234%2C%2B32-733%2BTrzciana",
+                                                          "mapsLabel":  "Nawiguj do studia",
+                                                          "relatedHeading":  "SPRAWDŹ TAKŻE",
+                                                          "allUrl":  "/zdjecia-do-dokumentow",
+                                                          "allLabel":  "Zobacz wszystkie zdjęcia do dokumentów",
+                                                          "items":  [
+                                                                        {
+                                                                            "title":  "Legitymacja studencka",
+                                                                            "url":  "/zdjecie-do-legitymacji-studenckiej"
+                                                                        },
+                                                                        {
+                                                                            "title":  "Legitymacja szkolna",
+                                                                            "url":  "/zdjecie-do-legitymacji-szkolnej"
+                                                                        },
+                                                                        {
+                                                                            "title":  "Zdjęcia do CV i LinkedIn",
+                                                                            "url":  "/zdjecia-do-cv-i-linkedin"
+                                                                        }
+                                                                    ]
+                                                      }
+                                         }
+                                     ]
+                                 ]
+                 }
+    }
+]

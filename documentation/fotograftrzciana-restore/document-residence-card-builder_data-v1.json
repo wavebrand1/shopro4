@@ -1,0 +1,472 @@
+[
+  {
+    "id": "ft-v5-section-e7c8c08580",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-3225710853",
+            "type": "ft_document_hero",
+            "data": {
+              "contentVersion": "document-page-v6",
+              "eyebrow": "Zdjęcia do dokumentów · Fotograf Trzciana",
+              "heading": "Zdjęcie do karty pobytu",
+              "text": "Przygotujemy biometryczne zdjęcie do wniosku o kartę pobytu. Dobierzemy kadr, tło i wariant odbioru, a przed wizytą możesz pokazać nam aktualne wymagania urzędu wojewódzkiego.",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-residence-hero-v1.png",
+              "imageAlt": "Kobieta przygotowuje dokumenty do sprawy pobytowej",
+              "booking": "Komplet 8 odbitek: 60 zł. Przed przyjazdem potwierdź dostępność i zabierz aktualną instrukcję urzędu.",
+              "phone": "575 445 675",
+              "whatsapp": "https://wa.me/48575445675",
+              "phoneLabel": "Zadzwoń",
+              "whatsappLabel": "WhatsApp",
+              "bookingLabel": "Przed przyjazdem potwierdź dostępność telefonicznie.",
+              "items": []
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-b90d6f54b3",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-64558fa68f",
+            "type": "ft_document_packages",
+            "data": {
+              "eyebrow": "Cena i warianty",
+              "heading": "Wybierz potrzebny wariant",
+              "link": "/cennik#zdjecia-i-sesje",
+              "linkLabel": "Zobacz pełny cennik zdjęć do dokumentów"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-4482557e0c",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        34,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-eba7638dd2",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet do karty pobytu",
+              "description": "8 odbitek 35 × 45 mm przygotowanych do złożenia wniosku.",
+              "price": "60 zł",
+              "priceKey": "documents.standard"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-c3195f76bb",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet z plikiem cyfrowym",
+              "description": "8 odbitek oraz plik cyfrowy przygotowany według wymagań urzędu.",
+              "price": "80 zł",
+              "priceKey": "documents.print_and_file"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-d2cb76c06c",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Sam plik cyfrowy",
+              "description": "Plik przygotowany do wskazanego formularza lub systemu, bez skanowania odbitki.",
+              "price": "60 zł",
+              "priceKey": "documents.digital_file"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-e4d9795d16",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-fd5af21c99",
+            "type": "ft_document_requirements_showcase",
+            "data": {
+              "eyebrow": "Wymagania do karty pobytu",
+              "heading": "Jak powinno wyglądać zdjęcie do karty pobytu?",
+              "intro": "Do wniosku o kartę pobytu potrzebujesz aktualnego zdjęcia biometrycznego. Przygotujemy fotografię zgodną z wymaganiami wskazanymi przez urząd wojewódzki i sprawdzimy kadr przed wydaniem.",
+              "link": "https://www.malopolska.uw.gov.pl/default.aspx?page=cudzoziemcy",
+              "linkLabel": "Informacje urzędu wojewódzkiego",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-residence-requirements-v2.png",
+              "imageAlt": "Przykładowe biometryczne zdjęcie cudzoziemki do karty pobytu na białym tle",
+              "items": [
+                {
+                  "icon": "id",
+                  "title": "Format zgodny z wnioskiem",
+                  "text": "Dla polskiej karty pobytu standardowo stosuje się zdjęcie 35 × 45 mm. Przed wizytą sprawdź aktualny formularz i liczbę wymaganych odbitek."
+                },
+                {
+                  "icon": "camera",
+                  "title": "Twarz na wprost",
+                  "text": "Głowa pozostaje ustawiona prosto, oczy są otwarte, usta zamknięte, a wyraz twarzy naturalny i neutralny."
+                },
+                {
+                  "icon": "image",
+                  "title": "Białe, jednolite tło",
+                  "text": "Tło powinno być jasne i jednolite, bez cieni oraz dodatkowych elementów. Twarz oświetlamy równomiernie."
+                },
+                {
+                  "icon": "check",
+                  "title": "Widoczne oczy i brwi",
+                  "text": "Włosy ani oprawki nie mogą zasłaniać oczu, źrenic ani brwi. Okulary korekcyjne mogą pozostać, jeśli nie odbijają światła."
+                },
+                {
+                  "icon": "shield",
+                  "title": "Aktualny wygląd",
+                  "text": "Zdjęcie powinno przedstawiać aktualny wygląd osoby składającej wniosek. Nie używaj starej fotografii z innego dokumentu."
+                },
+                {
+                  "icon": "search",
+                  "title": "Odbitka i plik",
+                  "text": "Sprawdzimy ostrość, proporcje i parametry pliku, jeśli urząd lub system wymaga wersji cyfrowej."
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-0c0fd35032",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-e642019eda",
+            "type": "ft_document_source_note",
+            "data": {
+              "heading": "Dokument papierowy lub elektroniczny",
+              "text": "Jeśli urząd lub system wymaga pliku cyfrowego, sprawdź jego rozmiar, proporcje i limit. Przygotujemy plik według aktualnej instrukcji — nie skanuj papierowej odbitki."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-c59ef588f1",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-ac9296a868",
+            "type": "ft_document_preparation",
+            "data": {
+              "eyebrow": "Przed wizytą",
+              "heading": "Jak przygotować się do zdjęcia do karty pobytu?",
+              "items": [
+                {
+                  "title": "Sprawdź właściwy wniosek",
+                  "text": "Powiedz, czy zdjęcie jest do zezwolenia na pobyt czasowy, stały czy innej sprawy cudzoziemca. Dobierzemy wariant do celu fotografii."
+                },
+                {
+                  "title": "Zabierz aktualne wymagania",
+                  "text": "Pokaż nam formularz lub instrukcję Małopolskiego Urzędu Wojewódzkiego, jeśli sprawa ma dodatkowe wymagania dotyczące zdjęcia."
+                },
+                {
+                  "title": "Wybierz prosty strój",
+                  "text": "Gładka, ciemniejsza góra dobrze odcina się od białego tła. Unikaj wzorów i elementów, które mogą odwracać uwagę od twarzy."
+                },
+                {
+                  "title": "Zadbaj o widoczność twarzy",
+                  "text": "Włosy nie powinny zasłaniać oczu ani brwi. Okulary korekcyjne możesz zostawić, jeśli oczy są widoczne i szkła nie odbijają światła."
+                }
+              ],
+              "versionEyebrow": "Odbitka czy plik cyfrowy?",
+              "versionHeading": "Wybierz wariant zgodny ze sposobem złożenia wniosku.",
+              "versionPaper": "Do dokumentów składanych w urzędzie zwykle potrzebujesz papierowych odbitek. Sprawdź liczbę i format w aktualnym formularzu.",
+              "versionDigital": "Jeśli urząd lub system wymaga pliku, przygotujemy go z oryginalnego ujęcia według przekazanych parametrów.",
+              "versionNote": "Zakres i cena wariantu cyfrowego zależą od wymagań sprawy. Potwierdzimy je przed wykonaniem usługi.",
+              "versionButton": "Zapytaj o zdjęcie do karty pobytu",
+              "versionMessage": "Dzień dobry, potrzebuję zdjęcia do karty pobytu.",
+              "whatsapp": "https://wa.me/48575445675"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-2a9a76105a",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-e739e4efef",
+            "type": "ft_document_process",
+            "data": {
+              "eyebrow": "Prosto i bez stresu",
+              "heading": "Jak wygląda przygotowanie zdjęcia do karty pobytu?",
+              "intro": "Od sprawdzenia formularza do gotowego kompletu lub pliku — zwykle około 15 minut."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-a5309134f4",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-0b0a09f0ae",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "01",
+              "title": "Sprawdzamy cel zdjęcia",
+              "text": "Powiedz, do jakiej sprawy pobytowej potrzebujesz fotografii i pokaż aktualny formularz, jeśli go masz."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-0789b7b370",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "02",
+              "title": "Ustawiamy kadr biometryczny",
+              "text": "Pomagamy ustawić głowę, ramiona i włosy. Dbamy o białe tło, równe światło i spokojną mimikę."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-db7b5dd5f5",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "03",
+              "title": "Wybierasz najlepsze ujęcie",
+              "text": "Wspólnie oglądamy kilka fotografii i wybierasz kadr, na którym twarz jest wyraźna i naturalna."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-0628d925db",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "04",
+              "title": "Przygotowujemy odbiór",
+              "text": "Kadrujemy zdjęcie do wymaganego formatu i przygotowujemy odbitki, plik cyfrowy albo oba warianty."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-84df77a10d",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-d57ffbb569",
+            "type": "ft_document_offices",
+            "data": {
+              "eyebrow": "Po wykonaniu zdjęcia",
+              "heading": "Gdzie złożyć wniosek o kartę pobytu?",
+              "intro": "Sprawy karty pobytu prowadzi urząd wojewódzki właściwy dla miejsca pobytu. Przed wizytą sprawdź aktualny punkt obsługi cudzoziemców, rezerwację i listę dokumentów.",
+              "disclaimer": "Adresy, godziny i zasady obsługi mogą się zmieniać. Przed wyjazdem sprawdź stronę Małopolskiego Urzędu Wojewódzkiego.",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona urzędu"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-391f609f73",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-fd18b6b989",
+            "type": "ft_document_office_card",
+            "data": {
+              "name": "Małopolski Urząd Wojewódzki — sprawy cudzoziemców",
+              "address": "Aktualny punkt obsługi wskazany przez Małopolski Urząd Wojewódzki",
+              "detail": "Sprawdź lokalizację, rezerwację wizyty i wymagane dokumenty przed wyjazdem.",
+              "url": "https://www.malopolska.uw.gov.pl/default.aspx?page=cudzoziemcy",
+              "number": "01",
+              "tag": "Właściwy urząd",
+              "site": "https://www.malopolska.uw.gov.pl/default.aspx?page=cudzoziemcy",
+              "map": "https://www.google.com/maps/search/?api=1&query=Ma%C5%82opolski%20Urz%C4%85d%20Wojew%C3%B3dzki%20sprawy%20cudzoziemc%C3%B3w",
+              "phone": "",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona urzędu"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-5ce82dbc58",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        33,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-344a431c7e",
+            "type": "ft_document_info",
+            "data": {
+              "eyebrow": "Dobrze wiedzieć",
+              "heading": "Przed złożeniem wniosku o kartę pobytu",
+              "text": "Wymagania zdjęcia, liczba odbitek i sposób dostarczenia pliku zależą od aktualnego formularza oraz procedury urzędu wojewódzkiego.",
+              "more": "Przed wizytą sprawdź, gdzie składasz wniosek i jakie dokumenty zabierasz. Jeśli potrzebujesz pliku cyfrowego, zgłoś to przed wykonaniem zdjęcia.",
+              "alertHeading": "Informacje urzędowe",
+              "alert": "Procedury dla cudzoziemców mogą się zmieniać. Przed złożeniem wniosku sprawdź aktualne informacje na stronie Małopolskiego Urzędu Wojewódzkiego."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-ee19dac360",
+            "type": "ft_document_faq",
+            "data": {
+              "eyebrow": "Najczęstsze pytania",
+              "heading": "O co pytacie przed zdjęciem do karty pobytu?",
+              "items": [
+                {
+                  "question": "Jaki format ma zdjęcie do karty pobytu?",
+                  "answer": "Dla polskiej karty pobytu najczęściej stosuje się format 35 × 45 mm, ale przed wizytą sprawdź aktualny formularz i wymagania urzędu."
+                },
+                {
+                  "question": "Czy muszę się umawiać?",
+                  "answer": "Przed przyjazdem zadzwoń i potwierdź dostępność studia. Dzięki temu łatwiej zaplanujesz wizytę."
+                },
+                {
+                  "question": "Czy dostanę plik cyfrowy?",
+                  "answer": "Tak, możemy przygotować plik cyfrowy w parametrach wymaganych przez urząd lub system. Powiedz o tym przed wykonaniem zdjęcia."
+                },
+                {
+                  "question": "Czy mogę mieć okulary?",
+                  "answer": "Okulary korekcyjne mogą pozostać, jeśli oczy są dobrze widoczne, oprawki nie zasłaniają brwi, a szkła nie odbijają światła."
+                },
+                {
+                  "question": "Czy zdjęcie musi być aktualne?",
+                  "answer": "Tak. Do wniosku użyj aktualnej fotografii przedstawiającej obecny wygląd osoby składającej wniosek."
+                },
+                {
+                  "question": "Ile odbitek potrzebuję?",
+                  "answer": "Liczba odbitek zależy od aktualnego formularza i procedury. Sprawdź wymagania przed wizytą — przygotujemy odpowiedni wariant."
+                }
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-33d79139e9",
+            "type": "ft_document_contact",
+            "data": {
+              "eyebrow": "Fotograf Trzciana",
+              "heading": "Zdjęcie do karty pobytu blisko Ciebie.",
+              "address": "Trzciana 234, 32-733 Trzciana",
+              "phone": "575 445 675",
+              "maps": "https://www.google.com/maps/dir/?api=1&destination=Trzciana+234,+32-733+Trzciana",
+              "mapsLabel": "Nawiguj do studia",
+              "relatedHeading": "Sprawdź także",
+              "allUrl": "/zdjecia-do-dokumentow",
+              "allLabel": "Zobacz wszystkie zdjęcia do dokumentów",
+              "items": [
+                {
+                  "title": "Zdjęcie do dowodu osobistego",
+                  "url": "/zdjecie-do-dowodu-osobistego"
+                },
+                {
+                  "title": "Zdjęcie do paszportu",
+                  "url": "/zdjecie-do-paszportu"
+                },
+                {
+                  "title": "Zdjęcie do prawa jazdy",
+                  "url": "/zdjecie-do-prawa-jazdy"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+]

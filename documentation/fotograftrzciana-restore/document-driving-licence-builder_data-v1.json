@@ -1,0 +1,472 @@
+[
+  {
+    "id": "ft-v5-section-d7ccba1f81",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-e0ca2bbbaf",
+            "type": "ft_document_hero",
+            "data": {
+              "contentVersion": "document-page-v6",
+              "eyebrow": "Zdjęcia do dokumentów · Fotograf Trzciana",
+              "heading": "Zdjęcie do prawa jazdy",
+              "text": "Potrzebujesz zdjęcia do prawa jazdy? W studiu Fotograf Trzciana przygotujemy właściwy kadr, format i wariant odbioru. Jeśli składasz wniosek w nietypowej procedurze, pokaż nam aktualne wymagania.",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-driving-licence-hero-v2.png",
+              "imageAlt": "Kursantka podczas przygotowania do egzaminu na prawo jazdy",
+              "booking": "Komplet 8 odbitek: 60 zł. Zadzwoń przed przyjazdem, aby potwierdzić dostępność.",
+              "phone": "575 445 675",
+              "whatsapp": "https://wa.me/48575445675",
+              "phoneLabel": "Zadzwoń",
+              "whatsappLabel": "WhatsApp",
+              "bookingLabel": "Przed przyjazdem potwierdź dostępność telefonicznie.",
+              "items": []
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-d6f07c7975",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-bced3b0030",
+            "type": "ft_document_packages",
+            "data": {
+              "eyebrow": "Cena i warianty",
+              "heading": "Wybierz potrzebny wariant",
+              "link": "/cennik#zdjecia-i-sesje",
+              "linkLabel": "Zobacz pełny cennik zdjęć do dokumentów"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-37cb226c69",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        34,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-6b93474ce4",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet do prawa jazdy",
+              "description": "8 odbitek 35 × 45 mm przygotowanych do złożenia wniosku.",
+              "price": "60 zł",
+              "priceKey": "documents.standard"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-291efc0cc9",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Komplet z plikiem cyfrowym",
+              "description": "8 odbitek oraz plik cyfrowy do wskazanego formularza lub systemu.",
+              "price": "80 zł",
+              "priceKey": "documents.print_and_file"
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-cdb626dd28",
+            "type": "ft_document_package_card",
+            "data": {
+              "name": "Sam plik cyfrowy",
+              "description": "Plik przygotowany według wymagań urzędu lub systemu, bez skanowania odbitki.",
+              "price": "60 zł",
+              "priceKey": "documents.digital_file"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-951736bde5",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-e2c525ad59",
+            "type": "ft_document_requirements_showcase",
+            "data": {
+              "eyebrow": "Wymagania do prawa jazdy",
+              "heading": "Jak powinno wyglądać zdjęcie do prawa jazdy?",
+              "intro": "Do wniosku o prawo jazdy potrzebujesz aktualnej fotografii w wymaganym formacie. Przygotujemy kadr zgodny z parametrami wskazanymi przez urząd i sprawdzimy go przed wydaniem.",
+              "link": "https://www.powiat.bochnia.pl/zalatw-sprawe/komunikacja-i-transport.html",
+              "linkLabel": "Informacje urzędu",
+              "image": "/bundles/shoprothemefotograftrzciana/assets/document-driving-licence-requirements-v2.png",
+              "imageAlt": "Przykładowe biometryczne zdjęcie do prawa jazdy na białym tle",
+              "items": [
+                {
+                  "icon": "id",
+                  "title": "Format 35 × 45 mm",
+                  "text": "Dla polskiego prawa jazdy stosuje się zdjęcie 35 × 45 mm. Przygotujemy odbitki i plik w proporcjach wymaganych do wniosku."
+                },
+                {
+                  "icon": "camera",
+                  "title": "Prosta pozycja głowy",
+                  "text": "Twarz skierowana na wprost, głowa ustawiona prosto, oczy otwarte, usta zamknięte i naturalny wyraz twarzy."
+                },
+                {
+                  "icon": "image",
+                  "title": "Jasne, jednolite tło",
+                  "text": "Tło powinno być jasne i pozbawione cieni oraz przypadkowych elementów. Równe światło ułatwia prawidłową ocenę zdjęcia."
+                },
+                {
+                  "icon": "check",
+                  "title": "Widoczne oczy i brwi",
+                  "text": "Włosy ani oprawki nie mogą zasłaniać oczu, źrenic ani brwi. Okulary korekcyjne mogą pozostać, jeśli nie odbijają światła."
+                },
+                {
+                  "icon": "shield",
+                  "title": "Aktualny wygląd",
+                  "text": "Fotografia powinna przedstawiać Twój obecny wygląd. Jeśli urząd wymaga dodatkowych parametrów, pokaż nam aktualną instrukcję."
+                },
+                {
+                  "icon": "search",
+                  "title": "Ostry plik i odbitka",
+                  "text": "Sprawdzimy ostrość, proporcje, kolor i jakość pliku, zanim przygotujemy wybrany wariant."
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-b9c918eb3d",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-1e9e730da3",
+            "type": "ft_document_source_note",
+            "data": {
+              "heading": "Wniosek papierowy lub elektroniczny",
+              "text": "Jeśli składasz wniosek online albo urząd wymaga pliku cyfrowego, sprawdź jego rozmiar, proporcje i limit. Przygotujemy plik według przekazanej instrukcji — nie skanuj papierowej odbitki."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-18e69a6cd1",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-a3adad639a",
+            "type": "ft_document_preparation",
+            "data": {
+              "eyebrow": "Przed wizytą",
+              "heading": "Co przygotować przed zdjęciem do prawa jazdy?",
+              "items": [
+                {
+                  "title": "Sprawdź rodzaj wniosku",
+                  "text": "Powiedz, czy zdjęcie jest do pierwszego prawa jazdy, wymiany dokumentu czy innej sprawy komunikacyjnej. Dzięki temu dobierzemy właściwy wariant."
+                },
+                {
+                  "title": "Zabierz aktualne wymagania",
+                  "text": "Jeśli składasz wniosek w nietypowej procedurze lub przez konkretny system, pokaż nam instrukcję urzędu albo formularza."
+                },
+                {
+                  "title": "Wybierz prosty strój",
+                  "text": "Najlepiej sprawdzi się gładka, ciemniejsza góra odcinająca się od jasnego tła. Unikaj wzorów zlewających się z tłem."
+                },
+                {
+                  "title": "Zadbaj o widoczność twarzy",
+                  "text": "Włosy nie powinny zasłaniać oczu ani brwi. Okulary korekcyjne możesz zostawić, jeśli oczy są dobrze widoczne i szkła nie odbijają światła."
+                }
+              ],
+              "versionEyebrow": "Odbitka czy plik cyfrowy?",
+              "versionHeading": "Wybierz wariant zgodny ze sposobem złożenia wniosku.",
+              "versionPaper": "Do wizyty w urzędzie zwykle potrzebujesz papierowego zdjęcia 35 × 45 mm. Sprawdź aktualną instrukcję przed przyjazdem.",
+              "versionDigital": "Jeśli wniosek lub system wymaga pliku, przygotujemy go z oryginalnego ujęcia w przekazanych parametrach.",
+              "versionNote": "Zakres i cena wariantu cyfrowego zależą od wymagania urzędu. Potwierdzimy je przed wykonaniem usługi.",
+              "versionButton": "Zapytaj o zdjęcie do prawa jazdy",
+              "versionMessage": "Dzień dobry, potrzebuję zdjęcia do prawa jazdy.",
+              "whatsapp": "https://wa.me/48575445675"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-85a56f30d0",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-dd90b4fd84",
+            "type": "ft_document_process",
+            "data": {
+              "eyebrow": "Prosto i bez stresu",
+              "heading": "Jak wygląda zdjęcie do prawa jazdy?",
+              "intro": "Od sprawdzenia rodzaju wniosku do gotowego kompletu lub pliku — zwykle około 15 minut."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-80eaca29d7",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-e724fa5f01",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "01",
+              "title": "Sprawdzamy rodzaj dokumentu",
+              "text": "Powiedz, czy zdjęcie jest do prawa jazdy, wymiany dokumentu lub konkretnej procedury komunikacyjnej."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-1ae58913be",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "02",
+              "title": "Ustawiamy kadr do dokumentu",
+              "text": "Pomagamy ustawić głowę, ramiona i włosy. Dbamy o jasne tło, równe światło i spokojną mimikę."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-0a33c53ed6",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "03",
+              "title": "Wybierasz najlepsze ujęcie",
+              "text": "Wspólnie oglądamy kilka fotografii i wybierasz kadr, na którym wyglądasz naturalnie i wyraźnie."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-d9370681bb",
+            "type": "ft_document_process_step",
+            "data": {
+              "number": "04",
+              "title": "Przygotowujemy odbiór",
+              "text": "Kadrujemy zdjęcie do 35 × 45 mm i przygotowujemy odbitki, plik cyfrowy albo oba warianty."
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v5-section-e7a787106b",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-e5dc62ec5f",
+            "type": "ft_document_offices",
+            "data": {
+              "eyebrow": "Po zrobieniu zdjęcia",
+              "heading": "Gdzie załatwisz sprawę prawa jazdy?",
+              "intro": "Sprawy prawa jazdy i transportu dla mieszkańców powiatu bocheńskiego prowadzi Starostwo Powiatowe w Bochni. Przed wyjazdem sprawdź aktualną organizację obsługi.",
+              "disclaimer": "Godziny i zasady rezerwacji mogą się zmieniać. Potwierdź informacje na stronie urzędu lub telefonicznie.",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona urzędu"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-f1e4bebad5",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        100
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-5525ffb794",
+            "type": "ft_document_office_card",
+            "data": {
+              "name": "Wydział Komunikacji i Transportu – Starostwo Powiatowe w Bochni",
+              "address": "ul. Windakiewicza 9, 32-700 Bochnia",
+              "detail": "Prawo jazdy i sprawy transportowe · sprawdź zasady rezerwacji przed wizytą",
+              "url": "https://www.powiat.bochnia.pl/zalatw-sprawe/komunikacja-i-transport.html",
+              "number": "01",
+              "tag": "Najbliżej studia",
+              "site": "https://www.powiat.bochnia.pl/zalatw-sprawe/komunikacja-i-transport.html",
+              "map": "https://www.google.com/maps/search/?api=1&query=Wydział%20Komunikacji%20i%20Transportu%20–%20Starostwo%20Powiatowe%20w%20Bochni%20ul.%20Windakiewicza%209%2C%2032-700%20Bochnia",
+              "phone": "",
+              "mapLabel": "Nawiguj",
+              "siteLabel": "Strona urzędu"
+            }
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "ft-v10-section-a8b832fc4a",
+    "type": "layout_section",
+    "data": {
+      "container": "full",
+      "widths": [
+        33,
+        33,
+        33
+      ],
+      "columns": [
+        [
+          {
+            "id": "component-3a9d9a31f0",
+            "type": "ft_document_info",
+            "data": {
+              "eyebrow": "Dobrze wiedzieć",
+              "heading": "Przed złożeniem wniosku o prawo jazdy",
+              "text": "Przygotuj aktualne wymagania dotyczące sprawy komunikacyjnej. Urząd może wymagać papierowej fotografii 35 × 45 mm albo pliku o określonych parametrach.",
+              "more": "Przed wizytą sprawdź, gdzie składasz wniosek, jakie dokumenty zabierasz i czy potrzebujesz rezerwacji. Jeśli wymagany jest plik cyfrowy, zgłoś to przed wykonaniem zdjęcia.",
+              "alertHeading": "Informacje urzędowe",
+              "alert": "Organizacja obsługi i wymagania mogą się zmieniać. Przed wizytą sprawdź aktualną procedurę na stronie Starostwa Powiatowego w Bochni."
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-9f3418f91b",
+            "type": "ft_document_faq",
+            "data": {
+              "eyebrow": "Najczęstsze pytania",
+              "heading": "O co pytacie przed zdjęciem do prawa jazdy?",
+              "items": [
+                {
+                  "question": "Jaki format ma zdjęcie do prawa jazdy?",
+                  "answer": "Dla polskiego prawa jazdy przygotowujemy zdjęcie 35 × 45 mm. Jeśli Twoja procedura ma dodatkowe wymagania, pokaż nam instrukcję."
+                },
+                {
+                  "question": "Czy muszę się umawiać?",
+                  "answer": "Przed przyjazdem zadzwoń i potwierdź dostępność studia. Dzięki temu unikniesz oczekiwania lub przyjazdu podczas sesji wyjazdowej."
+                },
+                {
+                  "question": "Czy dostanę plik cyfrowy?",
+                  "answer": "Tak, możemy przygotować plik cyfrowy w parametrach wskazanych przez urząd lub system. Powiedz o tym przed wykonaniem zdjęcia."
+                },
+                {
+                  "question": "Czy mogę mieć okulary?",
+                  "answer": "Okulary korekcyjne mogą pozostać, jeśli oczy są dobrze widoczne, oprawki nie zasłaniają brwi, a szkła nie odbijają światła."
+                },
+                {
+                  "question": "Czy zdjęcie z prawa jazdy może być takie samo jak do dowodu?",
+                  "answer": "Format może być taki sam, ale zawsze sprawdź aktualne wymagania konkretnego wniosku. Przygotujemy zdjęcie zgodnie z celem, który wskażesz."
+                },
+                {
+                  "question": "Jak długo trwa wykonanie zdjęcia?",
+                  "answer": "Sama wizyta zwykle trwa około 15 minut, zależnie od liczby ujęć i wybranego wariantu odbioru."
+                }
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "id": "component-25cbb6a30b",
+            "type": "ft_document_contact",
+            "data": {
+              "eyebrow": "Fotograf Trzciana",
+              "heading": "Zdjęcie do prawa jazdy blisko Ciebie.",
+              "address": "Trzciana 234, 32-733 Trzciana",
+              "phone": "575 445 675",
+              "maps": "https://www.google.com/maps/dir/?api=1&destination=Trzciana+234,+32-733+Trzciana",
+              "mapsLabel": "Nawiguj do studia",
+              "relatedHeading": "Sprawdź także",
+              "allUrl": "/zdjecia-do-dokumentow",
+              "allLabel": "Zobacz wszystkie zdjęcia do dokumentów",
+              "items": [
+                {
+                  "title": "Zdjęcie do dowodu osobistego",
+                  "url": "/zdjecie-do-dowodu-osobistego"
+                },
+                {
+                  "title": "Zdjęcie do paszportu",
+                  "url": "/zdjecie-do-paszportu"
+                },
+                {
+                  "title": "Zdjęcie do karty kierowcy",
+                  "url": "/zdjecie-do-karty-kierowcy"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }
+]
