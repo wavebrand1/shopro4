@@ -62,6 +62,10 @@ class MenuItem
     #[Assert\Range(min: 0, max: 9999)]
     private int $position = 0;
 
+    #[ORM\Column(name: 'submenu_columns', options: ['default' => 1])]
+    #[Assert\Range(min: 1, max: 4)]
+    private int $submenuColumns = 1;
+
     #[ORM\Column(options: ['default' => false])]
     private bool $homePage = false;
 
@@ -91,6 +95,8 @@ class MenuItem
     public function setTarget(string $target): void { $this->target = $target; }
     public function getPosition(): int { return $this->position; }
     public function setPosition(int $position): void { $this->position = $position; }
+    public function getSubmenuColumns(): int { return $this->submenuColumns; }
+    public function setSubmenuColumns(int $columns): void { $this->submenuColumns = max(1, min(4, $columns)); }
     public function isHomePage(): bool { return $this->homePage; }
     public function setHomePage(bool $homePage): void { $this->homePage = $homePage; }
     public function getPlace(): int { return $this->place; }

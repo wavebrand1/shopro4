@@ -124,5 +124,7 @@ final class SystemTranslationCatalog
   'menu.select_module_content'=>['pl'=>'Wybierz treść z modułu','en'=>'Select module content'],
   'builder.group.builtin'=>['pl'=>'Komponenty wbudowane','en'=>'Built-in components'],
   'builder.group.theme'=>['pl'=>'Komponenty skórki','en'=>'Theme components'],
+  'menu.submenu_columns'=>['pl'=>'Liczba kolumn podmenu','en'=>'Submenu columns'],
+  'menu.submenu_columns_help'=>['pl'=>'Ustaw 1–4 kolumny dla elementów podrzędnych tej pozycji menu.','en'=>'Set 1–4 columns for this menu item’s children.'],
  ];}
 }

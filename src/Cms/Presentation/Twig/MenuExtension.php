@@ -42,7 +42,7 @@ final class MenuExtension extends AbstractExtension
         ];
     }
 
-    /** @return list<array{id: int, name: string, caption: ?string, url: ?string, target: string, children: array}> */
+    /** @return list<array{id: int, name: string, caption: ?string, url: ?string, target: string, columns: int, children: array}> */
     public function menu(int $place): array
     {
         if (!$this->modules->isEnabled('cms')) {
@@ -62,7 +62,7 @@ final class MenuExtension extends AbstractExtension
     /**
      * @param list<MenuItem> $items
      * @param list<int> $visited
-     * @return list<array{id: int, name: string, caption: ?string, url: ?string, target: string, children: array}>
+     * @return list<array{id: int, name: string, caption: ?string, url: ?string, target: string, columns: int, children: array}>
      */
     private function branch(array $items, ?int $parentId, array $visited): array
     {
@@ -85,6 +85,7 @@ final class MenuExtension extends AbstractExtension
                 'caption' => $translation?->getCaption()??$item->getCaption(),
                 'url' => $url,
                 'target' => $item->getTarget(),
+                'columns' => $item->getSubmenuColumns(),
                 'children' => $this->branch($items, $id, [...$visited, $id]),
             ];
         }

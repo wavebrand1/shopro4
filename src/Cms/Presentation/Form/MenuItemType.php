@@ -13,6 +13,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,6 +29,7 @@ final class MenuItemType extends AbstractType
             ->add('name', TextType::class, ['label' => $t('menu.name')])
             ->add('caption', TextType::class, ['label' => $t('menu.caption'), 'required' => false])
             ->add('parent', EntityType::class, ['class' => MenuItem::class, 'choice_label' => 'name', 'label' => $t('menu.parent'), 'placeholder' => $t('menu.root_level'), 'required' => false])
+            ->add('submenuColumns', IntegerType::class, ['label' => $t('menu.submenu_columns'), 'help' => $t('menu.submenu_columns_help'), 'required' => true, 'attr' => ['min' => 1, 'max' => 4]])
             ->add('contentType', ChoiceType::class, ['label' => $t('menu.type'), 'choices' => [$t('menu.type_page') => MenuItem::TYPE_PAGE, $t('menu.type_module') => MenuItem::TYPE_MODULE, $t('menu.type_web') => MenuItem::TYPE_WEB, $t('menu.type_placeholder') => MenuItem::TYPE_PLACEHOLDER], 'attr' => ['data-menu-content-type' => '']])
             ->add('page', EntityType::class, ['class' => Page::class, 'query_builder' => static fn (PageRepository $pages) => $pages->createQueryBuilder('page')->andWhere('page.deletedAt IS NULL')->orderBy('page.title', 'ASC'), 'choice_label' => 'title', 'label' => $t('pages.page'), 'placeholder' => $t('menu.select_page'), 'required' => false, 'row_attr' => ['data-menu-field' => 'page']])
             ->add('moduleReference', ChoiceType::class, ['label' => $t('menu.module_content'), 'placeholder' => $t('menu.select_module_content'), 'choices' => $this->moduleContent->formChoices(), 'required' => false, 'row_attr' => ['data-menu-field' => 'module']])
